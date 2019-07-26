@@ -1,0 +1,11 @@
+*.iml
+*.ipr
+*.iws
+.idea/
+.classpath
+.project
+.settings/
+slimeworldmanager-testfileread/
+.DS_Store/
+target/
+dependency-reduced-pom.xml
