@@ -6,30 +6,30 @@ import com.grinderwolf.smw.api.exceptions.InvalidVersionException;
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
 import com.grinderwolf.smw.nms.SlimeNMS;
 import com.grinderwolf.smw.nms.v1_8_R3.v1_8_R3SlimeNMS;
-import com.grinderwolf.smw.plugin.loaders.FileLoader;
 import com.grinderwolf.smw.plugin.loaders.Loaders;
 import com.grinderwolf.smw.plugin.log.Logging;
+import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 
 public class SMWPlugin extends JavaPlugin {
 
-    private SlimeNMS nmsInstance;
+    @Getter
+    private static SMWPlugin instance;
+    @Getter
+    private SlimeNMS nms;
+
     private SlimeWorld world;
 
     @Override
     public void onLoad() {
         Logging.info("Loading...");
+        instance = this;
 
         try {
-            nmsInstance = loadInjector();
+            nms = loadInjector();
         } catch (InvalidVersionException ex) {
             Logging.error("Couldn't load injector:");
             ex.printStackTrace();
@@ -37,12 +37,12 @@ public class SMWPlugin extends JavaPlugin {
             return;
         }
 
-        nmsInstance.inject();
+        nms.inject(); // Useless for now
     }
 
     @Override
     public void onEnable() {
-        if (nmsInstance == null) {
+        if (nms == null) {
             this.setEnabled(false);
             return;
         }
@@ -50,7 +50,7 @@ public class SMWPlugin extends JavaPlugin {
         Logging.info("Loading test world.");
         try {
             world = Loaders.FILE.getInstance().loadWorld("test");
-            nmsInstance.loadWorld(world);
+            nms.loadWorld(world);
         } catch (UnknownWorldException e) {
             Logging.error("World not found.");
         } catch (IOException e) {
@@ -65,20 +65,6 @@ public class SMWPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
 
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        try {
-            sender.sendMessage("Guardando mundo.");
-            long currentTime = System.currentTimeMillis();
-            Loaders.FILE.getInstance().saveWorld(world);
-            sender.sendMessage("Mundo guardado en " + (System.currentTimeMillis() - currentTime) + "ms.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return true;
     }
 
     private SlimeNMS loadInjector() throws InvalidVersionException {

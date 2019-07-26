@@ -3,7 +3,6 @@ package com.grinderwolf.smw.nms;
 import com.grinderwolf.smw.api.SlimeChunk;
 import com.grinderwolf.smw.api.SlimeLoader;
 import com.grinderwolf.smw.api.SlimeWorld;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

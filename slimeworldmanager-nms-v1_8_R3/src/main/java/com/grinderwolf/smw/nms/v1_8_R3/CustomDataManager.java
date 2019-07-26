@@ -2,7 +2,6 @@ package com.grinderwolf.smw.nms.v1_8_R3;
 
 import com.grinderwolf.smw.api.SlimeWorld;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_8_R3.*;

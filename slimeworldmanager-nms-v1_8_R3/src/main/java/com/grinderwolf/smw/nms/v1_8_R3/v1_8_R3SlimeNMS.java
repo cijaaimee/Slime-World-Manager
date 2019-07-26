@@ -1,13 +1,13 @@
 package com.grinderwolf.smw.nms.v1_8_R3;
 
 import com.grinderwolf.smw.api.SlimeWorld;
+import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import com.grinderwolf.smw.nms.SlimeNMS;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
+import net.minecraft.server.v1_8_R3.WorldServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
@@ -29,7 +29,7 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World " + worldName + " already exists!");
         }
 
-        LOGGER.info("Trying to load world " + world.getName());
+        LOGGER.info("Loading world " + world.getName());
         long startTime = System.currentTimeMillis();
 
         CustomDataManager dataManager = new CustomDataManager(world);
@@ -42,14 +42,8 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
             }
         }
 
-        WorldServer server = new WorldServer(mcServer, dataManager, dataManager.getWorldData(), dimension, mcServer.methodProfiler, World.Environment.NORMAL, null);
+        WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimension);
 
-        server.b();
-        server.scoreboard = mcServer.server.getScoreboardManager().getMainScoreboard().getHandle();
-        server.tracker = new EntityTracker(server);
-        server.addIWorldAccess(new WorldManager(mcServer, server));
-        server.worldData.setDifficulty(EnumDifficulty.PEACEFUL);
-        server.setSpawnFlags(true, true); // allowMonsters and allowAnimals
         mcServer.worlds.add(server);
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));

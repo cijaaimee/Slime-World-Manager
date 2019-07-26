@@ -16,7 +16,6 @@ import com.grinderwolf.smw.api.utils.NibbleArray;
 import com.grinderwolf.smw.nms.CraftSlimeChunk;
 import com.grinderwolf.smw.nms.CraftSlimeChunkSection;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
-import org.bukkit.entity.Slime;
 
 import java.io.*;
 import java.nio.ByteOrder;
@@ -113,16 +112,12 @@ public class LoaderUtils {
         //CompoundTag entitiesCompound = readCompoundTag(entities);
 
         // Tile Entity deserialization
-        // noinspection unchecked
         CompoundTag tileEntitiesCompound = readCompoundTag(tileEntities);
 
         if (tileEntitiesCompound != null) {
             ListTag<CompoundTag> tileEntitiesList = (ListTag<CompoundTag>) tileEntitiesCompound.getValue().get("tiles");
-            System.out.println("Loading Tile Entities:");
 
             for (CompoundTag tileEntityCompound : tileEntitiesList.getValue()) {
-                System.out.println(" - " + tileEntityCompound.toString());
-
                 int chunkX = ((IntTag) tileEntityCompound.getValue().get("x")).getValue() >> 4;
                 int chunkZ = ((IntTag) tileEntityCompound.getValue().get("z")).getValue() >> 4;
                 long chunkKey = ((long) chunkZ) * Integer.MAX_VALUE + ((long) chunkX);
@@ -130,8 +125,8 @@ public class LoaderUtils {
 
 
                 if (chunk == null) {
-                    //throw new CorruptedWorldException(worldName);
-                    continue;
+                    throw new CorruptedWorldException(worldName);
+                    //continue;
                 }
 
                 chunk.getTileEntities().add(tileEntityCompound);

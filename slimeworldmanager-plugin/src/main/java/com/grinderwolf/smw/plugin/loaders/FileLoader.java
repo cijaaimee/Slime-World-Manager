@@ -43,7 +43,7 @@ public class FileLoader implements SlimeLoader {
 
     @Override
     public void saveWorld(SlimeWorld world) throws IOException {
-        File file = new File(WORLD_DIR, world.getName() + ".slime2");
+        File file = new File(WORLD_DIR, world.getName() + ".slime");
 
         try (FileOutputStream fileStream = new FileOutputStream(file, false)) {
             fileStream.write(LoaderUtils.serializeWorld((CraftSlimeWorld) world));
