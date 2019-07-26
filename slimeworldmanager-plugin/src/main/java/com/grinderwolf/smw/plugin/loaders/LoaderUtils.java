@@ -7,10 +7,11 @@ import com.flowpowered.nbt.ListTag;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import com.flowpowered.nbt.stream.NBTOutputStream;
 import com.github.luben.zstd.Zstd;
-import com.grinderwolf.smw.api.SlimeChunk;
-import com.grinderwolf.smw.api.SlimeChunkSection;
-import com.grinderwolf.smw.api.SlimeLoader;
-import com.grinderwolf.smw.api.SlimeWorld;
+import com.grinderwolf.smw.api.loaders.SlimeLoaders;
+import com.grinderwolf.smw.api.world.SlimeChunk;
+import com.grinderwolf.smw.api.world.SlimeChunkSection;
+import com.grinderwolf.smw.api.loaders.SlimeLoader;
+import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.smw.api.utils.NibbleArray;
 import com.grinderwolf.smw.nms.CraftSlimeChunk;
@@ -27,7 +28,12 @@ public class LoaderUtils {
     private static final byte[] SLIME_HEADER = new byte[] { -79, 11 };
     private static final int SLIME_VERSION = 3;
 
-    public static SlimeWorld loadWorldFromStream(SlimeLoader loader, String worldName, DataInputStream dataStream) throws IOException, CorruptedWorldException {
+    public static void registerLoaders() {
+        SlimeLoaders.add("file", new FileLoader());
+    }
+
+    public static SlimeWorld loadWorldFromStream(SlimeLoader loader, String worldName, DataInputStream dataStream,
+                                                 SlimeWorld.SlimeProperties properties) throws IOException, CorruptedWorldException {
         byte[] fileHeader = new byte[SLIME_HEADER.length];
         dataStream.read(fileHeader);
 
@@ -133,7 +139,7 @@ public class LoaderUtils {
             }
         }
 
-        return new CraftSlimeWorld(loader, worldName, chunks);
+        return new CraftSlimeWorld(loader, worldName, chunks, properties);
     }
 
     private static Map<Long, SlimeChunk> readChunks(String worldName, int minX, int minZ, int width, int depth, BitSet chunkBitset, byte[] chunkData) throws IOException {

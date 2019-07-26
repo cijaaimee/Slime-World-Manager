@@ -1,4 +1,4 @@
-package com.grinderwolf.smw.api;
+package com.grinderwolf.smw.api.world;
 
 import com.flowpowered.nbt.CompoundTag;
 

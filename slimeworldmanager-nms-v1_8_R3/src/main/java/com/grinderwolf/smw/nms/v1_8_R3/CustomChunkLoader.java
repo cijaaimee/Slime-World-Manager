@@ -1,12 +1,20 @@
 package com.grinderwolf.smw.nms.v1_8_R3;
 
 import com.flowpowered.nbt.CompoundTag;
-import com.grinderwolf.smw.api.SlimeChunk;
-import com.grinderwolf.smw.api.SlimeChunkSection;
-import com.grinderwolf.smw.api.SlimeWorld;
+import com.grinderwolf.smw.api.world.SlimeChunk;
+import com.grinderwolf.smw.api.world.SlimeChunkSection;
 import com.grinderwolf.smw.api.utils.NibbleArray;
+import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.Block;
+import net.minecraft.server.v1_8_R3.Chunk;
+import net.minecraft.server.v1_8_R3.ChunkSection;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityTypes;
+import net.minecraft.server.v1_8_R3.IChunkLoader;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.TileEntity;
+import net.minecraft.server.v1_8_R3.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,7 +26,7 @@ public class CustomChunkLoader implements IChunkLoader {
 
     private static final Logger LOGGER = LogManager.getLogger("SMW Chunk Loader");
 
-    private final SlimeWorld world;
+    private final CraftSlimeWorld world;
 
     // Load chunk
     @Override

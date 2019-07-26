@@ -1,10 +1,16 @@
 package com.grinderwolf.smw.nms.v1_8_R3;
 
-import com.grinderwolf.smw.api.SlimeWorld;
+import com.grinderwolf.smw.api.world.SlimeWorld;
+import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.IChunkLoader;
+import net.minecraft.server.v1_8_R3.IDataManager;
+import net.minecraft.server.v1_8_R3.IPlayerFileData;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.WorldData;
+import net.minecraft.server.v1_8_R3.WorldProvider;
 
 import java.io.File;
 import java.util.UUID;
@@ -32,7 +38,7 @@ public class CustomDataManager implements IDataManager {
 
     @Override
     public IChunkLoader createChunkLoader(WorldProvider worldProvider) {
-        return new CustomChunkLoader(world);
+        return new CustomChunkLoader((CraftSlimeWorld) world);
     }
 
     @Override

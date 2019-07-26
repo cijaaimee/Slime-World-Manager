@@ -1,8 +1,8 @@
 package com.grinderwolf.smw.nms.v1_8_R3;
 
 import com.flowpowered.nbt.*;
-import com.grinderwolf.smw.api.SlimeChunk;
-import com.grinderwolf.smw.api.SlimeChunkSection;
+import com.grinderwolf.smw.api.world.SlimeChunk;
+import com.grinderwolf.smw.api.world.SlimeChunkSection;
 import com.grinderwolf.smw.api.utils.NibbleArray;
 import com.grinderwolf.smw.nms.CraftSlimeChunk;
 import com.grinderwolf.smw.nms.CraftSlimeChunkSection;

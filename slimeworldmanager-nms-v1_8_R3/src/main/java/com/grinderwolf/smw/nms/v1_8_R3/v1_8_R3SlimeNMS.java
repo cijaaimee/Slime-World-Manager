@@ -1,6 +1,6 @@
 package com.grinderwolf.smw.nms.v1_8_R3;
 
-import com.grinderwolf.smw.api.SlimeWorld;
+import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import com.grinderwolf.smw.nms.SlimeNMS;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -17,12 +17,7 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
     private static final Logger LOGGER = LogManager.getLogger("SMW NMS implementation");
 
     @Override
-    public void inject() {
-        // Nothing to do really
-    }
-
-    @Override
-    public void loadWorld(SlimeWorld world) {
+    public void generateWorld(SlimeWorld world) {
         String worldName = world.getName();
 
         if (Bukkit.getWorld(worldName) != null) {
@@ -69,10 +64,5 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
         }
 
         LOGGER.info("World " + world.getName() + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
-    }
-
-    @Override
-    public void unloadWorld(SlimeWorld world) {
-
     }
 }

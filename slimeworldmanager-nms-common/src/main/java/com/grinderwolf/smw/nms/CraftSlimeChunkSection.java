@@ -1,6 +1,6 @@
 package com.grinderwolf.smw.nms;
 
-import com.grinderwolf.smw.api.SlimeChunkSection;
+import com.grinderwolf.smw.api.world.SlimeChunkSection;
 import com.grinderwolf.smw.api.utils.NibbleArray;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

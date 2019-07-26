@@ -1,7 +1,9 @@
 package com.grinderwolf.smw.nms.v1_8_R3;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
+import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.EntityTracker;
 import net.minecraft.server.v1_8_R3.EnumDifficulty;
 import net.minecraft.server.v1_8_R3.ExceptionWorldConflict;
@@ -35,8 +37,12 @@ public class CustomWorldServer extends WorldServer {
         this.scoreboard = MinecraftServer.getServer().server.getScoreboardManager().getMainScoreboard().getHandle();
         this.tracker = new EntityTracker(this);
         addIWorldAccess(new WorldManager(MinecraftServer.getServer(), this));
-        worldData.setDifficulty(EnumDifficulty.PEACEFUL);
-        setSpawnFlags(true, true); // allowMonsters and allowAnimals
+
+        SlimeWorld.SlimeProperties properties = world.getProperties();
+
+        worldData.setDifficulty(EnumDifficulty.getById(properties.getDifficulty()));
+        worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
+        setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
     }
 
     @Override

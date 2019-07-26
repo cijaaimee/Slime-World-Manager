@@ -1,8 +1,8 @@
 package com.grinderwolf.smw.nms;
 
-import com.grinderwolf.smw.api.SlimeChunk;
-import com.grinderwolf.smw.api.SlimeLoader;
-import com.grinderwolf.smw.api.SlimeWorld;
+import com.grinderwolf.smw.api.world.SlimeChunk;
+import com.grinderwolf.smw.api.loaders.SlimeLoader;
+import com.grinderwolf.smw.api.world.SlimeWorld;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,6 +16,7 @@ public class CraftSlimeWorld implements SlimeWorld {
     private final SlimeLoader loader;
     private final String name;
     private final Map<Long, SlimeChunk> chunks;
+    private final SlimeProperties properties;
 
     @Setter
     private boolean saving;
@@ -27,7 +28,6 @@ public class CraftSlimeWorld implements SlimeWorld {
         return chunks.get(index);
     }
 
-    @Override
     public void updateChunk(SlimeChunk chunk) {
         CraftSlimeChunk craftChunk = (CraftSlimeChunk) chunk;
 

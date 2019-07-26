@@ -1,8 +1,8 @@
 package com.grinderwolf.smw.nms;
 
 import com.flowpowered.nbt.CompoundTag;
-import com.grinderwolf.smw.api.SlimeChunk;
-import com.grinderwolf.smw.api.SlimeChunkSection;
+import com.grinderwolf.smw.api.world.SlimeChunk;
+import com.grinderwolf.smw.api.world.SlimeChunkSection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

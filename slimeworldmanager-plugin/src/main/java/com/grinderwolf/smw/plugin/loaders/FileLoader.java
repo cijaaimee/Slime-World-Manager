@@ -1,7 +1,7 @@
 package com.grinderwolf.smw.plugin.loaders;
 
-import com.grinderwolf.smw.api.SlimeLoader;
-import com.grinderwolf.smw.api.SlimeWorld;
+import com.grinderwolf.smw.api.loaders.SlimeLoader;
+import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
@@ -23,7 +23,7 @@ public class FileLoader implements SlimeLoader {
     }
 
     @Override
-    public SlimeWorld loadWorld(String worldName) throws UnknownWorldException, IOException, CorruptedWorldException {
+    public SlimeWorld loadWorld(String worldName, SlimeWorld.SlimeProperties properties) throws UnknownWorldException, IOException, CorruptedWorldException {
         if (!worldExists(worldName)) {
             throw new UnknownWorldException(worldName);
         }
@@ -32,7 +32,7 @@ public class FileLoader implements SlimeLoader {
 
         try (FileInputStream fileStream = new FileInputStream(file);
              DataInputStream dataStream = new DataInputStream(fileStream)) {
-            return LoaderUtils.loadWorldFromStream(this, worldName, dataStream);
+            return LoaderUtils.loadWorldFromStream(this, worldName, dataStream, properties);
         }
     }
 
