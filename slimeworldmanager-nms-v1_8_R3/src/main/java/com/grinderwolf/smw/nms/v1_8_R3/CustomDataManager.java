@@ -28,7 +28,7 @@ public class CustomDataManager implements IDataManager {
     @Override
     public WorldData getWorldData() {
         if (worldData == null) {
-            worldData = new CustomWorldData(world.getName());
+            worldData = new CustomWorldData((CraftSlimeWorld) world);
         }
 
         return worldData;

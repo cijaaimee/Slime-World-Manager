@@ -15,7 +15,7 @@ public interface SlimeWorld {
     public SlimeProperties getProperties();
 
     @Getter
-    @Builder
+    @Builder(toBuilder = true)
     public class SlimeProperties {
 
         double spawnX;

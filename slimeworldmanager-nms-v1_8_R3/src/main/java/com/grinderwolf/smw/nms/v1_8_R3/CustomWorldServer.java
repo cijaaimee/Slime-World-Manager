@@ -42,7 +42,7 @@ public class CustomWorldServer extends WorldServer {
 
         worldData.setDifficulty(EnumDifficulty.getById(properties.getDifficulty()));
         worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
-        setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
+        super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
     }
 
     @Override
@@ -68,5 +68,14 @@ public class CustomWorldServer extends WorldServer {
                 ex.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void setSpawnFlags(boolean allowMonsters, boolean allowAnimals) {
+        super.setSpawnFlags(allowMonsters, allowAnimals);
+
+        // Keep properties updated
+        SlimeWorld.SlimeProperties newProps = world.getProperties().toBuilder().allowMonsters(allowMonsters).allowAnimals(allowAnimals).build();
+        world.setProperties(newProps);
     }
 }

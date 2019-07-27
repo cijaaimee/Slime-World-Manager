@@ -12,6 +12,7 @@ import com.grinderwolf.smw.api.world.SlimeChunkSection;
 import com.grinderwolf.smw.api.world.SlimeWorld;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -34,8 +35,10 @@ public class CraftSlimeWorld implements SlimeWorld {
     private final SlimeLoader loader;
     private final String name;
     private final Map<Long, SlimeChunk> chunks;
-    private final SlimeProperties properties;
     private final CompoundTag extraData;
+
+    @Setter
+    private SlimeProperties properties;
 
     @Override
     public SlimeChunk getChunk(int x, int z) {
