@@ -154,7 +154,8 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         long start = System.currentTimeMillis();
 
         Logging.info("Loading world " + worldName + ".");
-        SlimeWorld world = loader.loadWorld(worldName, properties);
+        byte[] serializedWorld = loader.loadWorld(worldName);
+        SlimeWorld world = LoaderUtils.deserializeWorld(loader, worldName, serializedWorld, properties);
         nms.generateWorld(world);
 
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");

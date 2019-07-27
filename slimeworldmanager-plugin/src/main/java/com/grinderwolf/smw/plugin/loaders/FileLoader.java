@@ -1,13 +1,13 @@
 package com.grinderwolf.smw.plugin.loaders;
 
-import com.grinderwolf.smw.api.loaders.SlimeLoader;
-import com.grinderwolf.smw.api.world.SlimeWorld;
-import com.grinderwolf.smw.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
-import com.grinderwolf.smw.nms.CraftSlimeWorld;
+import com.grinderwolf.smw.api.loaders.SlimeLoader;
 import com.grinderwolf.smw.plugin.log.Logging;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class FileLoader implements SlimeLoader {
 
@@ -23,17 +23,14 @@ public class FileLoader implements SlimeLoader {
     }
 
     @Override
-    public SlimeWorld loadWorld(String worldName, SlimeWorld.SlimeProperties properties) throws UnknownWorldException, IOException, CorruptedWorldException {
+    public byte[] loadWorld(String worldName) throws UnknownWorldException, IOException {
         if (!worldExists(worldName)) {
             throw new UnknownWorldException(worldName);
         }
 
         File file = new File(WORLD_DIR, worldName + ".slime");
 
-        try (FileInputStream fileStream = new FileInputStream(file);
-             DataInputStream dataStream = new DataInputStream(fileStream)) {
-            return LoaderUtils.loadWorldFromStream(this, worldName, dataStream, properties);
-        }
+        return Files.readAllBytes(file.toPath());
     }
 
     @Override
@@ -42,12 +39,21 @@ public class FileLoader implements SlimeLoader {
     }
 
     @Override
-    public void saveWorld(SlimeWorld world) throws IOException {
-        File file = new File(WORLD_DIR, world.getName() + ".slime");
+    public void saveWorld(String worldName, byte[] serializedWorld) throws IOException {
+        File lastBackup = new File(WORLD_DIR, worldName + ".slime_old");
+
+        if (lastBackup.exists()) {
+            lastBackup.delete();
+        }
+
+        File file = new File(WORLD_DIR, worldName + ".slime");
+
+        file.renameTo(lastBackup);
 
         try (FileOutputStream fileStream = new FileOutputStream(file, false)) {
-            fileStream.write(LoaderUtils.serializeWorld((CraftSlimeWorld) world));
+            fileStream.write(serializedWorld);
             fileStream.flush();
+            lastBackup.delete();
         }
     }
 }

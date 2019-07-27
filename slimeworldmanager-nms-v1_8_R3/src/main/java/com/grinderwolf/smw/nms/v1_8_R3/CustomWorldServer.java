@@ -61,7 +61,8 @@ public class CustomWorldServer extends WorldServer {
             try {
                 LOGGER.info("Saving world " + world.getName() + "...");
                 long start = System.currentTimeMillis();
-                world.getLoader().saveWorld(world);
+                byte[] serializedWorld = world.serialize();
+                world.getLoader().saveWorld(world.getName(), serializedWorld);
                 LOGGER.info("World " + world.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();
