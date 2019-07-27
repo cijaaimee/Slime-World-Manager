@@ -2,6 +2,7 @@ package com.grinderwolf.smw.plugin.loaders;
 
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.DoubleTag;
 import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
 import com.flowpowered.nbt.stream.NBTInputStream;
@@ -119,7 +120,27 @@ public class LoaderUtils {
             Map<Long, SlimeChunk> chunks = readChunks(worldName, minX, minZ, width, depth, chunkBitset, chunkData);
 
             // Entity deserialization
-            //CompoundTag entitiesCompound = readCompoundTag(entities);
+            CompoundTag entitiesCompound = readCompoundTag(entities);
+
+            if (entitiesCompound != null) {
+                ListTag<CompoundTag> tileEntitiesList = (ListTag<CompoundTag>) entitiesCompound.getValue().get("entities");
+
+                for (CompoundTag entityCompound : tileEntitiesList.getValue()) {
+                    CompoundMap map = entityCompound.getValue();
+                    ListTag<DoubleTag> listTag = (ListTag<DoubleTag>) map.get("Pos");
+
+                    int chunkX = floor(listTag.getValue().get(0).getValue()) >> 4;
+                    int chunkZ = floor(listTag.getValue().get(2).getValue()) >> 4;
+                    long chunkKey = ((long) chunkZ) * Integer.MAX_VALUE + ((long) chunkX);
+                    SlimeChunk chunk = chunks.get(chunkKey);
+
+                    if (chunk == null) {
+                        throw new CorruptedWorldException(worldName);
+                    }
+
+                    chunk.getEntities().add(entityCompound);
+                }
+            }
 
             // Tile Entity deserialization
             CompoundTag tileEntitiesCompound = readCompoundTag(tileEntities);
@@ -153,6 +174,11 @@ public class LoaderUtils {
         } catch (EOFException ex) {
             throw new CorruptedWorldException(worldName);
         }
+    }
+
+    private static int floor(double num) {
+        final int floor = (int) num;
+        return floor == num ? floor : floor - (int) (Double.doubleToRawLongBits(num) >>> 63);
     }
 
     private static Map<Long, SlimeChunk> readChunks(String worldName, int minX, int minZ, int width, int depth, BitSet chunkBitset, byte[] chunkData) throws IOException {

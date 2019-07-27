@@ -86,7 +86,7 @@ public class Converter {
                     list.add(convertTag("", entry));
                 }
 
-                return new ListTag(name, TagType.getById(base.getTypeId()).getTagClass(), list);
+                return new ListTag(name, TagType.getById(originalList.f()).getTagClass(), list);
             case 10:
                 NBTTagCompound originalCompound = ((NBTTagCompound) base);
                 CompoundTag compound = new CompoundTag("", new CompoundMap());

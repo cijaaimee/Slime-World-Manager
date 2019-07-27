@@ -15,7 +15,11 @@ import com.grinderwolf.smw.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -160,5 +164,28 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         return world;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (!(sender instanceof Player)) {
+            return true;
+        }
+
+        Player player = (Player) sender;
+
+        if (args.length != 1) {
+            return false;
+        }
+
+        World world = Bukkit.getWorld(args[0]);
+
+        if (world == null) {
+            return false;
+        }
+
+        player.teleport(world.getSpawnLocation());
+
+        return true;
     }
 }

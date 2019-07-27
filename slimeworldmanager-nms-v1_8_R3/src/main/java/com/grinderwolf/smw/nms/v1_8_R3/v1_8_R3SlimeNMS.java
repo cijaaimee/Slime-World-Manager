@@ -14,7 +14,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 
 public class v1_8_R3SlimeNMS implements SlimeNMS {
 
-    private static final Logger LOGGER = LogManager.getLogger("SMW NMS implementation");
+    private static final Logger LOGGER = LogManager.getLogger("SMW");
 
     @Override
     public void generateWorld(SlimeWorld world) {
