@@ -50,7 +50,6 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         try {
-            Logging.info("Loading worlds from config file...");
             loadWorlds();
         } catch (NullPointerException | IOException ex) {
             Logging.error("Failed to load worlds from config file:");

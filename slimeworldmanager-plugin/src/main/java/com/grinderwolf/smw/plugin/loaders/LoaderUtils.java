@@ -1,5 +1,6 @@
 package com.grinderwolf.smw.plugin.loaders;
 
+import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
@@ -19,6 +20,7 @@ import com.grinderwolf.smw.nms.CraftSlimeWorld;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -36,112 +38,121 @@ public class LoaderUtils {
     public static SlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimeWorld.SlimeProperties properties) throws IOException, CorruptedWorldException {
         DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(serializedWorld));
 
-        byte[] fileHeader = new byte[SlimeFormat.SLIME_HEADER.length];
-        dataStream.read(fileHeader);
+        try {
+            byte[] fileHeader = new byte[SlimeFormat.SLIME_HEADER.length];
+            dataStream.read(fileHeader);
 
-        if (!Arrays.equals(SlimeFormat.SLIME_HEADER, fileHeader)) {
-            throw new CorruptedWorldException(worldName);
-        }
-
-        // File version
-        byte version = dataStream.readByte();
-
-        // Chunk
-        short minX = dataStream.readShort();
-        short minZ = dataStream.readShort();
-        int width = dataStream.readShort();
-        int depth = dataStream.readShort();
-
-        int bitmaskSize = (int) Math.ceil((width * depth) / 8.0D);
-        byte[] chunkBitmask = new byte[bitmaskSize];
-        dataStream.read(chunkBitmask);
-        BitSet chunkBitset = BitSet.valueOf(chunkBitmask);
-
-        int compressedChunkDataLength = dataStream.readInt();
-        int chunkDataLength = dataStream.readInt();
-        byte[] compressedChunkData = new byte[compressedChunkDataLength];
-        byte[] chunkData = new byte[chunkDataLength];
-
-        dataStream.read(compressedChunkData);
-
-        // Tile Entities
-        int compressedTileEntitiesLength = dataStream.readInt();
-        int tileEntitiesLength = dataStream.readInt();
-        byte[] compressedTileEntities = new byte[compressedTileEntitiesLength];
-        byte[] tileEntities = new byte[tileEntitiesLength];
-
-        dataStream.read(compressedTileEntities);
-
-        // Entities
-        byte[] compressedEntities = new byte[0];
-        byte[] entities = new byte[0];
-
-        if (version >= 3) {
-            boolean hasEntities = dataStream.readBoolean();
-
-            if (hasEntities) {
-                int compressedEntitiesLength = dataStream.readInt();
-                int entitiesLength = dataStream.readInt();
-                compressedEntities = new byte[compressedEntitiesLength];
-                entities = new byte[entitiesLength];
-
-                dataStream.read(compressedEntities);
+            if (!Arrays.equals(SlimeFormat.SLIME_HEADER, fileHeader)) {
+                throw new CorruptedWorldException(worldName);
             }
-        }
 
-        // Extra NBT tag
-        byte[] compressedExtraTag = new byte[0];
-        byte[] extraTag = new byte[0];
+            // File version
+            byte version = dataStream.readByte();
 
-        if (version >= 2) {
-            int compressedExtraTagLength = dataStream.readInt();
-            int extraTagLength = dataStream.readInt();
-            compressedExtraTag = new byte[compressedExtraTagLength];
-            extraTag = new byte[extraTagLength];
+            // Chunk
+            short minX = dataStream.readShort();
+            short minZ = dataStream.readShort();
+            int width = dataStream.readShort();
+            int depth = dataStream.readShort();
 
-            dataStream.read(compressedExtraTag);
-        }
+            int bitmaskSize = (int) Math.ceil((width * depth) / 8.0D);
+            byte[] chunkBitmask = new byte[bitmaskSize];
+            dataStream.read(chunkBitmask);
+            BitSet chunkBitset = BitSet.valueOf(chunkBitmask);
 
-        if (dataStream.read() != -1) {
-            throw new CorruptedWorldException(worldName);
-        }
+            int compressedChunkDataLength = dataStream.readInt();
+            int chunkDataLength = dataStream.readInt();
+            byte[] compressedChunkData = new byte[compressedChunkDataLength];
+            byte[] chunkData = new byte[chunkDataLength];
 
-        // Data decompression
-        Zstd.decompress(chunkData, compressedChunkData);
-        Zstd.decompress(tileEntities, compressedTileEntities);
-        Zstd.decompress(entities, compressedEntities);
-        Zstd.decompress(extraTag, compressedExtraTag);
+            dataStream.read(compressedChunkData);
 
-        // Chunk deserialization
-        Map<Long, SlimeChunk> chunks = readChunks(worldName, minX, minZ, width, depth, chunkBitset, chunkData);
+            // Tile Entities
+            int compressedTileEntitiesLength = dataStream.readInt();
+            int tileEntitiesLength = dataStream.readInt();
+            byte[] compressedTileEntities = new byte[compressedTileEntitiesLength];
+            byte[] tileEntities = new byte[tileEntitiesLength];
 
-        // Entity deserialization
-        // noinspection unchecked
-        //CompoundTag entitiesCompound = readCompoundTag(entities);
+            dataStream.read(compressedTileEntities);
 
-        // Tile Entity deserialization
-        CompoundTag tileEntitiesCompound = readCompoundTag(tileEntities);
+            // Entities
+            byte[] compressedEntities = new byte[0];
+            byte[] entities = new byte[0];
 
-        if (tileEntitiesCompound != null) {
-            ListTag<CompoundTag> tileEntitiesList = (ListTag<CompoundTag>) tileEntitiesCompound.getValue().get("tiles");
+            if (version >= 3) {
+                boolean hasEntities = dataStream.readBoolean();
 
-            for (CompoundTag tileEntityCompound : tileEntitiesList.getValue()) {
-                int chunkX = ((IntTag) tileEntityCompound.getValue().get("x")).getValue() >> 4;
-                int chunkZ = ((IntTag) tileEntityCompound.getValue().get("z")).getValue() >> 4;
-                long chunkKey = ((long) chunkZ) * Integer.MAX_VALUE + ((long) chunkX);
-                SlimeChunk chunk = chunks.get(chunkKey);
+                if (hasEntities) {
+                    int compressedEntitiesLength = dataStream.readInt();
+                    int entitiesLength = dataStream.readInt();
+                    compressedEntities = new byte[compressedEntitiesLength];
+                    entities = new byte[entitiesLength];
 
-
-                if (chunk == null) {
-                    throw new CorruptedWorldException(worldName);
-                    //continue;
+                    dataStream.read(compressedEntities);
                 }
-
-                chunk.getTileEntities().add(tileEntityCompound);
             }
-        }
 
-        return new CraftSlimeWorld(loader, worldName, chunks, properties);
+            // Extra NBT tag
+            byte[] compressedExtraTag = new byte[0];
+            byte[] extraTag = new byte[0];
+
+            if (version >= 2) {
+                int compressedExtraTagLength = dataStream.readInt();
+                int extraTagLength = dataStream.readInt();
+                compressedExtraTag = new byte[compressedExtraTagLength];
+                extraTag = new byte[extraTagLength];
+
+                dataStream.read(compressedExtraTag);
+            }
+
+            if (dataStream.read() != -1) {
+                throw new CorruptedWorldException(worldName);
+            }
+
+            // Data decompression
+            Zstd.decompress(chunkData, compressedChunkData);
+            Zstd.decompress(tileEntities, compressedTileEntities);
+            Zstd.decompress(entities, compressedEntities);
+            Zstd.decompress(extraTag, compressedExtraTag);
+
+            // Chunk deserialization
+            Map<Long, SlimeChunk> chunks = readChunks(worldName, minX, minZ, width, depth, chunkBitset, chunkData);
+
+            // Entity deserialization
+            //CompoundTag entitiesCompound = readCompoundTag(entities);
+
+            // Tile Entity deserialization
+            CompoundTag tileEntitiesCompound = readCompoundTag(tileEntities);
+
+            if (tileEntitiesCompound != null) {
+                ListTag<CompoundTag> tileEntitiesList = (ListTag<CompoundTag>) tileEntitiesCompound.getValue().get("tiles");
+
+                for (CompoundTag tileEntityCompound : tileEntitiesList.getValue()) {
+                    int chunkX = ((IntTag) tileEntityCompound.getValue().get("x")).getValue() >> 4;
+                    int chunkZ = ((IntTag) tileEntityCompound.getValue().get("z")).getValue() >> 4;
+                    long chunkKey = ((long) chunkZ) * Integer.MAX_VALUE + ((long) chunkX);
+                    SlimeChunk chunk = chunks.get(chunkKey);
+
+
+                    if (chunk == null) {
+                        throw new CorruptedWorldException(worldName);
+                    }
+
+                    chunk.getTileEntities().add(tileEntityCompound);
+                }
+            }
+
+            // Extra Data
+            CompoundTag extraCompound = readCompoundTag(extraTag);
+
+            if (extraCompound == null) {
+                extraCompound = new CompoundTag("", new CompoundMap());
+            }
+
+            return new CraftSlimeWorld(loader, worldName, chunks, properties, extraCompound);
+        } catch (EOFException ex) {
+            throw new CorruptedWorldException(worldName);
+        }
     }
 
     private static Map<Long, SlimeChunk> readChunks(String worldName, int minX, int minZ, int width, int depth, BitSet chunkBitset, byte[] chunkData) throws IOException {

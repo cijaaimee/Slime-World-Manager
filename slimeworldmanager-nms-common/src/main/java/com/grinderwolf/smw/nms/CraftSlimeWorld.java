@@ -35,6 +35,7 @@ public class CraftSlimeWorld implements SlimeWorld {
     private final String name;
     private final Map<Long, SlimeChunk> chunks;
     private final SlimeProperties properties;
+    private final CompoundTag extraData;
 
     @Override
     public SlimeChunk getChunk(int x, int z) {
@@ -142,8 +143,12 @@ public class CraftSlimeWorld implements SlimeWorld {
             }
 
             // Extra Tag
-            outStream.writeInt(0);
-            outStream.writeInt(0);
+            byte[] extra = serializeCompoundTag(extraData);
+            byte[] compressedExtra = Zstd.compress(extra);
+
+            outStream.writeInt(compressedExtra.length);
+            outStream.writeInt(extra.length);
+            outStream.write(compressedExtra);
         } catch (IOException ex) { // Ignore
             ex.printStackTrace();
         }
