@@ -24,8 +24,12 @@ public class CustomWorldData extends WorldData {
         super.setSpawn(position);
 
         // Keep properties updated
-        SlimeWorld.SlimeProperties newProps = world.getProperties().toBuilder().spawnX(position.getX()).spawnY(position.getY()).spawnZ(position.getZ()).build();
-        world.setProperties(newProps);
+        SlimeWorld.SlimeProperties oldProps = world.getProperties();
+
+        if (oldProps.getSpawnX() != position.getX() || oldProps.getSpawnY() != position.getY() || oldProps.getSpawnZ() != position.getZ()) {
+            SlimeWorld.SlimeProperties newProps = oldProps.toBuilder().spawnX(position.getX()).spawnY(position.getY()).spawnZ(position.getZ()).build();
+            world.setProperties(newProps);
+        }
     }
 
     @Override
@@ -33,7 +37,11 @@ public class CustomWorldData extends WorldData {
         super.setDifficulty(difficulty);
 
         // Keep properties updated
-        SlimeWorld.SlimeProperties newProps = world.getProperties().toBuilder().difficulty(difficulty.a()).build();
-        world.setProperties(newProps);
+        SlimeWorld.SlimeProperties oldProps = world.getProperties();
+
+        if (oldProps.getDifficulty() != difficulty.a()) {
+            SlimeWorld.SlimeProperties newProps = oldProps.toBuilder().difficulty(difficulty.a()).build();
+            world.setProperties(newProps);
+        }
     }
 }
