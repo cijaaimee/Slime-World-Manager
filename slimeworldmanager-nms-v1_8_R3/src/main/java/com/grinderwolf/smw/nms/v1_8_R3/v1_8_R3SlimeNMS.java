@@ -21,7 +21,7 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
         String worldName = world.getName();
 
         if (Bukkit.getWorld(worldName) != null) {
-            throw new IllegalArgumentException("World " + worldName + " already exists!");
+            throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
         LOGGER.info("Loading world " + world.getName());

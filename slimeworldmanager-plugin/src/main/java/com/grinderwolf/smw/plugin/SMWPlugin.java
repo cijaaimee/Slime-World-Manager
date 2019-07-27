@@ -3,23 +3,21 @@ package com.grinderwolf.smw.plugin;
 import com.grinderwolf.smw.api.SlimePlugin;
 import com.grinderwolf.smw.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.smw.api.exceptions.InvalidVersionException;
+import com.grinderwolf.smw.api.exceptions.NewerFormatException;
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
 import com.grinderwolf.smw.api.loaders.SlimeLoaders;
 import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.SlimeNMS;
 import com.grinderwolf.smw.nms.v1_8_R3.v1_8_R3SlimeNMS;
+import com.grinderwolf.smw.plugin.commands.CommandManager;
 import com.grinderwolf.smw.plugin.config.ConfigManager;
 import com.grinderwolf.smw.plugin.loaders.LoaderUtils;
 import com.grinderwolf.smw.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -53,6 +51,8 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
             return;
         }
 
+        getCommand("smw").setExecutor(new CommandManager());
+
         try {
             loadWorlds();
         } catch (NullPointerException | IOException ex) {
@@ -85,17 +85,21 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
             for (String world : config.getKeys(false)) {
                 ConfigurationSection worldConfig = config.getConfigurationSection(world);
 
-                try {
-                    loadWorldFromConfig(worldConfig);
-                    loadedWorlds++;
-                } catch (IllegalArgumentException ex) {
-                    Logging.error("Couldn't load world " + world + ": " + ex.getMessage() + ".");
-                } catch (UnknownWorldException ex) {
-                    Logging.error("Couldn't load world " + world + ": world does not exist, are you sure you've set the correct loader?");
-                } catch (CorruptedWorldException ex) {
-                    Logging.error("Couldn't load world " + world + ": world seems to be corrupted.");
+                if (worldConfig.getBoolean("loadOnStartup", true)) {
+                    try {
+                        loadWorldFromConfig(worldConfig);
+                        loadedWorlds++;
+                    } catch (IllegalArgumentException ex) {
+                        Logging.error("Couldn't load world " + world + ": " + ex.getMessage() + ".");
+                    } catch (UnknownWorldException ex) {
+                        Logging.error("Couldn't load world " + world + ": world does not exist, are you sure you've set the correct loader?");
+                    } catch (NewerFormatException ex) {
+                        Logging.error("Couldn't load world " + world + ": world is serialized in a newer Slime Format version (" + ex.getMessage() + ") that SMW does not understand.");
+                    } catch (CorruptedWorldException ex) {
+                        Logging.error("Couldn't load world " + world + ": world seems to be corrupted.");
 
-                    ex.printStackTrace();
+                        ex.printStackTrace();
+                    }
                 }
             }
 
@@ -107,7 +111,7 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         }
     }
 
-    public void loadWorldFromConfig(ConfigurationSection worldConfig) throws UnknownWorldException, IOException, CorruptedWorldException {
+    public void loadWorldFromConfig(ConfigurationSection worldConfig) throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException {
         if (Bukkit.getWorld(worldConfig.getName()) != null) {
             throw new IllegalArgumentException("world '" + worldConfig.getName() + "' already exists");
         }
@@ -153,7 +157,7 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
     }
 
     @Override
-    public SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws UnknownWorldException, IOException, CorruptedWorldException {
+    public SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException {
         long start = System.currentTimeMillis();
 
         Logging.info("Loading world " + worldName + ".");
@@ -164,28 +168,5 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         return world;
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            return true;
-        }
-
-        Player player = (Player) sender;
-
-        if (args.length != 1) {
-            return false;
-        }
-
-        World world = Bukkit.getWorld(args[0]);
-
-        if (world == null) {
-            return false;
-        }
-
-        player.teleport(world.getSpawnLocation());
-
-        return true;
     }
 }

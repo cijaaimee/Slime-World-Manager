@@ -10,8 +10,8 @@ import com.grinderwolf.smw.api.utils.SlimeFormat;
 import com.grinderwolf.smw.api.world.SlimeChunk;
 import com.grinderwolf.smw.api.world.SlimeChunkSection;
 import com.grinderwolf.smw.api.world.SlimeWorld;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.ByteArrayOutputStream;
@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class CraftSlimeWorld implements SlimeWorld {
 
     private final SlimeLoader loader;

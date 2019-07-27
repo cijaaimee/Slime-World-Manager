@@ -8,6 +8,7 @@ import com.flowpowered.nbt.ListTag;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import com.github.luben.zstd.Zstd;
 import com.grinderwolf.smw.api.exceptions.CorruptedWorldException;
+import com.grinderwolf.smw.api.exceptions.NewerFormatException;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
 import com.grinderwolf.smw.api.loaders.SlimeLoaders;
 import com.grinderwolf.smw.api.utils.NibbleArray;
@@ -36,7 +37,7 @@ public class LoaderUtils {
         SlimeLoaders.add("file", new FileLoader());
     }
 
-    public static SlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimeWorld.SlimeProperties properties) throws IOException, CorruptedWorldException {
+    public static SlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimeWorld.SlimeProperties properties) throws IOException, CorruptedWorldException, NewerFormatException {
         DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(serializedWorld));
 
         try {
@@ -49,6 +50,10 @@ public class LoaderUtils {
 
             // File version
             byte version = dataStream.readByte();
+
+            if (version > SlimeFormat.SLIME_VERSION) {
+                throw new NewerFormatException(version);
+            }
 
             // Chunk
             short minX = dataStream.readShort();
@@ -170,7 +175,7 @@ public class LoaderUtils {
                 extraCompound = new CompoundTag("", new CompoundMap());
             }
 
-            return new CraftSlimeWorld(loader, worldName, chunks, properties, extraCompound);
+            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, properties);
         } catch (EOFException ex) {
             throw new CorruptedWorldException(worldName);
         }

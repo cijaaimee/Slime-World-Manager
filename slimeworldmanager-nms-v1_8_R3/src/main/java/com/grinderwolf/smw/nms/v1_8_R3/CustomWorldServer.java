@@ -49,7 +49,7 @@ public class CustomWorldServer extends WorldServer {
     public void save(boolean forceSave, IProgressUpdate progressUpdate) throws ExceptionWorldConflict {
         super.save(forceSave, progressUpdate);
 
-        if (forceSave) { // Make sure the world gets saved before stopping the server by running it from the main thread
+        if (MinecraftServer.getServer().isStopped()) { // Make sure the world gets saved before stopping the server by running it from the main thread
             save();
         } else {
             WORLD_SAVER_SERVICE.execute(this::save);
