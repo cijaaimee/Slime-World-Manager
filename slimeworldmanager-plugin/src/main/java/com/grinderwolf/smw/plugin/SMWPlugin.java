@@ -149,8 +149,10 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         boolean allowMonsters = worldConfig.getBoolean("allowMonsters", true);
         boolean allowAnimals = worldConfig.getBoolean("allowAnimals", true);
 
+        boolean readOnly = worldConfig.getBoolean("readOnly", false);
+
         SlimeWorld.SlimeProperties properties = SlimeWorld.SlimeProperties.builder().spawnX(spawnX).spawnY(spawnY).spawnZ(spawnZ)
-                .difficulty(difficulty.getValue()).allowMonsters(allowMonsters).allowAnimals(allowAnimals).build();
+                .difficulty(difficulty.getValue()).allowMonsters(allowMonsters).allowAnimals(allowAnimals).readOnly(readOnly).build();
 
         // Actual world load
         loadWorld(loader, worldConfig.getName(), properties);

@@ -9,6 +9,7 @@
 #     allowMonsters: false
 #     allowAnimals: false
 #     loadOnStartup: true
+#     readOnly: true
 #   world2:
 #     loader: mysql
 #     difficulty: hard
@@ -16,6 +17,7 @@
 #     allowMonsters: false
 #     allowAnimals: false
 #     loadOnStartup: false
+#     readOnly: true
 #   world3:
 #     loader: seaweed
 #     difficulty: easy
@@ -23,4 +25,5 @@
 #     allowMonsters: false
 #     allowAnimals: true
 #     loadOnStartup: true
+#     readOnly: false
 worlds:

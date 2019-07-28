@@ -18,15 +18,16 @@ public interface SlimeWorld {
     @Builder(toBuilder = true)
     public class SlimeProperties {
 
-        double spawnX;
-        double spawnY;
-        double spawnZ;
+        final double spawnX;
+        final double spawnY;
+        final double spawnZ;
 
-        int difficulty;
+        final int difficulty;
 
         @Accessors(fluent = true)
-        boolean allowMonsters;
+        final boolean allowMonsters;
         @Accessors(fluent = true)
-        boolean allowAnimals;
+        final boolean allowAnimals;
+        final boolean readOnly;
     }
 }
