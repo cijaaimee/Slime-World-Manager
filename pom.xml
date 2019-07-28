@@ -13,6 +13,7 @@
         <module>slimeworldmanager-nms-common</module>
         <module>slimeworldmanager-nms-v1_8_R3</module>
         <module>slimeworldmanager-plugin</module>
+        <module>slimeworldmanager-importer</module>
     </modules>
 
     <dependencies>

@@ -4,26 +4,47 @@ import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_8_R3.IChunkLoader;
-import net.minecraft.server.v1_8_R3.IDataManager;
 import net.minecraft.server.v1_8_R3.IPlayerFileData;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.WorldData;
+import net.minecraft.server.v1_8_R3.WorldNBTStorage;
 import net.minecraft.server.v1_8_R3.WorldProvider;
 
 import java.io.File;
 import java.util.UUID;
 
 @Getter
-@RequiredArgsConstructor
-public class CustomDataManager implements IDataManager {
+public class CustomDataManager extends WorldNBTStorage {
 
     @Getter(value = AccessLevel.NONE)
     private final UUID uuid = UUID.randomUUID();
     private final IPlayerFileData playerFileData = new EmptyPlayerFileData();
     private final SlimeWorld world;
     private WorldData worldData;
+
+    // When unloading a world, Spigot tries to remove the region file from its cache.
+    // To do so, it casts the world's IDataManager to a WorldNBTStorage, to be able
+    // to use the getDirectory() method. Thanks to this, we have to create a custom
+    // WorldNBTStorage with a fake file instead of just implementing the IDataManager interface
+    //
+    // Thanks Spigot!
+    public CustomDataManager(SlimeWorld world) {
+        super(new File("temp_" + world.getName()), world.getName(), false);
+
+        // The WorldNBTStorage automatically creates some files inside the base dir, so we have to delete them
+        // (Thanks again Spigot)
+
+        // Can't just access the baseDir field inside WorldNBTStorage cause it's private :P
+        File baseDir = new File("temp_" + world.getName(), world.getName());
+        new File(baseDir, "session.lock").delete();
+        new File(baseDir, "data").delete();
+
+        baseDir.delete();
+        baseDir.getParentFile().delete();
+
+        this.world = world;
+    }
 
     @Override
     public WorldData getWorldData() {
@@ -50,11 +71,6 @@ public class CustomDataManager implements IDataManager {
     @Override
     public void a() {
 
-    }
-
-    @Override
-    public File getDirectory() {
-        return null;
     }
 
     @Override

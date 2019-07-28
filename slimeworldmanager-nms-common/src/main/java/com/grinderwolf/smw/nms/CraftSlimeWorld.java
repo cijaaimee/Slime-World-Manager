@@ -73,7 +73,6 @@ public class CraftSlimeWorld implements SlimeWorld {
         sortedChunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
         sortedChunks.removeIf(chunk -> chunk == null || Arrays.stream(chunk.getSections()).allMatch(Objects::isNull)); // Remove empty chunks to save space
 
-
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         DataOutputStream outStream = new DataOutputStream(outByteStream);
 
@@ -158,8 +157,6 @@ public class CraftSlimeWorld implements SlimeWorld {
 
         return outByteStream.toByteArray();
     }
-
-
 
     private static void writeBitSetAsBytes(DataOutputStream outStream, BitSet set, int fixedSize) throws IOException {
         byte[] array = set.toByteArray();

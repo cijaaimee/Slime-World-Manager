@@ -26,8 +26,11 @@ public class UnloadWorldCmd implements Subcommand {
                 return true;
             }
 
-            Bukkit.unloadWorld(world, true);
-            sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + args[0] + " unloaded correctly.");
+            if (Bukkit.unloadWorld(world, true)) {
+                sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "World " + args[0] + " unloaded correctly.");
+            } else {
+                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to unload world " + args[0] + ".");
+            }
 
             return true;
         }
