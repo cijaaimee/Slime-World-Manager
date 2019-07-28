@@ -5,6 +5,7 @@ import com.grinderwolf.smw.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.smw.api.exceptions.InvalidVersionException;
 import com.grinderwolf.smw.api.exceptions.NewerFormatException;
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
+import com.grinderwolf.smw.api.exceptions.WorldInUseException;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
 import com.grinderwolf.smw.api.loaders.SlimeLoaders;
 import com.grinderwolf.smw.api.world.SlimeWorld;
@@ -14,6 +15,7 @@ import com.grinderwolf.smw.plugin.commands.CommandManager;
 import com.grinderwolf.smw.plugin.config.ConfigManager;
 import com.grinderwolf.smw.plugin.loaders.LoaderUtils;
 import com.grinderwolf.smw.plugin.log.Logging;
+import com.grinderwolf.smw.plugin.world.WorldUnlocker;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -52,6 +54,7 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         getCommand("smw").setExecutor(new CommandManager());
+        getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
 
         try {
             loadWorlds();
@@ -94,7 +97,11 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
                     } catch (UnknownWorldException ex) {
                         Logging.error("Couldn't load world " + world + ": world does not exist, are you sure you've set the correct loader?");
                     } catch (NewerFormatException ex) {
-                        Logging.error("Couldn't load world " + world + ": world is serialized in a newer Slime Format version (" + ex.getMessage() + ") that SMW does not understand.");
+                        Logging.error("Couldn't load world " + world + ": world is serialized in a newer Slime Format version ("
+                                + ex.getMessage() + ") that SMW does not understand.");
+                    } catch (WorldInUseException e) {
+                        Logging.error("Couldn't load world " + world + ": world is in use! If you are sure this is a mistake, run " +
+                                "the command /smw manualunlock " + world + " " + worldConfig.get("loader"));
                     } catch (CorruptedWorldException ex) {
                         Logging.error("Couldn't load world " + world + ": world seems to be corrupted.");
 
@@ -111,7 +118,7 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         }
     }
 
-    public void loadWorldFromConfig(ConfigurationSection worldConfig) throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException {
+    public void loadWorldFromConfig(ConfigurationSection worldConfig) throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException {
         if (Bukkit.getWorld(worldConfig.getName()) != null) {
             throw new IllegalArgumentException("world '" + worldConfig.getName() + "' already exists");
         }
@@ -159,11 +166,12 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
     }
 
     @Override
-    public SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException {
+    public SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws UnknownWorldException,
+            IOException, CorruptedWorldException, NewerFormatException, WorldInUseException {
         long start = System.currentTimeMillis();
 
         Logging.info("Loading world " + worldName + ".");
-        byte[] serializedWorld = loader.loadWorld(worldName);
+        byte[] serializedWorld = loader.loadWorld(worldName, properties.isReadOnly());
         SlimeWorld world = LoaderUtils.deserializeWorld(loader, worldName, serializedWorld, properties);
         nms.generateWorld(world);
 

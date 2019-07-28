@@ -8,6 +8,7 @@ import net.minecraft.server.v1_8_R3.WorldServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
@@ -64,5 +65,18 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
         }
 
         LOGGER.info("World " + world.getName() + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+    }
+
+    @Override
+    public SlimeWorld getSlimeWorld(World world) {
+        CraftWorld craftWorld = (CraftWorld) world;
+
+        if (!(craftWorld.getHandle() instanceof CustomWorldServer)) {
+            return null;
+        }
+
+        CustomWorldServer worldServer = (CustomWorldServer) craftWorld.getHandle();
+
+        return worldServer.getSlimeWorld();
     }
 }

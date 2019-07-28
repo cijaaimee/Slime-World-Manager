@@ -6,6 +6,7 @@ import com.grinderwolf.smw.plugin.commands.sub.HelpCmd;
 import com.grinderwolf.smw.plugin.commands.sub.LoadWorldCmd;
 import com.grinderwolf.smw.plugin.commands.sub.Subcommand;
 import com.grinderwolf.smw.plugin.commands.sub.UnloadWorldCmd;
+import com.grinderwolf.smw.plugin.commands.sub.UnlockWorldCmd;
 import com.grinderwolf.smw.plugin.commands.sub.VersionCmd;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -34,6 +35,7 @@ public class CommandManager implements CommandExecutor {
         commands.put("goto", new GotoCmd());
         commands.put("load", new LoadWorldCmd());
         commands.put("unload", new UnloadWorldCmd());
+        commands.put("unlock", new UnlockWorldCmd());
     }
 
     @Override

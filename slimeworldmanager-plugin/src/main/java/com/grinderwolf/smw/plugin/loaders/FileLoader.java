@@ -1,9 +1,11 @@
 package com.grinderwolf.smw.plugin.loaders;
 
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
+import com.grinderwolf.smw.api.exceptions.WorldInUseException;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
 import com.grinderwolf.smw.plugin.log.Logging;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,9 +25,24 @@ public class FileLoader implements SlimeLoader {
     }
 
     @Override
-    public byte[] loadWorld(String worldName) throws UnknownWorldException, IOException {
+    public byte[] loadWorld(String worldName, boolean readOnly) throws UnknownWorldException, IOException, WorldInUseException {
         if (!worldExists(worldName)) {
             throw new UnknownWorldException(worldName);
+        }
+
+        if (!readOnly) {
+            File lockFile = new File(WORLD_DIR, worldName + ".slime_lock");
+
+            if (lockFile.exists()) {
+                throw new WorldInUseException(worldName);
+            }
+
+            lockFile.createNewFile();
+
+            try (FileOutputStream fileStream = new FileOutputStream(lockFile);
+                 DataOutputStream dataStream = new DataOutputStream(fileStream)) {
+                dataStream.writeLong(System.currentTimeMillis());
+            }
         }
 
         File file = new File(WORLD_DIR, worldName + ".slime");
@@ -55,5 +72,17 @@ public class FileLoader implements SlimeLoader {
             fileStream.flush();
             lastBackup.delete();
         }
+    }
+
+    @Override
+    public void unlockWorld(String worldName) {
+        File lockFile = new File(WORLD_DIR, worldName + ".slime_lock");
+
+        lockFile.delete();
+    }
+
+    @Override
+    public boolean isWorldLocked(String worldName) {
+        return new File(WORLD_DIR, worldName + ".slime_lock").exists();
     }
 }
