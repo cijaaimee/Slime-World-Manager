@@ -32,7 +32,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CraftSlimeWorld implements SlimeWorld {
 
-    private final SlimeLoader loader;
+    @Setter
+    private SlimeLoader loader;
     private final String name;
     private final Map<Long, SlimeChunk> chunks;
     private final CompoundTag extraData;

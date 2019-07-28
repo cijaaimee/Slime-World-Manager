@@ -3,7 +3,7 @@
 # Example configuration:
 # worlds:
 #   world1:
-#     loader: file
+#     source: file
 #     difficulty: peaceful
 #     spawn: 32, 40, 97
 #     allowMonsters: false
@@ -11,7 +11,7 @@
 #     loadOnStartup: true
 #     readOnly: true
 #   world2:
-#     loader: mysql
+#     source: mysql
 #     difficulty: hard
 #     spawn: -140, 38, 159
 #     allowMonsters: false
@@ -19,7 +19,7 @@
 #     loadOnStartup: false
 #     readOnly: true
 #   world3:
-#     loader: seaweed
+#     source: seaweed
 #     difficulty: easy
 #     spawn: -59, 67, -2
 #     allowMonsters: false

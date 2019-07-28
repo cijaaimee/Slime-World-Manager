@@ -68,7 +68,7 @@ public class LoadWorldCmd implements Subcommand {
 
             try {
                 long start = System.currentTimeMillis();
-                // This retrieves the world data through the specified loader on the main thread. Maybe in the future this should be performed asynchronously?
+                // This retrieves the world data through the specified data source on the main thread. Maybe in the future this should be performed asynchronously?
                 SMWPlugin.getInstance().loadWorldFromConfig(worldConfig);
                 sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms!");
             } catch (IllegalArgumentException ex) {
@@ -86,10 +86,10 @@ public class LoadWorldCmd implements Subcommand {
                         " was serialized with a newer version of the Slime Format (" + ex.getMessage() + ") that SMW cannot understand.");
             }catch (UnknownWorldException e) {
                 sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to load world " + worldName +
-                        ": world could not be found (using loader '" + worldConfig.getString("loader") + "').");
+                        ": world could not be found (using data source '" + worldConfig.getString("source") + "').");
             } catch (WorldInUseException e) {
                 sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to load world " + worldName +
-                        ": world is already in use. If you are sure this is a mistake, run the command /smw manualunlock " + worldName + " " + worldConfig.get("loader"));
+                        ": world is already in use. If you are sure this is a mistake, run the command /smw manualunlock " + worldName + " " + worldConfig.get("source"));
             } catch (IOException ex) {
                 if (!(sender instanceof ConsoleCommandSender)) {
                     sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to load world " + worldName

@@ -19,12 +19,17 @@ import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.CraftSlimeChunk;
 import com.grinderwolf.smw.nms.CraftSlimeChunkSection;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
+import com.grinderwolf.smw.plugin.config.ConfigManager;
+import com.grinderwolf.smw.plugin.log.Logging;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteOrder;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -33,8 +38,20 @@ import java.util.Map;
 
 public class LoaderUtils {
 
-    public static void registerLoaders() {
+    public static void registerLoaders() throws IOException {
         SlimeLoaders.add("file", new FileLoader());
+
+        FileConfiguration config = ConfigManager.getFile("sources");
+        ConfigurationSection mysqlConfig = config.getConfigurationSection("mysql");
+
+        if (mysqlConfig.getBoolean("enabled", false)) {
+            try {
+                SlimeLoaders.add("mysql", new MysqlLoader(mysqlConfig));
+            } catch (SQLException ex) {
+                Logging.error("Failed to establish connection to the MySQL server:");
+                ex.printStackTrace();
+            }
+        }
     }
 
     public static SlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimeWorld.SlimeProperties properties) throws IOException, CorruptedWorldException, NewerFormatException {

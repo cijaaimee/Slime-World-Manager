@@ -23,4 +23,9 @@ public class ConfigManager {
 
         return YamlConfiguration.loadConfiguration(file);
     }
+
+    public static void saveFile(FileConfiguration config, String name) throws IOException {
+        File file = new File(PLUGIN_DIR, name + ".yml");
+        config.save(file);
+    }
 }

@@ -2,6 +2,7 @@ package com.grinderwolf.smw.plugin.commands.sub;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
 import com.grinderwolf.smw.api.loaders.SlimeLoaders;
 import com.grinderwolf.smw.plugin.SMWPlugin;
@@ -37,29 +38,23 @@ public class UnlockWorldCmd implements Subcommand {
             SlimeLoader loader = SlimeLoaders.get(loaderString);
 
             if (loader == null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Loader " + loaderString + " does not exist.");
+                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Data source " + loaderString + " does not exist.");
 
                 return true;
             }
 
             String worldName = args[0];
 
-            if (!loader.worldExists(worldName)) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Loader " + loaderString + " does not contain any world called " + worldName + ".");
-
-                return true;
-            }
-
             World world = Bukkit.getWorld(worldName);
 
             if (world != null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + loaderString + " is loaded on this server!");
+                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is loaded on this server!");
 
                 return true;
             }
 
             if (unlockingWorlds.contains(worldName)) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + loaderString + " is already being unlocked!");
+                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is already being unlocked!");
 
                 return true;
             }
@@ -91,6 +86,8 @@ public class UnlockWorldCmd implements Subcommand {
 
                             Logging.error("Failed to unlock world " + worldName + ". Stack trace:");
                             ex.printStackTrace();
+                        } catch (UnknownWorldException ex) {
+                            sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Data source " + loaderString + " does not contain any world called " + worldName + ".");
                         } finally {
                             unlockingWorlds.remove(worldName);
                         }

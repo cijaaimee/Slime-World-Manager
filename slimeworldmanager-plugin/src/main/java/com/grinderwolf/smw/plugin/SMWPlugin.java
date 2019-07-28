@@ -36,7 +36,12 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         Logging.info("Loading...");
         instance = this;
 
-        LoaderUtils.registerLoaders();
+        try {
+            LoaderUtils.registerLoaders();
+        } catch (IOException ex) {
+            Logging.error("Failed to register data sources:");
+            ex.printStackTrace();
+        }
 
         try {
             nms = loadInjector();
@@ -95,13 +100,13 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
                     } catch (IllegalArgumentException ex) {
                         Logging.error("Couldn't load world " + world + ": " + ex.getMessage() + ".");
                     } catch (UnknownWorldException ex) {
-                        Logging.error("Couldn't load world " + world + ": world does not exist, are you sure you've set the correct loader?");
+                        Logging.error("Couldn't load world " + world + ": world does not exist, are you sure you've set the correct data source?");
                     } catch (NewerFormatException ex) {
                         Logging.error("Couldn't load world " + world + ": world is serialized in a newer Slime Format version ("
                                 + ex.getMessage() + ") that SMW does not understand.");
                     } catch (WorldInUseException e) {
                         Logging.error("Couldn't load world " + world + ": world is in use! If you are sure this is a mistake, run " +
-                                "the command /smw manualunlock " + world + " " + worldConfig.get("loader"));
+                                "the command /smw manualunlock " + world + " " + worldConfig.get("source"));
                     } catch (CorruptedWorldException ex) {
                         Logging.error("Couldn't load world " + world + ": world seems to be corrupted.");
 
@@ -124,7 +129,7 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         // Config data retrieval
-        String loaderString = worldConfig.getString("loader", "");
+        String loaderString = worldConfig.getString("source", "");
         SlimeLoader loader = SlimeLoaders.get(loaderString);
 
         if (loader == null) {
