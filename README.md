@@ -20,7 +20,9 @@ Once retrieved, every chunk is loaded and kept in memory, so SMW doesn't have to
 
 ## How to convert Minecraft worlds to the Slime Format
 
-As for now, there isn't a straightforward way to import all your worlds into SMW. However, you can use the [Slime Tools program](https://staticassets.hypixel.net/news/5d37b611d4298.slime-tools.jar) made by Minikloon, which will convert your world into a v1 Slime World. Nevertheless, as this program isn't up-to-date with the Slime Format, no entities will be imported.
+To convert a world to the Slime Format, you can use [this tool](https://drive.google.com/file/d/1MC3SyjM4nV-VzzwzoDWyx6th5ImKasJ7/view?usp=sharing). To do so, just download it, open your command line and type `java -jar slimeworldmanager-importer-1.0.0.jar <path-to-your-world>`. It'll scan your world and generate a .slime file inside the same directory you placed it. That's it!
+
+This tool is also inside this repository, so you can check out its source code if you want!
 
 ## Which Spigot versions is this compatible with?
 
