@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class UnlockWorldCmd implements Subcommand {
 
-    private final String usage = "manualunlock <world> <loader>";
+    private final String usage = "manualunlock <world> <data-source>";
     private final String description = "Unlock a world manually.";
     private final String permission = "smw.unlockworld";
 
@@ -33,7 +33,7 @@ public class UnlockWorldCmd implements Subcommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
-        if (args.length != 2) {
+        if (args.length > 0) {
             String loaderString = args[1];
             SlimeLoader loader = SlimeLoaders.get(loaderString);
 
@@ -65,7 +65,7 @@ public class UnlockWorldCmd implements Subcommand {
                 unlockCache.invalidate(sender.getName());
 
                 if (Arrays.equals(args, oldArgs)) { // Make sure it's exactly the same command
-                    sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "Unlocking world " + worldName + "...");
+                    sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "Unlocking world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + "...");
 
                     // No need to do this synchronously
                     unlockingWorlds.add(worldName);
@@ -74,7 +74,7 @@ public class UnlockWorldCmd implements Subcommand {
                         try {
                             if (loader.isWorldLocked(worldName)) {
                                 loader.unlockWorld(worldName);
-                                sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "World " + worldName + " unlocked.");
+                                sender.sendMessage(CommandManager.PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " unlocked.");
                             } else {
                                 sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + loaderString + " is not locked!");
                             }

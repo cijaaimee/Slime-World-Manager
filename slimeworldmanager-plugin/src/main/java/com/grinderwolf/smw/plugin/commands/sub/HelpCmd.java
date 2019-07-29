@@ -14,14 +14,14 @@ public class HelpCmd implements Subcommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
-        sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "Command list:");
+        sender.sendMessage(CommandManager.PREFIX + "Command list:");
 
         for (Subcommand cmd : CommandManager.getInstance().getCommands()) {
             if (cmd.inGameOnly() && !(sender instanceof Player) || (!cmd.getPermission().equals("") && !sender.hasPermission(cmd.getPermission()) && !sender.hasPermission("smw.*"))) {
                 continue;
             }
 
-            sender.sendMessage(ChatColor.GRAY + "  -/smw " + cmd.getUsage() + " - " + cmd.getDescription());
+            sender.sendMessage(ChatColor.GRAY + "  -" + ChatColor.AQUA + "/smw " + cmd.getUsage() + ChatColor.GRAY + " - " + cmd.getDescription());
         }
 
         return true;

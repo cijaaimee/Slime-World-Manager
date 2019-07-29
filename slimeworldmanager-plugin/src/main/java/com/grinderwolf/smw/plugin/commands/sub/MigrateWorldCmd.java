@@ -98,7 +98,7 @@ public class MigrateWorldCmd implements Subcommand {
                         return;
                     }
 
-                    sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "Migrating world " + worldName + "...");
+                    sender.sendMessage(CommandManager.PREFIX + "Migrating world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + "...");
                     World world = Bukkit.getWorld(worldName);
 
                     boolean leaveLock = false;
@@ -129,7 +129,8 @@ public class MigrateWorldCmd implements Subcommand {
 
                         worldConfig.set("source", loaderString);
                         ConfigManager.saveFile(configFile, "worlds");
-                        sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "World " + worldName + " migrated in " + (System.currentTimeMillis() - start) + "ms!");
+                        sender.sendMessage(CommandManager.PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " migrated in "
+                                + ChatColor.AQUA + (System.currentTimeMillis() - start) + "ms" + ChatColor.GREEN + "!");
                     } catch (UnknownWorldException ex) {
                         sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Can't find world " + worldName + " in data source " + oldLoaderString + ".");
                     } catch (WorldInUseException ex) {

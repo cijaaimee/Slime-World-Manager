@@ -1,12 +1,17 @@
 package com.grinderwolf.smw.plugin.commands.sub;
 
-
 import com.grinderwolf.smw.plugin.commands.CommandManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 @Getter
 public class UnloadWorldCmd implements Subcommand {
@@ -26,8 +31,24 @@ public class UnloadWorldCmd implements Subcommand {
                 return true;
             }
 
+            // Teleport all players outside the world before unloading it
+            List<Player> players = world.getPlayers();
+
+            if (!players.isEmpty()) {
+                World defaultWorld = Bukkit.getWorlds().get(0);
+                Location spawnLocation = defaultWorld.getSpawnLocation();
+
+                while (spawnLocation.getBlock().getType() != Material.AIR || spawnLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
+                    spawnLocation.add(0, 1, 0);
+                }
+
+                for (Player player : players) {
+                    player.teleport(spawnLocation);
+                }
+            }
+
             if (Bukkit.unloadWorld(world, true)) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "World " + args[0] + " unloaded correctly.");
+                sender.sendMessage(CommandManager.PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + args[0] + ChatColor.GREEN + " unloaded correctly.");
             } else {
                 sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to unload world " + args[0] + ".");
             }

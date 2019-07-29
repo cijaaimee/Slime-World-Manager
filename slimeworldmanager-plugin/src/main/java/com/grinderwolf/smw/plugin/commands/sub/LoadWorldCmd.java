@@ -64,13 +64,14 @@ public class LoadWorldCmd implements Subcommand {
                 return true;
             }
 
-            sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "Loading world " + worldName + "...");
+            sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "Loading world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + "...");
 
             try {
                 long start = System.currentTimeMillis();
                 // This retrieves the world data through the specified data source on the main thread. Maybe in the future this should be performed asynchronously?
                 SMWPlugin.getInstance().loadWorldFromConfig(worldConfig);
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms!");
+                sender.sendMessage(CommandManager.PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
+                        + ChatColor.GREEN + " loaded in " + (System.currentTimeMillis() - start) + "ms!");
             } catch (IllegalArgumentException ex) {
                 sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to load world " + worldName + ": " + ex.getMessage() + ".");
             } catch (CorruptedWorldException ex) {

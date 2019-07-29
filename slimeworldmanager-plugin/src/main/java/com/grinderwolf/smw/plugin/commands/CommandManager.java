@@ -1,6 +1,5 @@
 package com.grinderwolf.smw.plugin.commands;
 
-import com.grinderwolf.smw.plugin.SMWPlugin;
 import com.grinderwolf.smw.plugin.commands.sub.GotoCmd;
 import com.grinderwolf.smw.plugin.commands.sub.HelpCmd;
 import com.grinderwolf.smw.plugin.commands.sub.LoadWorldCmd;
@@ -23,7 +22,7 @@ import java.util.Map;
 
 public class CommandManager implements CommandExecutor {
 
-    public static final String PREFIX = ChatColor.YELLOW + "[SMW] ";
+    public static final String PREFIX = ChatColor.BLUE + ChatColor.BOLD.toString() + "SMW " + ChatColor.GRAY + ">> ";
 
     @Getter
     private static CommandManager instance;
@@ -45,7 +44,9 @@ public class CommandManager implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(PREFIX + ChatColor.GRAY + SMWPlugin.getInstance().getDescription().getDescription() + " To check out the help page, type /smw help.");
+            sender.sendMessage(PREFIX + ChatColor.AQUA + "Slime World Manager" + ChatColor.GRAY + " is a plugin that implements the Slime Region Format, " +
+                    "designed by the Hypixel Dev Team to load and save worlds more efficiently. To check out the help page, type "
+                    + ChatColor.YELLOW + "/smw help" + ChatColor.GRAY + ".");
 
             return true;
         }
@@ -53,7 +54,7 @@ public class CommandManager implements CommandExecutor {
         Subcommand command = commands.get(args[0]);
 
         if (command == null) {
-            sender.sendMessage(PREFIX + ChatColor.RED + "Unknown command. To check out the help page, type /smw help.");
+            sender.sendMessage(PREFIX + ChatColor.RED + "Unknown command. To check out the help page, type " + ChatColor.GRAY + "/smw help" + ChatColor.RED + ".");
 
             return true;
         }

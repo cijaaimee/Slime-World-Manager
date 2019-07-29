@@ -81,7 +81,7 @@ public class WorldListCmd implements Subcommand {
         }
 
         worldsList.sort(String::compareTo);
-        sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "World list [" + page + "/" + maxPages + "]:");
+        sender.sendMessage(CommandManager.PREFIX + "World list " + ChatColor.YELLOW + "[" + page + "/" + maxPages + "]" + ChatColor.GRAY + ":");
 
         for (int i = offset; i < MAX_ITEMS_PER_PAGE && i < worldsList.size(); i++) {
             String world = worldsList.get(i);

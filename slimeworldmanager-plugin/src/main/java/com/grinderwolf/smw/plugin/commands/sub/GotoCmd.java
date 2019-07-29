@@ -49,8 +49,8 @@ public class GotoCmd implements Subcommand {
                 return true;
             }
 
-            sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "Teleporting " + (target.getName().equals(sender.getName())
-                    ? "yourself" : target.getName()) + " to " + world.getName() + "...");
+            sender.sendMessage(CommandManager.PREFIX + "Teleporting " + (target.getName().equals(sender.getName())
+                    ? "yourself" : ChatColor.YELLOW + target.getName() + ChatColor.GRAY) + " to " + ChatColor.AQUA + world.getName() + ChatColor.GRAY + "...");
 
             Location spawnLocation = world.getSpawnLocation();
 
