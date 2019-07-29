@@ -3,7 +3,7 @@ package com.grinderwolf.smw.api.utils;
 import lombok.Getter;
 
 /**
- * Credits to Minikloon for this class
+ * Credits to Minikloon for this class.
  *
  * Source: https://github.com/Minikloon/CraftyWorld/blob/master/crafty-common/src/main/kotlin/world/crafty/common/utils/NibbleArray.kt
  */

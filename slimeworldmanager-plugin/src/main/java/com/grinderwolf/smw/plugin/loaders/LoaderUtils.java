@@ -10,7 +10,6 @@ import com.github.luben.zstd.Zstd;
 import com.grinderwolf.smw.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.smw.api.exceptions.NewerFormatException;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
-import com.grinderwolf.smw.api.loaders.SlimeLoaders;
 import com.grinderwolf.smw.api.utils.NibbleArray;
 import com.grinderwolf.smw.api.utils.SlimeFormat;
 import com.grinderwolf.smw.api.world.SlimeChunk;
@@ -39,15 +38,17 @@ import java.util.Map;
 
 public class LoaderUtils {
 
+    private static Map<String, SlimeLoader> loaderMap = new HashMap<>();
+
     public static void registerLoaders() throws IOException {
-        SlimeLoaders.add("file", new FileLoader());
+        registerLoader("file", new FileLoader());
 
         FileConfiguration config = ConfigManager.getFile("sources");
         ConfigurationSection mysqlConfig = config.getConfigurationSection("mysql");
 
         if (mysqlConfig.getBoolean("enabled", false)) {
             try {
-                SlimeLoaders.add("mysql", new MysqlLoader(mysqlConfig));
+                registerLoader("mysql", new MysqlLoader(mysqlConfig));
             } catch (SQLException ex) {
                 Logging.error("Failed to establish connection to the MySQL server:");
                 ex.printStackTrace();
@@ -58,12 +59,24 @@ public class LoaderUtils {
 
         if (mongoConfig.getBoolean("enabled", false)) {
             try {
-                SlimeLoaders.add("mongodb", new MongoLoader(mongoConfig));
+                registerLoader("mongodb", new MongoLoader(mongoConfig));
             } catch (MongoException ex) {
                 Logging.error("Failed to establish connection to the MongoDB server:");
                 ex.printStackTrace();
             }
         }
+    }
+
+    public static SlimeLoader getLoader(String dataSource) {
+        return loaderMap.get(dataSource);
+    }
+
+    public static void registerLoader(String dataSource, SlimeLoader loader) {
+        if (loaderMap.containsKey(dataSource)) {
+            throw new IllegalArgumentException("Data source " + dataSource + " already has a declared loader!");
+        }
+
+        loaderMap.put(dataSource, loader);
     }
 
     public static SlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimeWorld.SlimeProperties properties) throws IOException, CorruptedWorldException, NewerFormatException {

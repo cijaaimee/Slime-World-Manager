@@ -4,9 +4,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
-import com.grinderwolf.smw.api.loaders.SlimeLoaders;
 import com.grinderwolf.smw.plugin.SMWPlugin;
 import com.grinderwolf.smw.plugin.commands.CommandManager;
+import com.grinderwolf.smw.plugin.loaders.LoaderUtils;
 import com.grinderwolf.smw.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -35,7 +35,7 @@ public class UnlockWorldCmd implements Subcommand {
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length > 0) {
             String loaderString = args[1];
-            SlimeLoader loader = SlimeLoaders.get(loaderString);
+            SlimeLoader loader = LoaderUtils.getLoader(loaderString);
 
             if (loader == null) {
                 sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Data source " + loaderString + " does not exist.");

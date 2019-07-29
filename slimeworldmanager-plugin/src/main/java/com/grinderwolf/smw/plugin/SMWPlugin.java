@@ -7,7 +7,6 @@ import com.grinderwolf.smw.api.exceptions.NewerFormatException;
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
 import com.grinderwolf.smw.api.exceptions.WorldInUseException;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
-import com.grinderwolf.smw.api.loaders.SlimeLoaders;
 import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.SlimeNMS;
 import com.grinderwolf.smw.nms.v1_8_R3.v1_8_R3SlimeNMS;
@@ -130,7 +129,7 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
 
         // Config data retrieval
         String loaderString = worldConfig.getString("source", "");
-        SlimeLoader loader = SlimeLoaders.get(loaderString);
+        SlimeLoader loader = getLoader(loaderString);
 
         if (loader == null) {
             throw new IllegalArgumentException("unknown loader '" + loaderString + "'");
@@ -178,10 +177,23 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         Logging.info("Loading world " + worldName + ".");
         byte[] serializedWorld = loader.loadWorld(worldName, properties.isReadOnly());
         SlimeWorld world = LoaderUtils.deserializeWorld(loader, worldName, serializedWorld, properties);
-        nms.generateWorld(world);
-
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         return world;
+    }
+
+    @Override
+    public void generateWorld(SlimeWorld world) {
+        nms.generateWorld(world);
+    }
+
+    @Override
+    public SlimeLoader getLoader(String dataSource) {
+        return LoaderUtils.getLoader(dataSource);
+    }
+
+    @Override
+    public void registerLoader(String dataSource, SlimeLoader loader) {
+        LoaderUtils.registerLoader(dataSource, loader);
     }
 }

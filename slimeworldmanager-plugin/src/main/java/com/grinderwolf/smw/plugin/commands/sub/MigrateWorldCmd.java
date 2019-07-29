@@ -3,11 +3,11 @@ package com.grinderwolf.smw.plugin.commands.sub;
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
 import com.grinderwolf.smw.api.exceptions.WorldInUseException;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
-import com.grinderwolf.smw.api.loaders.SlimeLoaders;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import com.grinderwolf.smw.plugin.SMWPlugin;
 import com.grinderwolf.smw.plugin.commands.CommandManager;
 import com.grinderwolf.smw.plugin.config.ConfigManager;
+import com.grinderwolf.smw.plugin.loaders.LoaderUtils;
 import com.grinderwolf.smw.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -64,7 +64,7 @@ public class MigrateWorldCmd implements Subcommand {
             }
 
             String loaderString = args[1];
-            SlimeLoader newLoader = SlimeLoaders.get(loaderString);
+            SlimeLoader newLoader = LoaderUtils.getLoader(loaderString);
 
             if (newLoader == null) {
                 sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Unknown data source " + loaderString + "!");
@@ -79,7 +79,7 @@ public class MigrateWorldCmd implements Subcommand {
             }
 
             String oldLoaderString = worldConfig.getString("source");
-            SlimeLoader oldLoader = SlimeLoaders.get(oldLoaderString);
+            SlimeLoader oldLoader = LoaderUtils.getLoader(oldLoaderString);
 
             if (oldLoader == null) {
                 sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Unknown data source " + loaderString + "! Are you sure you configured it correctly?");
