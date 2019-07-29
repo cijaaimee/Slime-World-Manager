@@ -94,7 +94,7 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
 
                 if (worldConfig.getBoolean("loadOnStartup", true)) {
                     try {
-                        loadWorldFromConfig(worldConfig);
+                        generateWorld(loadWorldFromConfig(worldConfig));
                         loadedWorlds++;
                     } catch (IllegalArgumentException ex) {
                         Logging.error("Couldn't load world " + world + ": " + ex.getMessage() + ".");
@@ -122,7 +122,8 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         }
     }
 
-    public void loadWorldFromConfig(ConfigurationSection worldConfig) throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException {
+    public SlimeWorld loadWorldFromConfig(ConfigurationSection worldConfig) throws UnknownWorldException, IOException,
+            CorruptedWorldException, NewerFormatException, WorldInUseException {
         if (Bukkit.getWorld(worldConfig.getName()) != null) {
             throw new IllegalArgumentException("world '" + worldConfig.getName() + "' already exists");
         }
@@ -166,7 +167,7 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
                 .difficulty(difficulty.getValue()).allowMonsters(allowMonsters).allowAnimals(allowAnimals).readOnly(readOnly).build();
 
         // Actual world load
-        loadWorld(loader, worldConfig.getName(), properties);
+        return loadWorld(loader, worldConfig.getName(), properties);
     }
 
     @Override

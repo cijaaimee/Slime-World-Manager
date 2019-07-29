@@ -19,8 +19,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 public class MigrateWorldCmd implements Subcommand {
@@ -28,8 +26,6 @@ public class MigrateWorldCmd implements Subcommand {
     private final String usage = "migrate <world> <new-data-source>";
     private final String description = "Migrate a world from one data source to another.";
     private final String permission = "smw.migrate";
-
-    private final List<String> migratingWorlds = new ArrayList<>();
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
@@ -87,7 +83,13 @@ public class MigrateWorldCmd implements Subcommand {
                 return true;
             }
 
-            migratingWorlds.add(worldName);
+            if (CommandManager.getInstance().getWorldsInUse().contains(worldName)) {
+                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is already being used on another command! Wait some time and try again.");
+
+                return true;
+            }
+
+            CommandManager.getInstance().getWorldsInUse().add(worldName);
 
             Bukkit.getScheduler().runTaskAsynchronously(SMWPlugin.getInstance(), () -> {
 
@@ -145,7 +147,7 @@ public class MigrateWorldCmd implements Subcommand {
                     Logging.error("Failed to load world " + worldName + " (using data source " + oldLoaderString + "):");
                     ex.printStackTrace();
                 } finally {
-                    migratingWorlds.remove(worldName);
+                    CommandManager.getInstance().getWorldsInUse().remove(worldName);
                 }
 
             });

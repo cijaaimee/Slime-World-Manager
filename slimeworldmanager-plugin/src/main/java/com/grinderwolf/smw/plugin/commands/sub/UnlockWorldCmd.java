@@ -16,9 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -29,7 +27,6 @@ public class UnlockWorldCmd implements Subcommand {
     private final String permission = "smw.unlockworld";
 
     private final Cache<String, String[]> unlockCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
-    private final List<String> unlockingWorlds = new ArrayList<>();
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
@@ -53,8 +50,8 @@ public class UnlockWorldCmd implements Subcommand {
                 return true;
             }
 
-            if (unlockingWorlds.contains(worldName)) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is already being unlocked!");
+            if (CommandManager.getInstance().getWorldsInUse().contains(worldName)) {
+                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is already being used on another command! Wait some time and try again.");
 
                 return true;
             }
@@ -68,7 +65,7 @@ public class UnlockWorldCmd implements Subcommand {
                     sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "Unlocking world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + "...");
 
                     // No need to do this synchronously
-                    unlockingWorlds.add(worldName);
+                    CommandManager.getInstance().getWorldsInUse().add(worldName);
                     Bukkit.getScheduler().runTaskAsynchronously(SMWPlugin.getInstance(), () -> {
 
                         try {
@@ -89,7 +86,7 @@ public class UnlockWorldCmd implements Subcommand {
                         } catch (UnknownWorldException ex) {
                             sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Data source " + loaderString + " does not contain any world called " + worldName + ".");
                         } finally {
-                            unlockingWorlds.remove(worldName);
+                            CommandManager.getInstance().getWorldsInUse().remove(worldName);
                         }
 
                     });
@@ -106,7 +103,6 @@ public class UnlockWorldCmd implements Subcommand {
             sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "If you are sure you want to continue, type again this command.");
 
             unlockCache.put(sender.getName(), args);
-
 
             return true;
         }
