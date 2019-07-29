@@ -12,8 +12,8 @@ Minecraft stores worlds using the Anvil Region Format. This standard is just fin
 SMW is capable of loading worlds from various sources:
 * File System. 
 * MySQL.
+* MongoDB.
 * SeaweedFS _(to be done)_.
-* MongoDB _(to be done)_.
 
 Even though you could technically load the same world on various different servers at the same time, this could lead to some issues if read-only is not enabled.
 

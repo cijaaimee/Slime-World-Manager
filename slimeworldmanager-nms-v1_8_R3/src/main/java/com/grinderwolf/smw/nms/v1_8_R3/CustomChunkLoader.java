@@ -1,9 +1,9 @@
 package com.grinderwolf.smw.nms.v1_8_R3;
 
 import com.flowpowered.nbt.CompoundTag;
+import com.grinderwolf.smw.api.utils.NibbleArray;
 import com.grinderwolf.smw.api.world.SlimeChunk;
 import com.grinderwolf.smw.api.world.SlimeChunkSection;
-import com.grinderwolf.smw.api.utils.NibbleArray;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_8_R3.Block;
@@ -18,7 +18,6 @@ import net.minecraft.server.v1_8_R3.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class CustomChunkLoader implements IChunkLoader {
 
     // Load chunk
     @Override
-    public Chunk a(World nmsWorld, int x, int z) throws IOException {
+    public Chunk a(World nmsWorld, int x, int z) {
         LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + world.getName());
 
         SlimeChunk chunk = world.getChunk(x, z);
@@ -40,7 +39,7 @@ public class CustomChunkLoader implements IChunkLoader {
         nmsChunk.e(true);
 
         if (chunk == null) {
-            Long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
+            long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
 
             LOGGER.debug("Failed to load chunk (" + x + ", " + z + ") (" + index + ") on world " + world.getName() + ": chunk does not exist. Generating empty one...");
 
@@ -177,7 +176,7 @@ public class CustomChunkLoader implements IChunkLoader {
 
     // Does literally nothing
     @Override
-    public void b(World world, Chunk chunk) throws IOException { }
+    public void b(World world, Chunk chunk) { }
 
     // Does literally nothing
     @Override

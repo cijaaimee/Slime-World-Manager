@@ -21,6 +21,7 @@ import com.grinderwolf.smw.nms.CraftSlimeChunkSection;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import com.grinderwolf.smw.plugin.config.ConfigManager;
 import com.grinderwolf.smw.plugin.log.Logging;
+import com.mongodb.MongoException;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -49,6 +50,17 @@ public class LoaderUtils {
                 SlimeLoaders.add("mysql", new MysqlLoader(mysqlConfig));
             } catch (SQLException ex) {
                 Logging.error("Failed to establish connection to the MySQL server:");
+                ex.printStackTrace();
+            }
+        }
+
+        ConfigurationSection mongoConfig = config.getConfigurationSection("mongodb");
+
+        if (mongoConfig.getBoolean("enabled", false)) {
+            try {
+                SlimeLoaders.add("mongodb", new MongoLoader(mongoConfig));
+            } catch (MongoException ex) {
+                Logging.error("Failed to establish connection to the MongoDB server:");
                 ex.printStackTrace();
             }
         }

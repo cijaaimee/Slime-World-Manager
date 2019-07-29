@@ -5,7 +5,7 @@
 .classpath
 .project
 .settings/
-slimeworldmanager-testfileread/
+slimeworldmanager-test/
 .DS_Store/
 target/
 dependency-reduced-pom.xml
