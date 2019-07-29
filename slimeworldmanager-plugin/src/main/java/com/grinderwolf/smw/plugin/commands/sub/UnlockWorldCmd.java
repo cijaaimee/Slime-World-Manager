@@ -30,7 +30,7 @@ public class UnlockWorldCmd implements Subcommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
-        if (args.length > 0) {
+        if (args.length == 2) {
             String loaderString = args[1];
             SlimeLoader loader = LoaderUtils.getLoader(loaderString);
 

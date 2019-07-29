@@ -1,5 +1,6 @@
 package com.grinderwolf.smw.plugin.commands;
 
+import com.grinderwolf.smw.plugin.commands.sub.DeleteWorldCmd;
 import com.grinderwolf.smw.plugin.commands.sub.GotoCmd;
 import com.grinderwolf.smw.plugin.commands.sub.HelpCmd;
 import com.grinderwolf.smw.plugin.commands.sub.LoadWorldCmd;
@@ -45,6 +46,7 @@ public class CommandManager implements CommandExecutor {
         commands.put("unlock", new UnlockWorldCmd());
         commands.put("list", new WorldListCmd());
         commands.put("migrate", new MigrateWorldCmd());
+        commands.put("delete", new DeleteWorldCmd());
     }
 
     @Override

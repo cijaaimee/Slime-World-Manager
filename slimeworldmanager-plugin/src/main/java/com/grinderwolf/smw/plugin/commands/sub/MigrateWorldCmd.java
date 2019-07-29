@@ -132,11 +132,11 @@ public class MigrateWorldCmd implements Subcommand {
                         worldConfig.set("source", loaderString);
                         ConfigManager.saveFile(configFile, "worlds");
                         sender.sendMessage(CommandManager.PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " migrated in "
-                                + ChatColor.AQUA + (System.currentTimeMillis() - start) + "ms" + ChatColor.GREEN + "!");
+                                + (System.currentTimeMillis() - start) + "ms!");
                     } catch (UnknownWorldException ex) {
                         sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Can't find world " + worldName + " in data source " + oldLoaderString + ".");
                     } catch (WorldInUseException ex) {
-                        sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is being used on a server.");
+                        sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is being used on another server.");
                     }
                 } catch (IOException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
