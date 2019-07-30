@@ -18,6 +18,8 @@ import net.minecraft.server.v1_9_R1.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -46,7 +48,10 @@ public class CustomChunkLoader implements IChunkLoader {
             return nmsChunk;
         }
 
-        nmsChunk.a(chunk.getHeightMap());
+        CompoundTag heightMapsCompound = chunk.getHeightMaps();
+        int[] heightMap = heightMapsCompound.getIntArrayValue("heightMap").get();
+
+        nmsChunk.a(heightMap);
 
         // Load chunk sections
         LOGGER.debug("Loading chunk sections for chunk (" + x + ", " + z + ") on world " + world.getName());
@@ -78,7 +83,7 @@ public class CustomChunkLoader implements IChunkLoader {
         }
 
         nmsChunk.a(sections);
-        nmsChunk.a(chunk.getBiomes());
+        nmsChunk.a(toByteArray(chunk.getBiomes()));
 
         // Load tile entities
         LOGGER.debug("Loading tile entities for chunk (" + x + ", " + z + ") on world " + world.getName());
@@ -113,6 +118,13 @@ public class CustomChunkLoader implements IChunkLoader {
         LOGGER.debug("Loaded chunk (" + x + ", " + z + ") on world " + world.getName());
 
         return nmsChunk;
+    }
+
+    private byte[] toByteArray(int[] ints) {
+        ByteBuffer buf = ByteBuffer.allocate(ints.length * 4).order(ByteOrder.LITTLE_ENDIAN);
+        buf.asIntBuffer().put(ints);
+
+        return buf.array();
     }
 
     private Entity loadEntity(CompoundTag tag, World world, Chunk chunk) {

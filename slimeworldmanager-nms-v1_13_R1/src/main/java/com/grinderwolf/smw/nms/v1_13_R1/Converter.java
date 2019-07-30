@@ -1,4 +1,4 @@
-package com.grinderwolf.smw.nms.v1_10_R1;
+package com.grinderwolf.smw.nms.v1_13_R1;
 
 import com.flowpowered.nbt.ByteArrayTag;
 import com.flowpowered.nbt.ByteTag;
@@ -9,6 +9,7 @@ import com.flowpowered.nbt.FloatTag;
 import com.flowpowered.nbt.IntArrayTag;
 import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.LongArrayTag;
 import com.flowpowered.nbt.LongTag;
 import com.flowpowered.nbt.ShortTag;
 import com.flowpowered.nbt.StringTag;
@@ -19,36 +20,37 @@ import com.grinderwolf.smw.api.world.SlimeChunk;
 import com.grinderwolf.smw.api.world.SlimeChunkSection;
 import com.grinderwolf.smw.nms.CraftSlimeChunk;
 import com.grinderwolf.smw.nms.CraftSlimeChunkSection;
-import net.minecraft.server.v1_10_R1.Chunk;
-import net.minecraft.server.v1_10_R1.ChunkSection;
-import net.minecraft.server.v1_10_R1.DataPaletteBlock;
-import net.minecraft.server.v1_10_R1.Entity;
-import net.minecraft.server.v1_10_R1.NBTBase;
-import net.minecraft.server.v1_10_R1.NBTTagByte;
-import net.minecraft.server.v1_10_R1.NBTTagByteArray;
-import net.minecraft.server.v1_10_R1.NBTTagCompound;
-import net.minecraft.server.v1_10_R1.NBTTagDouble;
-import net.minecraft.server.v1_10_R1.NBTTagFloat;
-import net.minecraft.server.v1_10_R1.NBTTagInt;
-import net.minecraft.server.v1_10_R1.NBTTagIntArray;
-import net.minecraft.server.v1_10_R1.NBTTagList;
-import net.minecraft.server.v1_10_R1.NBTTagLong;
-import net.minecraft.server.v1_10_R1.NBTTagShort;
-import net.minecraft.server.v1_10_R1.NBTTagString;
-import net.minecraft.server.v1_10_R1.TileEntity;
+import net.minecraft.server.v1_13_R1.BiomeBase;
+import net.minecraft.server.v1_13_R1.Chunk;
+import net.minecraft.server.v1_13_R1.ChunkSection;
+import net.minecraft.server.v1_13_R1.DataPaletteBlock;
+import net.minecraft.server.v1_13_R1.Entity;
+import net.minecraft.server.v1_13_R1.HeightMap;
+import net.minecraft.server.v1_13_R1.NBTBase;
+import net.minecraft.server.v1_13_R1.NBTTagByte;
+import net.minecraft.server.v1_13_R1.NBTTagByteArray;
+import net.minecraft.server.v1_13_R1.NBTTagCompound;
+import net.minecraft.server.v1_13_R1.NBTTagDouble;
+import net.minecraft.server.v1_13_R1.NBTTagFloat;
+import net.minecraft.server.v1_13_R1.NBTTagInt;
+import net.minecraft.server.v1_13_R1.NBTTagIntArray;
+import net.minecraft.server.v1_13_R1.NBTTagList;
+import net.minecraft.server.v1_13_R1.NBTTagLong;
+import net.minecraft.server.v1_13_R1.NBTTagLongArray;
+import net.minecraft.server.v1_13_R1.NBTTagShort;
+import net.minecraft.server.v1_13_R1.NBTTagString;
+import net.minecraft.server.v1_13_R1.TileEntity;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Converter {
 
-    public static net.minecraft.server.v1_10_R1.NibbleArray convertArray(NibbleArray array) {
-        return new net.minecraft.server.v1_10_R1.NibbleArray(array.getBacking());
+    public static net.minecraft.server.v1_13_R1.NibbleArray convertArray(NibbleArray array) {
+        return new net.minecraft.server.v1_13_R1.NibbleArray(array.getBacking());
     }
 
-    public static NibbleArray convertArray(net.minecraft.server.v1_10_R1.NibbleArray array) {
+    public static NibbleArray convertArray(net.minecraft.server.v1_13_R1.NibbleArray array) {
         return new NibbleArray(array.asBytes());
     }
 
@@ -70,8 +72,6 @@ public class Converter {
                 return new NBTTagByteArray(((ByteArrayTag) tag).getValue());
             case TAG_STRING:
                 return new NBTTagString(((StringTag) tag).getValue());
-            case TAG_INT_ARRAY:
-                return new NBTTagIntArray(((IntArrayTag) tag).getValue());
             case TAG_LIST:
                 NBTTagList list = new NBTTagList();
 
@@ -85,6 +85,10 @@ public class Converter {
                 ((CompoundTag) tag).getValue().forEach((key, value) -> compound.set(key, convertTag(value)));
 
                 return compound;
+            case TAG_INT_ARRAY:
+                return new NBTTagIntArray(((IntArrayTag) tag).getValue());
+            case TAG_LONG_ARRAY:
+                return new NBTTagLongArray(((LongArrayTag) tag).getValue());
             default:
                 throw new IllegalArgumentException("Invalid tag type " + tag.getType().name());
         }
@@ -103,32 +107,34 @@ public class Converter {
             case 5:
                 return new FloatTag(name, ((NBTTagFloat) base).i());
             case 6:
-                return new DoubleTag(name, ((NBTTagDouble) base).h());
+                return new DoubleTag(name, ((NBTTagDouble) base).asDouble());
             case 7:
                 return new ByteArrayTag(name, ((NBTTagByteArray) base).c());
             case 8:
-                return new StringTag(name, ((NBTTagString) base).c_());
+                return new StringTag(name, ((NBTTagString) base).b_());
             case 9:
                 List<Tag> list = new ArrayList<>();
                 NBTTagList originalList = ((NBTTagList) base);
 
                 for (int i = 0; i < originalList.size(); i++) {
-                    NBTBase entry = originalList.h(i);
+                    NBTBase entry = originalList.get(i);
                     list.add(convertTag("", entry));
                 }
 
-                return new ListTag(name, TagType.getById(originalList.g()), list);
+                return new ListTag(name, TagType.getById(originalList.d()), list);
             case 10:
                 NBTTagCompound originalCompound = ((NBTTagCompound) base);
                 CompoundTag compound = new CompoundTag("", new CompoundMap());
 
-                for (String key : originalCompound.c()) {
+                for (String key : originalCompound.getKeys()) {
                     compound.getValue().put(key, convertTag(key, originalCompound.get(key)));
                 }
 
                 return compound;
             case 11:
                 return new IntArrayTag("", ((NBTTagIntArray) base).d());
+            case 12:
+                return new LongArrayTag("", ((NBTTagLongArray) base).d());
             default:
                 throw new IllegalArgumentException("Invalid tag type " + base.getTypeId());
         }
@@ -152,21 +158,20 @@ public class Converter {
                     NibbleArray skyLightArray = convertArray(section.getSkyLightArray());
 
                     // Block Data
-                    byte[] blocks = new byte[4096];
-
-                    net.minecraft.server.v1_10_R1.NibbleArray minecraftBlockDataArray = new net.minecraft.server.v1_10_R1.NibbleArray();
                     DataPaletteBlock dataPaletteBlock = section.getBlocks();
-                    dataPaletteBlock.exportData(blocks, minecraftBlockDataArray);
+                    NBTTagCompound blocksCompound = new NBTTagCompound();
+                    dataPaletteBlock.b(blocksCompound, "Palette", "BlockStates");
+                    NBTTagList paletteList = blocksCompound.getList("Palette", 10);
+                    ListTag<CompoundTag> palette = (ListTag<CompoundTag>) Converter.convertTag("", paletteList);
+                    long[] blockStates = blocksCompound.o("BlockStates");
 
-                    NibbleArray blockDataArray = convertArray(minecraftBlockDataArray);
-
-                    sections[sectionId] = new CraftSlimeChunkSection(blocks, blockDataArray, null, null, blockLightArray, skyLightArray);
+                    sections[sectionId] = new CraftSlimeChunkSection(null, null, palette, blockStates, blockLightArray, skyLightArray);
                 }
             }
         }
 
         // Tile Entities
-        ArrayList<CompoundTag> tileEntities = new ArrayList<>();
+        List<CompoundTag> tileEntities = new ArrayList<>();
 
         for (TileEntity entity : chunk.getTileEntities().values()) {
             NBTTagCompound entityNbt = new NBTTagCompound();
@@ -175,36 +180,36 @@ public class Converter {
         }
 
         // Entities
-        ArrayList<CompoundTag> entities = new ArrayList<>();
+        List<CompoundTag> entities = new ArrayList<>();
 
         for (int i = 0; i < chunk.getEntitySlices().length; i++) {
             for (Entity entity : chunk.getEntitySlices()[i]) {
                 NBTTagCompound entityNbt = new NBTTagCompound();
 
                 if (entity.d(entityNbt)) {
-                    chunk.g(true);
+                    chunk.f(true);
                     entities.add((CompoundTag) convertTag("", entityNbt));
                 }
             }
         }
 
         // Biomes
-        byte[] byteBiomes = chunk.getBiomeIndex();
-        int[] biomes = toIntArray(byteBiomes);
+        BiomeBase[] biomeBases = chunk.getBiomeIndex();
+        int[] biomes = new int[biomeBases.length];
+
+        for (int i = 0; i < biomeBases.length; i++) {
+            biomes[i] = BiomeBase.REGISTRY_ID.a(biomeBases[i]);
+        }
 
         // HeightMap
-        CompoundTag heightMapsCompound = new CompoundTag("", new CompoundMap());
-        heightMapsCompound.getValue().put("heightMap", new IntArrayTag("heightMap", chunk.heightMap));
+        CompoundMap heightMaps = new CompoundMap();
 
-        return new CraftSlimeChunk(chunk.world.worldData.getName(), chunk.locX, chunk.locZ, sections, heightMapsCompound, biomes, tileEntities, entities);
-    }
+        for (HeightMap.Type type : chunk.heightMap.keySet()) {
+            heightMaps.put(type.b(), new LongArrayTag(type.b(), chunk.b(type).b()));
+        }
 
-    private static int[] toIntArray(byte[] buf) {
-        ByteBuffer buffer = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
-        int[] ret = new int[buf.length / 4];
+        CompoundTag heightMapCompound = new CompoundTag("", heightMaps);
 
-        buffer.asIntBuffer().put(ret);
-
-        return ret;
+        return new CraftSlimeChunk(chunk.world.worldData.getName(), chunk.locX, chunk.locZ, sections, heightMapCompound, biomes, tileEntities, entities);
     }
 }

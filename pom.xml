@@ -19,6 +19,7 @@
         <module>slimeworldmanager-nms-v1_10_R1</module>
         <module>slimeworldmanager-nms-v1_11_R1</module>
         <module>slimeworldmanager-nms-v1_12_R1</module>
+        <module>slimeworldmanager-nms-v1_13_R1</module>
     </modules>
 
     <dependencies>
@@ -31,7 +32,7 @@
         <dependency>
             <groupId>com.flowpowered</groupId>
             <artifactId>flow-nbt</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

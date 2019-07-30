@@ -1,12 +1,12 @@
 package com.grinderwolf.smw.importer;
 
 import com.flowpowered.nbt.ByteArrayTag;
-import com.flowpowered.nbt.ByteTag;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.IntArrayTag;
-import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.Tag;
+import com.flowpowered.nbt.TagType;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import com.flowpowered.nbt.stream.NBTOutputStream;
 import com.github.luben.zstd.Zstd;
@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -151,7 +153,7 @@ public class SMWImporter {
 
                 DataInputStream chunkStream = new DataInputStream(new ByteArrayInputStream(regionByteArray, entry.getOffset() + 5, chunkSize));
                 InputStream decompressorStream = compressionScheme == 1 ? new GZIPInputStream(chunkStream) : new InflaterInputStream(chunkStream);
-                NBTInputStream nbtStream = new NBTInputStream(decompressorStream, false);
+                NBTInputStream nbtStream = new NBTInputStream(decompressorStream, NBTInputStream.NO_COMPRESSION, ByteOrder.BIG_ENDIAN);
                 CompoundTag globalCompound = (CompoundTag) nbtStream.readTag();
                 CompoundMap globalMap = globalCompound.getValue();
 
@@ -173,50 +175,97 @@ public class SMWImporter {
     }
 
     private static SlimeChunk readChunk(CompoundTag compound) {
-        CompoundMap map = compound.getValue();
+        int chunkX = compound.getAsIntTag("xPos").get().getValue();
+        int chunkZ = compound.getAsIntTag("zPos").get().getValue();
+        Optional<String> status = compound.getStringValue("Status");
 
-        int chunkX = ((IntTag) map.get("xPos")).getValue();
-        int chunkZ = ((IntTag) map.get("zPos")).getValue();
+        if (status.isPresent() && !status.get().equals("postprocessed") && !status.get().equals("fullchunk")) {
+            // It's a protochunk
+            System.out.println(status.get());
+            return null;
+        }
 
-        if (map.containsKey("Biomes") && map.containsKey("Biomes") && map.containsKey("HeightMap")) {
-            byte[] biomes = ((ByteArrayTag) map.get("Biomes")).getValue();
-            int[] heightMap = ((IntArrayTag) map.get("HeightMap")).getValue();
-            List<CompoundTag> tileEntities = ((ListTag<CompoundTag>) map.getOrDefault("TileEntities",
-                    new ListTag<>("TileEntities", CompoundTag.class, new ArrayList<>()))).getValue();
-            List<CompoundTag> entities = ((ListTag<CompoundTag>) map.getOrDefault("Entities",
-                    new ListTag<>("Entities", CompoundTag.class, new ArrayList<>()))).getValue();
-            ListTag<CompoundTag> sectionsTag = (ListTag<CompoundTag>) map.get("Sections");
-            SlimeChunkSection[] sectionArray = new SlimeChunkSection[16];
+        int[] biomes;
+        Tag biomesTag = compound.getValue().get("Biomes");
 
-            for (CompoundTag sectionTag : sectionsTag.getValue()) {
-                CompoundMap sectionMap = sectionTag.getValue();
+        if (biomesTag instanceof IntArrayTag) {
+            biomes = ((IntArrayTag) biomesTag).getValue();
+        } else if (biomesTag instanceof ByteArrayTag) {
+            byte[] byteBiomes = ((ByteArrayTag) biomesTag).getValue();
+            biomes = toIntArray(byteBiomes);
+        } else {
+            biomes = null;
+        }
 
-                byte[] blocks = ((ByteArrayTag) sectionMap.get("Blocks")).getValue();
+        Optional<CompoundTag> optionalHeightMaps = compound.getAsCompoundTag("Heightmaps");
+        CompoundTag heightMapsCompound;
+
+        if (optionalHeightMaps.isPresent()) {
+            heightMapsCompound = optionalHeightMaps.get();
+        } else {
+            // Pre 1.13 world
+
+            int[] heightMap = compound.getIntArrayValue("HeightMap").orElse(new int[256]);
+            heightMapsCompound = new CompoundTag("", new CompoundMap());
+            heightMapsCompound.getValue().put("heightMap", new IntArrayTag("heightMap", heightMap));
+        }
+
+        List<CompoundTag> tileEntities = ((ListTag<CompoundTag>) compound.getAsListTag("TileEntities")
+                .orElse(new ListTag<>("Entities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
+        List<CompoundTag> entities = ((ListTag<CompoundTag>) compound.getAsListTag("Entities")
+                .orElse(new ListTag<>("Entities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
+        ListTag<CompoundTag> sectionsTag = (ListTag<CompoundTag>) compound.getAsListTag("Sections").get();
+        SlimeChunkSection[] sectionArray = new SlimeChunkSection[16];
+
+        for (CompoundTag sectionTag : sectionsTag.getValue()) {
+            byte[] blocks = sectionTag.getByteArrayValue("Blocks").orElse(null);
+            NibbleArray dataArray;
+            ListTag<CompoundTag> paletteTag;
+            long[] blockStatesArray;
+
+            if (blocks != null) {
+                // Pre 1.13 world
+                dataArray = new NibbleArray(sectionTag.getByteArrayValue("Data").get());
 
                 if (isEmpty(blocks)) { // Just skip it
                     continue;
                 }
 
-                NibbleArray dataArray = new NibbleArray(((ByteArrayTag) sectionMap.get("Data")).getValue());
-                NibbleArray blockLightArray = new NibbleArray(((ByteArrayTag) sectionMap.get("BlockLight")).getValue());
-                NibbleArray skyLightArray = new NibbleArray(((ByteArrayTag) sectionMap.get("SkyLight")).getValue());
+                paletteTag = null;
+                blockStatesArray = null;
+            } else {
+                dataArray = null;
 
-                int index = ((ByteTag) sectionMap.get("Y")).getValue();
-
-                sectionArray[index] = new CraftSlimeChunkSection(blocks, dataArray, blockLightArray, skyLightArray);
+                paletteTag = (ListTag<CompoundTag>) sectionTag.getAsListTag("Palette").get();
+                blockStatesArray = sectionTag.getLongArrayValue("BlockStates").get();
             }
 
-            for (SlimeChunkSection section : sectionArray) {
-                if (section != null) { // Chunk isn't empty
-                    return new CraftSlimeChunk(null, chunkX, chunkZ, sectionArray, heightMap, biomes, tileEntities, entities);
-                }
-            }
+            NibbleArray blockLightArray = new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get());
+            NibbleArray skyLightArray = new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get());
 
-            // Chunk is empty
-            return null;
+            int index = sectionTag.getByteValue("Y").get();
+
+            sectionArray[index] = new CraftSlimeChunkSection(blocks, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
         }
 
+        for (SlimeChunkSection section : sectionArray) {
+            if (section != null) { // Chunk isn't empty
+                return new CraftSlimeChunk(null, chunkX, chunkZ, sectionArray, heightMapsCompound, biomes, tileEntities, entities);
+            }
+        }
+
+        // Chunk is empty
+
         return null;
+    }
+
+    private static int[] toIntArray(byte[] buf) {
+        ByteBuffer buffer = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
+        int[] ret = new int[buf.length / 4];
+
+        buffer.asIntBuffer().put(ret);
+
+        return ret;
     }
 
     private static boolean isEmpty(byte[] array) {
@@ -279,7 +328,7 @@ public class SMWImporter {
 
             // Tile Entities
             List<CompoundTag> tileEntitiesList = sortedChunks.stream().flatMap(chunk -> chunk.getTileEntities().stream()).collect(Collectors.toList());
-            ListTag<CompoundTag> tileEntitiesNbtList = new ListTag<>("tiles", CompoundTag.class, tileEntitiesList);
+            ListTag<CompoundTag> tileEntitiesNbtList = new ListTag<>("tiles", TagType.TAG_COMPOUND, tileEntitiesList);
             CompoundTag tileEntitiesCompound = new CompoundTag("", new CompoundMap(Collections.singletonList(tileEntitiesNbtList)));
             byte[] tileEntitiesData = serializeCompoundTag(tileEntitiesCompound);
             byte[] compressedTileEntitiesData = Zstd.compress(tileEntitiesData);
@@ -294,7 +343,7 @@ public class SMWImporter {
             outStream.writeBoolean(!entitiesList.isEmpty());
 
             if (!entitiesList.isEmpty()) {
-                ListTag<CompoundTag> entitiesNbtList = new ListTag<>("entities", CompoundTag.class, entitiesList);
+                ListTag<CompoundTag> entitiesNbtList = new ListTag<>("entities", TagType.TAG_COMPOUND, entitiesList);
                 CompoundTag entitiesCompound = new CompoundTag("", new CompoundMap(Collections.singletonList(entitiesNbtList)));
                 byte[] entitiesData = serializeCompoundTag(entitiesCompound);
                 byte[] compressedEntitiesData = Zstd.compress(entitiesData);
@@ -330,12 +379,19 @@ public class SMWImporter {
         DataOutputStream outStream = new DataOutputStream(outByteStream);
 
         for (SlimeChunk chunk : chunks) {
-            for (int value : chunk.getHeightMap()) {
-                outStream.writeInt(value);
+            // Height Maps
+            byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
+            outStream.writeInt(heightMaps.length);
+            outStream.write(heightMaps);
+
+            // Biomes
+            int[] biomes = chunk.getBiomes();
+
+            for (int i = 0; i < biomes.length; i++) {
+                outStream.writeInt(biomes[i]);
             }
 
-            outStream.write(chunk.getBiomes());
-
+            // Chunk sections
             SlimeChunkSection[] sections = chunk.getSections();
             BitSet sectionBitmask = new BitSet(16);
 
@@ -351,8 +407,35 @@ public class SMWImporter {
                 }
 
                 outStream.write(section.getBlockLight().getBacking());
-                outStream.write(section.getBlocks());
-                outStream.write(section.getData().getBacking());
+
+                boolean v1_13World = section.getBlocks() == null;
+                outStream.writeBoolean(v1_13World);
+
+                if (v1_13World) {
+                    // Palette
+                    List<CompoundTag> palette = section.getPalette().getValue();
+                    outStream.writeInt(palette.size());
+
+                    for (CompoundTag value : palette) {
+                        byte[] serializedValue = serializeCompoundTag(value);
+
+                        outStream.writeInt(serializedValue.length);
+                        outStream.write(serializedValue);
+                    }
+
+                    // Block states
+                    long[] blockStates = section.getBlockStates();
+
+                    outStream.writeInt(blockStates.length);
+
+                    for (long value : section.getBlockStates()) {
+                        outStream.writeLong(value);
+                    }
+                } else {
+                    outStream.write(section.getBlocks());
+                    outStream.write(section.getData().getBacking());
+                }
+
                 outStream.write(section.getSkyLight().getBacking());
                 outStream.writeShort(0); // HypixelBlocks 3
             }
@@ -363,7 +446,7 @@ public class SMWImporter {
 
     private static byte[] serializeCompoundTag(CompoundTag tag) throws IOException {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
-        NBTOutputStream outStream = new NBTOutputStream(outByteStream, false, ByteOrder.BIG_ENDIAN);
+        NBTOutputStream outStream = new NBTOutputStream(outByteStream, NBTInputStream.NO_COMPRESSION, ByteOrder.BIG_ENDIAN);
         outStream.writeTag(tag);
 
         return outByteStream.toByteArray();

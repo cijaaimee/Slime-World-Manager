@@ -8,6 +8,8 @@ import com.grinderwolf.smw.nms.CraftSlimeChunk;
 import com.grinderwolf.smw.nms.CraftSlimeChunkSection;
 import net.minecraft.server.v1_8_R3.*;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +88,7 @@ public class Converter {
                     list.add(convertTag("", entry));
                 }
 
-                return new ListTag(name, TagType.getById(originalList.f()).getTagClass(), list);
+                return new ListTag(name, TagType.getById(originalList.f()), list);
             case 10:
                 NBTTagCompound originalCompound = ((NBTTagCompound) base);
                 CompoundTag compound = new CompoundTag("", new CompoundMap());
@@ -131,7 +133,7 @@ public class Converter {
                         blockDataArray.set(i, packed & 15);
                     }
 
-                    sections[sectionId] = new CraftSlimeChunkSection(blocks, blockDataArray, blockLightArray, skyLightArray);
+                    sections[sectionId] = new CraftSlimeChunkSection(blocks, blockDataArray, null, null, blockLightArray, skyLightArray);
                 }
             }
         }
@@ -160,11 +162,22 @@ public class Converter {
         }
 
         // Biomes
-        byte[] biomes = chunk.getBiomeIndex();
+        byte[] byteBiomes = chunk.getBiomeIndex();
+        int[] biomes = toIntArray(byteBiomes);
 
         // HeightMap
-        int[] heightMap = chunk.heightMap;
+        CompoundTag heightMapsCompound = new CompoundTag("", new CompoundMap());
+        heightMapsCompound.getValue().put("heightMap", new IntArrayTag("heightMap", chunk.heightMap));
 
-        return new CraftSlimeChunk(chunk.world.worldData.getName(), chunk.locX, chunk.locZ, sections, heightMap, biomes, tileEntities, entities);
+        return new CraftSlimeChunk(chunk.world.worldData.getName(), chunk.locX, chunk.locZ, sections, heightMapsCompound, biomes, tileEntities, entities);
+    }
+
+    private static int[] toIntArray(byte[] buf) {
+        ByteBuffer buffer = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
+        int[] ret = new int[buf.length / 4];
+
+        buffer.asIntBuffer().put(ret);
+
+        return ret;
     }
 }

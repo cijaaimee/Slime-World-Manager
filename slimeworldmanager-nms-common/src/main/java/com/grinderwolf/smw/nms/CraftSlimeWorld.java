@@ -3,6 +3,8 @@ package com.grinderwolf.smw.nms;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.TagType;
+import com.flowpowered.nbt.stream.NBTInputStream;
 import com.flowpowered.nbt.stream.NBTOutputStream;
 import com.github.luben.zstd.Zstd;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
@@ -120,7 +122,7 @@ public class CraftSlimeWorld implements SlimeWorld {
 
             // Tile Entities
             List<CompoundTag> tileEntitiesList = sortedChunks.stream().flatMap(chunk -> chunk.getTileEntities().stream()).collect(Collectors.toList());
-            ListTag<CompoundTag> tileEntitiesNbtList = new ListTag<>("tiles", CompoundTag.class, tileEntitiesList);
+            ListTag<CompoundTag> tileEntitiesNbtList = new ListTag<>("tiles", TagType.TAG_COMPOUND, tileEntitiesList);
             CompoundTag tileEntitiesCompound = new CompoundTag("", new CompoundMap(Collections.singletonList(tileEntitiesNbtList)));
             byte[] tileEntitiesData = serializeCompoundTag(tileEntitiesCompound);
             byte[] compressedTileEntitiesData = Zstd.compress(tileEntitiesData);
@@ -135,7 +137,7 @@ public class CraftSlimeWorld implements SlimeWorld {
             outStream.writeBoolean(!entitiesList.isEmpty());
 
             if (!entitiesList.isEmpty()) {
-                ListTag<CompoundTag> entitiesNbtList = new ListTag<>("entities", CompoundTag.class, entitiesList);
+                ListTag<CompoundTag> entitiesNbtList = new ListTag<>("entities", TagType.TAG_COMPOUND, entitiesList);
                 CompoundTag entitiesCompound = new CompoundTag("", new CompoundMap(Collections.singletonList(entitiesNbtList)));
                 byte[] entitiesData = serializeCompoundTag(entitiesCompound);
                 byte[] compressedEntitiesData = Zstd.compress(entitiesData);
@@ -175,12 +177,19 @@ public class CraftSlimeWorld implements SlimeWorld {
         DataOutputStream outStream = new DataOutputStream(outByteStream);
 
         for (SlimeChunk chunk : chunks) {
-            for (int value : chunk.getHeightMap()) {
-                outStream.writeInt(value);
+            // Height Maps
+            byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
+            outStream.writeInt(heightMaps.length);
+            outStream.write(heightMaps);
+
+            // Biomes
+            int[] biomes = chunk.getBiomes();
+
+            for (int i = 0; i < biomes.length; i++) {
+                outStream.writeInt(biomes[i]);
             }
 
-            outStream.write(chunk.getBiomes());
-
+            // Chunk sections
             SlimeChunkSection[] sections = chunk.getSections();
             BitSet sectionBitmask = new BitSet(16);
 
@@ -196,8 +205,35 @@ public class CraftSlimeWorld implements SlimeWorld {
                 }
 
                 outStream.write(section.getBlockLight().getBacking());
-                outStream.write(section.getBlocks());
-                outStream.write(section.getData().getBacking());
+
+                boolean v1_13World = section.getBlocks() == null;
+                outStream.writeBoolean(v1_13World);
+
+                if (v1_13World) {
+                    // Palette
+                    List<CompoundTag> palette = section.getPalette().getValue();
+                    outStream.writeInt(palette.size());
+
+                    for (CompoundTag value : palette) {
+                        byte[] serializedValue = serializeCompoundTag(value);
+
+                        outStream.writeInt(serializedValue.length);
+                        outStream.write(serializedValue);
+                    }
+
+                    // Block states
+                    long[] blockStates = section.getBlockStates();
+
+                    outStream.writeInt(blockStates.length);
+
+                    for (long value : section.getBlockStates()) {
+                        outStream.writeLong(value);
+                    }
+                } else {
+                    outStream.write(section.getBlocks());
+                    outStream.write(section.getData().getBacking());
+                }
+
                 outStream.write(section.getSkyLight().getBacking());
                 outStream.writeShort(0); // HypixelBlocks 3
             }
@@ -208,7 +244,7 @@ public class CraftSlimeWorld implements SlimeWorld {
 
     private static byte[] serializeCompoundTag(CompoundTag tag) throws IOException {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
-        NBTOutputStream outStream = new NBTOutputStream(outByteStream, false, ByteOrder.BIG_ENDIAN);
+        NBTOutputStream outStream = new NBTOutputStream(outByteStream, NBTInputStream.NO_COMPRESSION, ByteOrder.BIG_ENDIAN);
         outStream.writeTag(tag);
 
         return outByteStream.toByteArray();

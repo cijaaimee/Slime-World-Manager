@@ -17,8 +17,8 @@ public class CraftSlimeChunk implements SlimeChunk {
     private final int z;
 
     private final SlimeChunkSection[] sections;
-    private final int[] heightMap;
-    private final byte[] biomes;
+    private final CompoundTag heightMaps;
+    private final int[] biomes;
     private final List<CompoundTag> tileEntities;
     private final List<CompoundTag> entities;
 }

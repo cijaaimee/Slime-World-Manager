@@ -3,8 +3,10 @@ package com.grinderwolf.smw.plugin.loaders;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.DoubleTag;
+import com.flowpowered.nbt.IntArrayTag;
 import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.TagType;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import com.github.luben.zstd.Zstd;
 import com.grinderwolf.smw.api.exceptions.CorruptedWorldException;
@@ -28,12 +30,14 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LoaderUtils {
@@ -164,7 +168,7 @@ public class LoaderUtils {
             Zstd.decompress(extraTag, compressedExtraTag);
 
             // Chunk deserialization
-            Map<Long, SlimeChunk> chunks = readChunks(worldName, minX, minZ, width, depth, chunkBitset, chunkData);
+            Map<Long, SlimeChunk> chunks = readChunks(version, worldName, minX, minZ, width, depth, chunkBitset, chunkData);
 
             // Entity deserialization
             CompoundTag entitiesCompound = readCompoundTag(entities);
@@ -228,7 +232,7 @@ public class LoaderUtils {
         return floor == num ? floor : floor - (int) (Double.doubleToRawLongBits(num) >>> 63);
     }
 
-    private static Map<Long, SlimeChunk> readChunks(String worldName, int minX, int minZ, int width, int depth, BitSet chunkBitset, byte[] chunkData) throws IOException {
+    private static Map<Long, SlimeChunk> readChunks(int version, String worldName, int minX, int minZ, int width, int depth, BitSet chunkBitset, byte[] chunkData) throws IOException {
         DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(chunkData));
         Map<Long, SlimeChunk> chunkMap = new HashMap<>();
 
@@ -237,22 +241,47 @@ public class LoaderUtils {
                 int bitsetIndex = z * width + x;
 
                 if (chunkBitset.get(bitsetIndex)) {
-                    // HeightMap
-                    int[] heightMap = new int[256];
+                    // Height Maps
+                    CompoundTag heightMaps;
 
-                    for (int i = 0; i < 256; i++) {
-                        heightMap[i] = dataStream.readInt();
+                    if (version >= 4) {
+                        int heightMapsLength = dataStream.readInt();
+                        byte[] heightMapsArray = new byte[heightMapsLength];
+                        dataStream.read(heightMapsArray);
+                        heightMaps = readCompoundTag(heightMapsArray);
+                    } else {
+                        int[] heightMap = new int[256];
+
+                        for (int i = 0; i < 256; i++) {
+                            heightMap[i] = dataStream.readInt();
+                        }
+
+                        CompoundMap map = new CompoundMap();
+                        map.put("heightMap", new IntArrayTag("heightMap", heightMap));
+
+                        heightMaps = new CompoundTag("", map);
                     }
 
                     // Biome array
-                    byte[] biomes = new byte[256];
-                    dataStream.read(biomes);
+                    int[] biomes;
+
+                    if (version >= 4) {
+                        biomes = new int[256];
+
+                        for (int i = 0; i < biomes.length; i++) {
+                            biomes[i] = dataStream.readInt();
+                        }
+                    } else {
+                        byte[] byteBiomes = new byte[256];
+                        dataStream.read(byteBiomes);
+                        biomes = toIntArray(byteBiomes);
+                    }
 
                     // Chunk Sections
-                    SlimeChunkSection[] sections = readChunkSections(dataStream);
+                    SlimeChunkSection[] sections = readChunkSections(version, dataStream);
 
                     chunkMap.put(((long) minZ + z) * Integer.MAX_VALUE + ((long) minX + x), new CraftSlimeChunk(worldName,minX + x, minZ + z,
-                            sections, heightMap, biomes, new ArrayList<>(), new ArrayList<>()));
+                            sections, heightMaps, biomes, new ArrayList<>(), new ArrayList<>()));
                 }
             }
         }
@@ -260,7 +289,16 @@ public class LoaderUtils {
         return chunkMap;
     }
 
-    private static SlimeChunkSection[] readChunkSections(DataInputStream dataStream) throws IOException {
+    private static int[] toIntArray(byte[] buf) {
+        ByteBuffer buffer = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
+        int[] ret = new int[buf.length / 4];
+
+        buffer.asIntBuffer().put(ret);
+
+        return ret;
+    }
+
+    private static SlimeChunkSection[] readChunkSections(int version, DataInputStream dataStream) throws IOException {
         SlimeChunkSection[] chunkSectionArray = new SlimeChunkSection[16];
         byte[] sectionBitmask = new byte[2];
         dataStream.read(sectionBitmask);
@@ -273,14 +311,50 @@ public class LoaderUtils {
                 dataStream.read(blockLightByteArray);
                 NibbleArray blockLightArray = new NibbleArray((blockLightByteArray));
 
-                // Block Array
-                byte[] blockArray = new byte[4096];
-                dataStream.read(blockArray);
+                // Block data
+                byte[] blockArray;
+                ListTag<CompoundTag> paletteTag;
+                long[] blockStatesArray;
+                NibbleArray dataArray;
 
-                // Block Data Nibble Array
-                byte[] dataByteArray = new byte[2048];
-                dataStream.read(dataByteArray);
-                NibbleArray dataArray = new NibbleArray((dataByteArray));
+                // Post 1.13 block format
+                if (version >= 4 && dataStream.readBoolean()) {
+                    // Palette
+                    int paletteLength = dataStream.readInt();
+                    List<CompoundTag> paletteList = new ArrayList<>(paletteLength);
+
+                    for (int index = 0; index < paletteLength; index++) {
+                        int tagLength = dataStream.readInt();
+                        byte[] serializedTag = new byte[tagLength];
+                        dataStream.read(serializedTag);
+
+                        paletteList.add(readCompoundTag(serializedTag));
+                    }
+
+                    paletteTag = new ListTag<>("", TagType.TAG_COMPOUND, paletteList);
+
+                    // Block states
+                    int blockStatesArrayLength = dataStream.readInt();
+                    blockStatesArray = new long[blockStatesArrayLength];
+
+                    for (int index = 0; index < blockStatesArrayLength; index++) {
+                        blockStatesArray[index] = dataStream.readLong();
+                    }
+
+                    blockArray = null;
+                    dataArray = null;
+                } else {
+                    blockArray = new byte[4096];
+                    dataStream.read(blockArray);
+
+                    // Block Data Nibble Array
+                    byte[] dataByteArray = new byte[2048];
+                    dataStream.read(dataByteArray);
+                    dataArray = new NibbleArray((dataByteArray));
+
+                    paletteTag = null;
+                    blockStatesArray = null;
+                }
 
                 // Sky Light Nibble Array
                 byte[] skyLightByteArray = new byte[2048];
@@ -291,7 +365,7 @@ public class LoaderUtils {
                 short hypixelBlocksLength = dataStream.readShort();
                 dataStream.skip(hypixelBlocksLength);
 
-                chunkSectionArray[i] = new CraftSlimeChunkSection(blockArray, dataArray, blockLightArray, skyLightArray);
+                chunkSectionArray[i] = new CraftSlimeChunkSection(blockArray, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
             }
         }
 
@@ -303,7 +377,7 @@ public class LoaderUtils {
             return null;
         }
 
-        NBTInputStream stream = new NBTInputStream(new ByteArrayInputStream(serializedCompound), false, ByteOrder.BIG_ENDIAN);
+        NBTInputStream stream = new NBTInputStream(new ByteArrayInputStream(serializedCompound), NBTInputStream.NO_COMPRESSION, ByteOrder.BIG_ENDIAN);
 
         return (CompoundTag) stream.readTag();
     }
