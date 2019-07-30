@@ -78,6 +78,7 @@ public class CustomChunkLoader implements IChunkLoader {
         }
 
         nmsChunk.a(sections);
+        nmsChunk.a(chunk.getBiomes());
 
         // Load tile entities
         LOGGER.debug("Loading tile entities for chunk (" + x + ", " + z + ") on world " + world.getName());

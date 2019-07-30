@@ -15,6 +15,7 @@
         <module>slimeworldmanager-plugin</module>
         <module>slimeworldmanager-importer</module>
         <module>slimeworldmanager-nms-v1_9_R1</module>
+        <module>slimeworldmanager-nms-v1_9_R2</module>
     </modules>
 
     <dependencies>

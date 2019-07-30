@@ -1,20 +1,20 @@
-package com.grinderwolf.smw.nms.v1_8_R3;
+package com.grinderwolf.smw.nms.v1_9_R2;
 
+import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.smw.api.utils.NibbleArray;
 import com.grinderwolf.smw.api.world.SlimeChunk;
 import com.grinderwolf.smw.api.world.SlimeChunkSection;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_8_R3.Block;
-import net.minecraft.server.v1_8_R3.Chunk;
-import net.minecraft.server.v1_8_R3.ChunkSection;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.EntityTypes;
-import net.minecraft.server.v1_8_R3.IChunkLoader;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.TileEntity;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.Chunk;
+import net.minecraft.server.v1_9_R2.ChunkSection;
+import net.minecraft.server.v1_9_R2.Entity;
+import net.minecraft.server.v1_9_R2.EntityTypes;
+import net.minecraft.server.v1_9_R2.IChunkLoader;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.TileEntity;
+import net.minecraft.server.v1_9_R2.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,41 +58,17 @@ public class CustomChunkLoader implements IChunkLoader {
             if (slimeSection != null) {
                 ChunkSection section = new ChunkSection(sectionId, true);
                 NibbleArray data = slimeSection.getData();
-
                 byte[] blocks = slimeSection.getBlocks();
-                char[] blockIds = new char[blocks.length];
-
-                for (int id = 0; id < blocks.length; id++) {
-                    int blockId = blocks[id] & 255;
-                    int blockData = data.get(id);
-                    int packed = blockId << 4 | blockData;
-
-                    if (Block.d.a(packed) == null) {
-                        Block block = Block.getById(blockId);
-
-                        if (block != null) {
-                            try {
-                                blockData = block.toLegacyData(block.fromLegacyData(blockData));
-                            } catch (Exception ex) {
-                                blockData = block.toLegacyData(block.getBlockData());
-                            }
-
-                            packed = blockId << 4 | blockData;
-                        }
-                    }
-
-                    blockIds[id] = (char) packed;
-                }
 
                 LOGGER.debug("ChunkSection #" + sectionId + " - Chunk (" + x + ", " + z + ") - World " + world.getName() + ":");
                 LOGGER.debug("Blocks:");
-                LOGGER.debug(blockIds);
+                LOGGER.debug(blocks);
                 LOGGER.debug("Block light array:");
                 LOGGER.debug(slimeSection.getBlockLight().getBacking());
                 LOGGER.debug("Sky light array:");
                 LOGGER.debug(slimeSection.getSkyLight().getBacking());
 
-                section.a(blockIds);
+                section.getBlocks().a(blocks, Converter.convertArray(data), new net.minecraft.server.v1_9_R2.NibbleArray());
                 section.a(Converter.convertArray(slimeSection.getBlockLight()));
                 section.b(Converter.convertArray(slimeSection.getSkyLight()));
 
@@ -129,27 +105,7 @@ public class CustomChunkLoader implements IChunkLoader {
 
         if (entities != null) {
             for (CompoundTag tag : entities) {
-                Entity entity = EntityTypes.a((NBTTagCompound) Converter.convertTag(tag), nmsWorld);
-                nmsChunk.g(true);
-
-                if (entity != null) {
-                    nmsChunk.a(entity);
-                    Entity entity1 = entity;
-
-                    for (CompoundTag ridingTag = tag; ridingTag.getValue().containsKey("Riding"); ridingTag = (CompoundTag) ridingTag.getValue().get("Riding")) {
-                        Entity entity2 = EntityTypes.a((NBTTagCompound) Converter.convertTag(ridingTag.getValue().get("Riding")), nmsWorld);
-
-                        if (entity2 != null) {
-                            nmsChunk.a(entity2);
-                            entity1.mount(entity2);
-                            loadedEntities++;
-                        }
-
-                        entity1 = entity2;
-                    }
-
-                    loadedEntities++;
-                }
+                loadEntity(tag, nmsWorld, nmsChunk);
             }
         }
 
@@ -157,6 +113,31 @@ public class CustomChunkLoader implements IChunkLoader {
         LOGGER.debug("Loaded chunk (" + x + ", " + z + ") on world " + world.getName());
 
         return nmsChunk;
+    }
+
+    private Entity loadEntity(CompoundTag tag, World world, Chunk chunk) {
+        Entity entity = EntityTypes.a((NBTTagCompound) Converter.convertTag(tag), world);
+        chunk.g(true);
+
+        if (entity != null) {
+            chunk.a(entity);
+
+            CompoundMap map = tag.getValue();
+
+            if (map.containsKey("Passengers")) {
+                List<CompoundTag> passengersList = (List<CompoundTag>) map.get("Passengers").getValue();
+
+                for (CompoundTag passengerTag : passengersList) {
+                    Entity passenger = loadEntity(passengerTag, world, chunk);
+
+                    if (passengerTag != null) {
+                        passenger.a(entity, true);
+                    }
+                }
+            }
+        }
+
+        return entity;
     }
 
     // Save chunk

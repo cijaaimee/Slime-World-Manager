@@ -28,8 +28,10 @@ This tool is also inside this repository, so you can check out its source code i
 ## Which Spigot versions is this compatible with?
 
 Currently, SMW can run on these Minecraft versions:
-* 1.8.8-R0.1.
-* 1.9-R0.1.
+* Spigot 1.8.8
+* Spigot 1.9
+* Spigot 1.9.2
+* Spigot 1.9.4
 
 Possible future versions:
 * 1.13.2
