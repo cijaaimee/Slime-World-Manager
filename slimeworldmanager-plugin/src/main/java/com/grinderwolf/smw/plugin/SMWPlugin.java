@@ -10,6 +10,7 @@ import com.grinderwolf.smw.api.loaders.SlimeLoader;
 import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.SlimeNMS;
 import com.grinderwolf.smw.nms.v1_8_R3.v1_8_R3SlimeNMS;
+import com.grinderwolf.smw.nms.v1_9_R1.v1_9_R1SlimeNMS;
 import com.grinderwolf.smw.plugin.commands.CommandManager;
 import com.grinderwolf.smw.plugin.config.ConfigManager;
 import com.grinderwolf.smw.plugin.loaders.LoaderUtils;
@@ -77,6 +78,8 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         switch (nmsVersion) {
             case "v1_8_R3":
                 return new v1_8_R3SlimeNMS();
+            case "v1_9_R1":
+                return new v1_9_R1SlimeNMS();
             default:
                 throw new InvalidVersionException(nmsVersion);
         }

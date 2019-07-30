@@ -29,6 +29,7 @@ This tool is also inside this repository, so you can check out its source code i
 
 Currently, SMW can run on these Minecraft versions:
 * 1.8.8-R0.1.
+* 1.9-R0.1.
 
 Possible future versions:
 * 1.13.2

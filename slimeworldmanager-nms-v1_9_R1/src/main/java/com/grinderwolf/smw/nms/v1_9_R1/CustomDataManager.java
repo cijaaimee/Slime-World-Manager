@@ -1,15 +1,15 @@
-package com.grinderwolf.smw.nms.v1_8_R3;
+package com.grinderwolf.smw.nms.v1_9_R1;
 
 import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.IChunkLoader;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.WorldData;
-import net.minecraft.server.v1_8_R3.WorldNBTStorage;
-import net.minecraft.server.v1_8_R3.WorldProvider;
+import net.minecraft.server.v1_9_R1.EntityHuman;
+import net.minecraft.server.v1_9_R1.IChunkLoader;
+import net.minecraft.server.v1_9_R1.NBTTagCompound;
+import net.minecraft.server.v1_9_R1.WorldData;
+import net.minecraft.server.v1_9_R1.WorldNBTStorage;
+import net.minecraft.server.v1_9_R1.WorldProvider;
 
 import java.io.File;
 import java.util.UUID;
@@ -29,7 +29,7 @@ public class CustomDataManager extends WorldNBTStorage {
     //
     // Thanks Spigot!
     public CustomDataManager(SlimeWorld world) {
-        super(new File("temp_" + world.getName()), world.getName(), false);
+        super(new File("temp_" + world.getName()), world.getName(), false, null);
 
         // The WorldNBTStorage automatically creates some files inside the base dir, so we have to delete them
         // (Thanks again Spigot)
@@ -74,11 +74,6 @@ public class CustomDataManager extends WorldNBTStorage {
 
     @Override
     public File getDataFile(String s) {
-        return null;
-    }
-
-    @Override
-    public String g() {
         return null;
     }
 
