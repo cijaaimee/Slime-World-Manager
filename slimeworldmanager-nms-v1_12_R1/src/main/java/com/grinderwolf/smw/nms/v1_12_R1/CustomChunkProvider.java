@@ -1,13 +1,13 @@
-package com.grinderwolf.smw.nms.v1_9_R2;
+package com.grinderwolf.smw.nms.v1_12_R1;
 
-import net.minecraft.server.v1_9_R2.Chunk;
-import net.minecraft.server.v1_9_R2.ChunkCoordIntPair;
-import net.minecraft.server.v1_9_R2.ChunkProviderServer;
-import net.minecraft.server.v1_9_R2.CrashReport;
-import net.minecraft.server.v1_9_R2.CrashReportSystemDetails;
-import net.minecraft.server.v1_9_R2.ReportedException;
+import net.minecraft.server.v1_12_R1.Chunk;
+import net.minecraft.server.v1_12_R1.ChunkCoordIntPair;
+import net.minecraft.server.v1_12_R1.ChunkProviderServer;
+import net.minecraft.server.v1_12_R1.CrashReport;
+import net.minecraft.server.v1_12_R1.CrashReportSystemDetails;
+import net.minecraft.server.v1_12_R1.ReportedException;
 import org.bukkit.Server;
-import org.bukkit.craftbukkit.v1_9_R2.generator.NormalChunkGenerator;
+import org.bukkit.craftbukkit.v1_12_R1.generator.NormalChunkGenerator;
 
 public class CustomChunkProvider extends ChunkProviderServer {
 
@@ -65,7 +65,7 @@ public class CustomChunkProvider extends ChunkProviderServer {
                 }
             }
 
-            chunk.loadNearby(this, this.chunkGenerator);
+            chunk.loadNearby(this, this.chunkGenerator, newChunk);
             world.timings.syncChunkLoadTimer.stopTiming();
         }
 

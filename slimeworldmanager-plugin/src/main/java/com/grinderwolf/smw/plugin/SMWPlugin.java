@@ -11,6 +11,7 @@ import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.SlimeNMS;
 import com.grinderwolf.smw.nms.v1_10_R1.v1_10_R1SlimeNMS;
 import com.grinderwolf.smw.nms.v1_11_R1.v1_11_R1SlimeNMS;
+import com.grinderwolf.smw.nms.v1_12_R1.v1_12_R1SlimeNMS;
 import com.grinderwolf.smw.nms.v1_8_R3.v1_8_R3SlimeNMS;
 import com.grinderwolf.smw.nms.v1_9_R1.v1_9_R1SlimeNMS;
 import com.grinderwolf.smw.nms.v1_9_R2.v1_9_R2SlimeNMS;
@@ -47,9 +48,9 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         try {
-            nms = loadInjector();
+            nms = getNMSBridge();
         } catch (InvalidVersionException ex) {
-            Logging.error("Couldn't load injector:");
+            Logging.error("Couldn't get nms bridge:");
             ex.printStackTrace();
         }
     }
@@ -72,7 +73,7 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
         }
     }
 
-    private SlimeNMS loadInjector() throws InvalidVersionException {
+    private SlimeNMS getNMSBridge() throws InvalidVersionException {
         String version = Bukkit.getServer().getClass().getPackage().getName();
         String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
 
@@ -89,6 +90,8 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
                 return new v1_10_R1SlimeNMS();
             case "v1_11_R1":
                 return new v1_11_R1SlimeNMS();
+            case "v1_12_R1":
+                return new v1_12_R1SlimeNMS();
             default:
                 throw new InvalidVersionException(nmsVersion);
         }

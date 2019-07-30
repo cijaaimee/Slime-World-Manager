@@ -18,6 +18,7 @@
         <module>slimeworldmanager-nms-v1_9_R2</module>
         <module>slimeworldmanager-nms-v1_10_R1</module>
         <module>slimeworldmanager-nms-v1_11_R1</module>
+        <module>slimeworldmanager-nms-v1_12_R1</module>
     </modules>
 
     <dependencies>

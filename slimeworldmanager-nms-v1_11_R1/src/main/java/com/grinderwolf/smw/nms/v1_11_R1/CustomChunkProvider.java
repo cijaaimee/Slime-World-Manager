@@ -32,7 +32,7 @@ public class CustomChunkProvider extends ChunkProviderServer {
                     CrashReport crashreport = CrashReport.a(throwable, "Exception generating new chunk");
                     CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Chunk to be generated");
 
-                    crashreportsystemdetails.a("Location", String.format("%d,%d", new Object[] { xPos, zPos }));
+                    crashreportsystemdetails.a("Location", String.format("%d,%d", xPos, zPos));
                     crashreportsystemdetails.a("Position hash", k);
                     crashreportsystemdetails.a("Generator", this.chunkGenerator);
                     throw new ReportedException(crashreport);
