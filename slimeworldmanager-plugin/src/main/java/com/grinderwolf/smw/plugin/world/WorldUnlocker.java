@@ -23,7 +23,7 @@ public class WorldUnlocker implements Listener {
                 try {
                     world.getLoader().unlockWorld(event.getWorld().getName());
                 } catch (IOException ex) {
-                    Logging.error("Failed to unlock world " + world.getName() + ". Please unlock it manually by using the command /smw manualunlock. Stack trace:");
+                    Logging.error("Failed to unlock world " + world.getName() + ". Please unlock it manually by using the command /smw unlock. Stack trace:");
                     ex.printStackTrace();
                 }
 

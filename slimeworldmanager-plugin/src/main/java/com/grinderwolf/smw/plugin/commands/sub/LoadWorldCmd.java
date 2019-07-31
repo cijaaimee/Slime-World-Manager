@@ -4,6 +4,7 @@ package com.grinderwolf.smw.plugin.commands.sub;
 import com.grinderwolf.smw.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.smw.api.exceptions.NewerFormatException;
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
+import com.grinderwolf.smw.api.exceptions.UnsupportedWorldException;
 import com.grinderwolf.smw.api.exceptions.WorldInUseException;
 import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.plugin.SMWPlugin;
@@ -77,7 +78,7 @@ public class LoadWorldCmd implements Subcommand {
                         SMWPlugin.getInstance().generateWorld(slimeWorld);
 
                         sender.sendMessage(CommandManager.PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
-                                + ChatColor.GREEN + " loaded in " + (System.currentTimeMillis() - start) + "ms!");
+                                + ChatColor.GREEN + " loaded and generated in " + (System.currentTimeMillis() - start) + "ms!");
                     });
                 } catch (IllegalArgumentException ex) {
                     sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to load world " + worldName + ": " + ex.getMessage() + ".");
@@ -97,7 +98,10 @@ public class LoadWorldCmd implements Subcommand {
                             ": world could not be found (using data source '" + worldConfig.getString("source") + "').");
                 } catch (WorldInUseException e) {
                     sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to load world " + worldName +
-                            ": world is already in use. If you are sure this is a mistake, run the command /smw manualunlock " + worldName + " " + worldConfig.get("source"));
+                            ": world is already in use. If you are sure this is a mistake, run the command /smw unlock " + worldName + " " + worldConfig.get("source"));
+                } catch (UnsupportedWorldException e) {
+                    sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to load world " + worldName + ": world is meant to be used on a "
+                            + (e.isV1_13() ? "1.13 or newer" : "1.12.2 or older") + " server.");
                 } catch (IOException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
                         sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to load world " + worldName

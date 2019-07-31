@@ -5,9 +5,11 @@ import com.grinderwolf.smw.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.smw.api.exceptions.InvalidVersionException;
 import com.grinderwolf.smw.api.exceptions.NewerFormatException;
 import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
+import com.grinderwolf.smw.api.exceptions.UnsupportedWorldException;
 import com.grinderwolf.smw.api.exceptions.WorldInUseException;
 import com.grinderwolf.smw.api.loaders.SlimeLoader;
 import com.grinderwolf.smw.api.world.SlimeWorld;
+import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import com.grinderwolf.smw.nms.SlimeNMS;
 import com.grinderwolf.smw.nms.v1_10_R1.v1_10_R1SlimeNMS;
 import com.grinderwolf.smw.nms.v1_11_R1.v1_11_R1SlimeNMS;
@@ -123,7 +125,9 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
                                 + ex.getMessage() + ") that SMW does not understand.");
                     } catch (WorldInUseException e) {
                         Logging.error("Couldn't load world " + world + ": world is in use! If you are sure this is a mistake, run " +
-                                "the command /smw manualunlock " + world + " " + worldConfig.get("source"));
+                                "the command /smw unlock " + world + " " + worldConfig.get("source"));
+                    } catch (UnsupportedWorldException e) {
+                        Logging.error("Couldn't load world " + world + ": world is meant to be used on a " + (e.isV1_13() ? "1.13 or newer" : "1.12.2 or older") + " server.");
                     } catch (CorruptedWorldException ex) {
                         Logging.error("Couldn't load world " + world + ": world seems to be corrupted.");
 
@@ -141,7 +145,7 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
     }
 
     public SlimeWorld loadWorldFromConfig(ConfigurationSection worldConfig) throws UnknownWorldException, IOException,
-            CorruptedWorldException, NewerFormatException, WorldInUseException {
+            CorruptedWorldException, NewerFormatException, WorldInUseException, UnsupportedWorldException {
         if (Bukkit.getWorld(worldConfig.getName()) != null) {
             throw new IllegalArgumentException("world '" + worldConfig.getName() + "' already exists");
         }
@@ -190,12 +194,17 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
 
     @Override
     public SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws UnknownWorldException,
-            IOException, CorruptedWorldException, NewerFormatException, WorldInUseException {
+            IOException, CorruptedWorldException, NewerFormatException, WorldInUseException, UnsupportedWorldException {
         long start = System.currentTimeMillis();
 
         Logging.info("Loading world " + worldName + ".");
         byte[] serializedWorld = loader.loadWorld(worldName, properties.isReadOnly());
-        SlimeWorld world = LoaderUtils.deserializeWorld(loader, worldName, serializedWorld, properties);
+        CraftSlimeWorld world = LoaderUtils.deserializeWorld(loader, worldName, serializedWorld, properties);
+
+        if ((world.isV1_13() && !nms.isV1_13WorldFormat()) || (!world.isV1_13() && nms.isV1_13WorldFormat())) {
+            throw new UnsupportedWorldException(worldName, world.isV1_13());
+        }
+
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         return world;

@@ -3,6 +3,7 @@ package com.grinderwolf.smw.nms.v1_8_R3;
 import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import com.grinderwolf.smw.nms.SlimeNMS;
+import lombok.Getter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.WorldServer;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +17,9 @@ import org.bukkit.event.world.WorldLoadEvent;
 public class v1_8_R3SlimeNMS implements SlimeNMS {
 
     private static final Logger LOGGER = LogManager.getLogger("SMW");
+
+    @Getter
+    private final boolean v1_13WorldFormat = false;
 
     @Override
     public void generateWorld(SlimeWorld world) {

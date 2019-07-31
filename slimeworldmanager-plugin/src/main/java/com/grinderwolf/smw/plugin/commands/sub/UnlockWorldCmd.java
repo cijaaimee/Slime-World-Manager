@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class UnlockWorldCmd implements Subcommand {
 
-    private final String usage = "manualunlock <world> [data-source]";
+    private final String usage = "unlock <world> [data-source]";
     private final String description = "Unlock a world manually.";
     private final String permission = "smw.unlockworld";
 

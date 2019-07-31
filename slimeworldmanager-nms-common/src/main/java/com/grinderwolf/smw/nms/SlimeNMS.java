@@ -7,4 +7,5 @@ public interface SlimeNMS {
 
     public void generateWorld(SlimeWorld world);
     public SlimeWorld getSlimeWorld(World world);
+    public boolean isV1_13WorldFormat();
 }

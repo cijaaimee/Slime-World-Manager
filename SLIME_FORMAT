@@ -1,0 +1,70 @@
+-------------------------------------
+“Slime” file format
+2 bytes - magic = 0xB10B
+1 byte (ubyte) - version, current = 0x04
+1 byte (boolean) - world mc version is 1.13 or newer
+2 bytes (short) - xPos of chunk lowest x & lowest z
+2 bytes (short) - zPos
+2 bytes (ushort) - width
+2 bytes (ushort) - depth
+[depends] - chunk bitmask
+  -> each chunk is 1 bit: 0 if all air (missing), 1 if present
+  -> chunks are ordered zx, meaning
+  -> the last byte has unused bits on the right
+  -> size is ceil((width*depth) / 8) bytes
+
+4 bytes (int) - compressed chunks size
+4 bytes (int) - uncompressed chunks size
+  <array of chunks> (size determined from bitmask)
+  compressed using zstd
+
+4 bytes (int) - compressed tile entities size
+4 bytes (int) - uncompressed tile entities size
+  <array of tile entity nbt compounds>
+    Same format as mc
+    inside an nbt list named “tiles”, in a global compound, no gzip anywhere
+    compressed using zstd
+
+1 byte (boolean) - has entities
+[if has entities]
+  4 bytes (int) compressed entities size
+  4 bytes (int) uncompressed entities size
+  <array of entity nbt compounds>
+    Same format as mc EXCEPT optional “CustomId”
+    inside an nbt list named “entities”, in a global compound
+    Compressed using zstd
+
+4 bytes (int) - compressed “extra” size
+4 bytes (int) - uncompressed “extra” size
+[depends] - compound tag compressed using zstd
+-------------------------------------
+
+Custom chunk format
+[if world mc version is 1.13 or newer]
+  4 bytes (int) - heightmaps size
+  <array of heightmap nbt compounds>
+    same format as mc, uncompressed
+    256 ints - biomes
+[else]
+  256 ints - heightmap
+  256 bytes - biomes
+2 bytes - sections bitmask (bottom to top)
+  2048 bytes - block light
+  [if world mc version is 1.13 or newer]
+    4 bytes (int) - block palette array size
+    <array of block palette nbt compounds>
+      same format as mc, without being inside a global compound
+    4 bytes (int) - block state array size
+    <array of block states (longs)>
+  [else]
+    4096 bytes - blocks
+    2048 bytes - data
+  2048 bytes - skylight
+  For each section
+
+-------------------------------------
+Version history:
+ - v1: Initial release.
+ - v2: Added "extra" nbt tag for per-world custom data.
+ - v3: Added entities storage.
+ - v4: Added support for 1.13 worlds and removed HypixelBlocks3.

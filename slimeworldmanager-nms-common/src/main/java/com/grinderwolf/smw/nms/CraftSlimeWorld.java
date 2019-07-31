@@ -39,6 +39,7 @@ public class CraftSlimeWorld implements SlimeWorld {
     private final String name;
     private final Map<Long, SlimeChunk> chunks;
     private final CompoundTag extraData;
+    private final boolean v1_13;
 
     @Setter
     private SlimeProperties properties;
@@ -84,6 +85,9 @@ public class CraftSlimeWorld implements SlimeWorld {
             outStream.write(SlimeFormat.SLIME_HEADER);
             outStream.write(SlimeFormat.SLIME_VERSION);
 
+            // v1.13 world
+            outStream.writeBoolean(v1_13);
+
             // Lowest chunk coordinates
             int minX = sortedChunks.stream().mapToInt(SlimeChunk::getX).min().getAsInt();
             int minZ = sortedChunks.stream().mapToInt(SlimeChunk::getZ).min().getAsInt();
@@ -113,7 +117,7 @@ public class CraftSlimeWorld implements SlimeWorld {
             writeBitSetAsBytes(outStream, chunkBitset, chunkMaskSize);
 
             // Chunks
-            byte[] chunkData = serializeChunks(sortedChunks);
+            byte[] chunkData = serializeChunks(sortedChunks, v1_13);
             byte[] compressedChunkData = Zstd.compress(chunkData);
 
             outStream.writeInt(compressedChunkData.length);
@@ -172,21 +176,29 @@ public class CraftSlimeWorld implements SlimeWorld {
         }
     }
 
-    private static byte[] serializeChunks(List<SlimeChunk> chunks) throws IOException {
+    private static byte[] serializeChunks(List<SlimeChunk> chunks, boolean v1_13World) throws IOException {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream(16384);
         DataOutputStream outStream = new DataOutputStream(outByteStream);
 
         for (SlimeChunk chunk : chunks) {
             // Height Maps
-            byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
-            outStream.writeInt(heightMaps.length);
-            outStream.write(heightMaps);
+            if (v1_13World) {
+                byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
+                outStream.writeInt(heightMaps.length);
+                outStream.write(heightMaps);
+            } else {
+                int[] heightMap = chunk.getHeightMaps().getIntArrayValue("heightMap").get();
+
+                for (int i = 0; i < 256; i++) {
+                    outStream.writeInt(heightMap[i]);
+                }
+            }
 
             // Biomes
             int[] biomes = chunk.getBiomes();
 
-            for (int i = 0; i < biomes.length; i++) {
-                outStream.writeInt(biomes[i]);
+            for (int biome : biomes) {
+                outStream.writeInt(biome);
             }
 
             // Chunk sections
@@ -205,9 +217,6 @@ public class CraftSlimeWorld implements SlimeWorld {
                 }
 
                 outStream.write(section.getBlockLight().getBacking());
-
-                boolean v1_13World = section.getBlocks() == null;
-                outStream.writeBoolean(v1_13World);
 
                 if (v1_13World) {
                     // Palette
@@ -235,7 +244,6 @@ public class CraftSlimeWorld implements SlimeWorld {
                 }
 
                 outStream.write(section.getSkyLight().getBacking());
-                outStream.writeShort(0); // HypixelBlocks 3
             }
         }
 

@@ -97,11 +97,24 @@ public class SMWImporter {
                 }
             }
 
+            boolean v1_13World = false;
+
+            mainLoop:
+            for (SlimeChunk chunk : chunks) {
+                for (SlimeChunkSection section : chunk.getSections()) {
+                    if (section != null) {
+                        v1_13World = section.getBlocks() == null;
+
+                        break mainLoop;
+                    }
+                }
+            }
+
             System.out.println("World " + worldDir.getName() + " contains " + chunks.size() + " chunks.");
 
             try {
                 long start = System.currentTimeMillis();
-                byte[] slimeFormattedWorld = generateSlimeWorld(chunks);
+                byte[] slimeFormattedWorld = generateSlimeWorld(chunks, v1_13World);
 
                 System.out.println(Chalk.on("World " + worldDir.getName() + " successfully serialized to the Slime Format in "
                         + (System.currentTimeMillis() - start) + "ms!").green());
@@ -181,7 +194,6 @@ public class SMWImporter {
 
         if (status.isPresent() && !status.get().equals("postprocessed") && !status.get().equals("fullchunk")) {
             // It's a protochunk
-            System.out.println(status.get());
             return null;
         }
 
@@ -278,7 +290,7 @@ public class SMWImporter {
         return true;
     }
 
-    private static byte[] generateSlimeWorld(List<SlimeChunk> chunks) {
+    private static byte[] generateSlimeWorld(List<SlimeChunk> chunks, boolean v1_13World) {
         List<SlimeChunk> sortedChunks = new ArrayList<>(chunks);
         sortedChunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
 
@@ -289,6 +301,9 @@ public class SMWImporter {
             // File Header and Slime version
             outStream.write(SlimeFormat.SLIME_HEADER);
             outStream.write(SlimeFormat.SLIME_VERSION);
+
+            // v1.13 world
+            outStream.writeBoolean(v1_13World);
 
             // Lowest chunk coordinates
             int minX = sortedChunks.stream().mapToInt(SlimeChunk::getX).min().getAsInt();
@@ -319,7 +334,7 @@ public class SMWImporter {
             writeBitSetAsBytes(outStream, chunkBitset, chunkMaskSize);
 
             // Chunks
-            byte[] chunkData = serializeChunks(sortedChunks);
+            byte[] chunkData = serializeChunks(sortedChunks, v1_13World);
             byte[] compressedChunkData = Zstd.compress(chunkData);
 
             outStream.writeInt(compressedChunkData.length);
@@ -374,21 +389,29 @@ public class SMWImporter {
         }
     }
 
-    private static byte[] serializeChunks(List<SlimeChunk> chunks) throws IOException {
+    private static byte[] serializeChunks(List<SlimeChunk> chunks, boolean v1_13World) throws IOException {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream(16384);
         DataOutputStream outStream = new DataOutputStream(outByteStream);
 
         for (SlimeChunk chunk : chunks) {
             // Height Maps
-            byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
-            outStream.writeInt(heightMaps.length);
-            outStream.write(heightMaps);
+            if (v1_13World) {
+                byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
+                outStream.writeInt(heightMaps.length);
+                outStream.write(heightMaps);
+            } else {
+                int[] heightMap = chunk.getHeightMaps().getIntArrayValue("heightMap").get();
+
+                for (int i = 0; i < 256; i++) {
+                    outStream.writeInt(heightMap[i]);
+                }
+            }
 
             // Biomes
             int[] biomes = chunk.getBiomes();
 
-            for (int i = 0; i < biomes.length; i++) {
-                outStream.writeInt(biomes[i]);
+            for (int biome : biomes) {
+                outStream.writeInt(biome);
             }
 
             // Chunk sections
@@ -407,9 +430,6 @@ public class SMWImporter {
                 }
 
                 outStream.write(section.getBlockLight().getBacking());
-
-                boolean v1_13World = section.getBlocks() == null;
-                outStream.writeBoolean(v1_13World);
 
                 if (v1_13World) {
                     // Palette
@@ -437,7 +457,6 @@ public class SMWImporter {
                 }
 
                 outStream.write(section.getSkyLight().getBacking());
-                outStream.writeShort(0); // HypixelBlocks 3
             }
         }
 
