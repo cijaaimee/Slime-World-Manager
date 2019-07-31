@@ -27,11 +27,10 @@ This tool is also inside this repository, so you can check out its source code i
 
 ## Which Spigot versions is this compatible with?
 
-Currently, SMW can run on any Spigot version from 1.8.8 up to 1.13.
+Currently, SMW can run on any Spigot version from 1.8.8 up to 1.13.2.
 
 Possible future versions:
 * 1.13.2
-* 1.14.4
 
 ## How can I help?
 
