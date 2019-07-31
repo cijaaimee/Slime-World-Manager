@@ -124,7 +124,7 @@ public class Converter {
                 return new ListTag(name, TagType.getById(originalList.d()), list);
             case 10:
                 NBTTagCompound originalCompound = ((NBTTagCompound) base);
-                CompoundTag compound = new CompoundTag("", new CompoundMap());
+                CompoundTag compound = new CompoundTag(name, new CompoundMap());
 
                 for (String key : originalCompound.getKeys()) {
                     compound.getValue().put(key, convertTag(key, originalCompound.get(key)));
