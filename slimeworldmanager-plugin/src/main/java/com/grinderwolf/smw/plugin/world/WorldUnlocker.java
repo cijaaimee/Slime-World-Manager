@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
 import java.io.IOException;
@@ -29,5 +30,10 @@ public class WorldUnlocker implements Listener {
 
             });
         }
+    }
+
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent event) {
+        System.out.println(event.getWorld().getName() + " - " + event.getChunk().getX() + " - " + event.getChunk().getZ());
     }
 }

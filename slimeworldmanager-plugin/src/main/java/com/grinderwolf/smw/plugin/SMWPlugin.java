@@ -16,7 +16,6 @@ import com.grinderwolf.smw.nms.v1_11_R1.v1_11_R1SlimeNMS;
 import com.grinderwolf.smw.nms.v1_12_R1.v1_12_R1SlimeNMS;
 import com.grinderwolf.smw.nms.v1_13_R1.v1_13_R1SlimeNMS;
 import com.grinderwolf.smw.nms.v1_13_R2.v1_13_R2SlimeNMS;
-import com.grinderwolf.smw.nms.v1_14_R1.v1_14_R1SlimeNMS;
 import com.grinderwolf.smw.nms.v1_8_R3.v1_8_R3SlimeNMS;
 import com.grinderwolf.smw.nms.v1_9_R1.v1_9_R1SlimeNMS;
 import com.grinderwolf.smw.nms.v1_9_R2.v1_9_R2SlimeNMS;
@@ -101,8 +100,6 @@ public class SMWPlugin extends JavaPlugin implements SlimePlugin {
                 return new v1_13_R1SlimeNMS();
             case "v1_13_R2":
                 return new v1_13_R2SlimeNMS();
-            case "v1_14_R1":
-                return new v1_14_R1SlimeNMS();
             default:
                 throw new InvalidVersionException(nmsVersion);
         }

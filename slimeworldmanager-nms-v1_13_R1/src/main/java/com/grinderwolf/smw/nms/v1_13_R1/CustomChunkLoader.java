@@ -202,34 +202,28 @@ public class CustomChunkLoader implements IChunkLoader {
     }
 
     private Entity loadEntity(CompoundTag tag, World world, Chunk chunk) {
-        try {
-            Entity entity = EntityTypes.a((NBTTagCompound) Converter.convertTag(tag), world);
-            chunk.f(true);
+        Entity entity = EntityTypes.a((NBTTagCompound) Converter.convertTag(tag), world);
+        chunk.f(true);
 
-            if (entity != null) {
-                chunk.a(entity);
+        if (entity != null) {
+            chunk.a(entity);
 
-                CompoundMap map = tag.getValue();
+            CompoundMap map = tag.getValue();
 
-                if (map.containsKey("Passengers")) {
-                    List<CompoundTag> passengersList = (List<CompoundTag>) map.get("Passengers").getValue();
+            if (map.containsKey("Passengers")) {
+                List<CompoundTag> passengersList = (List<CompoundTag>) map.get("Passengers").getValue();
 
-                    for (CompoundTag passengerTag : passengersList) {
-                        Entity passenger = loadEntity(passengerTag, world, chunk);
+                for (CompoundTag passengerTag : passengersList) {
+                    Entity passenger = loadEntity(passengerTag, world, chunk);
 
-                        if (passengerTag != null) {
-                            passenger.a(entity, true);
-                        }
+                    if (passengerTag != null) {
+                        passenger.a(entity, true);
                     }
                 }
             }
-
-            return entity;
-        } catch (RuntimeException ex) {
-            System.out.println(tag.toString());
-
-            throw ex;
         }
+
+        return entity;
     }
 
     @Override

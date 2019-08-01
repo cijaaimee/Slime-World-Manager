@@ -29,8 +29,8 @@ This tool is also inside this repository, so you can check out its source code i
 
 Currently, SMW can run on any Spigot version from 1.8.8 up to 1.13.2.
 
-Possible future versions:
-* 1.13.2
+### Why not Spigot 1.14?
+Minecraft changed a lot of stuff related to world loading from v1.13 to 1.14. Due to this, creating an adapter for spigot 1.14 becomes a incredibly hard task.
 
 ## How can I help?
 
