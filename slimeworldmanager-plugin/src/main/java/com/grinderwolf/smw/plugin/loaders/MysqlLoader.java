@@ -99,25 +99,36 @@ public class MysqlLoader implements SlimeLoader {
     }
 
     @Override
-    public void saveWorld(String worldName, byte[] serializedWorld) throws IOException {
+    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException {
         try (Connection con = source.getConnection();
              PreparedStatement statement = con.prepareStatement(UPDATE_WORLD_QUERY)) {
             statement.setString(1, worldName);
             statement.setBytes(2, serializedWorld);
             statement.setBytes(3, serializedWorld);
             statement.executeUpdate();
+
+            if (lock) {
+                try (PreparedStatement updateStatement = con.prepareStatement(UPDATE_LOCK_QUERY)) {
+                    updateStatement.setBoolean(1, true);
+                    updateStatement.setString(2, worldName);
+                    updateStatement.executeUpdate();
+                }
+            }
         } catch (SQLException ex) {
             throw new IOException(ex);
         }
     }
 
     @Override
-    public void unlockWorld(String worldName) throws IOException {
+    public void unlockWorld(String worldName) throws IOException, UnknownWorldException {
         try (Connection con = source.getConnection();
              PreparedStatement statement = con.prepareStatement(UPDATE_LOCK_QUERY)) {
             statement.setBoolean(1, false);
             statement.setString(2, worldName);
-            statement.executeUpdate();
+
+            if (statement.executeUpdate() == 0) {
+                throw new UnknownWorldException(worldName);
+            }
         } catch (SQLException ex) {
             throw new IOException(ex);
         }

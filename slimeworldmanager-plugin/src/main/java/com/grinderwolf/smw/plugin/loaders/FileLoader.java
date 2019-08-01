@@ -56,7 +56,7 @@ public class FileLoader implements SlimeLoader {
     }
 
     @Override
-    public void saveWorld(String worldName, byte[] serializedWorld) throws IOException {
+    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException {
         File lastBackup = new File(WORLD_DIR, worldName + ".slime_old");
 
         if (lastBackup.exists()) {
@@ -75,23 +75,28 @@ public class FileLoader implements SlimeLoader {
             lastBackup.delete();
         }
 
-        // Make sure the lock file is there
-        File lockFile = new File(WORLD_DIR, worldName + ".slime_lock");
+        if (lock) {
+            // Make sure the lock file is there
+            File lockFile = new File(WORLD_DIR, worldName + ".slime_lock");
 
-        if (!lockFile.exists()) {
-            lockFile.createNewFile();
+            if (!lockFile.exists()) {
+                lockFile.createNewFile();
 
-            try (FileOutputStream fileStream = new FileOutputStream(lockFile);
-                 DataOutputStream dataStream = new DataOutputStream(fileStream)) {
-                dataStream.writeLong(System.currentTimeMillis());
+                try (FileOutputStream fileStream = new FileOutputStream(lockFile);
+                     DataOutputStream dataStream = new DataOutputStream(fileStream)) {
+                    dataStream.writeLong(System.currentTimeMillis());
+                }
             }
         }
     }
 
     @Override
-    public void unlockWorld(String worldName) {
-        File lockFile = new File(WORLD_DIR, worldName + ".slime_lock");
+    public void unlockWorld(String worldName) throws UnknownWorldException {
+        if (!worldExists(worldName)) {
+            throw new UnknownWorldException(worldName);
+        }
 
+        File lockFile = new File(WORLD_DIR, worldName + ".slime_lock");
         lockFile.delete();
     }
 

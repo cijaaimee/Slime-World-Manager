@@ -15,6 +15,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -89,7 +90,7 @@ public class MongoLoader implements SlimeLoader {
     }
 
     @Override
-    public void saveWorld(String worldName, byte[] serializedWorld) throws IOException {
+    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException {
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection + "_files");
@@ -101,12 +102,14 @@ public class MongoLoader implements SlimeLoader {
 
             bucket.uploadFromStream(worldName, new ByteArrayInputStream(serializedWorld));
 
-            // Make sure the world is locked
-            MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
-            Document worldDoc = mongoCollection.find(Filters.eq("name", worldName)).first();
+            if (lock) {
+                // Make sure the world is locked
+                MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
+                Document worldDoc = mongoCollection.find(Filters.eq("name", worldName)).first();
 
-            if (worldDoc == null) {
-                mongoCollection.insertOne(new Document().append("name", worldName).append("locked", true));
+                if (worldDoc == null) {
+                    mongoCollection.insertOne(new Document().append("name", worldName).append("locked", true));
+                }
             }
         } catch (MongoException ex) {
             throw new IOException(ex);
@@ -114,11 +117,15 @@ public class MongoLoader implements SlimeLoader {
     }
 
     @Override
-    public void unlockWorld(String worldName) throws IOException {
+    public void unlockWorld(String worldName) throws IOException, UnknownWorldException {
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
-            mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", false));
+            UpdateResult result = mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", false));
+
+            if (result.getMatchedCount() == 0) {
+                throw new UnknownWorldException(worldName);
+            }
         } catch (MongoException ex) {
             throw new IOException(ex);
         }

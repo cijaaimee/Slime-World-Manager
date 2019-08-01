@@ -216,8 +216,15 @@ public class CraftSlimeWorld implements SlimeWorld {
                     continue;
                 }
 
-                outStream.write(section.getBlockLight().getBacking());
+                // Block Light
+                boolean hasBlockLight = section.getBlockLight() != null;
+                outStream.writeBoolean(hasBlockLight);
 
+                if (hasBlockLight) {
+                    outStream.write(section.getBlockLight().getBacking());
+                }
+
+                // Block Data
                 if (v1_13World) {
                     // Palette
                     List<CompoundTag> palette = section.getPalette().getValue();
@@ -243,7 +250,13 @@ public class CraftSlimeWorld implements SlimeWorld {
                     outStream.write(section.getData().getBacking());
                 }
 
-                outStream.write(section.getSkyLight().getBacking());
+                // Sky Light
+                boolean hasSkyLight = section.getSkyLight() != null;
+                outStream.writeBoolean(hasSkyLight);
+
+                if (hasSkyLight) {
+                    outStream.write(section.getSkyLight().getBacking());
+                }
             }
         }
 

@@ -156,7 +156,7 @@ public class SMWImporter {
             }
         }
 
-        List<SlimeChunk> loadedChunks = chunks.parallelStream().map((entry) -> {
+        List<SlimeChunk> loadedChunks = chunks.stream().map((entry) -> {
 
             try {
                 DataInputStream headerStream = new DataInputStream(new ByteArrayInputStream(regionByteArray, entry.getOffset(), entry.getPaddedSize()));
@@ -192,7 +192,7 @@ public class SMWImporter {
         int chunkZ = compound.getAsIntTag("zPos").get().getValue();
         Optional<String> status = compound.getStringValue("Status");
 
-        if (status.isPresent() && !status.get().equals("postprocessed") && !status.get().equals("fullchunk")) {
+        if (status.isPresent() && !status.get().equals("postprocessed") && !status.get().startsWith("full")) {
             // It's a protochunk
             return null;
         }
@@ -230,6 +230,13 @@ public class SMWImporter {
         SlimeChunkSection[] sectionArray = new SlimeChunkSection[16];
 
         for (CompoundTag sectionTag : sectionsTag.getValue()) {
+            int index = sectionTag.getByteValue("Y").get();
+
+            if (index < 0) {
+                // For some reason MC 1.14 worlds contain an empty section with Y = -1.
+                continue;
+            }
+
             byte[] blocks = sectionTag.getByteArrayValue("Blocks").orElse(null);
             NibbleArray dataArray;
             ListTag<CompoundTag> paletteTag;
@@ -252,10 +259,8 @@ public class SMWImporter {
                 blockStatesArray = sectionTag.getLongArrayValue("BlockStates").get();
             }
 
-            NibbleArray blockLightArray = new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get());
-            NibbleArray skyLightArray = new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get());
-
-            int index = sectionTag.getByteValue("Y").get();
+            NibbleArray blockLightArray= sectionTag.getValue().containsKey("BlockLight") ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get()) : null;
+            NibbleArray skyLightArray = sectionTag.getValue().containsKey("SkyLight") ? new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get()) : null;
 
             sectionArray[index] = new CraftSlimeChunkSection(blocks, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
         }
@@ -429,8 +434,15 @@ public class SMWImporter {
                     continue;
                 }
 
-                outStream.write(section.getBlockLight().getBacking());
+                // Block Light
+                boolean hasBlockLight = section.getBlockLight() != null;
+                outStream.writeBoolean(hasBlockLight);
 
+                if (hasBlockLight) {
+                    outStream.write(section.getBlockLight().getBacking());
+                }
+
+                // Block Data
                 if (v1_13World) {
                     // Palette
                     List<CompoundTag> palette = section.getPalette().getValue();
@@ -456,7 +468,13 @@ public class SMWImporter {
                     outStream.write(section.getData().getBacking());
                 }
 
-                outStream.write(section.getSkyLight().getBacking());
+                // Sky Light
+                boolean hasSkyLight = section.getSkyLight() != null;
+                outStream.writeBoolean(hasSkyLight);
+
+                if (hasSkyLight) {
+                    outStream.write(section.getSkyLight().getBacking());
+                }
             }
         }
 

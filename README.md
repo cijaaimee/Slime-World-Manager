@@ -29,8 +29,10 @@ This tool is also inside this repository, so you can check out its source code i
 
 Currently, SMW can run on any Spigot version from 1.8.8 up to 1.13.2.
 
-### Why not Spigot 1.14?
-Minecraft changed a lot of stuff related to world loading from v1.13 to 1.14. Due to this, creating an adapter for spigot 1.14 becomes a incredibly hard task.
+### Important note for Spigot 1.14
+Minecraft changed a lot of stuff related to world loading from v1.13 to 1.14. Due to this, creating an adapter for spigot 1.14 involved some tricky java stuff.
+
+To use SMW on Spigot 1.14, there's an extra step prior to starting your server. After installing the plugin, drop the 'slimeworldmanager-crlfixer-<version>.jar' file inside the server's root directory. Then, edit your server startup script and add this as a parameter before the ```-jar <server-jar>.jar``` part: ```-javaagent:slimeworldmanager-crlfixer-1.0-SNAPSHOT.jar```
 
 ## How can I help?
 

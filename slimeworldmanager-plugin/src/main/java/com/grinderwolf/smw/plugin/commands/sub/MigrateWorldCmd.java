@@ -121,11 +121,7 @@ public class MigrateWorldCmd implements Subcommand {
                     try {
                         long start = System.currentTimeMillis();
                         byte[] serializedWorld = oldLoader.loadWorld(worldName, false);
-                        newLoader.saveWorld(worldName, serializedWorld);
-
-                        if (!leaveLock) { // World will be automatically locked. We have to unlock it afterwards
-                            newLoader.unlockWorld(worldName);
-                        }
+                        newLoader.saveWorld(worldName, serializedWorld, leaveLock);
 
                         oldLoader.deleteWorld(worldName);
 
@@ -146,6 +142,8 @@ public class MigrateWorldCmd implements Subcommand {
 
                     Logging.error("Failed to load world " + worldName + " (using data source " + oldLoaderString + "):");
                     ex.printStackTrace();
+                } catch (UnknownWorldException ignored) {
+
                 } finally {
                     CommandManager.getInstance().getWorldsInUse().remove(worldName);
                 }

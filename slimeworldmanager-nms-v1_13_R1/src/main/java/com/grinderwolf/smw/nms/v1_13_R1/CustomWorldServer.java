@@ -1,6 +1,7 @@
 package com.grinderwolf.smw.nms.v1_13_R1;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.grinderwolf.smw.api.exceptions.UnknownWorldException;
 import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import lombok.Getter;
@@ -60,6 +61,8 @@ public class CustomWorldServer extends WorldServer {
                     LOGGER.error("Failed to unlock the world " + slimeWorld.getName() + ". Please unlock it manually by using the command /smw manualunlock. Stack trace:");
 
                     ex.printStackTrace();
+                } catch (UnknownWorldException ignored) {
+
                 }
             } else {
                 WORLD_SAVER_SERVICE.execute(this::save);
@@ -73,7 +76,7 @@ public class CustomWorldServer extends WorldServer {
                 LOGGER.info("Saving slimeWorld " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
                 byte[] serializedWorld = slimeWorld.serialize();
-                slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld);
+                slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
                 LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();

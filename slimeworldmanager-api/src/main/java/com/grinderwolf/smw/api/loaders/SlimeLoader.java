@@ -46,19 +46,21 @@ public interface SlimeLoader {
      *
      * @param worldName The name of the world.
      * @param serializedWorld The world's data file, contained inside a byte array.
+     * @param lock Whether or not the world should be relocked.
      *
      * @throws IOException if the world could not be saved.
      */
-    public void saveWorld(String worldName, byte[] serializedWorld) throws IOException;
+    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException;
 
     /**
-     * Manually unlocks a world.
+     * Unlocks a world.
      *
      * @param worldName The name of the world.
      *
-     * @throws IOException if the world could not be unlocked.
+     * @throws UnknownWorldException if the world could not be found.
+     * @throws IOException if the world could not be locked/unlocked.
      */
-    public void unlockWorld(String worldName) throws IOException;
+    public void unlockWorld(String worldName) throws UnknownWorldException, IOException;
 
     /**
      * Checks whether or not a world is locked.

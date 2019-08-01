@@ -324,9 +324,15 @@ public class LoaderUtils {
         for (int i = 0; i < 16; i++) {
             if (sectionBitset.get(i)) {
                 // Block Light Nibble Array
-                byte[] blockLightByteArray = new byte[2048];
-                dataStream.read(blockLightByteArray);
-                NibbleArray blockLightArray = new NibbleArray((blockLightByteArray));
+                NibbleArray blockLightArray;
+
+                if (version < 5 || dataStream.readBoolean()) {
+                    byte[] blockLightByteArray = new byte[2048];
+                    dataStream.read(blockLightByteArray);
+                    blockLightArray = new NibbleArray((blockLightByteArray));
+                } else {
+                    blockLightArray = null;
+                }
 
                 // Block data
                 byte[] blockArray;
@@ -374,9 +380,15 @@ public class LoaderUtils {
                 }
 
                 // Sky Light Nibble Array
-                byte[] skyLightByteArray = new byte[2048];
-                dataStream.read(skyLightByteArray);
-                NibbleArray skyLightArray = new NibbleArray((skyLightByteArray));
+                NibbleArray skyLightArray;
+
+                if (version < 5 || dataStream.readBoolean()) {
+                    byte[] skyLightByteArray = new byte[2048];
+                    dataStream.read(skyLightByteArray);
+                    skyLightArray = new NibbleArray((skyLightByteArray));
+                } else {
+                    skyLightArray = null;
+                }
 
                 // HypixelBlocks 3
                 if (version < 4) {
