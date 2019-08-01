@@ -42,7 +42,7 @@ public class CustomChunkLoader implements ChunkLoader {
     public Chunk getChunk(WorldServer world, int x, int z) {
         SlimeWorld slimeWorld = ((CustomWorldServer) world).getSlimeWorld();
 
-        LOGGER.info("Loading chunk (" + x + ", " + z + ") on world " + slimeWorld.getName());
+        LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + slimeWorld.getName());
 
         ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
         SlimeChunk chunk = slimeWorld.getChunk(x, z);
