@@ -1,9 +1,9 @@
 name: SlimeWorldManager
 version: ${project.version}
-main: com.grinderwolf.smw.plugin.SMWPlugin
+main: com.grinderwolf.swm.plugin.SWMPlugin
 author: Grinderwolf
 description: Slime World Manager is a resource that implements the Slime Region Format, designed by the Hypixel Team to load and save worlds more efficiently.
 commands:
-  smw:
-    description: Main SMW command.
-    usage: /smw <cmd>
+  swm:
+    description: Main SWM command.
+    usage: /swm <cmd>

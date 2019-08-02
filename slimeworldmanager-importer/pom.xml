@@ -50,7 +50,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>com.grinderwolf.smw.importer.SMWImporter</Main-Class>
+                            <Main-Class>com.grinderwolf.swm.importer.SWMImporter</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>

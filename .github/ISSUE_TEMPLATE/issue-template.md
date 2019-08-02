@@ -1,6 +1,6 @@
 ---
 name: Issue template
-about: SMW issue template.
+about: SWM issue template.
 title: ''
 labels: ''
 assignees: ''

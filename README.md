@@ -1,5 +1,5 @@
 # Slime World Manager
-Slime World Manager, or SMW, is a Minecraft plugin that implements the Slime Region Format, developed by the Hypixel Dev Team. Its goal is to provide server administrators with an easy-to-use tool to save space on their servers, for free.
+Slime World Manager, or SWM, is a Minecraft plugin that implements the Slime Region Format, developed by the Hypixel Dev Team. Its goal is to provide server administrators with an easy-to-use tool to save space on their servers, for free.
 
 ## What's wrong with Minecraft worlds?
 
@@ -9,7 +9,7 @@ Minecraft stores worlds using the Anvil Region Format. This standard is just fin
 
 ## How does this plugin work?
 
-SMW is capable of loading worlds from various sources:
+SWM is capable of loading worlds from various sources:
 * File System. 
 * MySQL.
 * MongoDB.
@@ -17,7 +17,7 @@ SMW is capable of loading worlds from various sources:
 
 Even though you could technically load the same world on various different servers at the same time, this could lead to some issues if read-only is not enabled.
 
-Once retrieved, every chunk is loaded and kept in memory, so SMW doesn't have to load the world again. For this reason, even though there are no hardcoded limitations for world size, the usage of this plugin for large worlds is disacouraged. The Slime Format is meant for small worlds, like lobbies or minigame maps, not for survival servers.
+Once retrieved, every chunk is loaded and kept in memory, so SWM doesn't have to load the world again. For this reason, even though there are no hardcoded limitations for world size, the usage of this plugin for large worlds is disacouraged. The Slime Format is meant for small worlds, like lobbies or minigame maps, not for survival servers.
 
 ## How to convert Minecraft worlds to the Slime Format
 
@@ -27,12 +27,12 @@ This tool is also inside this repository, so you can check out its source code i
 
 ## Which Spigot versions is this compatible with?
 
-Currently, SMW can run on any Spigot version from 1.8.8 up to 1.14.4.
+Currently, SWM can run on any Spigot version from 1.8.8 up to 1.14.4.
 
 ### Important note for Spigot 1.14
 Minecraft changed a lot of stuff related to world loading from v1.13 to 1.14. Due to this, creating an adapter for spigot 1.14 involved some tricky java stuff.
 
-To use SMW on Spigot 1.14, there's an extra step prior to starting your server. After installing the plugin, drop the 'slimeworldmanager-crlfixer-<version>.jar' file inside the server's root directory. Then, edit your server startup script and add this as a parameter before the ```-jar <server-jar>.jar``` part: ```-javaagent:slimeworldmanager-crlfixer-1.0-SNAPSHOT.jar```
+To use SWM on Spigot 1.14, there's an extra step prior to starting your server. After installing the plugin, drop the 'slimeworldmanager-crlfixer-<version>.jar' file inside the server's root directory. Then, edit your server startup script and add this as a parameter before the ```-jar <server-jar>.jar``` part: ```-javaagent:slimeworldmanager-crlfixer-1.0-SNAPSHOT.jar```
 
 ## How can I help?
 
