@@ -52,7 +52,7 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
         DimensionManager actualDimension = DimensionManager.a(0);
         DimensionManager dimensionManager = DimensionManager.register(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
                 actualDimension.folder, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension));
-        WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager, MinecraftServer.getServer().worldLoadListenerFactory.create(11));
+        WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager);
 
         mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings(dataManager.getWorldData()));
 

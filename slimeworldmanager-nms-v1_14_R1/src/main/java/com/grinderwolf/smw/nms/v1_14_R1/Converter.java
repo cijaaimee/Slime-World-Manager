@@ -55,6 +55,10 @@ public class Converter {
     }
 
     public static NibbleArray convertArray(net.minecraft.server.v1_14_R1.NibbleArray array) {
+        if (array == null) {
+            return null;
+        }
+
         return new NibbleArray(array.asBytes());
     }
 

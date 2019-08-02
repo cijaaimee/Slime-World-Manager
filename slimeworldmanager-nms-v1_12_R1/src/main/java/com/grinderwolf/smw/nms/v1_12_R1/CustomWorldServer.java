@@ -79,7 +79,7 @@ public class CustomWorldServer extends WorldServer {
     private void save() {
         synchronized (saveLock) { // Don't want to save the slimeWorld from multiple threads simultaneously
             try {
-                LOGGER.info("Saving slimeWorld " + slimeWorld.getName() + "...");
+                LOGGER.info("Saving world " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);

@@ -8,16 +8,15 @@ import lombok.Getter;
 import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.DimensionManager;
 import net.minecraft.server.v1_14_R1.EnumDifficulty;
-import net.minecraft.server.v1_14_R1.ExceptionWorldConflict;
 import net.minecraft.server.v1_14_R1.IProgressUpdate;
 import net.minecraft.server.v1_14_R1.MinecraftServer;
-import net.minecraft.server.v1_14_R1.WorldLoadListener;
 import net.minecraft.server.v1_14_R1.WorldNBTStorage;
 import net.minecraft.server.v1_14_R1.WorldServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.World;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,7 +31,7 @@ public class CustomWorldServer extends WorldServer {
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
 
-    public CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, DimensionManager dimensionManager, WorldLoadListener listener) {
+    public CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, DimensionManager dimensionManager) {
         super(MinecraftServer.getServer(), MinecraftServer.getServer().executorService, nbtStorage, nbtStorage.getWorldData(),
                 dimensionManager, MinecraftServer.getServer().getMethodProfiler(), MinecraftServer.getServer().worldLoadListenerFactory.create(11), World.Environment.NORMAL, null);
 
@@ -44,30 +43,35 @@ public class CustomWorldServer extends WorldServer {
         worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
         MinecraftServer.getServer().worldServer.put(dimensionManager, this);
+
+        new File(nbtStorage.getDirectory(), "session.lock").delete();
+        new File(nbtStorage.getDirectory(), "data").delete();
+
+        nbtStorage.getDirectory().delete();
+        nbtStorage.getDirectory().getParentFile().delete();
     }
 
     @Override
-    public void save(IProgressUpdate progressUpdate, boolean forceSave, boolean flag1) throws ExceptionWorldConflict {
+    public void save(IProgressUpdate progressUpdate, boolean forceSave, boolean flag1) {
         if (!slimeWorld.getProperties().isReadOnly()) {
-            if (!flag1) { // Don't know what this is at all, but the original method only saves the world when this is false
-                org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
+            org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
+            this.getChunkProvider().save(forceSave);
 
-                if (MinecraftServer.getServer().isStopped()) { // Make sure the slimeWorld gets saved before stopping the server by running it from the main thread
-                    save();
+            if (MinecraftServer.getServer().isStopped()) { // Make sure the slimeWorld gets saved before stopping the server by running it from the main thread
+                save();
 
-                    // Have to manually unlock the world as well
-                    try {
-                        slimeWorld.getLoader().unlockWorld(slimeWorld.getName());
-                    } catch (IOException ex) {
-                        LOGGER.error("Failed to unlock the world " + slimeWorld.getName() + ". Please unlock it manually by using the command /smw manualunlock. Stack trace:");
+                // Have to manually unlock the world as well
+                try {
+                    slimeWorld.getLoader().unlockWorld(slimeWorld.getName());
+                } catch (IOException ex) {
+                    LOGGER.error("Failed to unlock the world " + slimeWorld.getName() + ". Please unlock it manually by using the command /smw manualunlock. Stack trace:");
 
-                        ex.printStackTrace();
-                    } catch (UnknownWorldException ignored) {
+                    ex.printStackTrace();
+                } catch (UnknownWorldException ignored) {
 
-                    }
-                } else {
-                    WORLD_SAVER_SERVICE.execute(this::save);
                 }
+            } else {
+                WORLD_SAVER_SERVICE.execute(this::save);
             }
         }
     }
@@ -75,7 +79,7 @@ public class CustomWorldServer extends WorldServer {
     private void save() {
         synchronized (saveLock) { // Don't want to save the slimeWorld from multiple threads simultaneously
             try {
-                LOGGER.info("Saving slimeWorld " + slimeWorld.getName() + "...");
+                LOGGER.info("Saving world " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);

@@ -39,7 +39,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Premain-Class>com.grinderwolf.smw.com.grinderwolf.smw.crlfixer.PlayerChunkMapModifier</Premain-Class>
+                            <Premain-Class>com.grinderwolf.smw.crlfixer.PlayerChunkMapModifier</Premain-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>

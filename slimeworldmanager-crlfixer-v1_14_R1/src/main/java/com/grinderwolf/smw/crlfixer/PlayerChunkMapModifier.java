@@ -28,21 +28,32 @@ public class PlayerChunkMapModifier implements ClassFileTransformer {
                     ClassPool pool = ClassPool.getDefault();
                     pool.appendClassPath(new ByteArrayClassPath(fixedClassName, bytes));
                     CtClass ctClass = pool.get(fixedClassName);
-                    CtMethod[] ctMethods = ctClass.getDeclaredMethods("f");
 
-                    for (CtMethod method : ctMethods) {
+                    // Load chunk
+                    CtMethod[] loadChunkMethods = ctClass.getDeclaredMethods("f");
+
+                    for (CtMethod method : loadChunkMethods) {
                         if (method.getParameterTypes().length == 0) {
                             // There is another f() method which we're not interested in
                             continue;
                         }
 
                         method.insertBefore("{ " +
-                                "    java.util.concurrent.CompletableFuture chunk = com.grinderwolf.smw.CRLFixer.getFutureChunk($0.world, $1.x, $1.z);" +
+                                "    java.util.concurrent.CompletableFuture chunk = com.grinderwolf.smw.crlfixer.CRLFixer.getFutureChunk($0.world, $1.x, $1.z);" +
                                 "    if (chunk != null) { " +
                                 "        return chunk;" +
                                 "    }" +
                                 "}");
                     }
+
+                    // Save chunk
+                    CtMethod saveChunkMethod = ctClass.getDeclaredMethod("saveChunk");
+
+                    saveChunkMethod.insertBefore("{" +
+                            "    if (com.grinderwolf.smw.crlfixer.CRLFixer.saveChunk($0.world, $1)) {" +
+                            "        return false;" +
+                            "    }" +
+                            "}");
 
                     return ctClass.toBytecode();
                 }

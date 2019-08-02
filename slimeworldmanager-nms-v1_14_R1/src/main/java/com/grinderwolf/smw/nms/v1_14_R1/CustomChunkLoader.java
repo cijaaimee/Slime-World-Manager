@@ -7,6 +7,7 @@ import com.grinderwolf.smw.api.world.SlimeChunk;
 import com.grinderwolf.smw.api.world.SlimeChunkSection;
 import com.grinderwolf.smw.api.world.SlimeWorld;
 import com.grinderwolf.smw.crlfixer.ChunkLoader;
+import com.grinderwolf.smw.nms.CraftSlimeWorld;
 import net.minecraft.server.v1_14_R1.BiomeBase;
 import net.minecraft.server.v1_14_R1.Block;
 import net.minecraft.server.v1_14_R1.BlockPosition;
@@ -19,10 +20,12 @@ import net.minecraft.server.v1_14_R1.EnumSkyBlock;
 import net.minecraft.server.v1_14_R1.FluidType;
 import net.minecraft.server.v1_14_R1.FluidTypes;
 import net.minecraft.server.v1_14_R1.HeightMap;
+import net.minecraft.server.v1_14_R1.IChunkAccess;
 import net.minecraft.server.v1_14_R1.IRegistry;
 import net.minecraft.server.v1_14_R1.LightEngine;
 import net.minecraft.server.v1_14_R1.NBTTagCompound;
 import net.minecraft.server.v1_14_R1.NBTTagList;
+import net.minecraft.server.v1_14_R1.ProtoChunkExtension;
 import net.minecraft.server.v1_14_R1.ProtoChunkTickList;
 import net.minecraft.server.v1_14_R1.SectionPosition;
 import net.minecraft.server.v1_14_R1.TileEntity;
@@ -40,6 +43,10 @@ public class CustomChunkLoader implements ChunkLoader {
 
     @Override
     public Chunk getChunk(WorldServer world, int x, int z) {
+        if (!(world instanceof CustomWorldServer)) {
+            return null; // Returning null will just run the original getChunk method
+        }
+
         SlimeWorld slimeWorld = ((CustomWorldServer) world).getSlimeWorld();
 
         LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + slimeWorld.getName());
@@ -186,5 +193,32 @@ public class CustomChunkLoader implements ChunkLoader {
         HeightMap.a(nmsChunk, unsetHeightMaps);
 
         return nmsChunk;
+    }
+
+    @Override
+    public boolean saveChunk(WorldServer world, IChunkAccess chunkAccess) {
+        if (!(world instanceof CustomWorldServer)) {
+            return false; // Returning false will just run the original saveChunk method
+        }
+
+        if (!(chunkAccess instanceof ProtoChunkExtension || chunkAccess instanceof Chunk) || !chunkAccess.isNeedsSaving()) {
+            // We're only storing fully-loaded chunks that need to be saved
+            return true;
+        }
+
+        Chunk chunk;
+
+        if (chunkAccess instanceof ProtoChunkExtension) {
+            chunk = ((ProtoChunkExtension) chunkAccess).u();
+        } else {
+            chunk = (Chunk) chunkAccess;
+        }
+
+        CraftSlimeWorld slimeWorld = ((CustomWorldServer) world).getSlimeWorld();
+        SlimeChunk slimeChunk = Converter.convertChunk(chunk);
+        slimeWorld.updateChunk(slimeChunk);
+        chunk.setNeedsSaving(false);
+
+        return true;
     }
 }

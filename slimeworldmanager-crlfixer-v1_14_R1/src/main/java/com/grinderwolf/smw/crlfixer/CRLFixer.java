@@ -2,6 +2,7 @@ package com.grinderwolf.smw.crlfixer;
 
 import com.mojang.datafixers.util.Either;
 import net.minecraft.server.v1_14_R1.Chunk;
+import net.minecraft.server.v1_14_R1.IChunkAccess;
 import net.minecraft.server.v1_14_R1.ProtoChunkExtension;
 import net.minecraft.server.v1_14_R1.WorldServer;
 
@@ -28,6 +29,10 @@ public class CRLFixer {
 
         Chunk chunk = customLoader.getChunk(world, x, z);
         return chunk != null ? CompletableFuture.supplyAsync(() -> Either.left(new ProtoChunkExtension(chunk))) : null;
+    }
+
+    public static boolean saveChunk(WorldServer world, IChunkAccess chunkAccess) {
+        return customLoader != null && customLoader.saveChunk(world, chunkAccess);
     }
 
     public static void setLoader(ChunkLoader loader) {

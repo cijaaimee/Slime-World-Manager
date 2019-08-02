@@ -23,12 +23,6 @@ public class CustomNBTStorage extends WorldNBTStorage {
     public CustomNBTStorage(SlimeWorld world) {
         super(new File("temp_" + world.getName()), world.getName(), null, null);
 
-        new File(getDirectory(), "session.lock").delete();
-        new File(getDirectory(), "data").delete();
-
-        getDirectory().delete();
-        getDirectory().getParentFile().delete();
-
         this.world = world;
     }
 
