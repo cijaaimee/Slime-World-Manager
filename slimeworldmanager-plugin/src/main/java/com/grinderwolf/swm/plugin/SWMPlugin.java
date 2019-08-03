@@ -31,9 +31,11 @@ import org.bukkit.Difficulty;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
@@ -69,6 +71,17 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             loadWorlds();
         } catch (NullPointerException | IOException ex) {
             Logging.error("Failed to load worlds from config file:");
+            ex.printStackTrace();
+        }
+
+        try {
+            Properties props = new Properties();
+
+            props.load(new FileInputStream("server.properties"));
+            String defaultWorld = props.getProperty("level-name");
+
+            nms.setDefaultWorld(worlds.stream().filter(world -> world.getName().equals(defaultWorld)).findFirst().orElse(null));
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }

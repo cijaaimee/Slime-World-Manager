@@ -38,4 +38,8 @@ public class CRLFixer {
     public static void setLoader(ChunkLoader loader) {
         customLoader = loader;
     }
+
+    public static WorldServer getDefaultWorld() {
+        return customLoader != null ? customLoader.getDefaultWorld() : null;
+    }
 }
