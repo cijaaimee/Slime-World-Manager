@@ -5,7 +5,7 @@
     <groupId>com.grinderwolf</groupId>
     <artifactId>slimeworldmanager</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <modules>
         <module>slimeworldmanager-api</module>
         <module>slimeworldmanager-nms-common</module>
@@ -66,5 +66,11 @@
         </plugins>
   </build>
 
+  <distributionManagement>
+    <repository>
+      <id>glaremasters</id>
+      <url>https://repo.glaremasters.me/repository/concuncan/</url>
+    </repository>
+  </distributionManagement>
 
 </project>
