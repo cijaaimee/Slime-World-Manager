@@ -12,3 +12,4 @@ install:
     - java -jar BuildTools.jar --rev 1.8.8
 jdk: 
    - oraclejdk8
+dist: trusty
