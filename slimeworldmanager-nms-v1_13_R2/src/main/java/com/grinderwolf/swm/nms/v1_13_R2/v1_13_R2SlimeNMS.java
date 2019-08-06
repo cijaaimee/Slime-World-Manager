@@ -23,7 +23,7 @@ public class v1_13_R2SlimeNMS implements SlimeNMS {
     private final boolean v1_13WorldFormat = true;
 
     @Override
-    public void setDefaultWorld(SlimeWorld world) {
+    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
         // TODO
     }
 

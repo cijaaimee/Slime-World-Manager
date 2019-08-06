@@ -8,5 +8,7 @@ public interface ChunkLoader {
 
     public Chunk getChunk(WorldServer world, int x, int z);
     public boolean saveChunk(WorldServer world, IChunkAccess chunkAccess);
-    public WorldServer getDefaultWorld();
+
+    // Array containing the normal world, the nether and the end
+    public WorldServer[] getDefaultWorlds();
 }

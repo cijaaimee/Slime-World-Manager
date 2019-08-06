@@ -28,11 +28,21 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
 
     private final boolean v1_13WorldFormat = true;
     private WorldServer defaultWorld;
+    private WorldServer defaultNetherWorld;
+    private WorldServer defaultEndWorld;
 
-    public void setDefaultWorld(SlimeWorld world) {
-        if (world != null) {
-            System.out.println("Creating new default world");
-            defaultWorld = new CustomWorldServer((CraftSlimeWorld) world, new CustomNBTStorage(world), DimensionManager.OVERWORLD);
+    @Override
+    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
+        if (normalWorld != null) {
+            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomNBTStorage(normalWorld), DimensionManager.OVERWORLD);
+        }
+
+        if (netherWorld != null) {
+            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomNBTStorage(netherWorld), DimensionManager.NETHER);
+        }
+
+        if (netherWorld != null) {
+            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomNBTStorage(endWorld), DimensionManager.THE_END);
         }
     }
 

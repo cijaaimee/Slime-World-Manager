@@ -74,13 +74,18 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             ex.printStackTrace();
         }
 
+        // Default world override
         try {
             Properties props = new Properties();
 
             props.load(new FileInputStream("server.properties"));
-            String defaultWorld = props.getProperty("level-name");
+            String defaultWorldName = props.getProperty("level-name");
 
-            nms.setDefaultWorld(worlds.stream().filter(world -> world.getName().equals(defaultWorld)).findFirst().orElse(null));
+            SlimeWorld defaultWorld = worlds.stream().filter(world -> world.getName().equals(defaultWorldName)).findFirst().orElse(null);
+            SlimeWorld netherWorld = (getServer().getAllowNether() ? worlds.stream().filter(world -> world.getName().equals(defaultWorldName + "_nether")).findFirst().orElse(null) : null);
+            SlimeWorld endWorld = (getServer().getAllowEnd() ? worlds.stream().filter(world -> world.getName().equals(defaultWorldName + "_the_end")).findFirst().orElse(null) : null);
+
+            nms.setDefaultWorlds(defaultWorld, netherWorld, endWorld);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

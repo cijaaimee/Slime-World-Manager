@@ -39,7 +39,7 @@ public class CRLFixer {
         customLoader = loader;
     }
 
-    public static WorldServer getDefaultWorld() {
-        return customLoader != null ? customLoader.getDefaultWorld() : null;
+    public static WorldServer[] getDefaultWorlds() {
+        return customLoader != null ? customLoader.getDefaultWorlds() : null;
     }
 }

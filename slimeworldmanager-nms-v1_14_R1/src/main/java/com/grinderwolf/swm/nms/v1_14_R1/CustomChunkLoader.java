@@ -227,7 +227,16 @@ public class CustomChunkLoader implements ChunkLoader {
     }
 
     @Override
-    public WorldServer getDefaultWorld() {
-        return nmsInstance.getDefaultWorld();
+    public WorldServer[] getDefaultWorlds() {
+        WorldServer defaultWorld = nmsInstance.getDefaultWorld();
+        WorldServer netherWorld = nmsInstance.getDefaultNetherWorld();
+        WorldServer endWorld = nmsInstance.getDefaultEndWorld();
+
+        if (defaultWorld != null || netherWorld != null || endWorld != null) {
+            return new WorldServer[] { defaultWorld, netherWorld, endWorld };
+        }
+
+        // Returning null will just run the original load world method
+        return null;
     }
 }
