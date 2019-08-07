@@ -255,8 +255,12 @@ public class SWMImporter {
             } else {
                 dataArray = null;
 
-                paletteTag = (ListTag<CompoundTag>) sectionTag.getAsListTag("Palette").get();
-                blockStatesArray = sectionTag.getLongArrayValue("BlockStates").get();
+                paletteTag = (ListTag<CompoundTag>) sectionTag.getAsListTag("Palette").orElse(null);
+                blockStatesArray = sectionTag.getLongArrayValue("BlockStates").orElse(null);
+
+                if (paletteTag == null || blockStatesArray == null) { // Skip it
+                    continue;
+                }
             }
 
             NibbleArray blockLightArray= sectionTag.getValue().containsKey("BlockLight") ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get()) : null;

@@ -1,0 +1,15 @@
+language: java
+install:
+    - wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
+    - java -jar BuildTools.jar --rev 1.14.4
+    - java -jar BuildTools.jar --rev 1.13.2
+    - java -jar BuildTools.jar --rev 1.13
+    - java -jar BuildTools.jar --rev 1.12.2
+    - java -jar BuildTools.jar --rev 1.11.2
+    - java -jar BuildTools.jar --rev 1.10.2
+    - java -jar BuildTools.jar --rev 1.9
+    - java -jar BuildTools.jar --rev 1.9.4
+    - java -jar BuildTools.jar --rev 1.8.8
+jdk: 
+   - oraclejdk8
+dist: trusty
