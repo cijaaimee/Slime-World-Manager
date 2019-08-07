@@ -3,3 +3,5 @@ net/minecraft/server/v1_14_R1/PlayerChunkMap:
     - f(net.minecraft.server.v1_14_R1.ChunkCoordIntPair)@v1_14_R1/PlayerChunkMap_loadChunk.txt
 net/minecraft/server/v1_14_R1/MinecraftServer:
     - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_14_R1.WorldType, com.google.gson.JsonElement)@v1_14_R1/MinecraftServer_loadWorlds.txt
+net/minecraft/server/v1_13_R2/MinecraftServer:
+      - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_13_R2.WorldType, com.google.gson.JsonElement)@v1_13_R2/MinecraftServer_loadWorlds.txt

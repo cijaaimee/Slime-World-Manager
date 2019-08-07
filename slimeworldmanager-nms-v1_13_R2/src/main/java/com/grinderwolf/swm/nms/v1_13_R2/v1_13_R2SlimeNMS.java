@@ -15,16 +15,38 @@ import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
+@Getter
 public class v1_13_R2SlimeNMS implements SlimeNMS {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM");
 
-    @Getter
+    public v1_13_R2SlimeNMS() {
+        try {
+            CraftCLSMBridge.initialize(this);
+        }  catch (NoClassDefFoundError ex) {
+            LOGGER.warn("Failed to find ClassModifier classes. Overriding default worlds is disabled.");
+            System.exit(1); // No ClassModifier, no party
+        }
+    }
+
     private final boolean v1_13WorldFormat = true;
+    private WorldServer defaultWorld;
+    private WorldServer defaultNetherWorld;
+    private WorldServer defaultEndWorld;
 
     @Override
     public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
-        // TODO
+        if (normalWorld != null) {
+            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomDataManager(normalWorld), DimensionManager.OVERWORLD);
+        }
+
+        if (netherWorld != null) {
+            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomDataManager(netherWorld), DimensionManager.NETHER);
+        }
+
+        if (netherWorld != null) {
+            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomDataManager(endWorld), DimensionManager.THE_END);
+        }
     }
 
     @Override

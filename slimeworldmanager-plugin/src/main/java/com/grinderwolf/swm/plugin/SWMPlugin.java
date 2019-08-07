@@ -87,6 +87,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
             nms.setDefaultWorlds(defaultWorld, netherWorld, endWorld);
         } catch (IOException ex) {
+            Logging.error("Failed to retrieve default world name:");
             ex.printStackTrace();
         }
     }
