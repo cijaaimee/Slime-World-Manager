@@ -6,8 +6,10 @@ import com.flowpowered.nbt.LongArrayTag;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.api.world.SlimeWorld;
-import com.grinderwolf.swm.crlfixer.ChunkLoader;
+import com.grinderwolf.swm.clsm.ClassModifier;
+import com.grinderwolf.swm.clsm.CLSMBridge;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_14_R1.BiomeBase;
 import net.minecraft.server.v1_14_R1.Block;
@@ -38,20 +40,21 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Consumer;
 
-@RequiredArgsConstructor
-public class CustomChunkLoader implements ChunkLoader {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public class CraftCLSMBridge implements CLSMBridge {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
 
     private final v1_14_R1SlimeNMS nmsInstance;
 
     @Override
-    public Chunk getChunk(WorldServer world, int x, int z) {
-        if (!(world instanceof CustomWorldServer)) {
+    public Object getChunk(Object worldObject, int x, int z) {
+        if (!(worldObject instanceof CustomWorldServer)) {
             return null; // Returning null will just run the original getChunk method
         }
 
-        SlimeWorld slimeWorld = ((CustomWorldServer) world).getSlimeWorld();
+        WorldServer world = (WorldServer) worldObject;
+        SlimeWorld slimeWorld = ((CustomWorldServer) worldObject).getSlimeWorld();
 
         LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + slimeWorld.getName());
 
@@ -78,7 +81,7 @@ public class CustomChunkLoader implements ChunkLoader {
             Chunk nmsChunk = new Chunk(world, pos, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, null, null);
             HeightMap.a(nmsChunk, nmsChunk.getChunkStatus().h());
 
-            return nmsChunk;
+            return new ProtoChunkExtension(nmsChunk);
         }
 
         // Biomes
@@ -196,16 +199,16 @@ public class CustomChunkLoader implements ChunkLoader {
 
         HeightMap.a(nmsChunk, unsetHeightMaps);
 
-        return nmsChunk;
+        return new ProtoChunkExtension(nmsChunk);
     }
 
     @Override
-    public boolean saveChunk(WorldServer world, IChunkAccess chunkAccess) {
+    public boolean saveChunk(Object world, Object chunkAccess) {
         if (!(world instanceof CustomWorldServer)) {
             return false; // Returning false will just run the original saveChunk method
         }
 
-        if (!(chunkAccess instanceof ProtoChunkExtension || chunkAccess instanceof Chunk) || !chunkAccess.isNeedsSaving()) {
+        if (!(chunkAccess instanceof ProtoChunkExtension || chunkAccess instanceof Chunk) || !((IChunkAccess) chunkAccess).isNeedsSaving()) {
             // We're only storing fully-loaded chunks that need to be saved
             return true;
         }
@@ -227,7 +230,7 @@ public class CustomChunkLoader implements ChunkLoader {
     }
 
     @Override
-    public WorldServer[] getDefaultWorlds() {
+    public Object[] getDefaultWorlds() {
         WorldServer defaultWorld = nmsInstance.getDefaultWorld();
         WorldServer netherWorld = nmsInstance.getDefaultNetherWorld();
         WorldServer endWorld = nmsInstance.getDefaultEndWorld();
@@ -238,5 +241,9 @@ public class CustomChunkLoader implements ChunkLoader {
 
         // Returning null will just run the original load world method
         return null;
+    }
+
+    public static void initialize(v1_14_R1SlimeNMS instance) {
+        ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
 }

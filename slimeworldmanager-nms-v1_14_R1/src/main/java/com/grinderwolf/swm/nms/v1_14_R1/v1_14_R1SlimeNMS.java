@@ -1,7 +1,6 @@
 package com.grinderwolf.swm.nms.v1_14_R1;
 
 import com.grinderwolf.swm.api.world.SlimeWorld;
-import com.grinderwolf.swm.crlfixer.CRLFixer;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
@@ -23,7 +22,12 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
     private static final Logger LOGGER = LogManager.getLogger("SWM");
 
     public v1_14_R1SlimeNMS() {
-        CRLFixer.setLoader(new CustomChunkLoader(this));
+        try {
+            CraftCLSMBridge.initialize(this);
+        }  catch (NoClassDefFoundError ex) {
+            LOGGER.error("Failed to find ClassModifier classes. Are you sure you installed it correctly?");
+            System.exit(1); // No ClassModifier, no party
+        }
     }
 
     private final boolean v1_13WorldFormat = true;
