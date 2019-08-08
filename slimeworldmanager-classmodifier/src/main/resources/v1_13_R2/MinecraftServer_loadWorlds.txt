@@ -59,6 +59,10 @@
                 world.getWorldData().setGameType($0.getGamemode());
             }
             
+            if (!$0.H()) {
+                world.getWorldData().setGameType($0.getGamemode());
+            }
+            
             $0.worldServer.put(world.dimension, world);
             $0.getPlayerList().setPlayerFileData(world);
             
