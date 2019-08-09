@@ -37,6 +37,9 @@
                     $0.a(nbtStorage.getDirectory(), worldData);
                     net.minecraft.server.v1_14_R1.WorldLoadListener worldLoadListener = $0.worldLoadListenerFactory.create(11);
                     world = new net.minecraft.server.v1_14_R1.WorldServer($0, $0.executorService, nbtStorage, worldData, net.minecraft.server.v1_14_R1.DimensionManager.OVERWORLD, $0.methodProfiler, worldLoadListener, org.bukkit.World.Environment.getEnvironment(dimension), $0.server.getGenerator(name));
+                } else {
+                    org.spigotmc.SpigotConfig.disableStatSaving = true;
+                    org.spigotmc.SpigotConfig.disableAdvancementSaving = true;
                 }
                 
                 $0.initializeScoreboards(world.getWorldPersistentData());

@@ -6,8 +6,8 @@ import com.flowpowered.nbt.LongArrayTag;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.api.world.SlimeWorld;
-import com.grinderwolf.swm.clsm.ClassModifier;
 import com.grinderwolf.swm.clsm.CLSMBridge;
+import com.grinderwolf.swm.clsm.ClassModifier;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,6 @@ import net.minecraft.server.v1_14_R1.ChunkSection;
 import net.minecraft.server.v1_14_R1.EntityTypes;
 import net.minecraft.server.v1_14_R1.EnumSkyBlock;
 import net.minecraft.server.v1_14_R1.FluidType;
-import net.minecraft.server.v1_14_R1.FluidTypes;
 import net.minecraft.server.v1_14_R1.HeightMap;
 import net.minecraft.server.v1_14_R1.IChunkAccess;
 import net.minecraft.server.v1_14_R1.IRegistry;
@@ -29,13 +28,14 @@ import net.minecraft.server.v1_14_R1.LightEngine;
 import net.minecraft.server.v1_14_R1.NBTTagCompound;
 import net.minecraft.server.v1_14_R1.NBTTagList;
 import net.minecraft.server.v1_14_R1.ProtoChunkExtension;
-import net.minecraft.server.v1_14_R1.ProtoChunkTickList;
 import net.minecraft.server.v1_14_R1.SectionPosition;
+import net.minecraft.server.v1_14_R1.TickListChunk;
 import net.minecraft.server.v1_14_R1.TileEntity;
 import net.minecraft.server.v1_14_R1.WorldServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Consumer;
@@ -62,9 +62,9 @@ public class CraftCLSMBridge implements CLSMBridge {
         SlimeChunk chunk = slimeWorld.getChunk(x, z);
         BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
 
-        // ProtoChunkTickLists
-        ProtoChunkTickList<Block> airChunkTickList = new ProtoChunkTickList<>((block) -> block == null || block.getBlockData().isAir(), pos);
-        ProtoChunkTickList<FluidType> fluidChunkTickList = new ProtoChunkTickList<>((fluidType) -> fluidType == FluidTypes.EMPTY, pos);
+        // Tick lists
+        TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>());
+        TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>());
 
         if (chunk == null) {
             long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
@@ -108,7 +108,7 @@ public class CraftCLSMBridge implements CLSMBridge {
             SlimeChunkSection slimeSection = chunk.getSections()[sectionId];
 
             if (slimeSection != null) {
-                ChunkSection section = new ChunkSection(sectionId);
+                ChunkSection section = new ChunkSection(sectionId << 4);
 
                 LOGGER.debug("ChunkSection #" + sectionId + " - Chunk (" + pos.x + ", " + pos.z + ") - World " + slimeWorld.getName() + ":");
                 LOGGER.debug("Block palette:");
