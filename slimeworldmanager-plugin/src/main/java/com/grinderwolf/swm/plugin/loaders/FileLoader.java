@@ -10,6 +10,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileLoader implements SlimeLoader {
 
@@ -53,6 +56,12 @@ public class FileLoader implements SlimeLoader {
     @Override
     public boolean worldExists(String worldName) {
         return new File(WORLD_DIR, worldName + ".slime").exists();
+    }
+
+    @Override
+    public List<String> listWorlds() throws IOException {
+        if(WORLD_DIR.listFiles() == null) throw new IOException();
+        return Arrays.stream(WORLD_DIR.list()).filter(c -> c.endsWith(".slime")).collect(Collectors.toList());
     }
 
     @Override

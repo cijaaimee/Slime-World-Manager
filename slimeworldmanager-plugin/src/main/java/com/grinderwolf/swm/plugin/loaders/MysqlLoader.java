@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MysqlLoader implements SlimeLoader {
 
@@ -21,6 +23,7 @@ public class MysqlLoader implements SlimeLoader {
     private static final String UPDATE_WORLD_QUERY = "INSERT INTO `worlds` (`name`, `world`, `locked`) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE `world` = ?;";
     private static final String UPDATE_LOCK_QUERY = "UPDATE `worlds` SET `locked` = ? WHERE `name` = ?;";
     private static final String DELETE_WORLD_QUERY = "DELETE FROM `worlds` WHERE `name` = ?;";
+    private static final String LIST_WORLDS_QUERY = "SELECT `name` FROM `worlds`;";
 
     private final HikariDataSource source;
 
@@ -96,6 +99,22 @@ public class MysqlLoader implements SlimeLoader {
         } catch (SQLException ex) {
             throw new IOException(ex);
         }
+    }
+
+    @Override
+    public List<String> listWorlds() throws IOException {
+        List<String> worldList = new ArrayList<>();
+        try (Connection con = source.getConnection();
+             PreparedStatement statement = con.prepareStatement(LIST_WORLDS_QUERY)) {
+            ResultSet set = statement.executeQuery();
+
+            while(set.next()) {
+                worldList.add(set.getString("name"));
+            }
+        } catch (SQLException ex) {
+            throw new IOException(ex);
+        }
+        return worldList;
     }
 
     @Override
