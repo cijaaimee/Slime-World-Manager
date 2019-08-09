@@ -40,7 +40,7 @@ public interface SlimeLoader {
     /**
      * Returns the current saved world names.
      *
-     * @return an list containing all the world names
+     * @return a list containing all the world names
      * @throws IOException if the list could not be obtained
      */
     public List<String> listWorlds() throws IOException;
