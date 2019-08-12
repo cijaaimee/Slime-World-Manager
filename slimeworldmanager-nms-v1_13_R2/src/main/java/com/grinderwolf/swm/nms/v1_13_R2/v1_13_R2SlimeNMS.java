@@ -20,6 +20,11 @@ public class v1_13_R2SlimeNMS implements SlimeNMS {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM");
 
+    private final boolean v1_13WorldFormat = true;
+    private WorldServer defaultWorld;
+    private WorldServer defaultNetherWorld;
+    private WorldServer defaultEndWorld;
+
     public v1_13_R2SlimeNMS() {
         try {
             CraftCLSMBridge.initialize(this);
@@ -28,11 +33,6 @@ public class v1_13_R2SlimeNMS implements SlimeNMS {
             System.exit(1); // No ClassModifier, no party
         }
     }
-
-    private final boolean v1_13WorldFormat = true;
-    private WorldServer defaultWorld;
-    private WorldServer defaultNetherWorld;
-    private WorldServer defaultEndWorld;
 
     @Override
     public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {

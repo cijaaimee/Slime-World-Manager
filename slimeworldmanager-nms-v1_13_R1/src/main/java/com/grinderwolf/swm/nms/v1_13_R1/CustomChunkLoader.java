@@ -123,9 +123,9 @@ public class CustomChunkLoader implements IChunkLoader {
                 LOGGER.debug("Block states array:");
                 LOGGER.debug(slimeSection.getBlockStates());
                 LOGGER.debug("Block light array:");
-                LOGGER.debug(slimeSection.getBlockLight().getBacking());
+                LOGGER.debug(slimeSection.getBlockLight() != null ? slimeSection.getBlockLight().getBacking() : "Not present");
                 LOGGER.debug("Sky light array:");
-                LOGGER.debug(slimeSection.getSkyLight().getBacking());
+                LOGGER.debug(slimeSection.getSkyLight() != null ? slimeSection.getSkyLight().getBacking() : "Not present");
 
                 NBTTagCompound sectionCompound = new NBTTagCompound();
 
@@ -133,8 +133,14 @@ public class CustomChunkLoader implements IChunkLoader {
                 sectionCompound.a("BlockStates", slimeSection.getBlockStates());
 
                 section.getBlocks().a(sectionCompound, "Palette", "BlockStates");
-                section.a(Converter.convertArray(slimeSection.getBlockLight()));
-                section.b(Converter.convertArray(slimeSection.getSkyLight()));
+
+                if (slimeSection.getBlockLight() != null) {
+                    section.a(Converter.convertArray(slimeSection.getBlockLight()));
+                }
+
+                if (slimeSection.getSkyLight() != null) {
+                    section.b(Converter.convertArray(slimeSection.getSkyLight()));
+                }
 
                 section.recalcBlockCounts();
                 sections[sectionId] = section;
