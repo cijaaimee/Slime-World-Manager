@@ -13,3 +13,9 @@ net/minecraft/server/v1_11_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_11_R1.WorldType, java.lang.String)@v1_11_R1/MinecraftServer_loadWorlds.txt
 net/minecraft/server/v1_10_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_10_R1.WorldType, java.lang.String)@v1_10_R1/MinecraftServer_loadWorlds.txt
+net/minecraft/server/v1_9_R2/MinecraftServer:
+  - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_9_R2.WorldType, java.lang.String)@v1_9_R2/MinecraftServer_loadWorlds.txt
+net/minecraft/server/v1_9_R1/MinecraftServer:
+  - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_9_R1.WorldType, java.lang.String)@v1_9_R1/MinecraftServer_loadWorlds.txt
+net/minecraft/server/v1_8_R3/MinecraftServer:
+  - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_8_R3.WorldType, java.lang.String)@v1_8_R3/MinecraftServer_loadWorlds.txt

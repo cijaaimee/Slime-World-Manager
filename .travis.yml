@@ -3,7 +3,7 @@ install:
     - wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
     - java -jar BuildTools.jar --rev 1.14.4 &> /dev/null
     - java -jar BuildTools.jar --rev 1.13.2 &> /dev/null
-    - java -jar BuildTools.jar --rev 1.13 &> dev/null
+    - java -jar BuildTools.jar --rev 1.13 &> /dev/null
     - java -jar BuildTools.jar --rev 1.12.2 &> /dev/null
     - java -jar BuildTools.jar --rev 1.11.2 &> /dev/null
     - java -jar BuildTools.jar --rev 1.10.2 &> /dev/null

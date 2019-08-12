@@ -15,7 +15,7 @@
             if (dimension == 0) {
                 name = $1;
             } else {
-                name = $1 + "_ " + worldTypeString;
+                name = $1 + "_" + worldTypeString;
             }
             
             if (world == null) {
@@ -57,13 +57,13 @@
                 world = new net.minecraft.server.v1_14_R1.SecondaryWorldServer($0.getWorldServer(net.minecraft.server.v1_14_R1.DimensionManager.OVERWORLD), $0, $0.executorService, nbtStorage, net.minecraft.server.v1_14_R1.DimensionManager.a(dimension), $0.methodProfiler, worldLoadListener, worldData, org.bukkit.World.Environment.getEnvironment(dimension), $0.server.getGenerator(name));
             }
             
-            $0.initWorld(world, world.getDataManager().getWorldData(), worldSettings);
+            $0.initWorld(world, world.getWorldData(), worldSettings);
             $0.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldInitEvent(world.getWorld()));
             $0.worldServer.put(world.getWorldProvider().getDimensionManager(), world);
             $0.getPlayerList().setPlayerFileData(world);
             
-            if (world.getDataManager().getWorldData().getCustomBossEvents() != null) {
-                $0.getBossBattleCustomData().a(world.getDataManager().getWorldData().getCustomBossEvents());
+            if (world.getWorldData().getCustomBossEvents() != null) {
+                $0.getBossBattleCustomData().a(world.getWorldData().getCustomBossEvents());
             }
         }
         
