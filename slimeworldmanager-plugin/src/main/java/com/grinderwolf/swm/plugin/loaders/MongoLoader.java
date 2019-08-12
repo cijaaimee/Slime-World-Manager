@@ -4,10 +4,7 @@ import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.mongodb.MongoException;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.model.GridFSFile;
@@ -22,6 +19,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MongoLoader implements SlimeLoader {
 
@@ -87,6 +86,25 @@ public class MongoLoader implements SlimeLoader {
         } catch (MongoException ex) {
             throw new IOException(ex);
         }
+    }
+
+    @Override
+    public List<String> listWorlds() throws IOException {
+        List<String> worldList = new ArrayList<>();
+
+        try {
+            MongoDatabase mongoDatabase = client.getDatabase(database);
+            MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
+
+            MongoCursor<Document> documents = mongoCollection.find(Filters.text("name")).cursor();
+            while(documents.hasNext()) {
+                worldList.add(documents.next().getString("name"));
+            }
+        } catch (MongoException ex) {
+            throw new IOException(ex);
+        }
+
+        return worldList;
     }
 
     @Override

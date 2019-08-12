@@ -10,6 +10,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NotDirectoryException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileLoader implements SlimeLoader {
 
@@ -53,6 +57,15 @@ public class FileLoader implements SlimeLoader {
     @Override
     public boolean worldExists(String worldName) {
         return new File(WORLD_DIR, worldName + ".slime").exists();
+    }
+
+    @Override
+    public List<String> listWorlds() throws NotDirectoryException {
+        if(WORLD_DIR.list() == null) {
+            throw new NotDirectoryException(WORLD_DIR.getPath());
+        }
+
+        return Arrays.stream(WORLD_DIR.list()).filter(c -> c.endsWith(".slime")).collect(Collectors.toList());
     }
 
     @Override
