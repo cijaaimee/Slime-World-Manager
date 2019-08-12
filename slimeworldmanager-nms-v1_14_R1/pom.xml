@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>com.grinderwolf</groupId>
-            <artifactId>slimeworldmanager-crlfixer-v1_14_R1</artifactId>
+            <artifactId>slimeworldmanager-classmodifier</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

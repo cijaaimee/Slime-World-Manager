@@ -5,6 +5,7 @@ import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
+import net.minecraft.server.v1_12_R1.AdvancementDataWorld;
 import net.minecraft.server.v1_12_R1.BlockPosition;
 import net.minecraft.server.v1_12_R1.CustomFunctionData;
 import net.minecraft.server.v1_12_R1.EntityTracker;
@@ -38,10 +39,8 @@ public class CustomWorldServer extends WorldServer {
         super(MinecraftServer.getServer(), dataManager, dataManager.getWorldData(), dimension, MinecraftServer.getServer().methodProfiler, World.Environment.NORMAL, null);
 
         this.D = new CustomFunctionData(null, MinecraftServer.getServer());
-        b();
         this.slimeWorld = world;
         this.chunkProvider = new CustomChunkProvider(this);
-        this.scoreboard = MinecraftServer.getServer().server.getScoreboardManager().getMainScoreboard().getHandle();
         this.tracker = new EntityTracker(this);
         addIWorldAccess(new WorldManager(MinecraftServer.getServer(), this));
 
@@ -50,6 +49,12 @@ public class CustomWorldServer extends WorldServer {
         worldData.setDifficulty(EnumDifficulty.getById(properties.getDifficulty()));
         worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
+    }
+
+    public CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, AdvancementDataWorld advancementData) {
+        this(world, dataManager, 0);
+
+        this.C = advancementData;
     }
 
     @Override

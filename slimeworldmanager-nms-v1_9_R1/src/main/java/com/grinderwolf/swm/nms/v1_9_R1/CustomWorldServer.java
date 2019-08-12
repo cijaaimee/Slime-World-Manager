@@ -37,7 +37,6 @@ public class CustomWorldServer extends WorldServer {
 
         b();
         this.slimeWorld = world;
-        this.scoreboard = MinecraftServer.getServer().server.getScoreboardManager().getMainScoreboard().getHandle();
         this.tracker = new EntityTracker(this);
         addIWorldAccess(new WorldManager(MinecraftServer.getServer(), this));
 

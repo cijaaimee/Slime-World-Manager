@@ -4,6 +4,7 @@ import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
+import net.minecraft.server.v1_12_R1.AdvancementDataWorld;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
 import net.minecraft.server.v1_12_R1.WorldServer;
 import org.apache.logging.log4j.LogManager;
@@ -14,16 +15,37 @@ import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
+@Getter
 public class v1_12_R1SlimeNMS implements SlimeNMS {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM");
 
-    @Getter
     private final boolean v1_13WorldFormat = false;
+    private WorldServer defaultWorld;
+    private WorldServer defaultNetherWorld;
+    private WorldServer defaultEndWorld;
+
+    public v1_12_R1SlimeNMS() {
+        try {
+            CraftCLSMBridge.initialize(this);
+        }  catch (NoClassDefFoundError ex) {
+            LOGGER.warn("Failed to find ClassModifier classes. Overriding default worlds is disabled.");
+        }
+    }
 
     @Override
-    public void setDefaultWorld(SlimeWorld world) {
-        // TODO
+    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
+        if (normalWorld != null) {
+            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomDataManager(normalWorld), new AdvancementDataWorld(null));
+        }
+
+        if (netherWorld != null) {
+            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomDataManager(netherWorld), -1);
+        }
+
+        if (netherWorld != null) {
+            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomDataManager(endWorld), 1);
+        }
     }
 
     @Override
@@ -47,7 +69,7 @@ public class v1_12_R1SlimeNMS implements SlimeNMS {
             }
         }
 
-        WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimension);
+        WorldServer server = (WorldServer) new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimension).b();
 
         mcServer.worlds.add(server);
 

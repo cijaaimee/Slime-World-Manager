@@ -1,7 +1,6 @@
 package com.grinderwolf.swm.nms.v1_14_R1;
 
 import com.grinderwolf.swm.api.world.SlimeWorld;
-import com.grinderwolf.swm.crlfixer.CRLFixer;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
@@ -22,17 +21,32 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM");
 
-    public v1_14_R1SlimeNMS() {
-        CRLFixer.setLoader(new CustomChunkLoader(this));
-    }
-
     private final boolean v1_13WorldFormat = true;
     private WorldServer defaultWorld;
+    private WorldServer defaultNetherWorld;
+    private WorldServer defaultEndWorld;
 
-    public void setDefaultWorld(SlimeWorld world) {
-        if (world != null) {
-            System.out.println("Creating new default world");
-            defaultWorld = new CustomWorldServer((CraftSlimeWorld) world, new CustomNBTStorage(world), DimensionManager.OVERWORLD);
+    public v1_14_R1SlimeNMS() {
+        try {
+            CraftCLSMBridge.initialize(this);
+        }  catch (NoClassDefFoundError ex) {
+            LOGGER.error("Failed to find ClassModifier classes. Are you sure you installed it correctly?");
+            System.exit(1); // No ClassModifier, no party
+        }
+    }
+
+    @Override
+    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
+        if (normalWorld != null) {
+            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomNBTStorage(normalWorld), DimensionManager.OVERWORLD);
+        }
+
+        if (netherWorld != null) {
+            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomNBTStorage(netherWorld), DimensionManager.NETHER);
+        }
+
+        if (netherWorld != null) {
+            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomNBTStorage(endWorld), DimensionManager.THE_END);
         }
     }
 

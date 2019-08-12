@@ -61,7 +61,7 @@ public class CustomChunkLoader implements IChunkLoader {
             SlimeChunkSection slimeSection = chunk.getSections()[sectionId];
 
             if (slimeSection != null) {
-                ChunkSection section = new ChunkSection(sectionId, true);
+                ChunkSection section = new ChunkSection(sectionId << 4, true);
                 NibbleArray data = slimeSection.getData();
                 byte[] blocks = slimeSection.getBlocks();
 
@@ -83,6 +83,8 @@ public class CustomChunkLoader implements IChunkLoader {
         }
 
         nmsChunk.a(sections);
+
+        // Biomes
         nmsChunk.a(toByteArray(chunk.getBiomes()));
 
         // Load tile entities

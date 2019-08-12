@@ -110,6 +110,10 @@ public class LoaderUtils {
             int width = dataStream.readShort();
             int depth = dataStream.readShort();
 
+            if (width <= 0 || depth <= 0) {
+                throw new CorruptedWorldException(worldName);
+            }
+
             int bitmaskSize = (int) Math.ceil((width * depth) / 8.0D);
             byte[] chunkBitmask = new byte[bitmaskSize];
             dataStream.read(chunkBitmask);

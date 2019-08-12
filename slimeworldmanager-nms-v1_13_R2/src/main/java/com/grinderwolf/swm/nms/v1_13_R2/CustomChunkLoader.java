@@ -79,7 +79,6 @@ public class CustomChunkLoader implements IChunkLoader {
 
             Chunk nmsChunk = new Chunk(generatorAccess.getMinecraftWorld(), x, z, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L);
 
-
             nmsChunk.c("postprocessed");
 
             // Chunk consumer
@@ -116,7 +115,7 @@ public class CustomChunkLoader implements IChunkLoader {
             SlimeChunkSection slimeSection = chunk.getSections()[sectionId];
 
             if (slimeSection != null) {
-                ChunkSection section = new ChunkSection(sectionId, true);
+                ChunkSection section = new ChunkSection(sectionId << 4, true);
 
                 LOGGER.debug("ChunkSection #" + sectionId + " - Chunk (" + x + ", " + z + ") - World " + world.getName() + ":");
                 LOGGER.debug("Block palette:");

@@ -31,9 +31,11 @@ import org.bukkit.Difficulty;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
@@ -69,6 +71,23 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             loadWorlds();
         } catch (NullPointerException | IOException ex) {
             Logging.error("Failed to load worlds from config file:");
+            ex.printStackTrace();
+        }
+
+        // Default world override
+        try {
+            Properties props = new Properties();
+
+            props.load(new FileInputStream("server.properties"));
+            String defaultWorldName = props.getProperty("level-name");
+
+            SlimeWorld defaultWorld = worlds.stream().filter(world -> world.getName().equals(defaultWorldName)).findFirst().orElse(null);
+            SlimeWorld netherWorld = (getServer().getAllowNether() ? worlds.stream().filter(world -> world.getName().equals(defaultWorldName + "_nether")).findFirst().orElse(null) : null);
+            SlimeWorld endWorld = (getServer().getAllowEnd() ? worlds.stream().filter(world -> world.getName().equals(defaultWorldName + "_the_end")).findFirst().orElse(null) : null);
+
+            nms.setDefaultWorlds(defaultWorld, netherWorld, endWorld);
+        } catch (IOException ex) {
+            Logging.error("Failed to retrieve default world name:");
             ex.printStackTrace();
         }
     }
