@@ -66,7 +66,7 @@ public class MongoLoader implements SlimeLoader {
                 mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", true));
             }
 
-            GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection + "_files");
+            GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bucket.downloadToStream(worldName, stream);
 
@@ -93,7 +93,7 @@ public class MongoLoader implements SlimeLoader {
     public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException {
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
-            GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection + "_files");
+            GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection);
             GridFSFile oldFile = bucket.find(Filters.eq("filename", worldName)).first();
 
             if (oldFile != null) {
@@ -152,7 +152,7 @@ public class MongoLoader implements SlimeLoader {
     public void deleteWorld(String worldName) throws IOException, UnknownWorldException {
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
-            GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection + "_files");
+            GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection);
             GridFSFile file = bucket.find(Filters.eq("filename", worldName)).first();
 
             if (file == null) {
