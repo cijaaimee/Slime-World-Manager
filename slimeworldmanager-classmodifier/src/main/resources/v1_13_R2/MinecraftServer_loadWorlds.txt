@@ -5,6 +5,14 @@
         System.out.println("Overriding default worlds");
         
         for (int index = 0; index < 3; index++) {
+            if (index == 1 && !getAllowNether()) {
+                continue;
+            }
+
+            if (index == 2 && !server.getAllowEnd()) {
+                continue;
+            }
+
             net.minecraft.server.v1_13_R2.WorldServer world = defaultWorlds[index];
             byte dimension = (index == 1 ? -1 : (index == 2 ? 1 : 0));
             

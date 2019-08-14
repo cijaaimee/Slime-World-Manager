@@ -1,15 +1,19 @@
 language: java
 install:
     - wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-    - java -jar BuildTools.jar --rev 1.14.4 &> /dev/null
-    - java -jar BuildTools.jar --rev 1.13.2 &> /dev/null
-    - java -jar BuildTools.jar --rev 1.13 &> /dev/null
-    - java -jar BuildTools.jar --rev 1.12.2 &> /dev/null
-    - java -jar BuildTools.jar --rev 1.11.2 &> /dev/null
-    - java -jar BuildTools.jar --rev 1.10.2 &> /dev/null
-    - java -jar BuildTools.jar --rev 1.9 &> /dev/null
-    - java -jar BuildTools.jar --rev 1.9.4 &> /dev/null
-    - java -jar BuildTools.jar --rev 1.8.8 &> /dev/null
+    - [ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.14.4-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.14.4"; java -jar BuildTools.jar --rev 1.14.4 &> /dev/null }
+    - [ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.13.2-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.13.2"; java -jar BuildTools.jar --rev 1.13.2 &> /dev/null }
+    - [ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.13-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.13"; java -jar BuildTools.jar --rev 1.13 &> /dev/null }
+    - [ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.12.2-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.12.2"; java -jar BuildTools.jar --rev 1.12.2 &> /dev/null }
+    - [ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.11.2-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.11.2"; java -jar BuildTools.jar --rev 1.11.2 &> /dev/null }
+    - [ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.10.2-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.10.2"; java -jar BuildTools.jar --rev 1.10.2 &> /dev/null }
+    - [ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.9.4-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.9.4"; java -jar BuildTools.jar --rev 1.9.4 &> /dev/null }
+    - [ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.9-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.9"; java -jar BuildTools.jar --rev 1.9 &> /dev/null }
+    - [ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.8.8-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.8"; java -jar BuildTools.jar --rev 1.8.8 &> /dev/null }
 jdk: 
    - oraclejdk8
+cache:
+    timeout: 1000
+    directories:
+        - $HOME/.m2
 dist: trusty
