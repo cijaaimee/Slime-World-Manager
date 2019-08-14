@@ -1,6 +1,6 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
-import com.grinderwolf.swm.plugin.commands.CommandManager;
+import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,7 +26,7 @@ public class UnloadWorldCmd implements Subcommand {
             World world = Bukkit.getWorld(args[0]);
 
             if (world == null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + args[0] + " is not loaded!");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + args[0] + " is not loaded!");
 
                 return true;
             }
@@ -48,9 +48,9 @@ public class UnloadWorldCmd implements Subcommand {
             }
 
             if (Bukkit.unloadWorld(world, true)) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + args[0] + ChatColor.GREEN + " unloaded correctly.");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + args[0] + ChatColor.GREEN + " unloaded correctly.");
             } else {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to unload world " + args[0] + ".");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to unload world " + args[0] + ".");
             }
 
             return true;

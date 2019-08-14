@@ -10,6 +10,7 @@ import com.grinderwolf.swm.plugin.commands.sub.UnloadWorldCmd;
 import com.grinderwolf.swm.plugin.commands.sub.UnlockWorldCmd;
 import com.grinderwolf.swm.plugin.commands.sub.VersionCmd;
 import com.grinderwolf.swm.plugin.commands.sub.WorldListCmd;
+import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -24,8 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class CommandManager implements CommandExecutor {
-
-    public static final String PREFIX = ChatColor.BLUE + ChatColor.BOLD.toString() + "SWM " + ChatColor.GRAY + ">> ";
 
     @Getter
     private static CommandManager instance;
@@ -52,7 +51,7 @@ public class CommandManager implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(PREFIX + ChatColor.AQUA + "Slime World Manager" + ChatColor.GRAY + " is a plugin that implements the Slime Region Format, " +
+            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.AQUA + "Slime World Manager" + ChatColor.GRAY + " is a plugin that implements the Slime Region Format, " +
                     "designed by the Hypixel Dev Team to load and save worlds more efficiently. To check out the help page, type "
                     + ChatColor.YELLOW + "/swm help" + ChatColor.GRAY + ".");
 
@@ -62,19 +61,19 @@ public class CommandManager implements CommandExecutor {
         Subcommand command = commands.get(args[0]);
 
         if (command == null) {
-            sender.sendMessage(PREFIX + ChatColor.RED + "Unknown command. To check out the help page, type " + ChatColor.GRAY + "/swm help" + ChatColor.RED + ".");
+            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown command. To check out the help page, type " + ChatColor.GRAY + "/swm help" + ChatColor.RED + ".");
 
             return true;
         }
 
         if (command.inGameOnly() && !(sender instanceof Player)) {
-            sender.sendMessage(PREFIX + ChatColor.RED + "This command can only be run in-game.");
+            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "This command can only be run in-game.");
 
             return true;
         }
 
         if (!command.getPermission().equals("") && !sender.hasPermission(command.getPermission()) && !sender.hasPermission("swm.*")) {
-            sender.sendMessage(PREFIX + ChatColor.RED + "You do not have permission to perform this command.");
+            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "You do not have permission to perform this command.");
 
             return true;
         }
@@ -83,7 +82,7 @@ public class CommandManager implements CommandExecutor {
         System.arraycopy(args,1, subCmdArgs, 0, subCmdArgs.length);
 
         if (!command.onCommand(sender, subCmdArgs)) {
-            sender.sendMessage(PREFIX + ChatColor.RED + "Command usage: /swm " + ChatColor.GRAY + command.getUsage() + ChatColor.RED + ".");
+            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Command usage: /swm " + ChatColor.GRAY + command.getUsage() + ChatColor.RED + ".");
         }
 
         return true;

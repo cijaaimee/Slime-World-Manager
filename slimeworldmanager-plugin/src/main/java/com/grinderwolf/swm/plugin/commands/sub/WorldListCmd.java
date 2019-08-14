@@ -1,8 +1,8 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
 import com.grinderwolf.swm.plugin.SWMPlugin;
-import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
+import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -50,7 +50,7 @@ public class WorldListCmd implements Subcommand {
                     throw new NumberFormatException();
                 }
             } catch (NumberFormatException ex) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "'" + pageString + "' is not a valid number.");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "'" + pageString + "' is not a valid number.");
 
                 return true;
             }
@@ -65,7 +65,7 @@ public class WorldListCmd implements Subcommand {
                 config.getKeys(false).stream().filter(world -> !loadedWorlds.containsKey(world)).forEach(worldsList::add);
             }
         } catch (IOException ex) {
-            sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to read the worlds config file.");
+            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to read the worlds config file.");
             ex.printStackTrace();
         }
 
@@ -74,14 +74,14 @@ public class WorldListCmd implements Subcommand {
         int maxPages = ((int) d) + ((d > (int) d) ? 1 : 0);
 
         if (offset >= worldsList.size()) {
-            sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "There " + (maxPages == 1 ? "is" :
+            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "There " + (maxPages == 1 ? "is" :
                     "are") + " only " + maxPages + " page" + (maxPages == 1 ? "" : "s") + "!");
 
             return true;
         }
 
         worldsList.sort(String::compareTo);
-        sender.sendMessage(CommandManager.PREFIX + "World list " + ChatColor.YELLOW + "[" + page + "/" + maxPages + "]" + ChatColor.GRAY + ":");
+        sender.sendMessage(Logging.COMMAND_PREFIX + "World list " + ChatColor.YELLOW + "[" + page + "/" + maxPages + "]" + ChatColor.GRAY + ":");
 
         for (int i = offset; i < MAX_ITEMS_PER_PAGE && i < worldsList.size(); i++) {
             String world = worldsList.get(i);

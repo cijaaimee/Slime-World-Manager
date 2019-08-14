@@ -1,6 +1,6 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
-import com.grinderwolf.swm.plugin.commands.CommandManager;
+import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +24,7 @@ public class GotoCmd implements Subcommand {
             World world = Bukkit.getWorld(args[0]);
 
             if (world == null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + args[0] + " does not exist!");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + args[0] + " does not exist!");
 
                 return true;
             }
@@ -35,7 +35,7 @@ public class GotoCmd implements Subcommand {
                 target = Bukkit.getPlayerExact(args[1]);
             } else {
                 if (!(sender instanceof Player)) {
-                    sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "The console cannot be teleported to a world! Please specify a player.");
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "The console cannot be teleported to a world! Please specify a player.");
 
                     return true;
                 }
@@ -44,12 +44,12 @@ public class GotoCmd implements Subcommand {
             }
 
             if (target == null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + args[1] + " is offline.");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + args[1] + " is offline.");
 
                 return true;
             }
 
-            sender.sendMessage(CommandManager.PREFIX + "Teleporting " + (target.getName().equals(sender.getName())
+            sender.sendMessage(Logging.COMMAND_PREFIX + "Teleporting " + (target.getName().equals(sender.getName())
                     ? "yourself" : ChatColor.YELLOW + target.getName() + ChatColor.GRAY) + " to " + ChatColor.AQUA + world.getName() + ChatColor.GRAY + "...");
 
             Location spawnLocation = world.getSpawnLocation();

@@ -14,7 +14,7 @@
             if (index == 2 && !server.getAllowEnd()) {
                 continue;
             }
-            
+
             net.minecraft.server.v1_8_R3.WorldServer world = defaultWorlds[index];
             byte dimension = (index == 1 ? -1 : (index == 2 ? 1 : 0));
             

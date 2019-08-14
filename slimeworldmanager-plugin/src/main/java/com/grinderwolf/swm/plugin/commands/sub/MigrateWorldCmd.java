@@ -35,7 +35,7 @@ public class MigrateWorldCmd implements Subcommand {
             try {
                 configFile = ConfigManager.getFile("worlds");
             } catch (IOException ex) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to load the worlds config file. Take a look at the server console for more information.");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load the worlds config file. Take a look at the server console for more information.");
                 Logging.error("Failed to load the worlds config file:");
                 ex.printStackTrace();
 
@@ -45,7 +45,7 @@ public class MigrateWorldCmd implements Subcommand {
             ConfigurationSection config = configFile.getConfigurationSection("worlds");
 
             if (config == null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "The main config section seems to be missing. Make sure everything is where it's supposed to be.");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "The main config section seems to be missing. Make sure everything is where it's supposed to be.");
 
                 return true;
             }
@@ -54,7 +54,7 @@ public class MigrateWorldCmd implements Subcommand {
             ConfigurationSection worldConfig = config.getConfigurationSection(worldName);
 
             if (worldConfig == null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Unknown world " + worldName + "! Are you sure you configured it correctly?");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown world " + worldName + "! Are you sure you configured it correctly?");
 
                 return true;
             }
@@ -63,13 +63,13 @@ public class MigrateWorldCmd implements Subcommand {
             SlimeLoader newLoader = LoaderUtils.getLoader(loaderString);
 
             if (newLoader == null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Unknown data source " + loaderString + "!");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown data source " + loaderString + "!");
 
                 return true;
             }
 
             if (loaderString.equalsIgnoreCase(worldConfig.getString("source"))) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is already stored using data source " + loaderString + "!");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + " is already stored using data source " + loaderString + "!");
 
                 return true;
             }
@@ -78,13 +78,13 @@ public class MigrateWorldCmd implements Subcommand {
             SlimeLoader oldLoader = LoaderUtils.getLoader(oldLoaderString);
 
             if (oldLoader == null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Unknown data source " + loaderString + "! Are you sure you configured it correctly?");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown data source " + loaderString + "! Are you sure you configured it correctly?");
 
                 return true;
             }
 
             if (CommandManager.getInstance().getWorldsInUse().contains(worldName)) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is already being used on another command! Wait some time and try again.");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + " is already being used on another command! Wait some time and try again.");
 
                 return true;
             }
@@ -95,12 +95,12 @@ public class MigrateWorldCmd implements Subcommand {
 
                 try {
                     if (newLoader.worldExists(worldName)) {
-                        sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Data source " + loaderString + " already contains a world named " + worldName + "!");
+                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + loaderString + " already contains a world named " + worldName + "!");
 
                         return;
                     }
 
-                    sender.sendMessage(CommandManager.PREFIX + "Migrating world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + "...");
+                    sender.sendMessage(Logging.COMMAND_PREFIX + "Migrating world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + "...");
                     World world = Bukkit.getWorld(worldName);
 
                     boolean leaveLock = false;
@@ -127,16 +127,16 @@ public class MigrateWorldCmd implements Subcommand {
 
                         worldConfig.set("source", loaderString);
                         ConfigManager.saveFile(configFile, "worlds");
-                        sender.sendMessage(CommandManager.PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " migrated in "
+                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " migrated in "
                                 + (System.currentTimeMillis() - start) + "ms!");
                     } catch (UnknownWorldException ex) {
-                        sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Can't find world " + worldName + " in data source " + oldLoaderString + ".");
+                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Can't find world " + worldName + " in data source " + oldLoaderString + ".");
                     } catch (WorldInUseException ex) {
-                        sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is being used on another server.");
+                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + " is being used on another server.");
                     }
                 } catch (IOException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
-                        sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to migrate world " + worldName + " (using data sources "
+                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to migrate world " + worldName + " (using data sources "
                                 + oldLoaderString + " and " + loaderString + "). Take a look at the server console for more information.");
                     }
 

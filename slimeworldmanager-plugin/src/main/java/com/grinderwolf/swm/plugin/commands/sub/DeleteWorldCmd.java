@@ -38,7 +38,7 @@ public class DeleteWorldCmd implements Subcommand {
             World world = Bukkit.getWorld(worldName);
 
             if (world != null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is loaded on this server! Unload " +
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + " is loaded on this server! Unload " +
                         "it by running the command " + ChatColor.GRAY + "/swm unload " + worldName + ChatColor.RED + ".");
 
                 return true;
@@ -55,14 +55,14 @@ public class DeleteWorldCmd implements Subcommand {
                     ConfigurationSection config = ConfigManager.getFile("worlds").getConfigurationSection("worlds");
 
                     if (config == null) {
-                        sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "The main config section seems to be missing. Make sure everything is where it's supposed to be.");
+                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "The main config section seems to be missing. Make sure everything is where it's supposed to be.");
 
                         return true;
                     }
 
                     worldConfig = config.getConfigurationSection(worldName);
                 } catch (IOException ex) {
-                    sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to load the worlds config file. Take a look at the server console for more information.");
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load the worlds config file. Take a look at the server console for more information.");
                     Logging.error("Failed to load the worlds config file:");
                     ex.printStackTrace();
 
@@ -70,7 +70,7 @@ public class DeleteWorldCmd implements Subcommand {
                 }
 
                 if (worldConfig == null) {
-                    sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Unknown world " + worldName + "! Are you sure you've typed it correctly?");
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown world " + worldName + "! Are you sure you've typed it correctly?");
 
                     return true;
                 }
@@ -81,13 +81,13 @@ public class DeleteWorldCmd implements Subcommand {
             SlimeLoader loader = LoaderUtils.getLoader(loaderString);
 
             if (loader == null) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Unknown data source " + loaderString + "!  Are you sure you've typed it correctly?");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown data source " + loaderString + "!  Are you sure you've typed it correctly?");
 
                 return true;
             }
 
             if (CommandManager.getInstance().getWorldsInUse().contains(worldName)) {
-                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + " is already being used on another command! Wait some time and try again.");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + " is already being used on another command! Wait some time and try again.");
 
                 return true;
             }
@@ -98,7 +98,7 @@ public class DeleteWorldCmd implements Subcommand {
                 deleteCache.invalidate(sender.getName());
 
                 if (Arrays.equals(args, oldArgs)) { // Make sure it's exactly the same command
-                    sender.sendMessage(CommandManager.PREFIX + ChatColor.GRAY + "Deleting world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + "...");
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GRAY + "Deleting world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + "...");
 
                     // No need to do this synchronously
                     CommandManager.getInstance().getWorldsInUse().add(worldName);
@@ -106,7 +106,7 @@ public class DeleteWorldCmd implements Subcommand {
 
                         try {
                             if (loader.isWorldLocked(worldName)) {
-                                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "World " + worldName + "is being used on another server.");
+                                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + "is being used on another server.");
 
                                 return;
                             }
@@ -120,24 +120,24 @@ public class DeleteWorldCmd implements Subcommand {
                                 config.set("worlds." + worldName, null);
                                 ConfigManager.saveFile(config, "worlds");
                             } catch (IOException ex) {
-                                sender.sendMessage(CommandManager.PREFIX + ChatColor.YELLOW + "Failed to update the worlds " +
+                                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.YELLOW + "Failed to update the worlds " +
                                         "config file. Take a look at the server console for more information.");
                                 Logging.error("Failed to update the worlds config file:");
                                 ex.printStackTrace();
                             }
 
-                            sender.sendMessage(CommandManager.PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
+                            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
                                     + ChatColor.GREEN + " deleted in " + (System.currentTimeMillis() - start) + "ms!");
                         } catch (IOException ex) {
                             if (!(sender instanceof ConsoleCommandSender)) {
-                                sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Failed to delete world " + worldName
+                                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to delete world " + worldName
                                         + ". Take a look at the server console for more information.");
                             }
 
                             Logging.error("Failed to delete world " + worldName + ". Stack trace:");
                             ex.printStackTrace();
                         } catch (UnknownWorldException ex) {
-                            sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + "Data source " + loaderString + " does not contain any world called " + worldName + ".");
+                            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + loaderString + " does not contain any world called " + worldName + ".");
                         } finally {
                             CommandManager.getInstance().getWorldsInUse().remove(worldName);
                         }
@@ -148,7 +148,7 @@ public class DeleteWorldCmd implements Subcommand {
                 }
             }
 
-            sender.sendMessage(CommandManager.PREFIX + ChatColor.RED + ChatColor.BOLD + "WARNING: " + ChatColor.GRAY + "You're about to delete " +
+            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + ChatColor.BOLD + "WARNING: " + ChatColor.GRAY + "You're about to delete " +
                     "world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + ". This action cannot be undone.");
 
             sender.sendMessage(" ");

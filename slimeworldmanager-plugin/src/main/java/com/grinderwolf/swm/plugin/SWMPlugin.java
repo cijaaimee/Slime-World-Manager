@@ -24,6 +24,7 @@ import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
+import com.grinderwolf.swm.plugin.update.Updater;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -48,7 +49,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Override
     public void onLoad() {
-        Logging.info("Loading...");
         instance = this;
 
         try {
@@ -101,6 +101,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         getCommand("swm").setExecutor(new CommandManager());
         getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
+        getServer().getPluginManager().registerEvents(new Updater(), this);
 
         for (SlimeWorld world : worlds) {
             if (Bukkit.getWorld(world.getName()) == null) {
