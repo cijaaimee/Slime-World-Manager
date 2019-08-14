@@ -1,9 +1,9 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
+import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
-import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
@@ -12,7 +12,6 @@ import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -94,46 +93,14 @@ public class MigrateWorldCmd implements Subcommand {
             Bukkit.getScheduler().runTaskAsynchronously(SWMPlugin.getInstance(), () -> {
 
                 try {
-                    if (newLoader.worldExists(worldName)) {
-                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + loaderString + " already contains a world named " + worldName + "!");
+                    long start = System.currentTimeMillis();
+                    SWMPlugin.getInstance().migrateWorld(worldName, oldLoader, newLoader);
 
-                        return;
-                    }
+                    worldConfig.set("source", loaderString);
+                    ConfigManager.saveFile(configFile, "worlds");
 
-                    sender.sendMessage(Logging.COMMAND_PREFIX + "Migrating world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + "...");
-                    World world = Bukkit.getWorld(worldName);
-
-                    boolean leaveLock = false;
-
-                    if (world != null) {
-                        CraftSlimeWorld slimeWorld = (CraftSlimeWorld) SWMPlugin.getInstance().getNms().getSlimeWorld(world);
-
-                        if (slimeWorld != null) {
-                            slimeWorld.setLoader(newLoader);
-
-                            if (!slimeWorld.getProperties().isReadOnly()) { // We have to manually unlock the world so no WorldInUseException is thrown
-                                oldLoader.unlockWorld(worldName);
-                                leaveLock = true;
-                            }
-                        }
-                    }
-
-                    try {
-                        long start = System.currentTimeMillis();
-                        byte[] serializedWorld = oldLoader.loadWorld(worldName, false);
-                        newLoader.saveWorld(worldName, serializedWorld, leaveLock);
-
-                        oldLoader.deleteWorld(worldName);
-
-                        worldConfig.set("source", loaderString);
-                        ConfigManager.saveFile(configFile, "worlds");
-                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " migrated in "
-                                + (System.currentTimeMillis() - start) + "ms!");
-                    } catch (UnknownWorldException ex) {
-                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Can't find world " + worldName + " in data source " + oldLoaderString + ".");
-                    } catch (WorldInUseException ex) {
-                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + " is being used on another server.");
-                    }
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " migrated in "
+                            + (System.currentTimeMillis() - start) + "ms!");
                 } catch (IOException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
                         sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to migrate world " + worldName + " (using data sources "
@@ -142,8 +109,12 @@ public class MigrateWorldCmd implements Subcommand {
 
                     Logging.error("Failed to load world " + worldName + " (using data source " + oldLoaderString + "):");
                     ex.printStackTrace();
-                } catch (UnknownWorldException ignored) {
-
+                } catch (WorldInUseException ex) {
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + " is being used on another server.");
+                } catch (WorldAlreadyExistsException ex) {
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + loaderString + " already contains a world named " + worldName + "!");
+                } catch (UnknownWorldException ex) {
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Can't find world " + worldName + " in data source " + oldLoaderString + ".");
                 } finally {
                     CommandManager.getInstance().getWorldsInUse().remove(worldName);
                 }

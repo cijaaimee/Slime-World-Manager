@@ -4,6 +4,7 @@ import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.UnsupportedWorldException;
+import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
@@ -48,10 +49,24 @@ public interface SlimePlugin {
     public void generateWorld(SlimeWorld world);
 
     /**
+     * Migrates a {@link SlimeWorld} to another datasource.
+     *
+     * @param worldName The name of the world to be migrated.
+     * @param currentLoader The {@link SlimeLoader} of the data source where the world is currently stored in.
+     * @param newLoader The {@link SlimeLoader} of the data source where the world will be moved to.
+     *
+     * @throws IOException if the world could not be migrated.
+     * @throws WorldInUseException if the world is being used on a server.
+     * @throws WorldAlreadyExistsException if a world with the same name already exists inside the new data source.
+     * @throws UnknownWorldException if the world has been removed from the old data source.
+     */
+    public void migrateWorld(String worldName, SlimeLoader currentLoader, SlimeLoader newLoader) throws IOException, WorldInUseException, WorldAlreadyExistsException, UnknownWorldException;
+
+    /**
      * Returns the {@link SlimeLoader} that is able to
      * read and store worlds from a specified data source.
      *
-     * @param dataSource {@link String} containing the data source
+     * @param dataSource {@link String} containing the data source.
      *
      * @return The {@link SlimeLoader} capable of reading and writing to the data source.
      */

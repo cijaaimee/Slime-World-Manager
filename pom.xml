@@ -51,8 +51,6 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
-        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
     </properties>
     
     <scm>

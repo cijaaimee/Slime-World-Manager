@@ -6,6 +6,7 @@ import com.grinderwolf.swm.api.exceptions.InvalidVersionException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.UnsupportedWorldException;
+import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
@@ -29,6 +30,7 @@ import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -253,6 +255,36 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     @Override
     public void generateWorld(SlimeWorld world) {
         nms.generateWorld(world);
+    }
+
+    @Override
+    public void migrateWorld(String worldName, SlimeLoader currentLoader, SlimeLoader newLoader) throws IOException, WorldInUseException, WorldAlreadyExistsException, UnknownWorldException {
+        if (newLoader.worldExists(worldName)) {
+            throw new WorldAlreadyExistsException(worldName);
+        }
+
+        World bukkitWorld = Bukkit.getWorld(worldName);
+
+        boolean leaveLock = false;
+
+        if (bukkitWorld != null) {
+            // Make sure the loaded world really is a SlimeWorld and not a normal Bukkit world
+            CraftSlimeWorld slimeWorld = (CraftSlimeWorld) SWMPlugin.getInstance().getNms().getSlimeWorld(bukkitWorld);
+
+            if (slimeWorld != null && currentLoader.equals(slimeWorld.getLoader())) {
+                slimeWorld.setLoader(newLoader);
+
+                if (!slimeWorld.getProperties().isReadOnly()) { // We have to manually unlock the world so no WorldInUseException is thrown
+                    currentLoader.unlockWorld(worldName);
+                    leaveLock = true;
+                }
+            }
+        }
+
+        byte[] serializedWorld = currentLoader.loadWorld(worldName, false);
+
+        newLoader.saveWorld(worldName, serializedWorld, leaveLock);
+        currentLoader.deleteWorld(worldName);
     }
 
     @Override
