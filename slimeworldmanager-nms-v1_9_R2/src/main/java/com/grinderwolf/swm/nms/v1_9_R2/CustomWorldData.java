@@ -3,16 +3,20 @@ package com.grinderwolf.swm.nms.v1_9_R2;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_9_R2.BlockPosition;
 import net.minecraft.server.v1_9_R2.EnumDifficulty;
 import net.minecraft.server.v1_9_R2.WorldData;
+import net.minecraft.server.v1_9_R2.WorldSettings;
 
 @Getter
-@RequiredArgsConstructor
 public class CustomWorldData extends WorldData {
 
     private final CraftSlimeWorld world;
+
+    public CustomWorldData(CraftSlimeWorld world) {
+        this.world = world;
+        this.setGameType(WorldSettings.EnumGamemode.NOT_SET);
+    }
 
     @Override
     public String getName() {
