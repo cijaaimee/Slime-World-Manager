@@ -29,6 +29,10 @@ SWM releases can be found [here](https://www.spigotmc.org/resources/slimeworldma
 </dependency>
 ```
 
+## Javadocs
+
+Javadocs can be found [here](https://grinderwolf.github.io/Slime-World-Manager/apidocs/).
+
 ## Credits
 
 Thanks to:
