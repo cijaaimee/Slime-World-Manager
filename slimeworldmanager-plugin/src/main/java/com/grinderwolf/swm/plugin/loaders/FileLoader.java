@@ -17,15 +17,17 @@ import java.util.stream.Collectors;
 
 public class FileLoader implements SlimeLoader {
 
-    private static final File WORLD_DIR = new File("slime_worlds");
+    private final File worldDir;
 
-    {
-        if (WORLD_DIR.exists() && !WORLD_DIR.isDirectory()) {
-            Logging.warning("A file named '" + WORLD_DIR.getName() + "' has been deleted, as this is the name used for the worlds directory.");
-            WORLD_DIR.delete();
+    FileLoader(File worldDir) {
+        this.worldDir = worldDir;
+
+        if (worldDir.exists() && !worldDir.isDirectory()) {
+            Logging.warning("A file named '" + worldDir.getName() + "' has been deleted, as this is the name used for the worlds directory.");
+            worldDir.delete();
         }
 
-        WORLD_DIR.mkdirs();
+        worldDir.mkdirs();
     }
 
     @Override
@@ -35,7 +37,7 @@ public class FileLoader implements SlimeLoader {
         }
 
         if (!readOnly) {
-            File lockFile = new File(WORLD_DIR, worldName + ".slime_lock");
+            File lockFile = new File(worldDir, worldName + ".slime_lock");
 
             if (lockFile.exists()) {
                 throw new WorldInUseException(worldName);
@@ -49,34 +51,34 @@ public class FileLoader implements SlimeLoader {
             }
         }
 
-        File file = new File(WORLD_DIR, worldName + ".slime");
+        File file = new File(worldDir, worldName + ".slime");
 
         return Files.readAllBytes(file.toPath());
     }
 
     @Override
     public boolean worldExists(String worldName) {
-        return new File(WORLD_DIR, worldName + ".slime").exists();
+        return new File(worldDir, worldName + ".slime").exists();
     }
 
     @Override
     public List<String> listWorlds() throws NotDirectoryException {
-        if(WORLD_DIR.list() == null) {
-            throw new NotDirectoryException(WORLD_DIR.getPath());
+        if(worldDir.list() == null) {
+            throw new NotDirectoryException(worldDir.getPath());
         }
 
-        return Arrays.stream(WORLD_DIR.list()).filter(c -> c.endsWith(".slime")).collect(Collectors.toList());
+        return Arrays.stream(worldDir.list()).filter(c -> c.endsWith(".slime")).collect(Collectors.toList());
     }
 
     @Override
     public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException {
-        File lastBackup = new File(WORLD_DIR, worldName + ".slime_old");
+        File lastBackup = new File(worldDir, worldName + ".slime_old");
 
         if (lastBackup.exists()) {
             lastBackup.delete();
         }
 
-        File file = new File(WORLD_DIR, worldName + ".slime");
+        File file = new File(worldDir, worldName + ".slime");
 
         if (file.exists()) {
             file.renameTo(lastBackup);
@@ -90,7 +92,7 @@ public class FileLoader implements SlimeLoader {
 
         if (lock) {
             // Make sure the lock file is there
-            File lockFile = new File(WORLD_DIR, worldName + ".slime_lock");
+            File lockFile = new File(worldDir, worldName + ".slime_lock");
 
             if (!lockFile.exists()) {
                 lockFile.createNewFile();
@@ -109,13 +111,13 @@ public class FileLoader implements SlimeLoader {
             throw new UnknownWorldException(worldName);
         }
 
-        File lockFile = new File(WORLD_DIR, worldName + ".slime_lock");
+        File lockFile = new File(worldDir, worldName + ".slime_lock");
         lockFile.delete();
     }
 
     @Override
     public boolean isWorldLocked(String worldName) {
-        return new File(WORLD_DIR, worldName + ".slime_lock").exists();
+        return new File(worldDir, worldName + ".slime_lock").exists();
     }
 
     @Override
@@ -124,7 +126,7 @@ public class FileLoader implements SlimeLoader {
             throw new UnknownWorldException(worldName);
         }
 
-        new File(WORLD_DIR, worldName + ".slime_lock").delete();
-        new File(WORLD_DIR, worldName + ".slime").delete();
+        new File(worldDir, worldName + ".slime_lock").delete();
+        new File(worldDir, worldName + ".slime").delete();
     }
 }

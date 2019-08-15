@@ -29,6 +29,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -45,9 +46,13 @@ public class LoaderUtils {
     private static Map<String, SlimeLoader> loaderMap = new HashMap<>();
 
     public static void registerLoaders() throws IOException {
-        registerLoader("file", new FileLoader());
-
         FileConfiguration config = ConfigManager.getFile("sources");
+
+        ConfigurationSection fileConfig = config.getConfigurationSection("file");
+        String filePath = fileConfig == null ? "slime_worlds" : fileConfig.getString("path", "slime_worlds");
+
+        registerLoader("file", new FileLoader(new File(filePath)));
+
         ConfigurationSection mysqlConfig = config.getConfigurationSection("mysql");
 
         if (mysqlConfig.getBoolean("enabled", false)) {

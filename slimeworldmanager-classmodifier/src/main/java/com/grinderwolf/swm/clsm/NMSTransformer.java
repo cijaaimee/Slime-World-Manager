@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 public class NMSTransformer implements ClassFileTransformer {
 
     private static final Pattern PATTERN = Pattern.compile("^(\\w+)\\s*\\((.*?)\\)\\s*@(.+?\\.txt)$");
+    private static final boolean DEBUG = Boolean.getBoolean("clsmDebug");
 
     private static Map<String, Change[]> changes = new HashMap<>();
 
@@ -75,7 +76,10 @@ public class NMSTransformer implements ClassFileTransformer {
                         changeArray[i] = new Change(methodName, parameters, content);
                     }
 
-                    System.err.println("Loaded " + changeArray.length + " changes for class " + clazz + ".");
+                    if (DEBUG) {
+                        System.out.println("Loaded " + changeArray.length + " changes for class " + clazz + ".");
+                    }
+
                     changes.put(clazz, changeArray);
                 }
             }
@@ -104,7 +108,10 @@ public class NMSTransformer implements ClassFileTransformer {
         if (className != null) {
             if (changes.containsKey(className)) {
                 String fixedClassName = className.replace("/", ".");
-                System.out.println("Applying changes for class " + fixedClassName);
+
+                if (DEBUG) {
+                    System.out.println("Applying changes for class " + fixedClassName);
+                }
 
                 try {
                     ClassPool pool = ClassPool.getDefault();
@@ -125,8 +132,6 @@ public class NMSTransformer implements ClassFileTransformer {
 
                             for (int i = 0; i < params.length; i++) {
                                 if (!change.getParams()[i].trim().equals(params[i].getName())) {
-                                    System.out.println("Param " + i + " is different: " + change.getParams()[i] + " - " + params[i].getName());
-
                                     continue main;
                                 }
                             }

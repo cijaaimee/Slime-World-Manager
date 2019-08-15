@@ -3,7 +3,9 @@ package com.grinderwolf.swm.plugin.loaders;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.grinderwolf.swm.plugin.log.Logging;
 import com.mongodb.MongoException;
+import com.mongodb.MongoNamespace;
 import com.mongodb.client.*;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
@@ -44,6 +46,20 @@ public class MongoLoader implements SlimeLoader {
         MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
 
         mongoCollection.createIndex(Indexes.ascending("name"), new IndexOptions().unique(true));
+
+        // Old GridFS importing
+        for (String collectionName : mongoDatabase.listCollectionNames()) {
+            if (collectionName.equals(collection + "_files.files") || collectionName.equals(collection + "_files.chunks")) {
+                Logging.info("Updating MongoDB database...");
+
+                mongoDatabase.getCollection(collection + "_files.files").renameCollection(new MongoNamespace(database, collection + ".files"));
+                mongoDatabase.getCollection(collection + "_files.chunks").renameCollection(new MongoNamespace(database, collection + ".chunks"));
+
+                Logging.info("MongoDB database updated!");
+
+                break;
+            }
+        }
     }
 
     @Override

@@ -15,3 +15,5 @@ mongodb:
   password: ''
   database: slimeworldmanager
   collection: worlds
+file:
+  path: slime_worlds
