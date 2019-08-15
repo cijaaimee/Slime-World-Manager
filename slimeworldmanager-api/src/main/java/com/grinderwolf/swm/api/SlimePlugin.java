@@ -1,14 +1,18 @@
 package com.grinderwolf.swm.api;
 
 import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
+import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.UnsupportedWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
+import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
+import com.grinderwolf.swm.api.exceptions.WorldTooBigException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -76,8 +80,24 @@ public interface SlimePlugin {
      * Registers a custom {@link SlimeLoader}. This loader can
      * then be used by Slime World Manager to load and store worlds.
      *
-     * @param dataSource the data source this loader is capable of reading and writing to.
-     * @param loader the {@link SlimeLoader} that is going to be registered.
+     * @param dataSource The data source this loader is capable of reading and writing to.
+     * @param loader The {@link SlimeLoader} that is going to be registered.
      */
     public void registerLoader(String dataSource, SlimeLoader loader);
+
+    /**
+     * Imports a world into the SRF and saves it in a data source.
+     *
+     * @param worldDir The directory where the world is.
+     * @param worldName The name of the world.
+     * @param loader The {@link SlimeLoader} that will be used to store the world.
+     *
+     * @throws WorldAlreadyExistsException if the data source already contains a world with the same name.
+     * @throws InvalidWorldException if the provided directory does not contain a valid world.
+     * @throws WorldLoadedException if the world is loaded on the server.
+     * @throws WorldTooBigException if the world is too big to be imported into the SRF.
+     * @throws IOException if the world could not be read or stored.
+     */
+    public void importWorld(File worldDir, String worldName, SlimeLoader loader) throws WorldAlreadyExistsException,
+            InvalidWorldException, WorldLoadedException, WorldTooBigException, IOException;
 }

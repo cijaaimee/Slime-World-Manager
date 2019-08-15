@@ -1,8 +1,8 @@
 package com.grinderwolf.swm.api.exceptions;
 
 /**
- * Exception thrown when a
- * world could not be found.
+ * Exception thrown when a world
+ * already exists inside a data source.
  */
 public class WorldAlreadyExistsException extends SlimeException {
 

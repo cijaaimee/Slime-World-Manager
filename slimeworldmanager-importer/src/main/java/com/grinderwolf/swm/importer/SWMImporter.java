@@ -78,7 +78,7 @@ public class SWMImporter {
         System.out.println("**** WARNING ****");
         System.out.println("The Slime Format is meant to be used on tiny maps, not big survival worlds. It is recommended " +
                 "to trim your world by using the Prune MCEdit tool to ensure you don't save more chunks than you want to.");
-        System.out.println("");
+        System.out.println();
         System.out.println("NOTE: This utility will automatically ignore every chunk that doesn't contain any blocks.");
         System.out.print("Do you want to continue? [Y/N]: ");
 

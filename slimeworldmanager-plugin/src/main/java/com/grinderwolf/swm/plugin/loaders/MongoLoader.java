@@ -136,14 +136,13 @@ public class MongoLoader implements SlimeLoader {
 
             bucket.uploadFromStream(worldName, new ByteArrayInputStream(serializedWorld));
 
-            if (lock) {
-                // Make sure the world is locked
-                MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
-                Document worldDoc = mongoCollection.find(Filters.eq("name", worldName)).first();
+            MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
+            Document worldDoc = mongoCollection.find(Filters.eq("name", worldName)).first();
 
-                if (worldDoc == null) {
-                    mongoCollection.insertOne(new Document().append("name", worldName).append("locked", true));
-                }
+            if (worldDoc == null) {
+                mongoCollection.insertOne(new Document().append("name", worldName).append("locked", lock));
+            } else if (!worldDoc.getBoolean("lock") && lock) {
+                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", true));
             }
         } catch (MongoException ex) {
             throw new IOException(ex);

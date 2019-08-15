@@ -3,6 +3,7 @@ package com.grinderwolf.swm.plugin.commands;
 import com.grinderwolf.swm.plugin.commands.sub.DeleteWorldCmd;
 import com.grinderwolf.swm.plugin.commands.sub.GotoCmd;
 import com.grinderwolf.swm.plugin.commands.sub.HelpCmd;
+import com.grinderwolf.swm.plugin.commands.sub.ImportWorldCmd;
 import com.grinderwolf.swm.plugin.commands.sub.LoadWorldCmd;
 import com.grinderwolf.swm.plugin.commands.sub.MigrateWorldCmd;
 import com.grinderwolf.swm.plugin.commands.sub.Subcommand;
@@ -46,6 +47,7 @@ public class CommandManager implements CommandExecutor {
         commands.put("list", new WorldListCmd());
         commands.put("migrate", new MigrateWorldCmd());
         commands.put("delete", new DeleteWorldCmd());
+        commands.put("import", new ImportWorldCmd());
     }
 
     @Override

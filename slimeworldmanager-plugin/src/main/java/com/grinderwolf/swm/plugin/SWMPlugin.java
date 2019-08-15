@@ -3,11 +3,14 @@ package com.grinderwolf.swm.plugin;
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.swm.api.exceptions.InvalidVersionException;
+import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.UnsupportedWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
+import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
+import com.grinderwolf.swm.api.exceptions.WorldTooBigException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
@@ -26,6 +29,7 @@ import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.update.Updater;
+import com.grinderwolf.swm.plugin.world.WorldImporter;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -34,6 +38,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -295,5 +300,31 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     @Override
     public void registerLoader(String dataSource, SlimeLoader loader) {
         LoaderUtils.registerLoader(dataSource, loader);
+    }
+
+    @Override
+    public void importWorld(File worldDir, String worldName, SlimeLoader loader) throws WorldAlreadyExistsException,
+            InvalidWorldException, WorldLoadedException, WorldTooBigException, IOException {
+        if (loader.worldExists(worldName)) {
+            throw new WorldAlreadyExistsException(worldName);
+        }
+
+        World bukkitWorld = Bukkit.getWorld(worldDir.getName());
+
+        if (bukkitWorld != null && nms.getSlimeWorld(bukkitWorld) == null) {
+            throw new WorldLoadedException(worldDir.getName());
+        }
+
+        CraftSlimeWorld world = WorldImporter.readFromDirectory(worldDir);
+
+        byte[] serializedWorld;
+
+        try {
+            serializedWorld = world.serialize();
+        } catch (IndexOutOfBoundsException ex) {
+            throw new WorldTooBigException(worldDir.getName());
+        }
+
+        loader.saveWorld(worldName, serializedWorld, false);
     }
 }
