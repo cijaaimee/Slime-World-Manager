@@ -70,6 +70,9 @@ public interface SlimeWorld {
         final boolean allowMonsters;
         @Accessors(fluent = true)
         final boolean allowAnimals;
+
         final boolean readOnly;
+
+        final boolean pvp;
     }
 }

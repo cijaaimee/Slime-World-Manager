@@ -7,6 +7,8 @@ import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
+import com.grinderwolf.swm.plugin.config.WorldData;
+import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
@@ -15,8 +17,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -44,44 +44,27 @@ public class DeleteWorldCmd implements Subcommand {
                 return true;
             }
 
-            String loaderString;
+            String source;
 
             if (args.length > 1) {
-                loaderString = args[1];
+                source = args[1];
             } else {
-                ConfigurationSection worldConfig;
+                WorldsConfig config = ConfigManager.getWorldConfig();
+                WorldData worldData = config.getWorlds().get(worldName);
 
-                try {
-                    ConfigurationSection config = ConfigManager.getFile("worlds").getConfigurationSection("worlds");
-
-                    if (config == null) {
-                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "The main config section seems to be missing. Make sure everything is where it's supposed to be.");
-
-                        return true;
-                    }
-
-                    worldConfig = config.getConfigurationSection(worldName);
-                } catch (IOException ex) {
-                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load the worlds config file. Take a look at the server console for more information.");
-                    Logging.error("Failed to load the worlds config file:");
-                    ex.printStackTrace();
-
-                    return true;
-                }
-
-                if (worldConfig == null) {
+                if (worldData == null) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown world " + worldName + "! Are you sure you've typed it correctly?");
 
                     return true;
                 }
 
-                loaderString = worldConfig.getString("source");
+                source = worldData.getDataSource();
             }
 
-            SlimeLoader loader = LoaderUtils.getLoader(loaderString);
+            SlimeLoader loader = LoaderUtils.getLoader(source);
 
             if (loader == null) {
-                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown data source " + loaderString + "!  Are you sure you've typed it correctly?");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown data source " + source + "!  Are you sure you've typed it correctly?");
 
                 return true;
             }
@@ -115,16 +98,10 @@ public class DeleteWorldCmd implements Subcommand {
                             loader.deleteWorld(worldName);
 
                             // Now let's delete it from the config file
-                            try {
-                                FileConfiguration config = ConfigManager.getFile("worlds");
-                                config.set("worlds." + worldName, null);
-                                ConfigManager.saveFile(config, "worlds");
-                            } catch (IOException ex) {
-                                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.YELLOW + "Failed to update the worlds " +
-                                        "config file. Take a look at the server console for more information.");
-                                Logging.error("Failed to update the worlds config file:");
-                                ex.printStackTrace();
-                            }
+                            WorldsConfig config = ConfigManager.getWorldConfig();
+
+                            config.getWorlds().remove(worldName);
+                            config.save();
 
                             sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
                                     + ChatColor.GREEN + " deleted in " + (System.currentTimeMillis() - start) + "ms!");
@@ -137,7 +114,7 @@ public class DeleteWorldCmd implements Subcommand {
                             Logging.error("Failed to delete world " + worldName + ". Stack trace:");
                             ex.printStackTrace();
                         } catch (UnknownWorldException ex) {
-                            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + loaderString + " does not contain any world called " + worldName + ".");
+                            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + source + " does not contain any world called " + worldName + ".");
                         } finally {
                             CommandManager.getInstance().getWorldsInUse().remove(worldName);
                         }

@@ -3,10 +3,15 @@ package com.grinderwolf.swm.plugin.loaders;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.mongodb.MongoException;
 import com.mongodb.MongoNamespace;
-import com.mongodb.client.*;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.model.GridFSFile;
@@ -16,7 +21,6 @@ import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,17 +34,12 @@ public class MongoLoader implements SlimeLoader {
     private final String database;
     private final String collection;
 
-    MongoLoader(ConfigurationSection config) throws MongoException {
-        String host = config.getString("host", "127.0.0.1");
-        int port = config.getInt("port", 27017);
+    MongoLoader(DatasourcesConfig.MongoDBConfig config) throws MongoException {
+        this.database = config.getDatabase();
+        this.collection = config.getCollection();
 
-        String username = config.getString("username", "slimeworldmanager");
-        String password = config.getString("password", "");
-        String authSource = config.getString("auth", "admin");
-        this.database = config.getString("database", "slimeworldmanager");
-        this.collection = config.getString("collection", "worlds");
-
-        this.client = MongoClients.create("mongodb://" + username + ":" + password + "@" + host + ":" + port + "/?authSource=" + authSource);
+        this.client = MongoClients.create("mongodb://" + config.getUsername() + ":" + config.getPassword() + "@" + config.getHost()
+                + ":" + config.getPort() + "/?authSource=" + config.getAuthSource());
 
         MongoDatabase mongoDatabase = client.getDatabase(database);
         MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);

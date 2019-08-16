@@ -47,6 +47,8 @@ public class CustomWorldServer extends WorldServer {
         worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
         MinecraftServer.getServer().worldServer.put(dimension, this);
+
+        this.pvpMode = properties.isPvp();
     }
 
     @Override

@@ -49,6 +49,8 @@ public class CustomWorldServer extends WorldServer {
 
         nbtStorage.getDirectory().delete();
         nbtStorage.getDirectory().getParentFile().delete();
+
+        this.pvpMode = properties.isPvp();
     }
 
     @Override

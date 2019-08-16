@@ -8,9 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,17 +55,7 @@ public class WorldListCmd implements Subcommand {
         }
 
         List<String> worldsList = new ArrayList<>(loadedWorlds.keySet());
-
-        try {
-            ConfigurationSection config = ConfigManager.getFile("worlds").getConfigurationSection("worlds");
-
-            if (config != null) {
-                config.getKeys(false).stream().filter(world -> !loadedWorlds.containsKey(world)).forEach(worldsList::add);
-            }
-        } catch (IOException ex) {
-            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to read the worlds config file.");
-            ex.printStackTrace();
-        }
+        ConfigManager.getWorldConfig().getWorlds().keySet().stream().filter((world) -> !worldsList.contains(world)).forEach(worldsList::add);
 
         int offset = (page - 1) * MAX_ITEMS_PER_PAGE;
         double d = worldsList.size() / (double) MAX_ITEMS_PER_PAGE;

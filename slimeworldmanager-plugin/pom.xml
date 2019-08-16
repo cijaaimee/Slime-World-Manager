@@ -13,6 +13,10 @@
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>sponge</id>
+            <url>https://repo.spongepowered.org/maven</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -96,6 +100,11 @@
             <groupId>com.github.olivergondza</groupId>
             <artifactId>maven-jdk-tools-wrapper</artifactId>
             <version>0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>configurate-yaml</artifactId>
+            <version>3.6</version>
         </dependency>
     </dependencies>
     <build>

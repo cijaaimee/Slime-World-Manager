@@ -3,9 +3,9 @@ package com.grinderwolf.swm.plugin.loaders;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -27,18 +27,12 @@ public class MysqlLoader implements SlimeLoader {
 
     private final HikariDataSource source;
 
-    MysqlLoader(ConfigurationSection config) throws SQLException {
-        String host = config.getString("host", "127.0.0.1");
-        int port = config.getInt("port", 3306);
-        String username = config.getString("username", "slimeworldmanager");
-        String password = config.getString("password", "");
-        String database = config.getString("database", "slimeworldmanager");
-
+    MysqlLoader(DatasourcesConfig.MysqlConfig config) throws SQLException {
         HikariConfig hikariConfig = new HikariConfig();
 
-        hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database + "?autoReconnect=true&allowMultiQueries=true");
-        hikariConfig.setUsername(username);
-        hikariConfig.setPassword(password);
+        hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabase() + "?autoReconnect=true&allowMultiQueries=true");
+        hikariConfig.setUsername(config.getUsername());
+        hikariConfig.setPassword(config.getPassword());
 
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");

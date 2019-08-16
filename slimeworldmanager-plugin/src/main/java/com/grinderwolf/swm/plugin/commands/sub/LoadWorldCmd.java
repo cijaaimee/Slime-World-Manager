@@ -6,10 +6,13 @@ import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.UnsupportedWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
+import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
+import com.grinderwolf.swm.plugin.config.WorldData;
+import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -17,7 +20,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.IOException;
 
@@ -40,28 +42,11 @@ public class LoadWorldCmd implements Subcommand {
                 return true;
             }
 
-            ConfigurationSection worldConfig;
+            WorldsConfig config = ConfigManager.getWorldConfig();
+            WorldData worldData = config.getWorlds().get(worldName);
 
-            try {
-                ConfigurationSection config = ConfigManager.getFile("worlds").getConfigurationSection("worlds");
-
-                if (config == null) {
-                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "The main config section seems to be missing. Make sure everything is where it's supposed to be.");
-
-                    return true;
-                }
-
-                worldConfig = config.getConfigurationSection(worldName);
-            } catch (IOException ex) {
-                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load the worlds config file. Take a look at the server console for more information.");
-                Logging.error("Failed to load the worlds config file:");
-                ex.printStackTrace();
-
-                return true;
-            }
-
-            if (worldConfig == null) {
-                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown world " + worldName + "! Are you sure you configured it correctly?");
+            if (worldData == null) {
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to find world " + worldName + " inside the worlds config file.");
 
                 return true;
             }
@@ -70,18 +55,29 @@ public class LoadWorldCmd implements Subcommand {
 
             // It's best to load the world async, and then just go back to the server thread and add it to the world list
             Bukkit.getScheduler().runTaskAsynchronously(SWMPlugin.getInstance(), () -> {
+
                 try {
                     long start = System.currentTimeMillis();
-                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorldFromConfig(worldConfig);
+                    SlimeLoader loader = SWMPlugin.getInstance().getLoader(worldData.getDataSource());
+
+                    if (loader == null) {
+                        throw new IllegalArgumentException("invalid data source " + worldData.getDataSource());
+                    }
+
+                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorld(loader, worldName, worldData.toProperties());
 
                     Bukkit.getScheduler().runTask(SWMPlugin.getInstance(), () -> {
-                        SWMPlugin.getInstance().generateWorld(slimeWorld);
+                        try {
+                            SWMPlugin.getInstance().generateWorld(slimeWorld);
+                        } catch (IllegalArgumentException ex) {
+                            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName + ": " + ex.getMessage() + ".");
+
+                            return;
+                        }
 
                         sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
                                 + ChatColor.GREEN + " loaded and generated in " + (System.currentTimeMillis() - start) + "ms!");
                     });
-                } catch (IllegalArgumentException ex) {
-                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName + ": " + ex.getMessage() + ".");
                 } catch (CorruptedWorldException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
                         sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
@@ -95,10 +91,10 @@ public class LoadWorldCmd implements Subcommand {
                             " was serialized with a newer version of the Slime Format (" + ex.getMessage() + ") that SWM cannot understand.");
                 } catch (UnknownWorldException e) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
-                            ": world could not be found (using data source '" + worldConfig.getString("source") + "').");
+                            ": world could not be found (using data source '" + worldData.getDataSource() + "').");
                 } catch (WorldInUseException e) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
-                            ": world is already in use. If you are sure this is a mistake, run the command /swm unlock " + worldName + " " + worldConfig.get("source"));
+                            ": world is already in use. If you are sure this is a mistake, run the command /swm unlock " + worldName);
                 } catch (UnsupportedWorldException e) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName + ": world is meant to be used on a "
                             + (e.isV1_13() ? "1.13 or newer" : "1.12.2 or older") + " server.");

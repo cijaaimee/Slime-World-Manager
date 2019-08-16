@@ -21,10 +21,9 @@ import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
+import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.mongodb.MongoException;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -46,16 +45,16 @@ public class LoaderUtils {
     private static Map<String, SlimeLoader> loaderMap = new HashMap<>();
 
     public static void registerLoaders() throws IOException {
-        FileConfiguration config = ConfigManager.getFile("sources");
+        DatasourcesConfig config = ConfigManager.getDatasourcesConfig();
 
-        ConfigurationSection fileConfig = config.getConfigurationSection("file");
-        String filePath = fileConfig == null ? "slime_worlds" : fileConfig.getString("path", "slime_worlds");
+        // File loader
+        DatasourcesConfig.FileConfig fileConfig = config.getFileConfig();
+        registerLoader("file", new FileLoader(new File(fileConfig.getPath())));
 
-        registerLoader("file", new FileLoader(new File(filePath)));
+        // Mysql loader
+        DatasourcesConfig.MysqlConfig mysqlConfig = config.getMysqlConfig();
 
-        ConfigurationSection mysqlConfig = config.getConfigurationSection("mysql");
-
-        if (mysqlConfig.getBoolean("enabled", false)) {
+        if (mysqlConfig.isEnabled()) {
             try {
                 registerLoader("mysql", new MysqlLoader(mysqlConfig));
             } catch (SQLException ex) {
@@ -64,9 +63,10 @@ public class LoaderUtils {
             }
         }
 
-        ConfigurationSection mongoConfig = config.getConfigurationSection("mongodb");
+        // MongoDB loader
+        DatasourcesConfig.MongoDBConfig mongoConfig = config.getMongoDbConfig();
 
-        if (mongoConfig.getBoolean("enabled", false)) {
+        if (mongoConfig.isEnabled()) {
             try {
                 registerLoader("mongodb", new MongoLoader(mongoConfig));
             } catch (MongoException ex) {

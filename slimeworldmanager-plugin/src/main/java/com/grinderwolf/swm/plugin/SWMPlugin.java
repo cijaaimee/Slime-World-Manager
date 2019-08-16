@@ -26,16 +26,17 @@ import com.grinderwolf.swm.nms.v1_9_R1.v1_9_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_9_R2.v1_9_R2SlimeNMS;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
+import com.grinderwolf.swm.plugin.config.WorldData;
+import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.update.Updater;
 import com.grinderwolf.swm.plugin.world.WorldImporter;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import lombok.Getter;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -43,6 +44,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
@@ -57,6 +59,14 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     @Override
     public void onLoad() {
         instance = this;
+
+        try {
+            ConfigManager.initialize();
+        } catch (NullPointerException | IOException | ObjectMappingException ex) {
+            Logging.error("Failed to load config files:");
+            ex.printStackTrace();
+            return;
+        }
 
         try {
             LoaderUtils.registerLoaders();
@@ -74,12 +84,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             return;
         }
 
-        try {
-            loadWorlds();
-        } catch (NullPointerException | IOException ex) {
-            Logging.error("Failed to load worlds from config file:");
-            ex.printStackTrace();
-        }
+        loadWorlds();
 
         // Default world override
         try {
@@ -149,94 +154,49 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
     }
 
-    private void loadWorlds() throws IOException {
-        ConfigurationSection config = ConfigManager.getFile("worlds").getConfigurationSection("worlds");
+    private void loadWorlds() {
+        WorldsConfig config = ConfigManager.getWorldConfig();
 
-        if (config != null) {
-            long start = System.currentTimeMillis();
-            int loadedWorlds = 0;
+        for (Map.Entry<String, WorldData> entry : config.getWorlds().entrySet()) {
+            String worldName = entry.getKey();
+            WorldData worldData = entry.getValue();
 
-            for (String world : config.getKeys(false)) {
-                ConfigurationSection worldConfig = config.getConfigurationSection(world);
+            if (worldData.isLoadOnStartup()) {
+                try {
+                    SlimeLoader loader = getLoader(worldData.getDataSource());
 
-                if (worldConfig.getBoolean("loadOnStartup", true)) {
-                    try {
-                        worlds.add(loadWorldFromConfig(worldConfig));
-                        loadedWorlds++;
-                    } catch (IllegalArgumentException ex) {
-                        Logging.error("Couldn't load world " + world + ": " + ex.getMessage() + ".");
-                    } catch (UnknownWorldException ex) {
-                        Logging.error("Couldn't load world " + world + ": world does not exist, are you sure you've set the correct data source?");
-                    } catch (NewerFormatException ex) {
-                        Logging.error("Couldn't load world " + world + ": world is serialized in a newer Slime Format version ("
-                                + ex.getMessage() + ") that SWM does not understand.");
-                    } catch (WorldInUseException e) {
-                        Logging.error("Couldn't load world " + world + ": world is in use! If you are sure this is a mistake, run " +
-                                "the command /swm unlock " + world + " " + worldConfig.get("source"));
-                    } catch (UnsupportedWorldException e) {
-                        Logging.error("Couldn't load world " + world + ": world is meant to be used on a " + (e.isV1_13() ? "1.13 or newer" : "1.12.2 or older") + " server.");
-                    } catch (CorruptedWorldException ex) {
-                        Logging.error("Couldn't load world " + world + ": world seems to be corrupted.");
-
-                        ex.printStackTrace();
+                    if (loader == null) {
+                        throw new IllegalArgumentException("invalid data source " + worldData.getDataSource() + "");
                     }
+
+                    SlimeWorld.SlimeProperties properties = worldData.toProperties();
+                    SlimeWorld world = loadWorld(loader, worldName, properties);
+
+                    worlds.add(world);
+                } catch (IllegalArgumentException ex) {
+                    Logging.error("Couldn't load world " + worldName + ": " + ex.getMessage());
+                } catch (UnknownWorldException ex) {
+                    Logging.error("Couldn't load world " + worldName + ": world does not exist, are you sure you've set the correct data source?");
+                } catch (NewerFormatException ex) {
+                    Logging.error("Couldn't load world " + worldName + ": world is serialized in a newer Slime Format version ("
+                            + ex.getMessage() + ") that SWM does not understand.");
+                } catch (WorldInUseException e) {
+                    Logging.error("Couldn't load world " + worldName + ": world is in use! If you are sure this is a mistake, run the command /swm unlock " + worldName);
+                } catch (UnsupportedWorldException e) {
+                    Logging.error("Couldn't load world " + worldName + ": world is meant to be used on a " + (e.isV1_13() ? "1.13 or newer" : "1.12.2 or older") + " server.");
+                } catch (CorruptedWorldException ex) {
+                    Logging.error("Couldn't load world " + worldName + ": world seems to be corrupted.");
+
+                    ex.printStackTrace();
+                } catch (IOException ex) {
+                    Logging.error("Couldn't load world " + worldName + ":");
+
+                    ex.printStackTrace();
                 }
             }
-
-            if (loadedWorlds > 0) {
-                Logging.info(loadedWorlds + " world" + (loadedWorlds == 1 ? "" : "s") + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
-            }
-        } else {
-            Logging.warning("No worlds found to load!");
-        }
-    }
-
-    public SlimeWorld loadWorldFromConfig(ConfigurationSection worldConfig) throws UnknownWorldException, IOException,
-            CorruptedWorldException, NewerFormatException, WorldInUseException, UnsupportedWorldException {
-        if (Bukkit.getWorld(worldConfig.getName()) != null) {
-            throw new IllegalArgumentException("world '" + worldConfig.getName() + "' already exists");
         }
 
-        // Config data retrieval
-        String loaderString = worldConfig.getString("source", "");
-        SlimeLoader loader = getLoader(loaderString);
-
-        if (loader == null) {
-            throw new IllegalArgumentException("unknown loader '" + loaderString + "'");
-        }
-
-        String difficultyString = worldConfig.getString("difficulty", "peaceful");
-        Difficulty difficulty;
-
-        try {
-            difficulty = Enum.valueOf(Difficulty.class, difficultyString.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("unknown difficulty '" + difficultyString + "'");
-        }
-
-        String spawnLocation = worldConfig.getString("spawn", "0, 255, 0");
-        String[] spawnLocationSplit = spawnLocation.split(", ");
-
-        double spawnX, spawnY, spawnZ;
-
-        try {
-            spawnX = Double.parseDouble(spawnLocationSplit[0]);
-            spawnY = Double.parseDouble(spawnLocationSplit[1]);
-            spawnZ = Double.parseDouble(spawnLocationSplit[2]);
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-            throw new IllegalArgumentException("invalid spawn location '" + spawnLocation + "'");
-        }
-
-        boolean allowMonsters = worldConfig.getBoolean("allowMonsters", true);
-        boolean allowAnimals = worldConfig.getBoolean("allowAnimals", true);
-
-        boolean readOnly = worldConfig.getBoolean("readOnly", false);
-
-        SlimeWorld.SlimeProperties properties = SlimeWorld.SlimeProperties.builder().spawnX(spawnX).spawnY(spawnY).spawnZ(spawnZ)
-                .difficulty(difficulty.getValue()).allowMonsters(allowMonsters).allowAnimals(allowAnimals).readOnly(readOnly).build();
-
-        // Actual world load
-        return loadWorld(loader, worldConfig.getName(), properties);
+        config.save();
     }
 
     @Override

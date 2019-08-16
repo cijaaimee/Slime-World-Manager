@@ -49,6 +49,8 @@ public class CustomWorldServer extends WorldServer {
         worldData.setDifficulty(EnumDifficulty.getById(properties.getDifficulty()));
         worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
+
+        this.pvpMode = properties.isPvp();
     }
 
     public CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, AdvancementDataWorld advancementData) {

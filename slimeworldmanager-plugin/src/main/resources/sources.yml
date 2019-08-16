@@ -11,6 +11,7 @@ mongodb:
   enabled: false
   host: 127.0.0.1
   port: 27017
+  auth: admin
   username: slimeworldmanager
   password: ''
   database: slimeworldmanager
