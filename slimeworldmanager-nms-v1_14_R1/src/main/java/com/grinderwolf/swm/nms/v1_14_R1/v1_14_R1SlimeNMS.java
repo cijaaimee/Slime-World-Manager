@@ -4,8 +4,13 @@ import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
+import net.minecraft.server.v1_14_R1.BlockPosition;
+import net.minecraft.server.v1_14_R1.ChunkCoordIntPair;
+import net.minecraft.server.v1_14_R1.ChunkProviderServer;
 import net.minecraft.server.v1_14_R1.DimensionManager;
 import net.minecraft.server.v1_14_R1.MinecraftServer;
+import net.minecraft.server.v1_14_R1.TicketType;
+import net.minecraft.server.v1_14_R1.Unit;
 import net.minecraft.server.v1_14_R1.WorldServer;
 import net.minecraft.server.v1_14_R1.WorldSettings;
 import org.apache.logging.log4j.LogManager;
@@ -79,7 +84,14 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
         mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings(dataManager.getWorldData()));
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
-        MinecraftServer.getServer().loadSpawn(server.getChunkProvider().playerChunkMap.worldLoadListener, server);
+
+        if (server.getWorld().getKeepSpawnInMemory()) {
+            LOGGER.info("Preparing start region for dimension '{}'/{}", worldName, actualDimension);
+            BlockPosition spawn = server.getSpawn();
+            ChunkProviderServer provider = server.getChunkProvider();
+            provider.addTicket(TicketType.START, new ChunkCoordIntPair(spawn), 11, Unit.INSTANCE);
+        }
+        
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
 
         LOGGER.info("World " + world.getName() + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
