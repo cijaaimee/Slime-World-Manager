@@ -6,6 +6,7 @@ import com.grinderwolf.swm.plugin.commands.sub.HelpCmd;
 import com.grinderwolf.swm.plugin.commands.sub.ImportWorldCmd;
 import com.grinderwolf.swm.plugin.commands.sub.LoadWorldCmd;
 import com.grinderwolf.swm.plugin.commands.sub.MigrateWorldCmd;
+import com.grinderwolf.swm.plugin.commands.sub.ReloadConfigCmd;
 import com.grinderwolf.swm.plugin.commands.sub.Subcommand;
 import com.grinderwolf.swm.plugin.commands.sub.UnloadWorldCmd;
 import com.grinderwolf.swm.plugin.commands.sub.UnlockWorldCmd;
@@ -48,6 +49,7 @@ public class CommandManager implements CommandExecutor {
         commands.put("migrate", new MigrateWorldCmd());
         commands.put("delete", new DeleteWorldCmd());
         commands.put("import", new ImportWorldCmd());
+        commands.put("reload", new ReloadConfigCmd());
     }
 
     @Override
