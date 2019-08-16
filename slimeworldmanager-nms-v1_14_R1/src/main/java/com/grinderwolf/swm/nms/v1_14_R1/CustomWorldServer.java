@@ -41,6 +41,7 @@ public class CustomWorldServer extends WorldServer {
 
         worldData.setDifficulty(EnumDifficulty.getById(properties.getDifficulty()));
         worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
+        worldData.d(true);
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
         MinecraftServer.getServer().worldServer.put(dimensionManager, this);
 

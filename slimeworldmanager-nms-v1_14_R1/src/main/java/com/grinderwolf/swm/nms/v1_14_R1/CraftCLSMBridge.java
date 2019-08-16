@@ -81,6 +81,8 @@ public class CraftCLSMBridge implements CLSMBridge {
             Chunk nmsChunk = new Chunk(world, pos, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, null, null);
             HeightMap.a(nmsChunk, nmsChunk.getChunkStatus().h());
 
+            world.getChunkProvider().getLightEngine().b(pos, true);
+
             return new ProtoChunkExtension(nmsChunk);
         }
 

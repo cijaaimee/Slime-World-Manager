@@ -91,7 +91,7 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
             ChunkProviderServer provider = server.getChunkProvider();
             provider.addTicket(TicketType.START, new ChunkCoordIntPair(spawn), 11, Unit.INSTANCE);
         }
-        
+
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
 
         LOGGER.info("World " + world.getName() + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
