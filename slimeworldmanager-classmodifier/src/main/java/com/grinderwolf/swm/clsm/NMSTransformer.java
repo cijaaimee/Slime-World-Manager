@@ -8,8 +8,7 @@ import javassist.CtMethod;
 import javassist.NotFoundException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,6 +18,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.nio.charset.StandardCharsets;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,11 +43,19 @@ public class NMSTransformer implements ClassFileTransformer {
                 return;
             }
 
-            try (InputStreamReader reader = new InputStreamReader(fileStream)) {
-                FileConfiguration config = YamlConfiguration.loadConfiguration(reader);
+            Yaml yaml = new Yaml();
 
-                for (String clazz : config.getKeys(false)) {
-                    List<String> changeList = config.getStringList(clazz);
+            try (InputStreamReader reader = new InputStreamReader(fileStream)) {
+                Map<String, Object> data = yaml.load(reader);
+
+                for (String clazz : data.keySet()) {
+                    if (!(data.get(clazz) instanceof ArrayList)) {
+                        System.err.println("Invalid change list for class " + clazz + ".");
+
+                        continue;
+                    }
+
+                    List<String> changeList = (List<String>) data.get(clazz);
                     Change[] changeArray = new Change[changeList.size()];
 
                     for (int i = 0; i < changeList.size(); i++) {
