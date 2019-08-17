@@ -5,7 +5,7 @@
     <groupId>com.grinderwolf</groupId>
     <artifactId>slimeworldmanager</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.1.0</version>
     <modules>
         <module>slimeworldmanager-api</module>
         <module>slimeworldmanager-nms-common</module>
@@ -57,7 +57,8 @@
         <connection>scm:git:git@github.com:Grinderwolf/Slime-World-Manager.git</connection>
         <developerConnection>scm:git:git@github.com:Grinderwolf/Slime-World-Manager.git</developerConnection>
         <url>git@github.com:Grinderwolf/Slime-World-Manager.git</url>
-    </scm>
+      <tag>slimeworldmanager-1.1.0</tag>
+  </scm>
     
     <build>
         <plugins>
