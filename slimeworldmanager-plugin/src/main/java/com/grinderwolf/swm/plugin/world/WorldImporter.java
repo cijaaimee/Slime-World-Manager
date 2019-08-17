@@ -215,10 +215,10 @@ public class WorldImporter {
     }
 
     private static int[] toIntArray(byte[] buf) {
-        ByteBuffer buffer = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.wrap(buf).order(ByteOrder.BIG_ENDIAN);
         int[] ret = new int[buf.length / 4];
 
-        buffer.asIntBuffer().put(ret);
+        buffer.asIntBuffer().get(ret);
 
         return ret;
     }
