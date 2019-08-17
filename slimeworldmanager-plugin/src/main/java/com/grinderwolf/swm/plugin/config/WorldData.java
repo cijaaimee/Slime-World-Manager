@@ -1,18 +1,16 @@
 package com.grinderwolf.swm.plugin.config;
 
 import com.grinderwolf.swm.api.world.SlimeWorld;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.bukkit.Difficulty;
 
-@Getter
+@Data
 @ConfigSerializable
 public class WorldData {
 
     @Setting("source")
-    @Setter
     private String dataSource = "file";
 
     @Setting("spawn")

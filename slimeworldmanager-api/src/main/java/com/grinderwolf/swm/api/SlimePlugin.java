@@ -45,6 +45,22 @@ public interface SlimePlugin {
             throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException, UnsupportedWorldException;
 
     /**
+     * Creates an empty world and stores it using a specified
+     * {@link SlimeLoader}. This world can then be added to
+     * the server's world list by using the {@link #generateWorld(SlimeWorld)} method.
+     *
+     * @param loader {@link SlimeLoader} used to store the world.
+     * @param worldName Name of the world.
+     * @param properties Properties of the world contained within a {@link SlimeWorld.SlimeProperties} object.
+     *
+     * @return A {@link SlimeWorld}, which is the in-memory representation of the world.
+     *
+     * @throws WorldAlreadyExistsException if the provided data source already contains a world with the same name.
+     * @throws IOException if the world could not be stored.
+     */
+    public SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws WorldAlreadyExistsException, IOException;
+
+    /**
      * Generates a Minecraft World from a {@link SlimeWorld} and
      * adds it to the server's world list.
      *

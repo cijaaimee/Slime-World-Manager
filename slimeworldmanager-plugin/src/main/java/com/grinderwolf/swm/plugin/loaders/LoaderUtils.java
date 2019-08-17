@@ -345,9 +345,10 @@ public class LoaderUtils {
 
                 // Block data
                 byte[] blockArray;
+                NibbleArray dataArray;
+
                 ListTag<CompoundTag> paletteTag;
                 long[] blockStatesArray;
-                NibbleArray dataArray;
 
                 // Post 1.13 block format
                 if (v1_13World) {

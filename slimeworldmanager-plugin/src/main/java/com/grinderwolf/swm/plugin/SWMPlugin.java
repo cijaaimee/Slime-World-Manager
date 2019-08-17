@@ -1,5 +1,8 @@
 package com.grinderwolf.swm.plugin;
 
+import com.flowpowered.nbt.CompoundMap;
+import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.IntArrayTag;
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.swm.api.exceptions.InvalidVersionException;
@@ -12,7 +15,12 @@ import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
 import com.grinderwolf.swm.api.exceptions.WorldTooBigException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.grinderwolf.swm.api.utils.NibbleArray;
+import com.grinderwolf.swm.api.world.SlimeChunk;
+import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.nms.CraftSlimeChunk;
+import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import com.grinderwolf.swm.nms.v1_10_R1.v1_10_R1SlimeNMS;
@@ -43,6 +51,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -213,6 +222,45 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
+
+        return world;
+    }
+
+    @Override
+    public SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws WorldAlreadyExistsException, IOException {
+        if (loader.worldExists(worldName)) {
+            throw new WorldAlreadyExistsException(worldName);
+        }
+
+        long start = System.currentTimeMillis();
+
+        Logging.info("Creating empty world " + worldName + ".");
+
+        // The world must contain at least one chunk
+        SlimeChunkSection[] chunkSections = new SlimeChunkSection[16];
+        chunkSections[0] = new CraftSlimeChunkSection(new byte[4096], new NibbleArray(8192), null, null, new NibbleArray(4096), new NibbleArray(4096));
+        CompoundTag heightMaps;
+        int[] biomes;
+
+        if (nms.isV1_13WorldFormat()) {
+            heightMaps = null;
+            biomes = new int[256];
+        } else {
+            heightMaps = new CompoundTag("", new CompoundMap());
+            heightMaps.getValue().put("heightMap", new IntArrayTag("heightMap", new int[256]));
+            biomes = new int[64];
+
+        }
+
+        SlimeChunk chunk = new CraftSlimeChunk(worldName, 0, 0, chunkSections, heightMaps, biomes, new ArrayList<>(), new ArrayList<>());
+        Map<Long, SlimeChunk> chunkMap = new HashMap<>();
+
+        chunkMap.put(0L, chunk);
+
+        CraftSlimeWorld world = new CraftSlimeWorld(loader, worldName, chunkMap, new CompoundTag("", new CompoundMap()), nms.isV1_13WorldFormat(), properties);
+        loader.saveWorld(worldName, world.serialize(), !properties.isReadOnly());
+
+        Logging.info("World " + worldName + " created in " + (System.currentTimeMillis() - start) + "ms.");
 
         return world;
     }

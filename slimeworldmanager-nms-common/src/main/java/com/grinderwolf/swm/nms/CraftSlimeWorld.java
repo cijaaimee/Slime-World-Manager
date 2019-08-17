@@ -264,6 +264,10 @@ public class CraftSlimeWorld implements SlimeWorld {
     }
 
     private static byte[] serializeCompoundTag(CompoundTag tag) throws IOException {
+        if (tag == null || tag.getValue().isEmpty()) {
+            return new byte[0];
+        }
+
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         NBTOutputStream outStream = new NBTOutputStream(outByteStream, NBTInputStream.NO_COMPRESSION, ByteOrder.BIG_ENDIAN);
         outStream.writeTag(tag);
