@@ -12,7 +12,7 @@ public class UnsupportedWorldException extends SlimeException {
     private final boolean v1_13;
 
     public UnsupportedWorldException(String world, boolean v1_13) {
-        super("Unknown world " + world);
+        super("World " + world + " is meant to be loaded on a " + (v1_13 ? "1.13 or newer" : "1.12 or older") + " server");
         this.v1_13 = v1_13;
     }
 }
