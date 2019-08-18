@@ -43,7 +43,7 @@ public class v1_13_R2SlimeNMS implements SlimeNMS {
             defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomDataManager(netherWorld), DimensionManager.NETHER);
         }
 
-        if (netherWorld != null) {
+        if (endWorld != null) {
             defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomDataManager(endWorld), DimensionManager.THE_END);
         }
     }
