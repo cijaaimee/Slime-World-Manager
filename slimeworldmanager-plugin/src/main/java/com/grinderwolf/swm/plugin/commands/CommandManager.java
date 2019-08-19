@@ -1,6 +1,7 @@
 package com.grinderwolf.swm.plugin.commands;
 
 import com.grinderwolf.swm.plugin.commands.sub.CreateWorldCmd;
+import com.grinderwolf.swm.plugin.commands.sub.DSListCmd;
 import com.grinderwolf.swm.plugin.commands.sub.DeleteWorldCmd;
 import com.grinderwolf.swm.plugin.commands.sub.GotoCmd;
 import com.grinderwolf.swm.plugin.commands.sub.HelpCmd;
@@ -49,6 +50,7 @@ public class CommandManager implements CommandExecutor {
         commands.put("unload", new UnloadWorldCmd());
         commands.put("unlock", new UnlockWorldCmd());
         commands.put("list", new WorldListCmd());
+        commands.put("dslist", new DSListCmd());
         commands.put("migrate", new MigrateWorldCmd());
         commands.put("delete", new DeleteWorldCmd());
         commands.put("import", new ImportWorldCmd());
