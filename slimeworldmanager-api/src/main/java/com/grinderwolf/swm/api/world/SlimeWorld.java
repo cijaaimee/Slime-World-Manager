@@ -73,20 +73,24 @@ public interface SlimeWorld {
     @Builder(toBuilder = true)
     class SlimeProperties {
 
-        final double spawnX;
-        final double spawnY;
-        final double spawnZ;
+        private double spawnX;
+        @Builder.Default
+        private double spawnY = 255;
+        private double spawnZ;
 
-        final int difficulty;
+        private int difficulty;
 
         @Accessors(fluent = true)
-        final boolean allowMonsters;
+        private boolean allowMonsters = true;
         @Accessors(fluent = true)
-        final boolean allowAnimals;
+        private boolean allowAnimals = true;
 
         @Wither
-        final boolean readOnly;
+        private boolean readOnly;
 
-        final boolean pvp;
+        private boolean pvp = true;
+
+        @Builder.Default
+        private String environment = "NORMAL";
     }
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.bukkit.Difficulty;
+import org.bukkit.World;
 
 @Data
 @ConfigSerializable
@@ -26,6 +27,9 @@ public class WorldData {
 
     @Setting("pvp")
     private boolean pvp = true;
+
+    @Setting("environment")
+    private String environment = "NORMAL";
 
     @Setting("loadOnStartup")
     private boolean loadOnStartup = true;
@@ -50,10 +54,28 @@ public class WorldData {
             spawnY = Double.parseDouble(spawnLocationSplit[1]);
             spawnZ = Double.parseDouble(spawnLocationSplit[2]);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
-            throw new IllegalArgumentException("invalid spawn location '" + spawn + "'");
+            throw new IllegalArgumentException("invalid spawn location '" + this.spawn + "'");
+        }
+
+        String environment = this.environment;
+
+        try {
+            Enum.valueOf(World.Environment.class, environment);
+        } catch (IllegalArgumentException ex) {
+            try {
+                int envId = Integer.parseInt(environment);
+
+                if (envId < -1 || envId > 1) {
+                    throw new NumberFormatException(environment);
+                }
+
+                environment = World.Environment.getEnvironment(envId).name();
+            } catch (NumberFormatException ex2) {
+                throw new IllegalArgumentException("unknown environment '" + this.environment + "'");
+            }
         }
 
         return SlimeWorld.SlimeProperties.builder().spawnX(spawnX).spawnY(spawnY).spawnZ(spawnZ).difficulty(difficulty.getValue())
-                .allowMonsters(allowMonsters).allowAnimals(allowAnimals).pvp(pvp).readOnly(readOnly).build();
+                .allowMonsters(allowMonsters).allowAnimals(allowAnimals).pvp(pvp).environment(environment).readOnly(readOnly).build();
     }
 }

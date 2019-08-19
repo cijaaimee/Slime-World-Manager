@@ -44,7 +44,7 @@ public class LoaderUtils {
 
     private static Map<String, SlimeLoader> loaderMap = new HashMap<>();
 
-    public static void registerLoaders() throws IOException {
+    public static void registerLoaders() {
         DatasourcesConfig config = ConfigManager.getDatasourcesConfig();
 
         // File loader
@@ -88,7 +88,8 @@ public class LoaderUtils {
         loaderMap.put(dataSource, loader);
     }
 
-    public static CraftSlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimeWorld.SlimeProperties properties) throws IOException, CorruptedWorldException, NewerFormatException {
+    public static CraftSlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimeWorld.SlimeProperties properties)
+            throws IOException, CorruptedWorldException, NewerFormatException {
         DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(serializedWorld));
 
         try {

@@ -33,7 +33,8 @@ public class CustomWorldServer extends WorldServer {
     private final Object saveLock = new Object();
 
     public CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, int dimension) {
-        super(MinecraftServer.getServer(), dataManager, dataManager.getWorldData(), dimension, MinecraftServer.getServer().methodProfiler, World.Environment.NORMAL, null);
+        super(MinecraftServer.getServer(), dataManager, dataManager.getWorldData(), dimension, MinecraftServer.getServer().methodProfiler,
+                World.Environment.valueOf(world.getProperties().getEnvironment()), null);
 
         b();
         this.slimeWorld = world;
