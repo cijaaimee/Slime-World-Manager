@@ -15,7 +15,7 @@ public interface SlimeChunkSection {
      *
      * @return A <code>byte[]</code> with all the blocks of a chunk section.
      */
-    public byte[] getBlocks();
+    byte[] getBlocks();
 
     /**
      * Returns the data of all the blocks of the chunk section, or
@@ -23,7 +23,7 @@ public interface SlimeChunkSection {
      *
      * @return A {@link NibbleArray} containing all the blocks of a chunk section.
      */
-    public NibbleArray getData();
+    NibbleArray getData();
 
     /**
      * Returns the block palette of the chunk section, or
@@ -31,7 +31,7 @@ public interface SlimeChunkSection {
      *
      * @return The block palette, contained inside a {@link ListTag}
      */
-    public ListTag<CompoundTag> getPalette();
+    ListTag<CompoundTag> getPalette();
 
     /**
      * Returns all the states of the blocks of the chunk section, or
@@ -39,19 +39,19 @@ public interface SlimeChunkSection {
      *
      * @return A <code>long[]</code> with every block state.
      */
-    public long[] getBlockStates();
+    long[] getBlockStates();
 
     /**
      * Returns the block light data.
      *
      * @return A {@link NibbleArray} with the block light data.
      */
-    public NibbleArray getBlockLight();
+    NibbleArray getBlockLight();
 
     /**
      * Returns the sky light data.
      *
      * @return A {@link NibbleArray} containing the sky light data.
      */
-    public NibbleArray getSkyLight();
+    NibbleArray getSkyLight();
 }

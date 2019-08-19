@@ -5,6 +5,7 @@ import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import lombok.experimental.Wither;
 
 /**
  * In-memory representation of a SRF world.
@@ -16,7 +17,7 @@ public interface SlimeWorld {
      *
      * @return The name of the world.
      */
-    public String getName();
+    String getName();
 
     /**
      * Returns the {@link SlimeLoader} used
@@ -24,7 +25,7 @@ public interface SlimeWorld {
      *
      * @return The {@link SlimeLoader} used to load and store the world.
      */
-    public SlimeLoader getLoader();
+    SlimeLoader getLoader();
 
     /**
      * Returns the chunk that belongs to the coordinates specified.
@@ -34,16 +35,16 @@ public interface SlimeWorld {
      *
      * @return The {@link SlimeChunk} that belongs to those coordinates.
      */
-    public SlimeChunk getChunk(int x, int z);
+     SlimeChunk getChunk(int x, int z);
 
     /**
      * Returns the extra data of the world. Inside this {@link CompoundTag}
-     * can be stored any information, to then be retrieved later, as it's
+     * can be stored any information to then be retrieved later, as it's
      * saved alongside the world data.
      *
      * @return A {@link CompoundTag} containing the extra data of the world.
      */
-    public CompoundTag getExtraData();
+    CompoundTag getExtraData();
 
     /**
      * Returns the properties of the world. These properties are automatically
@@ -51,14 +52,26 @@ public interface SlimeWorld {
      *
      * @return A {@link SlimeProperties} object with all the current properties of the world.
      */
-    public SlimeProperties getProperties();
+    SlimeProperties getProperties();
+
+    /**
+     * Returns a clone of the world with the given name. This world will never be
+     * stored, as the <code>readOnly</code> property will be set to true.
+     *
+     * @param worldName The name of the cloned world.
+     *
+     * @return The clone of the world.
+     *
+     * @throws IllegalArgumentException if the name of the world is the same as the current one or is null.
+     */
+    SlimeWorld clone(String worldName);
 
     /**
      * All the currently-available properties of the world.
      */
     @Getter
     @Builder(toBuilder = true)
-    public class SlimeProperties {
+    class SlimeProperties {
 
         final double spawnX;
         final double spawnY;
@@ -71,6 +84,7 @@ public interface SlimeWorld {
         @Accessors(fluent = true)
         final boolean allowAnimals;
 
+        @Wither
         final boolean readOnly;
 
         final boolean pvp;

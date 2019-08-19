@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,6 +63,20 @@ public class CraftSlimeWorld implements SlimeWorld {
 
         synchronized (chunks) {
             chunks.put(((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()), chunk);
+        }
+    }
+
+    public SlimeWorld clone(String worldName) {
+        if (name.equals(worldName)) {
+            throw new IllegalArgumentException("The clone world cannot have the same name as the original world!");
+        }
+
+        if (worldName == null) {
+            throw new IllegalArgumentException("The world name cannot be null!");
+        }
+
+        synchronized (chunks) {
+            return new CraftSlimeWorld(this.loader, worldName, new HashMap<>(chunks), extraData.clone(), v1_13, properties.withReadOnly(true));
         }
     }
 
