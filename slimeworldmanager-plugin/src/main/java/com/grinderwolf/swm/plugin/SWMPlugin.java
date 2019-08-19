@@ -43,6 +43,7 @@ import com.grinderwolf.swm.plugin.world.WorldImporter;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -119,6 +120,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             this.setEnabled(false);
             return;
         }
+
+        new Metrics(this);
 
         getCommand("swm").setExecutor(new CommandManager());
         getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
