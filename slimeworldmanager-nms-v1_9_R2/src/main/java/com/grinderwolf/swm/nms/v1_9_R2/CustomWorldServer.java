@@ -95,9 +95,4 @@ public class CustomWorldServer extends WorldServer {
         SlimeWorld.SlimeProperties newProps = slimeWorld.getProperties().toBuilder().allowMonsters(allowMonsters).allowAnimals(allowAnimals).build();
         slimeWorld.setProperties(newProps);
     }
-
-    /*@Override
-    public IChunkProvider n() {
-        return null;
-    }*/
 }
