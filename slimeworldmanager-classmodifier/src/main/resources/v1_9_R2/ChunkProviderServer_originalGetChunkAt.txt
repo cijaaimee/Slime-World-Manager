@@ -1,0 +1,37 @@
+{
+    net.minecraft.server.v1_9_R2.Chunk c = getLoadedChunkAt($1, $2);
+
+    if (c == null) {
+        c = $0.loadChunk($1, $2);
+
+        if (c != null) {
+            $0.chunks.put(net.minecraft.server.v1_9_R2.ChunkCoordIntPair.a($1, $2), c);
+            c.addEntities();
+
+            org.bukkit.Server server = world.getServer();
+
+            if (server != null) {
+                server.getPluginManager().callEvent(new org.bukkit.event.world.ChunkLoadEvent(c.bukkitChunk, false));
+            }
+
+            for (int x = -2; x < 3; x++) {
+                for (int z = -2; z < 3; z++) {
+                    if (x == 0 && z == 0) {
+                        continue;
+                    }
+
+                    net.minecraft.server.v1_9_R2.Chunk neighbor = $0.getChunkIfLoaded(c.locX + x, c.locZ + z);
+
+                    if (neighbor != null) {
+                        neighbor.setNeighborLoaded(-x, -z);
+                        c.setNeighborLoaded(x, z);
+                    }
+                }
+            }
+
+            c.loadNearby($0, $0.chunkGenerator);
+
+            return c;
+        }
+    }
+}
