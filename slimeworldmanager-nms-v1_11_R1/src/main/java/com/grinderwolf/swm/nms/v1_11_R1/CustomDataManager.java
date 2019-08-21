@@ -5,9 +5,11 @@ import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.minecraft.server.v1_11_R1.EntityHuman;
+import net.minecraft.server.v1_11_R1.IChunkLoader;
 import net.minecraft.server.v1_11_R1.NBTTagCompound;
 import net.minecraft.server.v1_11_R1.WorldData;
 import net.minecraft.server.v1_11_R1.WorldNBTStorage;
+import net.minecraft.server.v1_11_R1.WorldProvider;
 
 import java.io.File;
 import java.util.UUID;
@@ -53,6 +55,11 @@ public class CustomDataManager extends WorldNBTStorage {
     }
 
     @Override public void checkSession() { }
+
+    @Override
+    public IChunkLoader createChunkLoader(WorldProvider worldProvider) {
+        return new CustomChunkLoader((CraftSlimeWorld) world);
+    }
 
     @Override
     public void saveWorldData(WorldData worldData, NBTTagCompound nbtTagCompound) { }
