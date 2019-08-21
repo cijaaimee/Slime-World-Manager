@@ -11,7 +11,6 @@ import net.minecraft.server.v1_12_R1.CustomFunctionData;
 import net.minecraft.server.v1_12_R1.EntityTracker;
 import net.minecraft.server.v1_12_R1.EnumDifficulty;
 import net.minecraft.server.v1_12_R1.ExceptionWorldConflict;
-import net.minecraft.server.v1_12_R1.IChunkProvider;
 import net.minecraft.server.v1_12_R1.IDataManager;
 import net.minecraft.server.v1_12_R1.IProgressUpdate;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
@@ -40,7 +39,6 @@ public class CustomWorldServer extends WorldServer {
 
         this.D = new CustomFunctionData(null, MinecraftServer.getServer());
         this.slimeWorld = world;
-        this.chunkProvider = new CustomChunkProvider(this);
         this.tracker = new EntityTracker(this);
         addIWorldAccess(new WorldManager(MinecraftServer.getServer(), this));
 
@@ -104,10 +102,5 @@ public class CustomWorldServer extends WorldServer {
         // Keep properties updated
         SlimeWorld.SlimeProperties newProps = slimeWorld.getProperties().toBuilder().allowMonsters(allowMonsters).allowAnimals(allowAnimals).build();
         slimeWorld.setProperties(newProps);
-    }
-
-    @Override
-    public IChunkProvider n() {
-        return null;
     }
 }
