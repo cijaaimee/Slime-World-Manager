@@ -3,7 +3,7 @@
     <parent>
         <artifactId>slimeworldmanager</artifactId>
         <groupId>com.grinderwolf</groupId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.1.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -79,6 +79,6 @@
 
 
   <scm>
-    <tag>slimeworldmanager-classmodifier-1.1.2</tag>
+    <tag>slimeworldmanager-1.1.2</tag>
   </scm>
 </project>
