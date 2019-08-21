@@ -1,19 +1,14 @@
 language: java
 install:
-    - wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-    - '[ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.14.4-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.14.4"; java -jar BuildTools.jar --rev 1.14.4 &> /dev/null; }'
-    - '[ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.13.2-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.13.2"; java -jar BuildTools.jar --rev 1.13.2 &> /dev/null; }'
-    - '[ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.13-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.13"; java -jar BuildTools.jar --rev 1.13 &> /dev/null; }'
-    - '[ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.12.2-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.12.2"; java -jar BuildTools.jar --rev 1.12.2 &> /dev/null; }'
-    - '[ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.11.2-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.11.2"; java -jar BuildTools.jar --rev 1.11.2 &> /dev/null; }'
-    - '[ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.10.2-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.10.2"; java -jar BuildTools.jar --rev 1.10.2 &> /dev/null; }'
-    - '[ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.9.4-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.9.4"; java -jar BuildTools.jar --rev 1.9.4 &> /dev/null; }'
-    - '[ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.9-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.9"; java -jar BuildTools.jar --rev 1.9 &> /dev/null; }'
-    - '[ ! -d $HOME/.m2/repository/org/spigotmc/spigot/1.8.8-R0.1-SNAPSHOT ] && { echo "Building Spigot 1.8"; java -jar BuildTools.jar --rev 1.8.8 &> /dev/null; }'
+    - wget https://cdn.getbukkit.org/spigot/spigot-1.14.4.jar && mvn install:install-file -Dfile=spigot-1.14.4.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.14.4-R0.1-SNAPSHOT -Dpackaging=jar
+    - wget https://cdn.getbukkit.org/spigot/spigot-1.13.2.jar && mvn install:install-file -Dfile=spigot-1.13.2.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.13.2-R0.1-SNAPSHOT -Dpackaging=jar
+    - wget https://cdn.getbukkit.org/spigot/spigot-1.13.jar && mvn install:install-file -Dfile=spigot-1.13.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.13-R0.1-SNAPSHOT -Dpackaging=jar
+    - wget https://cdn.getbukkit.org/spigot/spigot-1.12.2.jar && mvn install:install-file -Dfile=spigot-1.12.2.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.12.2-R0.1-SNAPSHOT -Dpackaging=jar
+    - wget https://cdn.getbukkit.org/spigot/spigot-1.11.2.jar && mvn install:install-file -Dfile=spigot-1.11.2.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.11.2-R0.1-SNAPSHOT -Dpackaging=jar
+    - wget -O spigot-1.10.2.jar https://cdn.getbukkit.org/spigot/spigot-1.10.2-R0.1-SNAPSHOT-latest.jar && mvn install:install-file -Dfile=spigot-1.10.2.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.10.2-R0.1-SNAPSHOT -Dpackaging=jar
+    - wget -O spigot-1.9.4.jar https://cdn.getbukkit.org/spigot/spigot-1.9.4-R0.1-SNAPSHOT-latest.jar && mvn install:install-file -Dfile=spigot-1.9.4.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.9.4-R0.1-SNAPSHOT -Dpackaging=jar
+    - wget -O spigot-1.9.jar https://cdn.getbukkit.org/spigot/spigot-1.9-R0.1-SNAPSHOT-latest.jar && mvn install:install-file -Dfile=spigot-1.9.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.9-R0.1-SNAPSHOT -Dpackaging=jar
+    - wget -O spigot-1.8.8.jar https://cdn.getbukkit.org/spigot/spigot-1.8.8-R0.1-SNAPSHOT-latest.jar && mvn install:install-file -Dfile=spigot-1.8.8.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.8.8-R0.1-SNAPSHOT -Dpackaging=jar
 jdk: 
    - oraclejdk8
-cache:
-    timeout: 1000
-    directories:
-        - $HOME/.m2
 dist: trusty
