@@ -47,15 +47,15 @@ import java.util.List;
 
 public class Converter {
 
-    public static net.minecraft.server.v1_13_R2.NibbleArray convertArray(NibbleArray array) {
+    static net.minecraft.server.v1_13_R2.NibbleArray convertArray(NibbleArray array) {
         return new net.minecraft.server.v1_13_R2.NibbleArray(array.getBacking());
     }
 
-    public static NibbleArray convertArray(net.minecraft.server.v1_13_R2.NibbleArray array) {
+    private static NibbleArray convertArray(net.minecraft.server.v1_13_R2.NibbleArray array) {
         return new NibbleArray(array.asBytes());
     }
 
-    public static NBTBase convertTag(Tag tag) {
+    static NBTBase convertTag(Tag tag) {
         switch (tag.getType()) {
             case TAG_BYTE:
                 return new NBTTagByte(((ByteTag) tag).getValue());
@@ -75,8 +75,6 @@ public class Converter {
                 return new NBTTagString(((StringTag) tag).getValue());
             case TAG_LIST:
                 NBTTagList list = new NBTTagList();
-
-                //noinspection unchecked
                 ((ListTag<?>) tag).getValue().stream().map(Converter::convertTag).forEach(list::add);
 
                 return list;
@@ -95,7 +93,7 @@ public class Converter {
         }
     }
 
-    private static Tag convertTag(String name, NBTBase base) {
+    static Tag convertTag(String name, NBTBase base) {
         switch (base.getTypeId()) {
             case 1:
                 return new ByteTag(name, ((NBTTagByte) base).asByte());
@@ -141,7 +139,7 @@ public class Converter {
         }
     }
 
-    public static SlimeChunk convertChunk(Chunk chunk) {
+    static SlimeChunk convertChunk(Chunk chunk) {
         // Chunk sections
         SlimeChunkSection[] sections = new SlimeChunkSection[16];
 
