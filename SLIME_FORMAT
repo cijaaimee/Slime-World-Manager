@@ -1,8 +1,8 @@
 -------------------------------------
 “Slime” file format
 2 bytes - magic = 0xB10B
-1 byte (ubyte) - version, current = 0x05
-1 byte (boolean) - world mc version is 1.13 or newer
+1 byte (ubyte) - version, current = 0x06
+1 byte (ubyte) - world version (see version list below)
 2 bytes (short) - xPos of chunk lowest x & lowest z
 2 bytes (short) - zPos
 2 bytes (ushort) - width
@@ -67,9 +67,18 @@ Custom chunk format
   For each section
 
 -------------------------------------
+
+World version list:
+ - 1: 1.8 world
+ - 2: 1.9 world
+ - 3: 1.13 world
+
+-------------------------------------
+
 Version history:
  - v1: Initial release.
  - v2: Added "extra" nbt tag for per-world custom data.
  - v3: Added entities storage.
  - v4: Added support for 1.13 worlds and removed HypixelBlocks3.
  - v5: Skylight and blocklight might not always be present.
+ - v6: Added world versioning
