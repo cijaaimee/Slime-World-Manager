@@ -97,13 +97,16 @@ public class SWMImporter {
                 }
             }
 
-            boolean v1_13World = false;
+            byte worldVersion = 0x01;
 
             mainLoop:
             for (SlimeChunk chunk : chunks) {
                 for (SlimeChunkSection section : chunk.getSections()) {
                     if (section != null) {
-                        v1_13World = section.getBlocks() == null;
+                        if (section.getBlocks() == null) {
+                            section.getBlocks();
+                            worldVersion = 0x03;
+                        }
 
                         break mainLoop;
                     }
@@ -114,7 +117,7 @@ public class SWMImporter {
 
             try {
                 long start = System.currentTimeMillis();
-                byte[] slimeFormattedWorld = generateSlimeWorld(chunks, v1_13World);
+                byte[] slimeFormattedWorld = generateSlimeWorld(chunks, worldVersion);
 
                 System.out.println(Chalk.on("World " + worldDir.getName() + " successfully serialized to the Slime Format in "
                         + (System.currentTimeMillis() - start) + "ms!").green());
@@ -299,7 +302,7 @@ public class SWMImporter {
         return true;
     }
 
-    private static byte[] generateSlimeWorld(List<SlimeChunk> chunks, boolean v1_13World) {
+    private static byte[] generateSlimeWorld(List<SlimeChunk> chunks, byte worldVersion) {
         List<SlimeChunk> sortedChunks = new ArrayList<>(chunks);
         sortedChunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
 
@@ -311,8 +314,8 @@ public class SWMImporter {
             outStream.write(SlimeFormat.SLIME_HEADER);
             outStream.write(SlimeFormat.SLIME_VERSION);
 
-            // v1.13 world
-            outStream.writeBoolean(v1_13World);
+            // World version
+            outStream.writeByte(worldVersion);
 
             // Lowest chunk coordinates
             int minX = sortedChunks.stream().mapToInt(SlimeChunk::getX).min().getAsInt();
@@ -343,7 +346,7 @@ public class SWMImporter {
             writeBitSetAsBytes(outStream, chunkBitset, chunkMaskSize);
 
             // Chunks
-            byte[] chunkData = serializeChunks(sortedChunks, v1_13World);
+            byte[] chunkData = serializeChunks(sortedChunks, worldVersion);
             byte[] compressedChunkData = Zstd.compress(chunkData);
 
             outStream.writeInt(compressedChunkData.length);
@@ -398,13 +401,13 @@ public class SWMImporter {
         }
     }
 
-    private static byte[] serializeChunks(List<SlimeChunk> chunks, boolean v1_13World) throws IOException {
+    private static byte[] serializeChunks(List<SlimeChunk> chunks, byte worldVersion) throws IOException {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream(16384);
         DataOutputStream outStream = new DataOutputStream(outByteStream);
 
         for (SlimeChunk chunk : chunks) {
             // Height Maps
-            if (v1_13World) {
+            if (worldVersion >= 0x03) {
                 byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
                 outStream.writeInt(heightMaps.length);
                 outStream.write(heightMaps);
@@ -447,7 +450,7 @@ public class SWMImporter {
                 }
 
                 // Block Data
-                if (v1_13World) {
+                if (worldVersion >= 0x03) {
                     // Palette
                     List<CompoundTag> palette = section.getPalette().getValue();
                     outStream.writeInt(palette.size());
