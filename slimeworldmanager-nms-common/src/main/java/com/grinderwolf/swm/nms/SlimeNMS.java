@@ -8,5 +8,5 @@ public interface SlimeNMS {
     void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld);
     void generateWorld(SlimeWorld world);
     SlimeWorld getSlimeWorld(World world);
-    boolean isV1_13WorldFormat();
+    byte getWorldVersion();
 }

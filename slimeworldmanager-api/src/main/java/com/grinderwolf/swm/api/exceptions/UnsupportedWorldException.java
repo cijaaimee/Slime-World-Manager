@@ -9,10 +9,10 @@ import lombok.Getter;
 public class UnsupportedWorldException extends SlimeException {
 
     @Getter
-    private final boolean v1_13;
+    private final byte worldVersion;
 
-    public UnsupportedWorldException(String world, boolean v1_13) {
-        super("world " + world + " is meant to be loaded on a " + (v1_13 ? "1.13 or newer" : "1.12 or older") + " server");
-        this.v1_13 = v1_13;
+    public UnsupportedWorldException(String world, byte worldVersion, byte nmsVersion) {
+        super("world " + world + " is a  v" + worldVersion + " world, while the server only supports v" + nmsVersion);
+        this.worldVersion = worldVersion;
     }
 }

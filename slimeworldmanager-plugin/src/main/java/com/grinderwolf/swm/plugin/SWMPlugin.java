@@ -237,8 +237,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             throw ex;
         }
 
-        if ((world.isV1_13() && !nms.isV1_13WorldFormat()) || (!world.isV1_13() && nms.isV1_13WorldFormat())) {
-            throw new UnsupportedWorldException(worldName, world.isV1_13());
+        if (world.getVersion() != nms.getWorldVersion()) {
+            throw new UnsupportedWorldException(worldName, world.getVersion(), nms.getWorldVersion());
         }
 
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
@@ -262,7 +262,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         CompoundTag heightMaps;
         int[] biomes;
 
-        if (nms.isV1_13WorldFormat()) {
+        if (nms.getWorldVersion() >= 0x03) {
             heightMaps = null;
             biomes = new int[256];
         } else {
@@ -277,7 +277,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         chunkMap.put(0L, chunk);
 
-        CraftSlimeWorld world = new CraftSlimeWorld(loader, worldName, chunkMap, new CompoundTag("", new CompoundMap()), nms.isV1_13WorldFormat(), properties);
+        CraftSlimeWorld world = new CraftSlimeWorld(loader, worldName, chunkMap, new CompoundTag("", new CompoundMap()), nms.getWorldVersion(), properties);
         loader.saveWorld(worldName, world.serialize(), !properties.isReadOnly());
 
         Logging.info("World " + worldName + " created in " + (System.currentTimeMillis() - start) + "ms.");
