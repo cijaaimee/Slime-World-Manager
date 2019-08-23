@@ -105,7 +105,7 @@ public class SWMImporter {
                     if (section != null) {
                         if (section.getBlocks() == null) {
                             section.getBlocks();
-                            worldVersion = 0x03;
+                            worldVersion = 0x04;
                         }
 
                         break mainLoop;
@@ -407,7 +407,7 @@ public class SWMImporter {
 
         for (SlimeChunk chunk : chunks) {
             // Height Maps
-            if (worldVersion >= 0x03) {
+            if (worldVersion >= 0x04) {
                 byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
                 outStream.writeInt(heightMaps.length);
                 outStream.write(heightMaps);
@@ -450,7 +450,7 @@ public class SWMImporter {
                 }
 
                 // Block Data
-                if (worldVersion >= 0x03) {
+                if (worldVersion >= 0x04) {
                     // Palette
                     List<CompoundTag> palette = section.getPalette().getValue();
                     outStream.writeInt(palette.size());

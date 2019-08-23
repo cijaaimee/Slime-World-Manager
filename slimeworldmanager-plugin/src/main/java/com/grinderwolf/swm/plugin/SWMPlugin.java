@@ -39,6 +39,7 @@ import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.update.Updater;
+import com.grinderwolf.swm.plugin.upgrade.WorldUpgrader;
 import com.grinderwolf.swm.plugin.world.WorldImporter;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import lombok.Getter;
@@ -223,7 +224,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             IOException, CorruptedWorldException, NewerFormatException, WorldInUseException, UnsupportedWorldException {
         long start = System.currentTimeMillis();
 
-        Logging.info("Loading world " + worldName + ".");
+        Logging.info("Loading world " + worldName + "." );
         byte[] serializedWorld = loader.loadWorld(worldName, properties.isReadOnly());
         CraftSlimeWorld world;
 
@@ -237,8 +238,10 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             throw ex;
         }
 
-        if (world.getVersion() != nms.getWorldVersion()) {
-            throw new UnsupportedWorldException(worldName, world.getVersion(), nms.getWorldVersion());
+        if (world.getVersion() > nms.getWorldVersion()) {
+            WorldUpgrader.downgradeWorld(world);
+        } else if (world.getVersion() < nms.getWorldVersion()) {
+            WorldUpgrader.upgradeWorld(world);
         }
 
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
@@ -262,7 +265,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         CompoundTag heightMaps;
         int[] biomes;
 
-        if (nms.getWorldVersion() >= 0x03) {
+        if (nms.getWorldVersion() >= 0x04) {
             heightMaps = null;
             biomes = new int[256];
         } else {

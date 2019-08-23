@@ -113,7 +113,7 @@ public class LoaderUtils {
             if (version >= 6) {
                 worldVersion = dataStream.readByte();
             } else if (version >= 4) { // In v4 there's just a boolean indicating whether the world is pre-1.13 or post-1.13
-                worldVersion = (byte) (dataStream.readBoolean() ? 0x03 : 0x01);
+                worldVersion = (byte) (dataStream.readBoolean() ? 0x04 : 0x01);
             } else {
                 worldVersion = 0; // We'll try to automatically detect it later
             }
@@ -248,7 +248,7 @@ public class LoaderUtils {
                 for (SlimeChunk chunk : chunks.values()) {
                     for (SlimeChunkSection section : chunk.getSections()) {
                         if (section != null) {
-                            worldVersion = (byte) (section.getBlocks() == null ? 0x03 : 0x01);
+                            worldVersion = (byte) (section.getBlocks() == null ? 0x04 : 0x01);
 
                             break mainLoop;
                         }
@@ -279,7 +279,7 @@ public class LoaderUtils {
                     // Height Maps
                     CompoundTag heightMaps;
 
-                    if (worldVersion >= 0x03) {
+                    if (worldVersion >= 0x04) {
                         int heightMapsLength = dataStream.readInt();
                         byte[] heightMapsArray = new byte[heightMapsLength];
                         dataStream.read(heightMapsArray);
@@ -300,7 +300,7 @@ public class LoaderUtils {
                     // Biome array
                     int[] biomes;
 
-                    if (worldVersion >= 0x03) {
+                    if (worldVersion >= 0x04) {
                         biomes = new int[256];
 
                         for (int i = 0; i < biomes.length; i++) {
@@ -360,7 +360,7 @@ public class LoaderUtils {
                 long[] blockStatesArray;
 
                 // Post 1.13 block format
-                if (worldVersion >= 0x03) {
+                if (worldVersion >= 0x04) {
                     // Palette
                     int paletteLength = dataStream.readInt();
                     List<CompoundTag> paletteList = new ArrayList<>(paletteLength);

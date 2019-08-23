@@ -4,6 +4,7 @@ import com.flowpowered.nbt.ByteArrayTag;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.IntArrayTag;
+import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
 import com.flowpowered.nbt.Tag;
 import com.flowpowered.nbt.TagType;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -42,6 +44,14 @@ public class WorldImporter {
     private static final int SECTOR_SIZE = 4096;
 
     public static CraftSlimeWorld readFromDirectory(File worldDir) throws InvalidWorldException, IOException {
+        File levelFile = new File(worldDir, "level.dat");
+
+        if (!levelFile.exists() || !levelFile.isFile()) {
+            throw new InvalidWorldException(worldDir);
+        }
+
+        byte worldVersion = getWorldVersion(levelFile);
+
         File regionDir = new File(worldDir, "region");
 
         if (!regionDir.exists() || !regionDir.isDirectory()) {
@@ -58,20 +68,38 @@ public class WorldImporter {
             throw new InvalidWorldException(worldDir);
         }
 
-        boolean v1_13World = false;
+        return new CraftSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", new CompoundMap()), worldVersion, SlimeWorld.SlimeProperties.builder().build());
+    }
 
-        mainLoop:
-        for (SlimeChunk chunk : chunks.values()) {
-            for (SlimeChunkSection section : chunk.getSections()) {
-                if (section != null) {
-                    v1_13World = section.getBlocks() == null;
+    private static byte getWorldVersion(File file) throws IOException, InvalidWorldException {
+        NBTInputStream nbtStream = new NBTInputStream(new FileInputStream(file));
+        Optional<CompoundTag> tag = nbtStream.readTag().getAsCompoundTag();
 
-                    break mainLoop;
+        if (tag.isPresent()) {
+            Optional<CompoundTag> dataTag = tag.get().getAsCompoundTag("Data");
+
+            if (dataTag.isPresent()) {
+                Optional<IntTag> versionTag = dataTag.get().getAsIntTag("DataVersion");
+
+                if (!versionTag.isPresent()) { // DataVersion tag was added in 1.9
+                    return 0x01;
                 }
+
+                int version = versionTag.get().getValue();
+
+                if (version < 818) {
+                    return 0x02; // 1.9 world
+                }
+
+                if (version < 1501) {
+                    return 0x03; // 1.11 world
+                }
+
+                return 0x04; // 1.13 world
             }
         }
 
-        return new CraftSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", new CompoundMap()), v1_13World, SlimeWorld.SlimeProperties.builder().build());
+        throw new InvalidWorldException(file.getParentFile());
     }
 
     private static List<SlimeChunk> loadChunks(File file) throws IOException {

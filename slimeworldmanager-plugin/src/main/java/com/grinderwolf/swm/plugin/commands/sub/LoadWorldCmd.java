@@ -95,15 +95,14 @@ public class LoadWorldCmd implements Subcommand {
                 } catch (NewerFormatException ex) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName + ": this world" +
                             " was serialized with a newer version of the Slime Format (" + ex.getMessage() + ") that SWM cannot understand.");
-                } catch (UnknownWorldException e) {
+                } catch (UnknownWorldException ex) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
                             ": world could not be found (using data source '" + worldData.getDataSource() + "').");
-                } catch (WorldInUseException e) {
+                } catch (WorldInUseException ex) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
                             ": world is already in use. If you are sure this is a mistake, run the command /swm unlock " + worldName);
-                } catch (UnsupportedWorldException e) {
-                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName + ": world is meant to be used on a "
-                            + (e.isV1_13() ? "1.13 or newer" : "1.12.2 or older") + " server.");
+                } catch (UnsupportedWorldException ex) {
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName + ": " + ex.getMessage() + ".");
                 } catch (IOException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
                         sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName

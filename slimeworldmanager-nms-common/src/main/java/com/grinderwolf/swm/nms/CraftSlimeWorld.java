@@ -40,7 +40,9 @@ public class CraftSlimeWorld implements SlimeWorld {
     private final String name;
     private final Map<Long, SlimeChunk> chunks;
     private final CompoundTag extraData;
-    private final byte version;
+
+    @Setter
+    private byte version;
 
     @Setter
     private SlimeProperties properties;
@@ -197,7 +199,7 @@ public class CraftSlimeWorld implements SlimeWorld {
 
         for (SlimeChunk chunk : chunks) {
             // Height Maps
-            if (worldVersion >= 0x03) {
+            if (worldVersion >= 0x04) {
                 byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
                 outStream.writeInt(heightMaps.length);
                 outStream.write(heightMaps);
@@ -240,7 +242,7 @@ public class CraftSlimeWorld implements SlimeWorld {
                 }
 
                 // Block Data
-                if (worldVersion >= 0x03) {
+                if (worldVersion >= 0x04) {
                     // Palette
                     List<CompoundTag> palette = section.getPalette().getValue();
                     outStream.writeInt(palette.size());
