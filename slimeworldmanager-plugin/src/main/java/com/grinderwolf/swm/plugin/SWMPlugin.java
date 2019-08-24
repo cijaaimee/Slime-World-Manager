@@ -238,7 +238,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         // The world must contain at least one chunk
         SlimeChunkSection[] chunkSections = new SlimeChunkSection[16];
-        chunkSections[0] = new CraftSlimeChunkSection(new byte[4096], new NibbleArray(8192), null, null, new NibbleArray(4096), new NibbleArray(4096));
+        chunkSections[0] = new CraftSlimeChunkSection(new byte[4096], new NibbleArray(4096), null, null, new NibbleArray(4096), new NibbleArray(4096));
         CompoundTag heightMaps;
         int[] biomes;
 
