@@ -3,7 +3,8 @@ package com.grinderwolf.swm.plugin.upgrade;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.log.Logging;
-import com.grinderwolf.swm.plugin.upgrade.v1_9.v1_11WorldUpgrade;
+import com.grinderwolf.swm.plugin.upgrade.v1_11.v1_11WorldUpgrade;
+import com.grinderwolf.swm.plugin.upgrade.v1_13.v1_13WorldUpgrade;
 import com.grinderwolf.swm.plugin.upgrade.v1_9.v1_9WorldUpgrade;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ public class WorldUpgrader {
     static {
         upgrades.put((byte) 0x02, new v1_9WorldUpgrade());
         upgrades.put((byte) 0x03, new v1_11WorldUpgrade());
+        upgrades.put((byte) 0x04, new v1_13WorldUpgrade());
     }
 
     public static void upgradeWorld(CraftSlimeWorld world) {

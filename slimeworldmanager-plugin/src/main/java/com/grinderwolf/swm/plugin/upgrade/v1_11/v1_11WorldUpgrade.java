@@ -1,4 +1,4 @@
-package com.grinderwolf.swm.plugin.upgrade.v1_9;
+package com.grinderwolf.swm.plugin.upgrade.v1_11;
 
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.StringTag;
