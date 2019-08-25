@@ -1,11 +1,16 @@
 package com.grinderwolf.swm.nms.v1_13_R2;
 
+import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
+import com.mojang.datafixers.DataFixTypes;
 import lombok.Getter;
+import net.minecraft.server.v1_13_R2.DataConverterRegistry;
 import net.minecraft.server.v1_13_R2.DimensionManager;
+import net.minecraft.server.v1_13_R2.GameProfileSerializer;
 import net.minecraft.server.v1_13_R2.MinecraftServer;
+import net.minecraft.server.v1_13_R2.NBTTagCompound;
 import net.minecraft.server.v1_13_R2.WorldServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -109,5 +114,15 @@ public class v1_13_R2SlimeNMS implements SlimeNMS {
         CustomWorldServer worldServer = (CustomWorldServer) craftWorld.getHandle();
 
         return worldServer.getSlimeWorld();
+    }
+
+    @Override
+    public CompoundTag convertChunk(CompoundTag tag) {
+        NBTTagCompound nmsTag = (NBTTagCompound) Converter.convertTag(tag);
+        int version = nmsTag.getInt("DataVersion");
+
+        NBTTagCompound newNmsTag = GameProfileSerializer.a(DataConverterRegistry.a(), DataFixTypes.CHUNK, nmsTag, version);
+
+        return (CompoundTag) Converter.convertTag("", newNmsTag);
     }
 }

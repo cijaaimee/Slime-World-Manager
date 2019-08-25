@@ -112,7 +112,6 @@ public class v1_13_R1SlimeNMS implements SlimeNMS {
         }
 
         CustomWorldServer worldServer = (CustomWorldServer) craftWorld.getHandle();
-
         return worldServer.getSlimeWorld();
     }
 
@@ -122,8 +121,7 @@ public class v1_13_R1SlimeNMS implements SlimeNMS {
         int version = nmsTag.getInt("DataVersion");
 
         NBTTagCompound newNmsTag = GameProfileSerializer.a(DataConverterRegistry.a(), DataFixTypes.CHUNK, nmsTag, version);
-        CompoundTag newTag = (CompoundTag) Converter.convertTag("", newNmsTag);
 
-        return newTag;
+        return (CompoundTag) Converter.convertTag("", newNmsTag);
     }
 }
