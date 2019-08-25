@@ -19,6 +19,7 @@ import com.grinderwolf.swm.plugin.upgrade.Upgrade;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class v1_13WorldUpgrade implements Upgrade {
@@ -26,7 +27,10 @@ public class v1_13WorldUpgrade implements Upgrade {
     @Override
     public void upgrade(CraftSlimeWorld world) {
         Logging.warning("Updating world to the 1.13 format. This may take a while.");
+
         List<SlimeChunk> chunks = new ArrayList<>(world.getChunks().values());
+        chunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
+
         long lastMessage = -1;
 
         for (int i = 0; i < chunks.size(); i++) {
