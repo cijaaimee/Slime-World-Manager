@@ -3,7 +3,7 @@
     <parent>
         <artifactId>slimeworldmanager</artifactId>
         <groupId>com.grinderwolf</groupId>
-        <version>1.1.4</version>
+        <version>1.1.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
