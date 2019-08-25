@@ -114,7 +114,7 @@ public class CustomChunkLoader implements IChunkLoader {
         for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
             SlimeChunkSection slimeSection = chunk.getSections()[sectionId];
 
-            if (slimeSection != null) {
+            if (slimeSection != null && slimeSection.getBlockStates().length > 0) { // If block states array is empty, it's just a fake chunk made by the createEmptyWorld method
                 ChunkSection section = new ChunkSection(sectionId, true);
 
                 LOGGER.debug("ChunkSection #" + sectionId + " - Chunk (" + x + ", " + z + ") - World " + world.getName() + ":");

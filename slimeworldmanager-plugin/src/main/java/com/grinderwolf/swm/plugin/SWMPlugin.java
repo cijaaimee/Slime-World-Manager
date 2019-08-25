@@ -243,17 +243,14 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         chunkSections[0] = new CraftSlimeChunkSection(new byte[4096], new NibbleArray(4096), new ListTag<>("", TagType.TAG_COMPOUND,
                 new ArrayList<>()), new long[0], new NibbleArray(4096), new NibbleArray(4096));
 
-        CompoundTag heightMaps;
+        CompoundTag heightMaps = new CompoundTag("", new CompoundMap());
         int[] biomes;
 
         if (nms.isV1_13WorldFormat()) {
-            heightMaps = null;
             biomes = new int[256];
         } else {
-            heightMaps = new CompoundTag("", new CompoundMap());
             heightMaps.getValue().put("heightMap", new IntArrayTag("heightMap", new int[256]));
             biomes = new int[64];
-
         }
 
         SlimeChunk chunk = new CraftSlimeChunk(worldName, 0, 0, chunkSections, heightMaps, biomes, new ArrayList<>(), new ArrayList<>());
