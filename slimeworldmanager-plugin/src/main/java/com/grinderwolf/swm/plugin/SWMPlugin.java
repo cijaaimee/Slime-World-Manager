@@ -3,6 +3,8 @@ package com.grinderwolf.swm.plugin;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.IntArrayTag;
+import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.TagType;
 import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.swm.api.exceptions.InvalidVersionException;
@@ -258,23 +260,21 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         // The world must contain at least one chunk
         SlimeChunkSection[] chunkSections = new SlimeChunkSection[16];
-        chunkSections[0] = new CraftSlimeChunkSection(new byte[4096], new NibbleArray(4096), null, null, new NibbleArray(4096), new NibbleArray(4096));
-        CompoundTag heightMaps;
+        chunkSections[0] = new CraftSlimeChunkSection(new byte[4096], new NibbleArray(4096), new ListTag<>("", TagType.TAG_COMPOUND,
+                new ArrayList<>()), new long[0], new NibbleArray(4096), new NibbleArray(4096));
+
+        CompoundTag heightMaps = new CompoundTag("", new CompoundMap());
         int[] biomes;
 
         if (nms.isV1_13WorldFormat()) {
-            heightMaps = null;
             biomes = new int[256];
         } else {
-            heightMaps = new CompoundTag("", new CompoundMap());
             heightMaps.getValue().put("heightMap", new IntArrayTag("heightMap", new int[256]));
             biomes = new int[64];
-
         }
 
         SlimeChunk chunk = new CraftSlimeChunk(worldName, 0, 0, chunkSections, heightMaps, biomes, new ArrayList<>(), new ArrayList<>());
         Map<Long, SlimeChunk> chunkMap = new HashMap<>();
-
         chunkMap.put(0L, chunk);
 
         CraftSlimeWorld world = new CraftSlimeWorld(loader, worldName, chunkMap, new CompoundTag("", new CompoundMap()), nms.isV1_13WorldFormat(), properties);
