@@ -4,9 +4,13 @@ import com.flowpowered.nbt.ByteArrayTag;
 import com.flowpowered.nbt.ByteTag;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.DoubleTag;
+import com.flowpowered.nbt.FloatTag;
 import com.flowpowered.nbt.IntArrayTag;
 import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.LongTag;
+import com.flowpowered.nbt.ShortTag;
 import com.flowpowered.nbt.StringTag;
 import com.flowpowered.nbt.Tag;
 import com.flowpowered.nbt.TagType;
@@ -199,30 +203,131 @@ public class v1_13WorldUpgrade implements Upgrade {
                                 if (blockEntry != null) {
                                     id = blockEntry.getId();
                                     data = (byte) blockEntry.getData();
+
+                                    // Block properties
                                     Optional<CompoundTag> propertiesTag = blockTag.getAsCompoundTag("Properties");
+                                    Map<String, String> properties = null;
 
-                                    if (propertiesTag.isPresent() && blockEntry.getProperties() != null) {
-                                        Map<String, String> properties = propertiesTag.get().getValue().values().stream().map(Tag::getAsStringTag)
-                                                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toMap(Tag::getName, StringTag::getValue));
-                                        List<String> validProperties = blockEntry.getProperties().keySet().stream().filter(properties::containsKey).collect(Collectors.toList());
+                                    if (propertiesTag.isPresent()) {
+                                        properties = propertiesTag.get().getValue().values().stream().map(Tag::getAsStringTag).filter(Optional::
+                                                isPresent).map(Optional::get).collect(Collectors.toMap(Tag::getName, StringTag::getValue));
 
-                                        for (String propName : validProperties) {
-                                            DowngradeData.BlockProperty prop = blockEntry.getProperties().get(propName);
-                                            String value = properties.get(propName);
-                                            DowngradeData.BlockPropertyValue propValue = prop.getValues().get(value);
+                                        if (blockEntry.getProperties() != null) {
+                                            List<String> validProperties = blockEntry.getProperties().keySet().stream().filter(properties::containsKey).collect(Collectors.toList());
 
-                                            if (propValue != null) {
-                                                if (propValue.getId() != -1) {
-                                                    id = propValue.getId();
-                                                }
+                                            for (String propName : validProperties) {
+                                                DowngradeData.BlockProperty prop = blockEntry.getProperties().get(propName);
+                                                String value = properties.get(propName);
+                                                DowngradeData.BlockPropertyValue propValue = prop.getValues().get(value);
 
-                                                if (propValue.getData() != -1) {
-                                                    if (propValue.getOperation() == DowngradeData.PropertyOperation.OR) {
-                                                        data |= propValue.getData();
-                                                    } else {
-                                                        data = (byte) propValue.getData();
+                                                if (propValue != null) {
+                                                    if (propValue.getId() != -1) {
+                                                        id = propValue.getId();
+                                                    }
+
+                                                    if (propValue.getData() != -1) {
+                                                        if (propValue.getOperation() == DowngradeData.PropertyOperation.OR) {
+                                                            data |= propValue.getData();
+                                                        } else {
+                                                            data = (byte) propValue.getData();
+                                                        }
                                                     }
                                                 }
+                                            }
+                                        }
+                                    }
+
+                                    // Tile Entity data
+                                    DowngradeData.TileEntityData tileEntityData = blockEntry.getTileEntityData();
+
+                                    if (tileEntityData != null) {
+                                        CompoundTag tileEntityTag = null;
+
+                                        // Search for existing tile entities
+                                        int blockX = x + chunk.getX() * 16;
+                                        int blockY = y + sectionIndex * 16;
+                                        int blockZ = z + chunk.getZ() * 16;
+
+                                        for (CompoundTag tileTag : chunk.getTileEntities()) {
+                                            int tileX = tileTag.getIntValue("x").get();
+                                            int tileY = tileTag.getIntValue("y").get();
+                                            int tileZ = tileTag.getIntValue("z").get();
+
+                                            if (tileX == blockX && tileY == blockY && tileZ == blockZ) {
+                                                tileEntityTag = tileTag;
+
+                                                break;
+                                            }
+                                        }
+
+                                        // Create Tile Entity Action
+                                        DowngradeData.TileCreateAction createAction = tileEntityData.getCreateAction();
+
+                                        if (tileEntityTag == null) {
+                                            if (createAction == null) {
+                                                throw new IllegalStateException("No create action was specified for block " + name + " but no tile entity was found");
+                                            }
+
+                                            CompoundMap tileMap = new CompoundMap();
+                                            tileMap.put("id", new StringTag("id", "minecraft:" + createAction.getName()));
+                                            tileMap.put("x", new IntTag("x", blockX));
+                                            tileMap.put("y", new IntTag("y", blockY));
+                                            tileMap.put("z", new IntTag("z", blockZ));
+                                            tileEntityTag = new CompoundTag("", tileMap);
+                                        }
+
+                                        // Set Values Action
+                                        DowngradeData.TileSetAction setAction = tileEntityData.getSetAction();
+
+                                        if (setAction != null) {
+                                            Map<String, DowngradeData.TileSetEntry> entries = setAction.getEntries();
+
+                                            for (Map.Entry<String, DowngradeData.TileSetEntry> entry : entries.entrySet()) {
+                                                String key = entry.getKey();
+                                                DowngradeData.TileSetEntry value = entry.getValue();
+                                                String nbtValue = value.getValue();
+
+                                                // Retrieve value from property
+                                                if (nbtValue.startsWith("@prop:")) {
+                                                    if (properties == null) {
+                                                        throw new IllegalStateException("Block " + name + " doesn't have any properties");
+                                                    }
+
+                                                    String propName = nbtValue.substring(6);
+                                                    nbtValue = properties.get(propName);
+
+                                                    if (nbtValue == null) {
+                                                        throw new IllegalStateException("Block " + name + " doesn't have a property called " + propName);
+                                                    }
+                                                }
+
+                                                Tag nbtTag;
+
+                                                switch (value.getType().toLowerCase()) {
+                                                    case "byte":
+                                                        nbtTag = new ByteTag(key, Byte.valueOf(nbtValue));
+                                                        break;
+                                                    case "short":
+                                                        nbtTag = new ShortTag(key, Short.valueOf(nbtValue));
+                                                        break;
+                                                    case "int":
+                                                        nbtTag = new IntTag(key, Integer.valueOf(nbtValue));
+                                                        break;
+                                                    case "long":
+                                                        nbtTag = new LongTag(key, Long.valueOf(nbtValue));
+                                                        break;
+                                                    case "float":
+                                                        nbtTag = new FloatTag(key, Float.valueOf(nbtValue));
+                                                        break;
+                                                    case "double":
+                                                        nbtTag = new DoubleTag(key, Double.valueOf(nbtValue));
+                                                        break;
+                                                    default:
+                                                        nbtTag = new StringTag(key, nbtValue);
+                                                        break;
+                                                }
+
+                                                tileEntityTag.getValue().put(key, nbtTag);
                                             }
                                         }
                                     }
