@@ -4,8 +4,11 @@ import com.flowpowered.nbt.ByteArrayTag;
 import com.flowpowered.nbt.ByteTag;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.IntArrayTag;
 import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.StringTag;
+import com.flowpowered.nbt.Tag;
 import com.flowpowered.nbt.TagType;
 import com.google.gson.GsonBuilder;
 import com.grinderwolf.swm.api.utils.NibbleArray;
@@ -30,6 +33,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class v1_13WorldUpgrade implements Upgrade {
 
@@ -40,8 +46,6 @@ public class v1_13WorldUpgrade implements Upgrade {
         Logging.warning("Updating world to the 1.13 format. This may take a while.");
 
         List<SlimeChunk> chunks = new ArrayList<>(world.getChunks().values());
-        chunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
-
         long lastMessage = -1;
 
         for (int i = 0; i < chunks.size(); i++) {
@@ -88,7 +92,7 @@ public class v1_13WorldUpgrade implements Upgrade {
             // Biomes
             int[] newBiomes = new int[256];
 
-            for (int index = 0; i < chunk.getBiomes().length; ++i) {
+            for (int index = 0; index < chunk.getBiomes().length; index++) {
                 newBiomes[index] = chunk.getBiomes()[index] & 255;
             }
 
@@ -154,18 +158,96 @@ public class v1_13WorldUpgrade implements Upgrade {
             SlimeChunk chunk = chunks.get(i);
             SlimeChunkSection[] newSections = new SlimeChunkSection[16];
 
-            for (SlimeChunkSection section : chunk.getSections()) {
+            for (int sectionIndex = 0; sectionIndex < 16; sectionIndex++) {
+                SlimeChunkSection section = chunk.getSections()[sectionIndex];
+
                 if (section != null) {
-                    ListTag<CompoundTag> palette = section.getPalette();
+                    List<CompoundTag> palette = section.getPalette().getValue();
                     long[] blockData = section.getBlockStates();
 
-                    // TODO: Read all blocks from palette and convert them to the old system
+                    byte[] blockArray = new byte[4096];
+                    NibbleArray dataArray = new NibbleArray(4096);
+
+                    int bitsPerBlock = Math.max(4, blockData.length * 64 / 4096);
+                    long maxEntryValue = (1L << bitsPerBlock) - 1;
+
+                    for (int y = 0; y < 16; y++) {
+                        for (int z = 0; z < 16; z++) {
+                            for (int x = 0; x < 16; x++) {
+                                int arrayIndex = y << 8 | z << 4 | x;
+                                int bitIndex = arrayIndex * bitsPerBlock;
+                                int startIndex = bitIndex / 64;
+                                int endIndex = ((arrayIndex + 1) * bitsPerBlock - 1) / 64;
+                                int startBitSubIndex = bitIndex % 64;
+
+                                int val;
+
+                                if (startIndex == endIndex) {
+                                    val = (int) (blockData[startIndex] >>> startBitSubIndex & maxEntryValue);
+                                } else {
+                                    int endBitSubIndex = 64 - startBitSubIndex;
+                                    val = (int) ((blockData[startIndex] >>> startBitSubIndex | blockData[endIndex] << endBitSubIndex) & maxEntryValue);
+                                }
+
+                                int id = 0;
+                                byte data = 0;
+
+                                CompoundTag blockTag = palette.get(val);
+                                String name = blockTag.getStringValue("Name").get().substring(10); // Remove the namespace (minecraft: prefix)
+                                DowngradeData.BlockEntry blockEntry = downgradeData.getBlocks().get(name);
+
+                                if (blockEntry != null) {
+                                    id = blockEntry.getId();
+                                    data = (byte) blockEntry.getData();
+                                    Optional<CompoundTag> propertiesTag = blockTag.getAsCompoundTag("Properties");
+
+                                    if (propertiesTag.isPresent() && blockEntry.getProperties() != null) {
+                                        Map<String, String> properties = propertiesTag.get().getValue().values().stream().map(Tag::getAsStringTag)
+                                                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toMap(Tag::getName, StringTag::getValue));
+                                        List<String> validProperties = blockEntry.getProperties().keySet().stream().filter(properties::containsKey).collect(Collectors.toList());
+
+                                        for (String propName : validProperties) {
+                                            DowngradeData.BlockProperty prop = blockEntry.getProperties().get(propName);
+                                            String value = properties.get(propName);
+                                            DowngradeData.BlockPropertyValue propValue = prop.getValues().get(value);
+
+                                            if (propValue != null) {
+                                                if (propValue.getId() != -1) {
+                                                    id = propValue.getId();
+                                                }
+
+                                                if (propValue.getData() != -1) {
+                                                    if (propValue.getOperation() == DowngradeData.PropertyOperation.OR) {
+                                                        data |= propValue.getData();
+                                                    } else {
+                                                        data = (byte) propValue.getData();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                blockArray[arrayIndex] = (byte) id;
+                                dataArray.set(arrayIndex, data);
+                            }
+                        }
+                    }
+
+                    newSections[sectionIndex] = new CraftSlimeChunkSection(blockArray, dataArray, null, null, section.getBlockLight(), section.getSkyLight());
                 }
+
+                CompoundMap heightMap = new CompoundMap();
+                heightMap.put("heightMap", new IntArrayTag("heightMap", new int[256]));
+
+                SlimeChunk newChunk = new CraftSlimeChunk(world.getName(), chunk.getX(), chunk.getZ(), newSections, new CompoundTag("", heightMap),
+                        new int[64], chunk.getTileEntities(), chunk.getEntities());
+                world.updateChunk(newChunk);
             }
 
             int done = i + 1;
             if (done == chunks.size()) {
-                Logging.info(ChatColor.GREEN + "World successfully converted to the 1.13 format!");
+                Logging.info(ChatColor.GREEN + "World successfully converted to the 1.12 format!");
             } else if (System.currentTimeMillis() - lastMessage > 1000) {
                 int percentage = (done * 100) / chunks.size();
                 Logging.info("Converting world... " + percentage + "%");

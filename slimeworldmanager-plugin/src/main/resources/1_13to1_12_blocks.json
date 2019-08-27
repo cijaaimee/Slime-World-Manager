@@ -216,7 +216,7 @@
     "id": 22
   },
   "dispenser": {
-    "id": 22,
+    "id": 23,
     "properties": {
       "facing": {
         "up": {
@@ -1329,7 +1329,7 @@
       }
     }
   },
-  "quartz_slab": {
+  "nether_brick_slab": {
     "id": 44,
     "data": 6,
     "properties": {
@@ -1343,7 +1343,7 @@
       }
     }
   },
-  "nether_brick_slab": {
+  "quartz_slab": {
     "id": 44,
     "data": 7,
     "properties": {
@@ -1501,14 +1501,14 @@
     "id": 53,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -2130,14 +2130,14 @@
     "id": 67,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -3160,14 +3160,14 @@
     "id": 108,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -3181,14 +3181,14 @@
     "id": 109,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -3214,14 +3214,14 @@
     "id": 114,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -3333,14 +3333,14 @@
     "id": 128,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -3425,14 +3425,14 @@
     "id": 134,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -3446,14 +3446,14 @@
     "id": 135,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -3467,14 +3467,14 @@
     "id": 136,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -4691,14 +4691,14 @@
     "id": 156,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -4884,14 +4884,14 @@
     "id": 163,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -4905,14 +4905,14 @@
     "id": 164,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -6269,14 +6269,14 @@
     "id": 180,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
@@ -6714,14 +6714,14 @@
     "id": 203,
     "properties": {
       "facing": {
-        "east": {
+        "west": {
           "data": "|5"
         },
         "north": {
-          "data": "|2"
+          "data": "|3"
         },
         "south": {
-          "data": "|3"
+          "data": "|2"
         }
       },
       "half": {
