@@ -1502,7 +1502,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -2131,7 +2131,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -3161,7 +3161,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -3182,7 +3182,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -3215,7 +3215,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -3334,7 +3334,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -3426,7 +3426,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -3447,7 +3447,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -3468,7 +3468,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -4692,7 +4692,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -4885,7 +4885,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -4906,7 +4906,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -6270,7 +6270,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
@@ -6715,7 +6715,7 @@
     "properties": {
       "facing": {
         "west": {
-          "data": "|5"
+          "data": "|1"
         },
         "north": {
           "data": "|3"
