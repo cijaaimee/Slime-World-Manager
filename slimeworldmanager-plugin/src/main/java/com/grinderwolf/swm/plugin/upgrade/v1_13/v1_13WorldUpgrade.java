@@ -24,6 +24,7 @@ import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.upgrade.Upgrade;
+import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.BlockEntryDeserializer;
 import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.DowngradeDataDeserializer;
 import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.PropertyDeserializer;
 import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.PropertyValueDeserializer;
@@ -213,14 +214,22 @@ public class v1_13WorldUpgrade implements Upgrade {
                                                 isPresent).map(Optional::get).collect(Collectors.toMap(Tag::getName, StringTag::getValue));
 
                                         if (blockEntry.getProperties() != null) {
-                                            List<String> validProperties = blockEntry.getProperties().keySet().stream().filter(properties::containsKey).collect(Collectors.toList());
+                                            for (String[] propNames : blockEntry.getProperties().keySet()) {
+                                                DowngradeData.BlockProperty prop = blockEntry.getProperties().get(propNames);
 
-                                            for (String propName : validProperties) {
-                                                DowngradeData.BlockProperty prop = blockEntry.getProperties().get(propName);
-                                                String value = properties.get(propName);
-                                                DowngradeData.BlockPropertyValue propValue = prop.getValues().get(value);
+                                                mainLoop:
+                                                for (String value : prop.getValues().keySet()) {
+                                                    for (String propName : propNames) {
+                                                        boolean inverted = propName.startsWith("!");
 
-                                                if (propValue != null) {
+                                                        if ((inverted && value.equals(properties.get(propName.substring(1)))) || (!inverted && !value.equals(properties.get(propName)))) {
+                                                            continue mainLoop;
+                                                        }
+                                                    }
+
+                                                    // If we get to this point, all specified properties have the required value
+                                                    DowngradeData.BlockPropertyValue propValue = prop.getValues().get(value);
+
                                                     if (propValue.getId() != -1) {
                                                         id = propValue.getId();
                                                     }
@@ -367,6 +376,7 @@ public class v1_13WorldUpgrade implements Upgrade {
 
         // Type Adapters
         builder.registerTypeAdapter(DowngradeData.class, new DowngradeDataDeserializer());
+        builder.registerTypeAdapter(DowngradeData.BlockEntry.class, new BlockEntryDeserializer());
         builder.registerTypeAdapter(DowngradeData.BlockProperty.class, new PropertyDeserializer());
         builder.registerTypeAdapter(DowngradeData.BlockPropertyValue.class, new PropertyValueDeserializer());
         builder.registerTypeAdapter(DowngradeData.TileSetAction.class, new SetActionDeserializer());

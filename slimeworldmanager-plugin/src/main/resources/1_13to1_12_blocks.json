@@ -2445,7 +2445,8 @@
     }
   },
   "redstone_torch": {
-    "id": 76
+    "id": 76,
+    "data": 5
   },
   "stone_button": {
     "id": 77,
@@ -3024,13 +3025,184 @@
     "data": 3
   },
   "brown_mushroom_block": {
-    "id": 99
+    "id": 99,
+    "properties": {
+      "!down|east|!north|south|!west": {
+        "true": {
+          "data": 9
+        }
+      },
+      "!down|east|!north|!south|!west": {
+        "true": {
+          "data": 6
+        }
+      },
+      "!down|east|north|!south|!west": {
+        "true": {
+          "data": 3
+        }
+      },
+      "!down|!east|north|!south|!west": {
+        "true": {
+          "data": 2
+        }
+      },
+      "!down|!east|north|!south|west": {
+        "true": {
+          "data": 1
+        }
+      },
+      "!down|!east|!north|!south|west": {
+        "true": {
+          "data": 4
+        }
+      },
+      "!down|!east|!north|south|!west": {
+        "true": {
+          "data": 8
+        }
+      },
+      "!down|!east|!north|south|west": {
+        "true": {
+          "data": 7
+        }
+      },
+      "!down|!east|!north|!south|up|!west": {
+        "true": {
+          "data": 5
+        }
+      },
+      "!down|east|north|south|west": {
+        "true": {
+          "data": 10
+        }
+      },
+      "west|up|south|north|down|east": {
+        "true": {
+          "data": 14
+        }
+      }
+    }
   },
   "red_mushroom_block": {
-    "id": 100
+    "id": 100,
+    "properties": {
+      "!down|east|!north|south|!west": {
+        "true": {
+          "data": 9
+        }
+      },
+      "!down|east|!north|!south|!west": {
+        "true": {
+          "data": 6
+        }
+      },
+      "!down|east|north|!south|!west": {
+        "true": {
+          "data": 3
+        }
+      },
+      "!down|!east|north|!south|!west": {
+        "true": {
+          "data": 2
+        }
+      },
+      "!down|!east|north|!south|west": {
+        "true": {
+          "data": 1
+        }
+      },
+      "!down|!east|!north|!south|west": {
+        "true": {
+          "data": 4
+        }
+      },
+      "!down|!east|!north|south|!west": {
+        "true": {
+          "data": 8
+        }
+      },
+      "!down|!east|!north|south|west": {
+        "true": {
+          "data": 7
+        }
+      },
+      "!down|!east|!north|!south|up|!west": {
+        "true": {
+          "data": 5
+        }
+      },
+      "!down|east|north|south|west": {
+        "true": {
+          "data": 10
+        }
+      },
+      "west|up|south|north|down|east": {
+        "true": {
+          "data": 14
+        }
+      }
+    }
   },
   "mushroom_stem": {
-    "id": 100
+    "id": 100,
+    "properties": {
+      "!down|east|!north|south|!west": {
+        "true": {
+          "data": 9
+        }
+      },
+      "!down|east|!north|!south|!west": {
+        "true": {
+          "data": 6
+        }
+      },
+      "!down|east|north|!south|!west": {
+        "true": {
+          "data": 3
+        }
+      },
+      "!down|!east|north|!south|!west": {
+        "true": {
+          "data": 2
+        }
+      },
+      "!down|!east|north|!south|west": {
+        "true": {
+          "data": 1
+        }
+      },
+      "!down|!east|!north|!south|west": {
+        "true": {
+          "data": 4
+        }
+      },
+      "!down|!east|!north|south|!west": {
+        "true": {
+          "data": 8
+        }
+      },
+      "!down|!east|!north|south|west": {
+        "true": {
+          "data": 7
+        }
+      },
+      "!down|!east|!north|!south|up|!west": {
+        "true": {
+          "data": 5
+        }
+      },
+      "!down|east|north|south|west": {
+        "true": {
+          "data": 10
+        }
+      },
+      "west|up|south|north|down|east": {
+        "true": {
+          "data": 15
+        }
+      }
+    }
   },
   "iron_bars": {
     "id": 101
@@ -3303,7 +3475,14 @@
     "id": 206
   },
   "redstone_lamp": {
-    "id": 123
+    "id": 123,
+    "properties": {
+      "lit": {
+        "true": {
+          "id": 124
+        }
+      }
+    }
   },
   "cocoa": {
     "id": 127,

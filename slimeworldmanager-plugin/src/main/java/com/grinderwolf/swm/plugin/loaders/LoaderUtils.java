@@ -284,6 +284,11 @@ public class LoaderUtils {
                         byte[] heightMapsArray = new byte[heightMapsLength];
                         dataStream.read(heightMapsArray);
                         heightMaps = readCompoundTag(heightMapsArray);
+
+                        // Height Maps might be null if empty
+                        if (heightMaps == null) {
+                            heightMaps = new CompoundTag("", new CompoundMap());
+                        }
                     } else {
                         int[] heightMap = new int[256];
 

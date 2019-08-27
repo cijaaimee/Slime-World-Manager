@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 @Getter
 @RequiredArgsConstructor
@@ -14,15 +13,14 @@ public class DowngradeData {
     private final Map<String, BlockEntry> blocks;
 
     @Getter
+    @RequiredArgsConstructor
     public static class BlockEntry {
 
-        private int id = 0;
-        private int data = 0;
+        private final int id;
+        private final int data;
 
-        private TreeMap<String, BlockProperty> properties;
-
-        @SerializedName("tile_entity")
-        private TileEntityData tileEntityData;
+        private final Map<String[], BlockProperty> properties;
+        private final TileEntityData tileEntityData;
 
     }
 
