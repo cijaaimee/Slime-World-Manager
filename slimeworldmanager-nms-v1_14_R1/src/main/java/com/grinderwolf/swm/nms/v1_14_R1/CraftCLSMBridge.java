@@ -8,6 +8,7 @@ import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.clsm.CLSMBridge;
 import com.grinderwolf.swm.clsm.ClassModifier;
+import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +60,7 @@ public class CraftCLSMBridge implements CLSMBridge {
         LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + slimeWorld.getName());
 
         ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
-        SlimeChunk chunk = slimeWorld.getChunk(x, z);
+        CraftSlimeChunk chunk = (CraftSlimeChunk) slimeWorld.getChunk(x, z);
         BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
 
         // Tick lists
@@ -181,7 +182,9 @@ public class CraftCLSMBridge implements CLSMBridge {
 
         };
 
-        Chunk nmsChunk = new Chunk(world, pos, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, sections, loadEntities);
+        CompoundTag upgradeDataTag = chunk.getUpgradeData();
+        Chunk nmsChunk = new Chunk(world, pos, biomeBaseArray, upgradeDataTag == null ? ChunkConverter.a : new ChunkConverter((NBTTagCompound)
+                Converter.convertTag(upgradeDataTag)), airChunkTickList, fluidChunkTickList, 0L, sections, loadEntities);
 
         // Height Maps
         EnumSet<HeightMap.Type> heightMapTypes = nmsChunk.getChunkStatus().h();

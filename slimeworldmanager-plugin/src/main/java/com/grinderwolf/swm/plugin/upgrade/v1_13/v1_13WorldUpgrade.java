@@ -7,6 +7,7 @@ import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
 import com.flowpowered.nbt.TagType;
+import com.google.gson.GsonBuilder;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
@@ -16,13 +17,23 @@ import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.upgrade.Upgrade;
+import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.DowngradeDataDeserializer;
+import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.PropertyDeserializer;
+import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.PropertyValueDeserializer;
+import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.SetActionDeserializer;
 import org.bukkit.ChatColor;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class v1_13WorldUpgrade implements Upgrade {
+
+    private DowngradeData downgradeData;
 
     @Override
     public void upgrade(CraftSlimeWorld world) {
@@ -101,11 +112,6 @@ public class v1_13WorldUpgrade implements Upgrade {
         }
     }
 
-    @Override
-    public void downgrade(CraftSlimeWorld world) {
-
-    }
-
     private ListTag<CompoundTag> serializeSections(SlimeChunkSection[] sections) {
         ListTag<CompoundTag> sectionList = new ListTag<>("Sections", TagType.TAG_COMPOUND, new ArrayList<>());
 
@@ -126,5 +132,60 @@ public class v1_13WorldUpgrade implements Upgrade {
         }
 
         return sectionList;
+    }
+
+    @Override
+    public void downgrade(CraftSlimeWorld world) {
+        if (downgradeData == null) {
+            try {
+                loadDowngradeData();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        Logging.warning("Downgrading world to the 1.12 format. This may take a while.");
+        List<SlimeChunk> chunks = new ArrayList<>(world.getChunks().values());
+        chunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
+
+        long lastMessage = -1;
+
+        for (int i = 0; i < chunks.size(); i++) {
+            SlimeChunk chunk = chunks.get(i);
+            SlimeChunkSection[] newSections = new SlimeChunkSection[16];
+
+            for (SlimeChunkSection section : chunk.getSections()) {
+                if (section != null) {
+                    ListTag<CompoundTag> palette = section.getPalette();
+                    long[] blockData = section.getBlockStates();
+
+                    // TODO: Read all blocks from palette and convert them to the old system
+                }
+            }
+
+            int done = i + 1;
+            if (done == chunks.size()) {
+                Logging.info(ChatColor.GREEN + "World successfully converted to the 1.13 format!");
+            } else if (System.currentTimeMillis() - lastMessage > 1000) {
+                int percentage = (done * 100) / chunks.size();
+                Logging.info("Converting world... " + percentage + "%");
+                lastMessage = System.currentTimeMillis();
+            }
+        }
+    }
+
+    private void loadDowngradeData() throws IOException {
+        Logging.info("Loading downgrade data...");
+        GsonBuilder builder = new GsonBuilder();
+
+        // Type Adapters
+        builder.registerTypeAdapter(DowngradeData.class, new DowngradeDataDeserializer());
+        builder.registerTypeAdapter(DowngradeData.BlockProperty.class, new PropertyDeserializer());
+        builder.registerTypeAdapter(DowngradeData.BlockPropertyValue.class, new PropertyValueDeserializer());
+        builder.registerTypeAdapter(DowngradeData.TileSetAction.class, new SetActionDeserializer());
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(SWMPlugin.getInstance().getResource("1_13to1_12_blocks.json"), StandardCharsets.UTF_8))) {
+            downgradeData = builder.create().fromJson(reader, DowngradeData.class);
+        }
     }
 }

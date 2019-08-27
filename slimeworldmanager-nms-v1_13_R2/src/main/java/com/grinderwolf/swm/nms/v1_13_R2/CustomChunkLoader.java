@@ -110,7 +110,7 @@ public class CustomChunkLoader implements IChunkLoader {
         // Chunk status
         nmsChunk.c("postprocessed");
 
-        // chunk sections
+        // Chunk sections
         LOGGER.debug("Loading chunk sections for chunk (" + x + ", " + z + ") on world " + world.getName());
         ChunkSection[] sections = new ChunkSection[16];
 
