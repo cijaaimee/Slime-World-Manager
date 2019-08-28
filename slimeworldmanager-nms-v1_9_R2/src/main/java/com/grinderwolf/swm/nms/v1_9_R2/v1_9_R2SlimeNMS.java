@@ -28,8 +28,9 @@ public class v1_9_R2SlimeNMS implements SlimeNMS {
     public v1_9_R2SlimeNMS() {
         try {
             CraftCLSMBridge.initialize(this);
-        }  catch (NoClassDefFoundError ex) {
-            LOGGER.warn("Failed to find ClassModifier classes. Overriding default worlds is disabled.");
+        } catch (NoClassDefFoundError ex) {
+            LOGGER.error("Failed to find ClassModifier classes. Are you sure you installed it correctly?");
+            System.exit(1); // No ClassModifier, no party
         }
     }
 
