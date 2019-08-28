@@ -1,11 +1,14 @@
 package com.grinderwolf.swm.api.world;
 
 import com.flowpowered.nbt.CompoundTag;
+import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.experimental.Wither;
+
+import java.io.IOException;
 
 /**
  * In-memory representation of a SRF world.
@@ -62,9 +65,24 @@ public interface SlimeWorld {
      *
      * @return The clone of the world.
      *
-     * @throws IllegalArgumentException if the name of the world is the same as the current one or is null.
+     * @throws IllegalArgumentException if the name of the world is the same as the current one or is <code>null</code>.
      */
     SlimeWorld clone(String worldName);
+
+    /**
+     * Returns a clone of the world with the given name. The world will be
+     * automatically stored inside the provided data source.
+     *
+     * @param worldName The name of the cloned world.
+     * @param loader The {@link SlimeLoader} used to store the world or <code>null</code> if the world is temporary.
+     *
+     * @return The clone of the world.
+     *
+     * @throws IllegalArgumentException if the name of the world is the same as the current one or is <code>null</code>.
+     * @throws WorldAlreadyExistsException if there's already a world with the same name inside the provided data source.
+     * @throws IOException if the world could not be stored.
+     */
+    SlimeWorld clone(String worldName, SlimeLoader loader) throws WorldAlreadyExistsException, IOException;
 
     /**
      * All the currently-available properties of the world.
