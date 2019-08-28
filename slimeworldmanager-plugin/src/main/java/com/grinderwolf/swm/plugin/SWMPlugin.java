@@ -11,7 +11,6 @@ import com.grinderwolf.swm.api.exceptions.InvalidVersionException;
 import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.exceptions.UnsupportedWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
@@ -191,11 +190,10 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
                     SlimeWorld world = loadWorld(loader, worldName, properties);
 
                     worlds.add(world);
-                } catch (IllegalArgumentException | UnknownWorldException | NewerFormatException | WorldInUseException
-                        | UnsupportedWorldException | CorruptedWorldException | IOException ex) {
+                } catch (IllegalArgumentException | UnknownWorldException | NewerFormatException | WorldInUseException | CorruptedWorldException | IOException ex) {
                     String message;
 
-                    if (ex instanceof IllegalArgumentException || ex instanceof UnsupportedWorldException) {
+                    if (ex instanceof IllegalArgumentException) {
                         message = ex.getMessage();
                     } else if (ex instanceof UnknownWorldException) {
                         message = "world does not exist, are you sure you've set the correct data source?";
@@ -223,7 +221,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Override
     public SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws UnknownWorldException,
-            IOException, CorruptedWorldException, NewerFormatException, WorldInUseException, UnsupportedWorldException {
+            IOException, CorruptedWorldException, NewerFormatException, WorldInUseException {
         long start = System.currentTimeMillis();
 
         Logging.info("Loading world " + worldName + ".");

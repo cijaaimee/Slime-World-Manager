@@ -4,7 +4,6 @@ import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.exceptions.UnsupportedWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
@@ -39,10 +38,9 @@ public interface SlimePlugin {
      * @throws CorruptedWorldException if the world retrieved cannot be parsed into a {@link SlimeWorld} object.
      * @throws NewerFormatException if the world uses a newer version of the SRF.
      * @throws WorldInUseException if the world is already being used on another server when trying to open it without read-only mode enabled.
-     * @throws UnsupportedWorldException if the world is saved using the 1.13 format and the server version is 1.12.2 (or older) and vice versa.
      */
     SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws
-            UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException, UnsupportedWorldException;
+            UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException;
 
     /**
      * Creates an empty world and stores it using a specified
