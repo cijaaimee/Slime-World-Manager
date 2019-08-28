@@ -31,7 +31,7 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM");
 
-    private final byte worldVersion = 0x04;
+    private final byte worldVersion = 0x05;
 
     private WorldServer defaultWorld;
     private WorldServer defaultNetherWorld;
@@ -40,7 +40,7 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
     public v1_14_R1SlimeNMS() {
         try {
             CraftCLSMBridge.initialize(this);
-        }  catch (NoClassDefFoundError ex) {
+        } catch (NoClassDefFoundError ex) {
             LOGGER.error("Failed to find ClassModifier classes. Are you sure you installed it correctly?");
             System.exit(1); // No ClassModifier, no party
         }
