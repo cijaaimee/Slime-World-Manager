@@ -13,10 +13,16 @@ net/minecraft/server/v1_13_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_13_R1.WorldType, com.google.gson.JsonElement)@v1_13_R1/MinecraftServer_loadWorlds.txt
 net/minecraft/server/v1_12_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_12_R1.WorldType, java.lang.String)@v1_12_R1/MinecraftServer_loadWorlds.txt
+__optional__net/minecraft/server/v1_12_R1/ChunkProviderServer: # Patch for PaperSpigot
+  - a(boolean)@v1_12_R1/ChunkProviderServer_saveChunks.txt
 net/minecraft/server/v1_11_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_11_R1.WorldType, java.lang.String)@v1_11_R1/MinecraftServer_loadWorlds.txt
+__optional__net/minecraft/server/v1_11_R1/ChunkProviderServer: # Patch for PaperSpigot
+  - a(boolean)@v1_11_R1/ChunkProviderServer_saveChunks.txt
 net/minecraft/server/v1_10_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_10_R1.WorldType, java.lang.String)@v1_10_R1/MinecraftServer_loadWorlds.txt
+__optional__net/minecraft/server/v1_10_R1/ChunkProviderServer: # Patch for PaperSpigot
+  - a(boolean)@v1_10_R1/ChunkProviderServer_saveChunks.txt
 net/minecraft/server/v1_9_R2/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_9_R2.WorldType, java.lang.String)@v1_9_R2/MinecraftServer_loadWorlds.txt
 net/minecraft/server/v1_9_R2/ChunkProviderServer:
