@@ -7,6 +7,7 @@ import com.flowpowered.nbt.TagType;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import com.flowpowered.nbt.stream.NBTOutputStream;
 import com.github.luben.zstd.Zstd;
+import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.utils.SlimeFormat;
 import com.grinderwolf.swm.api.world.SlimeChunk;
@@ -68,7 +69,17 @@ public class CraftSlimeWorld implements SlimeWorld {
         }
     }
 
+    @Override
     public SlimeWorld clone(String worldName) {
+        try {
+            return clone(worldName, null);
+        } catch (WorldAlreadyExistsException | IOException ignored) {
+            return null; // Never going to happen
+        }
+    }
+
+    @Override
+    public SlimeWorld clone(String worldName, SlimeLoader loader) throws WorldAlreadyExistsException, IOException {
         if (name.equals(worldName)) {
             throw new IllegalArgumentException("The clone world cannot have the same name as the original world!");
         }
@@ -77,9 +88,23 @@ public class CraftSlimeWorld implements SlimeWorld {
             throw new IllegalArgumentException("The world name cannot be null!");
         }
 
-        synchronized (chunks) {
-            return new CraftSlimeWorld(this.loader, worldName, new HashMap<>(chunks), extraData.clone(), version, properties.withReadOnly(true));
+        if (loader != null) {
+            if (loader.worldExists(worldName)) {
+                throw new WorldAlreadyExistsException(worldName);
+            }
         }
+
+        CraftSlimeWorld world;
+
+        synchronized (chunks) {
+            world = new CraftSlimeWorld(loader == null ? this.loader : loader, worldName, new HashMap<>(chunks), extraData.clone(), version, properties.withReadOnly(loader == null));
+        }
+
+        if (loader != null) {
+            loader.saveWorld(worldName, world.serialize(), true);
+        }
+
+        return world;
     }
 
     // World Serialization methods
