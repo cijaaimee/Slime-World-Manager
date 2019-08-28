@@ -9,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.minecraft.server.v1_13_R2.DimensionManager;
 import net.minecraft.server.v1_13_R2.EntityHuman;
-import net.minecraft.server.v1_13_R2.GameRules;
 import net.minecraft.server.v1_13_R2.IChunkLoader;
 import net.minecraft.server.v1_13_R2.NBTTagCompound;
 import net.minecraft.server.v1_13_R2.WorldData;
@@ -18,13 +17,44 @@ import net.minecraft.server.v1_13_R2.WorldProvider;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.UUID;
 
 @Getter
 public class CustomDataManager extends WorldNBTStorage {
 
+    private static final Map<String, String> defaultValues = new HashMap<>();
+
+    // We cannot get the default values automatically because the method
+    // return type is paperspigot is not the same that the one in spigot,
+    // so there's no easy way to support both at the same time
+    static {
+        defaultValues.put("doFireTick", "true");
+        defaultValues.put("mobGriefing", "true");
+        defaultValues.put("keepInventory", "false");
+        defaultValues.put("doMobSpawning", "true");
+        defaultValues.put("doMobLoot", "true");
+        defaultValues.put("doTileDrops", "true");
+        defaultValues.put("doEntityDrops", "true");
+        defaultValues.put("commandBlockOutput", "true");
+        defaultValues.put("naturalRegeneration", "true");
+        defaultValues.put("doDaylightCycle", "true");
+        defaultValues.put("logAdminCommands", "true");
+        defaultValues.put("showDeathMessages", "true");
+        defaultValues.put("randomTickSpeed", "3");
+        defaultValues.put("sendCommandFeedback", "true");
+        defaultValues.put("reducedDebugInfo", "false");
+        defaultValues.put("spectatorsGenerateChunks", "true");
+        defaultValues.put("spawnRadius", "10");
+        defaultValues.put("disableElytraMovementCheck", "false");
+        defaultValues.put("maxEntityCramming", "24");
+        defaultValues.put("doWeatherCycle", "true");
+        defaultValues.put("doLimitedCrafting", "false");
+        defaultValues.put("maxCommandChainLength", "65536");
+        defaultValues.put("announceAdvancements", "true");
+    }
+    
     @Getter(value = AccessLevel.NONE)
     private final UUID uuid = UUID.randomUUID();
     private final SlimeWorld world;
@@ -78,14 +108,12 @@ public class CustomDataManager extends WorldNBTStorage {
 
         if (!gameRules.getValue().isEmpty()) {
             // Remove default values to save space
-            TreeMap<String, GameRules.GameRuleDefinition> defaultValues = GameRules.getGameRules();
-
             for (Map.Entry<String, Tag<?>> entry : new ArrayList<>(gameRules.getValue().entrySet())) {
                 String rule = entry.getKey();
                 StringTag valueTag = (StringTag) entry.getValue();
-                GameRules.GameRuleDefinition defaultValue = defaultValues.get(rule);
+                String defaultValue = defaultValues.get(rule);
 
-                if (defaultValue != null && defaultValue.a().a().equalsIgnoreCase(valueTag.getValue())) {
+                if (defaultValue != null && defaultValue.equalsIgnoreCase(valueTag.getValue())) {
                     gameRules.getValue().remove(rule);
                 }
             }
