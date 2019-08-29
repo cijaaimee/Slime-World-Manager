@@ -95,20 +95,16 @@
   "water": {
     "id": 9,
     "properties": {
-      "falling": {
-        "true": {
-          "id": 8
-        }
+      "falling=true": {
+        "id": 8
       }
     }
   },
   "lava": {
     "id": 11,
     "properties": {
-      "falling": {
-        "true": {
-          "id": 10
-        }
+      "falling=true": {
+        "id": 10
       }
     }
   },
@@ -218,22 +214,20 @@
   "dispenser": {
     "id": 23,
     "properties": {
-      "facing": {
-        "up": {
-          "data": 1
-        },
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        },
-        "east": {
-          "data": 5
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=up": {
+        "data": 1
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
@@ -269,26 +263,20 @@
   "white_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -306,26 +294,20 @@
   "orange_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -343,26 +325,20 @@
   "magenta_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -380,26 +356,20 @@
   "light_blue_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -417,26 +387,20 @@
   "yellow_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -454,26 +418,20 @@
   "lime_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -491,26 +449,20 @@
   "pink_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -528,26 +480,20 @@
   "gray_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -565,26 +511,20 @@
   "light_gray_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -602,26 +542,20 @@
   "cyan_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -639,26 +573,20 @@
   "purple_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -676,26 +604,20 @@
   "blue_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -713,26 +635,20 @@
   "brown_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -750,26 +666,20 @@
   "green_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -787,26 +697,20 @@
   "red_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -824,26 +728,20 @@
   "black_bed": {
     "id": 26,
     "properties": {
-      "part": {
-        "head": {
-          "data": "|8"
-        }
+      "occupied=true": {
+        "data": "|4"
       },
-      "occupied": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "part=head": {
+        "data": "|8"
       }
     },
     "tile_entity": {
@@ -861,81 +759,69 @@
   "powered_rail": {
     "id": 27,
     "properties": {
-      "shape": {
-        "east_west": {
-          "data": "|1"
-        },
-        "ascending_east": {
-          "data": "|2"
-        },
-        "ascending_west": {
-          "data": "|3"
-        },
-        "ascending_north": {
-          "data": "|4"
-        },
-        "ascending_south": {
-          "data": "|5"
-        }
+      "shape=east_west": {
+        "data": "|1"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "shape=ascending_west": {
+        "data": "|3"
+      },
+      "powered=true": {
+        "data": "|8"
+      },
+      "shape=ascending_south": {
+        "data": "|5"
+      },
+      "shape=ascending_east": {
+        "data": "|2"
+      },
+      "shape=ascending_north": {
+        "data": "|4"
       }
     }
   },
   "detector_rail": {
     "id": 28,
     "properties": {
-      "shape": {
-        "east_west": {
-          "data": "|1"
-        },
-        "ascending_east": {
-          "data": "|2"
-        },
-        "ascending_west": {
-          "data": "|3"
-        },
-        "ascending_north": {
-          "data": "|4"
-        },
-        "ascending_south": {
-          "data": "|5"
-        }
+      "shape=east_west": {
+        "data": "|1"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "shape=ascending_west": {
+        "data": "|3"
+      },
+      "powered=true": {
+        "data": "|8"
+      },
+      "shape=ascending_south": {
+        "data": "|5"
+      },
+      "shape=ascending_east": {
+        "data": "|2"
+      },
+      "shape=ascending_north": {
+        "data": "|4"
       }
     }
   },
   "sticky_piston": {
     "id": 29,
     "properties": {
-      "facing": {
-        "up": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=up": {
+        "data": "|1"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     }
   },
@@ -946,11 +832,9 @@
     "id": 31,
     "data": 1,
     "properties": {
-      "half": {
-        "upper": {
-          "id": 175,
-          "data": 2
-        }
+      "half=upper": {
+        "id": 175,
+        "data": 2
       }
     }
   },
@@ -958,11 +842,9 @@
     "id": 31,
     "data": 2,
     "properties": {
-      "half": {
-        "upper": {
-          "id": 175,
-          "data": 3
-        }
+      "half=upper": {
+        "id": 175,
+        "data": 3
       }
     }
   },
@@ -972,81 +854,69 @@
   "piston": {
     "id": 33,
     "properties": {
-      "facing": {
-        "up": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=up": {
+        "data": "|1"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     }
   },
   "piston_head": {
     "id": 34,
     "properties": {
-      "facing": {
-        "up": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "type=sticky": {
+        "data": "|8"
       },
-      "type": {
-        "sticky": {
-          "data": "|8"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=up": {
+        "data": "|1"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     }
   },
   "moving_piston": {
     "id": 36,
     "properties": {
-      "facing": {
-        "up": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "type=sticky": {
+        "data": "|8"
       },
-      "type": {
-        "sticky": {
-          "data": "|8"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=up": {
+        "data": "|1"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     }
   },
@@ -1166,13 +1036,11 @@
   "oak_slab": {
     "id": 126,
     "properties": {
-      "type": {
-        "top": {
-          "data": 8
-        },
-        "double": {
-          "id": 125
-        }
+      "type=double": {
+        "id": 125
+      },
+      "type=top": {
+        "data": 8
       }
     }
   },
@@ -1180,13 +1048,11 @@
     "id": 126,
     "data": 1,
     "properties": {
-      "type": {
-        "top": {
-          "data": 9
-        },
-        "double": {
-          "id": 125
-        }
+      "type=double": {
+        "id": 125
+      },
+      "type=top": {
+        "data": 9
       }
     }
   },
@@ -1194,13 +1060,11 @@
     "id": 126,
     "data": 2,
     "properties": {
-      "type": {
-        "top": {
-          "data": 10
-        },
-        "double": {
-          "id": 125
-        }
+      "type=double": {
+        "id": 125
+      },
+      "type=top": {
+        "data": 10
       }
     }
   },
@@ -1208,13 +1072,11 @@
     "id": 126,
     "data": 3,
     "properties": {
-      "type": {
-        "top": {
-          "data": 11
-        },
-        "double": {
-          "id": 125
-        }
+      "type=double": {
+        "id": 125
+      },
+      "type=top": {
+        "data": 11
       }
     }
   },
@@ -1222,13 +1084,11 @@
     "id": 126,
     "data": 4,
     "properties": {
-      "type": {
-        "top": {
-          "data": 12
-        },
-        "double": {
-          "id": 125
-        }
+      "type=double": {
+        "id": 125
+      },
+      "type=top": {
+        "data": 12
       }
     }
   },
@@ -1236,26 +1096,22 @@
     "id": 126,
     "data": 5,
     "properties": {
-      "type": {
-        "top": {
-          "data": 13
-        },
-        "double": {
-          "id": 125
-        }
+      "type=double": {
+        "id": 125
+      },
+      "type=top": {
+        "data": 13
       }
     }
   },
   "stone_slab": {
     "id": 44,
     "properties": {
-      "type": {
-        "top": {
-          "data": 8
-        },
-        "double": {
-          "id": 43
-        }
+      "type=double": {
+        "id": 43
+      },
+      "type=top": {
+        "data": 8
       }
     }
   },
@@ -1263,13 +1119,11 @@
     "id": 44,
     "data": 1,
     "properties": {
-      "type": {
-        "top": {
-          "data": 9
-        },
-        "double": {
-          "id": 43
-        }
+      "type=double": {
+        "id": 43
+      },
+      "type=top": {
+        "data": 9
       }
     }
   },
@@ -1277,13 +1131,11 @@
     "id": 44,
     "data": 2,
     "properties": {
-      "type": {
-        "top": {
-          "data": 10
-        },
-        "double": {
-          "id": 43
-        }
+      "type=double": {
+        "id": 43
+      },
+      "type=top": {
+        "data": 10
       }
     }
   },
@@ -1291,13 +1143,11 @@
     "id": 44,
     "data": 3,
     "properties": {
-      "type": {
-        "top": {
-          "data": 11
-        },
-        "double": {
-          "id": 43
-        }
+      "type=double": {
+        "id": 43
+      },
+      "type=top": {
+        "data": 11
       }
     }
   },
@@ -1305,13 +1155,11 @@
     "id": 44,
     "data": 4,
     "properties": {
-      "type": {
-        "top": {
-          "data": 12
-        },
-        "double": {
-          "id": 43
-        }
+      "type=double": {
+        "id": 43
+      },
+      "type=top": {
+        "data": 12
       }
     }
   },
@@ -1319,13 +1167,11 @@
     "id": 44,
     "data": 5,
     "properties": {
-      "type": {
-        "top": {
-          "data": 13
-        },
-        "double": {
-          "id": 43
-        }
+      "type=double": {
+        "id": 43
+      },
+      "type=top": {
+        "data": 13
       }
     }
   },
@@ -1333,13 +1179,11 @@
     "id": 44,
     "data": 6,
     "properties": {
-      "type": {
-        "top": {
-          "data": 14
-        },
-        "double": {
-          "id": 43
-        }
+      "type=double": {
+        "id": 43
+      },
+      "type=top": {
+        "data": 14
       }
     }
   },
@@ -1347,13 +1191,11 @@
     "id": 44,
     "data": 7,
     "properties": {
-      "type": {
-        "top": {
-          "data": 15
-        },
-        "double": {
-          "id": 43
-        }
+      "type=double": {
+        "id": 43
+      },
+      "type=top": {
+        "data": 15
       }
     }
   },
@@ -1372,13 +1214,11 @@
   "red_sandstone_slab": {
     "id": 182,
     "properties": {
-      "type": {
-        "top": {
-          "data": 8
-        },
-        "double": {
-          "id": 181
-        }
+      "type=double": {
+        "id": 181
+      },
+      "type=top": {
+        "data": 8
       }
     }
   },
@@ -1390,13 +1230,11 @@
     "id": 182,
     "data": 1,
     "properties": {
-      "type": {
-        "top": {
-          "data": 9
-        },
-        "double": {
-          "id": 181
-        }
+      "type=double": {
+        "id": 181
+      },
+      "type=top": {
+        "data": 9
       }
     }
   },
@@ -1419,22 +1257,20 @@
     "id": 50,
     "data": 5,
     "properties": {
-      "facing": {
-        "down": {
-          "data": 0
-        },
-        "east": {
-          "data": 1
-        },
-        "west": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "north": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 1
+      },
+      "facing=south": {
+        "data": 3
+      },
+      "facing=down": {
+        "data": 0
+      },
+      "facing=north": {
+        "data": 4
+      },
+      "facing=west": {
+        "data": 2
       }
     }
   },
@@ -1445,52 +1281,50 @@
   "fire": {
     "id": 51,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "age=13": {
+        "data": 13
+      },
+      "age=14": {
+        "data": 14
+      },
+      "age=15": {
+        "data": 15
+      },
+      "age=5": {
+        "data": 5
+      },
+      "age=4": {
+        "data": 4
+      },
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
+      },
+      "age=9": {
+        "data": 9
+      },
+      "age=8": {
+        "data": 8
+      },
+      "age=10": {
+        "data": 10
+      },
+      "age=7": {
+        "data": 7
+      },
+      "age=11": {
+        "data": 11
+      },
+      "age=6": {
+        "data": 6
+      },
+      "age=12": {
+        "data": 12
       }
     }
   },
@@ -1500,92 +1334,84 @@
   "oak_stairs": {
     "id": 53,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "chest": {
     "id": 54,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        },
-        "east": {
-          "data": 5
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "redstone_wire": {
     "id": 55,
     "properties": {
-      "power": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "power=8": {
+        "data": 8
+      },
+      "power=9": {
+        "data": 9
+      },
+      "power=15": {
+        "data": 15
+      },
+      "power=11": {
+        "data": 11
+      },
+      "power=12": {
+        "data": 12
+      },
+      "power=13": {
+        "data": 13
+      },
+      "power=14": {
+        "data": 14
+      },
+      "power=1": {
+        "data": 1
+      },
+      "power=2": {
+        "data": 2
+      },
+      "power=3": {
+        "data": 3
+      },
+      "power=10": {
+        "data": 10
+      },
+      "power=4": {
+        "data": 4
+      },
+      "power=5": {
+        "data": 5
+      },
+      "power=6": {
+        "data": 6
+      },
+      "power=7": {
+        "data": 7
       }
     }
   },
@@ -1601,820 +1427,750 @@
   "wheat": {
     "id": 59,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        }
+      "age=5": {
+        "data": 5
+      },
+      "age=4": {
+        "data": 4
+      },
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
+      },
+      "age=7": {
+        "data": 7
+      },
+      "age=6": {
+        "data": 6
       }
     }
   },
   "farmland": {
     "id": 60,
     "properties": {
-      "moisture": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        }
+      "moisture=2": {
+        "data": 2
+      },
+      "moisture=1": {
+        "data": 1
+      },
+      "moisture=4": {
+        "data": 4
+      },
+      "moisture=3": {
+        "data": 3
+      },
+      "moisture=6": {
+        "data": 6
+      },
+      "moisture=5": {
+        "data": 5
+      },
+      "moisture=7": {
+        "data": 7
       }
     }
   },
   "furnace": {
     "id": 61,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        },
-        "east": {
-          "data": 5
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "sign": {
     "id": 63,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "oak_sign": {
     "id": 63,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "spruce_sign": {
     "id": 63,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "birch_sign": {
     "id": 63,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "jungle_sign": {
     "id": 63,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "acacia_sign": {
     "id": 63,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "dark_oak_sign": {
     "id": 63,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "oak_door": {
     "id": 64,
     "properties": {
-      "hinge": {
-        "right": {
-          "data": "|1"
-        }
+      "half=upper": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|2"
-        }
+      "half=upper|hinge=right": {
+        "data": "|1"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "half=upper|powered=true": {
+        "data": "|2"
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "half=lower|facing=south": {
+        "data": "|1"
       },
-      "half": {
-        "upper": {
-          "data": "|8"
-        }
+      "half=lower|facing=north": {
+        "data": "|3"
+      },
+      "half=lower|facing=west": {
+        "data": "|2"
+      },
+      "half=lower|open=true": {
+        "data": "|4"
       }
     }
   },
   "ladder": {
     "id": 65,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        },
-        "east": {
-          "data": 5
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "rail": {
     "id": 66,
     "properties": {
-      "shape": {
-        "east_west": {
-          "data": 1
-        },
-        "ascending_east": {
-          "data": 2
-        },
-        "ascending_west": {
-          "data": 3
-        },
-        "ascending_north": {
-          "data": 4
-        },
-        "ascending_south": {
-          "data": 5
-        },
-        "south_east": {
-          "data": 6
-        },
-        "south_west": {
-          "data": 7
-        },
-        "north_west": {
-          "data": 8
-        },
-        "north_east": {
-          "data": 9
-        }
+      "shape=east_west": {
+        "data": 1
+      },
+      "shape=ascending_west": {
+        "data": 3
+      },
+      "shape=north_east": {
+        "data": 9
+      },
+      "shape=south_west": {
+        "data": 7
+      },
+      "shape=south_east": {
+        "data": 6
+      },
+      "shape=ascending_south": {
+        "data": 5
+      },
+      "shape=ascending_east": {
+        "data": 2
+      },
+      "shape=north_west": {
+        "data": 8
+      },
+      "shape=ascending_north": {
+        "data": 4
       }
     }
   },
   "cobblestone_stairs": {
     "id": 67,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "wall_sign": {
     "id": 68,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "east": {
-          "data": 5
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 5
+      },
+      "facing=south": {
+        "data": 3
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "oak_wall_sign": {
     "id": 68,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "east": {
-          "data": 5
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 5
+      },
+      "facing=south": {
+        "data": 3
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "spruce_wall_sign": {
     "id": 68,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "east": {
-          "data": 5
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 5
+      },
+      "facing=south": {
+        "data": 3
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "birch_wall_sign": {
     "id": 68,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "east": {
-          "data": 5
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 5
+      },
+      "facing=south": {
+        "data": 3
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "jungle_wall_sign": {
     "id": 68,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "east": {
-          "data": 5
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 5
+      },
+      "facing=south": {
+        "data": 3
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "acacia_wall_sign": {
     "id": 68,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "east": {
-          "data": 5
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 5
+      },
+      "facing=south": {
+        "data": 3
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "dark_oak_wall_sign": {
     "id": 68,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "east": {
-          "data": 5
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 5
+      },
+      "facing=south": {
+        "data": 3
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "lever": {
     "id": 69,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|4"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|1"
-        }
+      "face=wall|facing=east": {
+        "data": "|1"
       },
-      "face": {
-        "floor": {
-          "data": "|5"
-        },
-        "ceiling": {
-          "data": "|6"
-        }
+      "face=wall|facing=west": {
+        "data": "|2"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "face=wall|facing=south": {
+        "data": "|3"
+      },
+      "face=wall|facing=north": {
+        "data": "|4"
+      },
+      "face=floor|facing=north": {
+        "data": "|5"
+      },
+      "face=floor|facing=south": {
+        "data": "|5"
+      },
+      "face=floor|facing=east": {
+        "data": "|6"
+      },
+      "face=floor|facing=west": {
+        "data": "|6"
+      },
+      "face=ceiling|facing=south": {
+        "data": "|7"
+      },
+      "face=ceiling|facing=north": {
+        "data": "|7"
+      },
+      "powered=true": {
+        "data": "|8"
       }
     }
   },
   "stone_pressure_plate": {
     "id": 70,
     "properties": {
-      "powered": {
-        "true": {
-          "data": 1
-        }
+      "powered=true": {
+        "data": 1
       }
     }
   },
   "iron_door": {
     "id": 71,
     "properties": {
-      "hinge": {
-        "right": {
-          "data": "|1"
-        }
+      "half=upper": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|2"
-        }
+      "half=upper|hinge=right": {
+        "data": "|1"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "half=upper|powered=true": {
+        "data": "|2"
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "half=lower|facing=south": {
+        "data": "|1"
       },
-      "half": {
-        "upper": {
-          "data": "|8"
-        }
+      "half=lower|facing=north": {
+        "data": "|3"
+      },
+      "half=lower|facing=west": {
+        "data": "|2"
+      },
+      "half=lower|open=true": {
+        "data": "|4"
       }
     }
   },
   "oak_pressure_plate": {
     "id": 72,
     "properties": {
-      "powered": {
-        "true": {
-          "data": 1
-        }
+      "powered=true": {
+        "data": 1
       }
     }
   },
   "spruce_pressure_plate": {
     "id": 72,
     "properties": {
-      "powered": {
-        "true": {
-          "data": 1
-        }
+      "powered=true": {
+        "data": 1
       }
     }
   },
   "birch_pressure_plate": {
     "id": 72,
     "properties": {
-      "powered": {
-        "true": {
-          "data": 1
-        }
+      "powered=true": {
+        "data": 1
       }
     }
   },
   "jungle_pressure_plate": {
     "id": 72,
     "properties": {
-      "powered": {
-        "true": {
-          "data": 1
-        }
+      "powered=true": {
+        "data": 1
       }
     }
   },
   "acacia_pressure_plate": {
     "id": 72,
     "properties": {
-      "powered": {
-        "true": {
-          "data": 1
-        }
+      "powered=true": {
+        "data": 1
       }
     }
   },
   "dark_oak_pressure_plate": {
     "id": 72,
     "properties": {
-      "powered": {
-        "true": {
-          "data": 1
-        }
+      "powered=true": {
+        "data": 1
       }
     }
   },
@@ -2425,22 +2181,20 @@
     "id": 76,
     "data": 5,
     "properties": {
-      "facing": {
-        "down": {
-          "data": 0
-        },
-        "east": {
-          "data": 1
-        },
-        "west": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "north": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 1
+      },
+      "facing=south": {
+        "data": 3
+      },
+      "facing=down": {
+        "data": 0
+      },
+      "facing=north": {
+        "data": 4
+      },
+      "facing=west": {
+        "data": 2
       }
     }
   },
@@ -2450,59 +2204,50 @@
   },
   "stone_button": {
     "id": 77,
-    "data": 5,
     "properties": {
-      "face": {
-        "floor": {
-          "data": 0
-        }
+      "face=wall|facing=east": {
+        "data": "|1"
       },
-      "facing": {
-        "east": {
-          "data": 1
-        },
-        "west": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "north": {
-          "data": 4
-        }
+      "face=wall|facing=south": {
+        "data": "|3"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "face=wall|facing=north": {
+        "data": "|4"
+      },
+      "face=wall|facing=west": {
+        "data": "|2"
+      },
+      "face=floor": {
+        "data": "|5"
+      },
+      "powered=true": {
+        "data": "|8"
       }
     }
   },
   "snow": {
     "id": 78,
     "properties": {
-      "layers": {
-        "2": {
-          "data": 1
-        },
-        "3": {
-          "data": 2
-        },
-        "4": {
-          "data": 3
-        },
-        "5": {
-          "data": 4
-        },
-        "6": {
-          "data": 5
-        },
-        "7": {
-          "data": 6
-        },
-        "8": {
-          "data": 7
-        }
+      "layers=5": {
+        "data": 4
+      },
+      "layers=6": {
+        "data": 5
+      },
+      "layers=3": {
+        "data": 2
+      },
+      "layers=4": {
+        "data": 3
+      },
+      "layers=7": {
+        "data": 6
+      },
+      "layers=8": {
+        "data": 7
+      },
+      "layers=2": {
+        "data": 1
       }
     }
   },
@@ -2515,52 +2260,50 @@
   "cactus": {
     "id": 81,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "age=13": {
+        "data": 13
+      },
+      "age=14": {
+        "data": 14
+      },
+      "age=15": {
+        "data": 15
+      },
+      "age=5": {
+        "data": 5
+      },
+      "age=4": {
+        "data": 4
+      },
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
+      },
+      "age=9": {
+        "data": 9
+      },
+      "age=8": {
+        "data": 8
+      },
+      "age=10": {
+        "data": 10
+      },
+      "age=7": {
+        "data": 7
+      },
+      "age=11": {
+        "data": 11
+      },
+      "age=6": {
+        "data": 6
+      },
+      "age=12": {
+        "data": 12
       }
     }
   },
@@ -2570,62 +2313,58 @@
   "sugar_cane": {
     "id": 83,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "age=13": {
+        "data": 13
+      },
+      "age=14": {
+        "data": 14
+      },
+      "age=15": {
+        "data": 15
+      },
+      "age=5": {
+        "data": 5
+      },
+      "age=4": {
+        "data": 4
+      },
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
+      },
+      "age=9": {
+        "data": 9
+      },
+      "age=8": {
+        "data": 8
+      },
+      "age=10": {
+        "data": 10
+      },
+      "age=7": {
+        "data": 7
+      },
+      "age=11": {
+        "data": 11
+      },
+      "age=6": {
+        "data": 6
+      },
+      "age=12": {
+        "data": 12
       }
     }
   },
   "jukebox": {
     "id": 84,
     "properties": {
-      "has_record": {
-        "true": {
-          "data": 1
-        }
+      "has_record=true": {
+        "data": 1
       }
     }
   },
@@ -2635,54 +2374,48 @@
   "pumpkin": {
     "id": 86,
     "properties": {
-      "facing": {
-        "west": {
-          "data": 1
-        },
-        "east": {
-          "data": 3
-        },
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 3
+      },
+      "facing=south": {
+        "data": 4
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 1
       }
     }
   },
   "carved_pumpkin": {
     "id": 86,
     "properties": {
-      "facing": {
-        "west": {
-          "data": 1
-        },
-        "east": {
-          "data": 3
-        },
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 3
+      },
+      "facing=south": {
+        "data": 4
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 1
       }
     }
   },
   "jack_o_lantern": {
     "id": 86,
     "properties": {
-      "facing": {
-        "west": {
-          "data": 1
-        },
-        "east": {
-          "data": 3
-        },
-        "south": {
-          "data": 4
-        }
+      "facing=east": {
+        "data": 3
+      },
+      "facing=south": {
+        "data": 4
+      },
+      "facing=west": {
+        "data": 1
       }
     }
   },
@@ -2698,65 +2431,57 @@
   "nether_portal": {
     "id": 90,
     "properties": {
-      "axis": {
-        "x": {
-          "data": 1
-        },
-        "z": {
-          "data": 2
-        }
+      "axis=z": {
+        "data": 2
+      },
+      "axis=x": {
+        "data": 1
       }
     }
   },
   "cake": {
     "id": 92,
     "properties": {
-      "bites": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        }
+      "bites=3": {
+        "data": 3
+      },
+      "bites=2": {
+        "data": 2
+      },
+      "bites=5": {
+        "data": 5
+      },
+      "bites=4": {
+        "data": 4
+      },
+      "bites=6": {
+        "data": 6
+      },
+      "bites=1": {
+        "data": 1
       }
     }
   },
   "repeater": {
     "id": 93,
     "properties": {
-      "facing": {
-        "east": {
-          "data": "|3"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "delay=2": {
+        "data": "|4"
       },
-      "delay": {
-        "2": {
-          "data": "|4"
-        },
-        "3": {
-          "data": "|8"
-        },
-        "4": {
-          "data": "|12"
-        }
+      "facing=east": {
+        "data": "|3"
+      },
+      "delay=3": {
+        "data": "|8"
+      },
+      "delay=4": {
+        "data": "|12"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
@@ -2827,26 +2552,20 @@
     "id": 96,
     "data": 3,
     "properties": {
-      "facing": {
-        "west": {
-          "data": 2
-        },
-        "north": {
-          "data": 0
-        },
-        "south": {
-          "data": 1
-        }
+      "facing=south": {
+        "data": 1
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": 0
       },
-      "half": {
-        "top": {
-          "data": "|8"
-        }
+      "half=top": {
+        "data": "|8"
+      },
+      "facing=west": {
+        "data": 2
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
@@ -2854,26 +2573,20 @@
     "id": 96,
     "data": 3,
     "properties": {
-      "facing": {
-        "west": {
-          "data": 2
-        },
-        "north": {
-          "data": 0
-        },
-        "south": {
-          "data": 1
-        }
+      "facing=south": {
+        "data": 1
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": 0
       },
-      "half": {
-        "top": {
-          "data": "|8"
-        }
+      "half=top": {
+        "data": "|8"
+      },
+      "facing=west": {
+        "data": 2
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
@@ -2881,26 +2594,20 @@
     "id": 96,
     "data": 3,
     "properties": {
-      "facing": {
-        "west": {
-          "data": 2
-        },
-        "north": {
-          "data": 0
-        },
-        "south": {
-          "data": 1
-        }
+      "facing=south": {
+        "data": 1
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": 0
       },
-      "half": {
-        "top": {
-          "data": "|8"
-        }
+      "half=top": {
+        "data": "|8"
+      },
+      "facing=west": {
+        "data": 2
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
@@ -2908,26 +2615,20 @@
     "id": 96,
     "data": 3,
     "properties": {
-      "facing": {
-        "west": {
-          "data": 2
-        },
-        "north": {
-          "data": 0
-        },
-        "south": {
-          "data": 1
-        }
+      "facing=south": {
+        "data": 1
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": 0
       },
-      "half": {
-        "top": {
-          "data": "|8"
-        }
+      "half=top": {
+        "data": "|8"
+      },
+      "facing=west": {
+        "data": 2
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
@@ -2935,26 +2636,20 @@
     "id": 96,
     "data": 3,
     "properties": {
-      "facing": {
-        "west": {
-          "data": 2
-        },
-        "north": {
-          "data": 0
-        },
-        "south": {
-          "data": 1
-        }
+      "facing=south": {
+        "data": 1
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": 0
       },
-      "half": {
-        "top": {
-          "data": "|8"
-        }
+      "half=top": {
+        "data": "|8"
+      },
+      "facing=west": {
+        "data": 2
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
@@ -2962,26 +2657,20 @@
     "id": 96,
     "data": 3,
     "properties": {
-      "facing": {
-        "west": {
-          "data": 2
-        },
-        "north": {
-          "data": 0
-        },
-        "south": {
-          "data": 1
-        }
+      "facing=south": {
+        "data": 1
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": 0
       },
-      "half": {
-        "top": {
-          "data": "|8"
-        }
+      "half=top": {
+        "data": "|8"
+      },
+      "facing=west": {
+        "data": 2
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
@@ -3027,180 +2716,114 @@
   "brown_mushroom_block": {
     "id": 99,
     "properties": {
-      "!down|east|!north|south|!west": {
-        "true": {
-          "data": 9
-        }
+      "!down=true|!east=true|!north=true|!south=true|west=true": {
+        "data": 4
       },
-      "!down|east|!north|!south|!west": {
-        "true": {
-          "data": 6
-        }
+      "!down=true|!east=true|!north=true|south=true|west=true": {
+        "data": 7
       },
-      "!down|east|north|!south|!west": {
-        "true": {
-          "data": 3
-        }
+      "!down=true|!east=true|north=true|!south=true|west=true": {
+        "data": 1
       },
-      "!down|!east|north|!south|!west": {
-        "true": {
-          "data": 2
-        }
+      "!down=true|!east=true|!north=true|!south=true|up=true|!west=true": {
+        "data": 5
       },
-      "!down|!east|north|!south|west": {
-        "true": {
-          "data": 1
-        }
+      "!down=true|east=true|!north=true|south=true|!west=true": {
+        "data": 9
       },
-      "!down|!east|!north|!south|west": {
-        "true": {
-          "data": 4
-        }
+      "!down=true|!east=true|north=true|!south=true|!west=true": {
+        "data": 2
       },
-      "!down|!east|!north|south|!west": {
-        "true": {
-          "data": 8
-        }
+      "!down=true|!east=true|!north=true|south=true|!west=true": {
+        "data": 8
       },
-      "!down|!east|!north|south|west": {
-        "true": {
-          "data": 7
-        }
+      "west=true|up=true|south=true|north=true|down=true|east=true": {
+        "data": 14
       },
-      "!down|!east|!north|!south|up|!west": {
-        "true": {
-          "data": 5
-        }
+      "!down=true|east=true|!north=true|!south=true|!west=true": {
+        "data": 6
       },
-      "!down|east|north|south|west": {
-        "true": {
-          "data": 10
-        }
+      "!down=true|east=true|north=true|south=true|west=true": {
+        "data": 10
       },
-      "west|up|south|north|down|east": {
-        "true": {
-          "data": 14
-        }
+      "!down=true|east=true|north=true|!south=true|!west=true": {
+        "data": 3
       }
     }
   },
   "red_mushroom_block": {
     "id": 100,
     "properties": {
-      "!down|east|!north|south|!west": {
-        "true": {
-          "data": 9
-        }
+      "!down=true|!east=true|!north=true|!south=true|west=true": {
+        "data": 4
       },
-      "!down|east|!north|!south|!west": {
-        "true": {
-          "data": 6
-        }
+      "!down=true|!east=true|!north=true|south=true|west=true": {
+        "data": 7
       },
-      "!down|east|north|!south|!west": {
-        "true": {
-          "data": 3
-        }
+      "!down=true|!east=true|north=true|!south=true|west=true": {
+        "data": 1
       },
-      "!down|!east|north|!south|!west": {
-        "true": {
-          "data": 2
-        }
+      "!down=true|!east=true|!north=true|!south=true|up=true|!west=true": {
+        "data": 5
       },
-      "!down|!east|north|!south|west": {
-        "true": {
-          "data": 1
-        }
+      "!down=true|east=true|!north=true|south=true|!west=true": {
+        "data": 9
       },
-      "!down|!east|!north|!south|west": {
-        "true": {
-          "data": 4
-        }
+      "!down=true|!east=true|north=true|!south=true|!west=true": {
+        "data": 2
       },
-      "!down|!east|!north|south|!west": {
-        "true": {
-          "data": 8
-        }
+      "!down=true|!east=true|!north=true|south=true|!west=true": {
+        "data": 8
       },
-      "!down|!east|!north|south|west": {
-        "true": {
-          "data": 7
-        }
+      "west=true|up=true|south=true|north=true|down=true|east=true": {
+        "data": 14
       },
-      "!down|!east|!north|!south|up|!west": {
-        "true": {
-          "data": 5
-        }
+      "!down=true|east=true|!north=true|!south=true|!west=true": {
+        "data": 6
       },
-      "!down|east|north|south|west": {
-        "true": {
-          "data": 10
-        }
+      "!down=true|east=true|north=true|south=true|west=true": {
+        "data": 10
       },
-      "west|up|south|north|down|east": {
-        "true": {
-          "data": 14
-        }
+      "!down=true|east=true|north=true|!south=true|!west=true": {
+        "data": 3
       }
     }
   },
   "mushroom_stem": {
     "id": 100,
     "properties": {
-      "!down|east|!north|south|!west": {
-        "true": {
-          "data": 9
-        }
+      "!down=true|!east=true|!north=true|!south=true|west=true": {
+        "data": 4
       },
-      "!down|east|!north|!south|!west": {
-        "true": {
-          "data": 6
-        }
+      "!down=true|!east=true|!north=true|south=true|west=true": {
+        "data": 7
       },
-      "!down|east|north|!south|!west": {
-        "true": {
-          "data": 3
-        }
+      "!down=true|!east=true|north=true|!south=true|west=true": {
+        "data": 1
       },
-      "!down|!east|north|!south|!west": {
-        "true": {
-          "data": 2
-        }
+      "!down=true|!east=true|!north=true|!south=true|up=true|!west=true": {
+        "data": 5
       },
-      "!down|!east|north|!south|west": {
-        "true": {
-          "data": 1
-        }
+      "!down=true|east=true|!north=true|south=true|!west=true": {
+        "data": 9
       },
-      "!down|!east|!north|!south|west": {
-        "true": {
-          "data": 4
-        }
+      "!down=true|!east=true|north=true|!south=true|!west=true": {
+        "data": 2
       },
-      "!down|!east|!north|south|!west": {
-        "true": {
-          "data": 8
-        }
+      "!down=true|!east=true|!north=true|south=true|!west=true": {
+        "data": 8
       },
-      "!down|!east|!north|south|west": {
-        "true": {
-          "data": 7
-        }
+      "west=true|up=true|south=true|north=true|down=true|east=true": {
+        "data": 15
       },
-      "!down|!east|!north|!south|up|!west": {
-        "true": {
-          "data": 5
-        }
+      "!down=true|east=true|!north=true|!south=true|!west=true": {
+        "data": 6
       },
-      "!down|east|north|south|west": {
-        "true": {
-          "data": 10
-        }
+      "!down=true|east=true|north=true|south=true|west=true": {
+        "data": 10
       },
-      "west|up|south|north|down|east": {
-        "true": {
-          "data": 15
-        }
+      "!down=true|east=true|north=true|!south=true|!west=true": {
+        "data": 3
       }
     }
   },
@@ -3216,28 +2839,26 @@
   "pumpkin_stem": {
     "id": 104,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        }
+      "age=5": {
+        "data": 5
+      },
+      "age=4": {
+        "data": 4
+      },
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
+      },
+      "age=7": {
+        "data": 7
+      },
+      "age=6": {
+        "data": 6
       }
     }
   },
@@ -3248,28 +2869,26 @@
   "melon_stem": {
     "id": 105,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        }
+      "age=5": {
+        "data": 5
+      },
+      "age=4": {
+        "data": 4
+      },
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
+      },
+      "age=7": {
+        "data": 7
+      },
+      "age=6": {
+        "data": 6
       }
     }
   },
@@ -3280,93 +2899,71 @@
   "vine": {
     "id": 106,
     "properties": {
-      "south": {
-        "true": {
-          "data": "|1"
-        }
+      "west=true": {
+        "data": "|2"
       },
-      "west": {
-        "true": {
-          "data": "|2"
-        }
+      "north=true": {
+        "data": "|4"
       },
-      "north": {
-        "true": {
-          "data": "|4"
-        }
+      "east=true": {
+        "data": "|8"
       },
-      "east": {
-        "true": {
-          "data": "|8"
-        }
+      "south=true": {
+        "data": "|1"
       }
     }
   },
   "oak_fence_gate": {
     "id": 107,
     "properties": {
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
   "brick_stairs": {
     "id": 108,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "stone_brick_stairs": {
     "id": 109,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
@@ -3385,37 +2982,31 @@
   "nether_brick_stairs": {
     "id": 114,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "nether_wart": {
     "id": 115,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        }
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
       }
     }
   },
@@ -3428,16 +3019,14 @@
   "cauldron": {
     "id": 118,
     "properties": {
-      "level": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        }
+      "level=1": {
+        "data": 1
+      },
+      "level=2": {
+        "data": 2
+      },
+      "level=3": {
+        "data": 3
       }
     }
   },
@@ -3447,21 +3036,17 @@
   "end_portal_frame": {
     "id": 120,
     "properties": {
-      "eye": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "east": {
-          "data": "|3"
-        },
-        "north": {
-          "data": "|2"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "eye=true": {
+        "data": "|4"
       }
     }
   },
@@ -3477,55 +3062,45 @@
   "redstone_lamp": {
     "id": 123,
     "properties": {
-      "lit": {
-        "true": {
-          "id": 124
-        }
+      "lit=true": {
+        "id": 124
       }
     }
   },
   "cocoa": {
     "id": 127,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "west": {
-          "data": "|1"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "age": {
-        "1": {
-          "data": "|4"
-        },
-        "2": {
-          "data": "|8"
-        }
+      "age=2": {
+        "data": "|8"
+      },
+      "age=1": {
+        "data": "|4"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "sandstone_stairs": {
     "id": 128,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
@@ -3535,65 +3110,51 @@
   "ender_chest": {
     "id": 130,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        },
-        "east": {
-          "data": 5
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "tripwire_hook": {
     "id": 131,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "west": {
-          "data": "|1"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "attached": {
-        "true": {
-          "data": "|4"
-        }
+      "attached=true": {
+        "data": "|4"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "tripwire": {
     "id": 132,
     "properties": {
-      "powered": {
-        "true": {
-          "data": "|1"
-        }
+      "powered=true": {
+        "data": "|1"
       },
-      "attached": {
-        "true": {
-          "data": "|4"
-        }
+      "attached=true": {
+        "data": "|4"
       },
-      "disarmed": {
-        "true": {
-          "data": "|8"
-        }
+      "disarmed=true": {
+        "data": "|8"
       }
     }
   },
@@ -3603,87 +3164,71 @@
   "spruce_stairs": {
     "id": 134,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "birch_stairs": {
     "id": 135,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "jungle_stairs": {
     "id": 136,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "command_block": {
     "id": 137,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "facing=south": {
+        "data": "|3"
       },
-      "conditional": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|4"
+      },
+      "conditional=true": {
+        "data": "|8"
       }
     }
   },
@@ -4053,236 +3598,190 @@
   "carrots": {
     "id": 141,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        }
+      "age=5": {
+        "data": 5
+      },
+      "age=4": {
+        "data": 4
+      },
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
+      },
+      "age=7": {
+        "data": 7
+      },
+      "age=6": {
+        "data": 6
       }
     }
   },
   "potatoes": {
     "id": 142,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        }
+      "age=5": {
+        "data": 5
+      },
+      "age=4": {
+        "data": 4
+      },
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
+      },
+      "age=7": {
+        "data": 7
+      },
+      "age=6": {
+        "data": 6
       }
     }
   },
   "oak_button": {
     "id": 143,
-    "data": 5,
     "properties": {
-      "face": {
-        "floor": {
-          "data": 0
-        }
+      "face=wall|facing=east": {
+        "data": "|1"
       },
-      "facing": {
-        "east": {
-          "data": 1
-        },
-        "west": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "north": {
-          "data": 4
-        }
+      "face=wall|facing=south": {
+        "data": "|3"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "face=wall|facing=north": {
+        "data": "|4"
+      },
+      "face=wall|facing=west": {
+        "data": "|2"
+      },
+      "face=floor": {
+        "data": "|5"
+      },
+      "powered=true": {
+        "data": "|8"
       }
     }
   },
   "spruce_button": {
     "id": 143,
-    "data": 5,
     "properties": {
-      "face": {
-        "floor": {
-          "data": 0
-        }
+      "face=wall|facing=east": {
+        "data": "|1"
       },
-      "facing": {
-        "east": {
-          "data": 1
-        },
-        "west": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "north": {
-          "data": 4
-        }
+      "face=wall|facing=south": {
+        "data": "|3"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "face=wall|facing=north": {
+        "data": "|4"
+      },
+      "face=wall|facing=west": {
+        "data": "|2"
+      },
+      "face=floor": {
+        "data": "|5"
+      },
+      "powered=true": {
+        "data": "|8"
       }
     }
   },
   "birch_button": {
     "id": 143,
-    "data": 5,
     "properties": {
-      "face": {
-        "floor": {
-          "data": 0
-        }
+      "face=wall|facing=east": {
+        "data": "|1"
       },
-      "facing": {
-        "east": {
-          "data": 1
-        },
-        "west": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "north": {
-          "data": 4
-        }
+      "face=wall|facing=south": {
+        "data": "|3"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "face=wall|facing=north": {
+        "data": "|4"
+      },
+      "face=wall|facing=west": {
+        "data": "|2"
+      },
+      "face=floor": {
+        "data": "|5"
+      },
+      "powered=true": {
+        "data": "|8"
       }
     }
   },
   "jungle_button": {
     "id": 143,
-    "data": 5,
     "properties": {
-      "face": {
-        "floor": {
-          "data": 0
-        }
+      "face=wall|facing=east": {
+        "data": "|1"
       },
-      "facing": {
-        "east": {
-          "data": 1
-        },
-        "west": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "north": {
-          "data": 4
-        }
+      "face=wall|facing=south": {
+        "data": "|3"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "face=wall|facing=north": {
+        "data": "|4"
+      },
+      "face=wall|facing=west": {
+        "data": "|2"
+      },
+      "face=floor": {
+        "data": "|5"
+      },
+      "powered=true": {
+        "data": "|8"
       }
     }
   },
   "acacia_button": {
     "id": 143,
-    "data": 5,
     "properties": {
-      "face": {
-        "floor": {
-          "data": 0
-        }
+      "face=wall|facing=east": {
+        "data": "|1"
       },
-      "facing": {
-        "east": {
-          "data": 1
-        },
-        "west": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "north": {
-          "data": 4
-        }
+      "face=wall|facing=south": {
+        "data": "|3"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "face=wall|facing=north": {
+        "data": "|4"
+      },
+      "face=wall|facing=west": {
+        "data": "|2"
+      },
+      "face=floor": {
+        "data": "|5"
+      },
+      "powered=true": {
+        "data": "|8"
       }
     }
   },
   "dark_oak_button": {
     "id": 143,
-    "data": 5,
     "properties": {
-      "face": {
-        "floor": {
-          "data": 0
-        }
+      "face=wall|facing=east": {
+        "data": "|1"
       },
-      "facing": {
-        "east": {
-          "data": 1
-        },
-        "west": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "north": {
-          "data": 4
-        }
+      "face=wall|facing=south": {
+        "data": "|3"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "face=wall|facing=north": {
+        "data": "|4"
+      },
+      "face=wall|facing=west": {
+        "data": "|2"
+      },
+      "face=floor": {
+        "data": "|5"
+      },
+      "powered=true": {
+        "data": "|8"
       }
     }
   },
@@ -4305,19 +3804,17 @@
   "skeleton_wall_skull": {
     "id": 144,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     },
     "tile_entity": {
@@ -4352,19 +3849,17 @@
   "wither_skeleton_wall_skull": {
     "id": 144,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     },
     "tile_entity": {
@@ -4399,19 +3894,17 @@
   "zombie_wall_head": {
     "id": 144,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     },
     "tile_entity": {
@@ -4446,19 +3939,17 @@
   "player_wall_head": {
     "id": 144,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     },
     "tile_entity": {
@@ -4493,19 +3984,17 @@
   "creeper_wall_head": {
     "id": 144,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     },
     "tile_entity": {
@@ -4540,19 +4029,17 @@
   "dragon_wall_head": {
     "id": 144,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     },
     "tile_entity": {
@@ -4571,16 +4058,14 @@
   "anvil": {
     "id": 145,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "facing=east": {
+        "data": "|3"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
@@ -4588,16 +4073,14 @@
     "id": 145,
     "data": 1,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "facing=east": {
+        "data": "|3"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
@@ -4605,217 +4088,201 @@
     "id": 145,
     "data": 2,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "facing=east": {
+        "data": "|3"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "trapped_chest": {
     "id": 146,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        },
-        "east": {
-          "data": 5
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "light_weighted_pressure_plate": {
     "id": 147,
     "properties": {
-      "power": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "power=8": {
+        "data": 8
+      },
+      "power=9": {
+        "data": 9
+      },
+      "power=15": {
+        "data": 15
+      },
+      "power=11": {
+        "data": 11
+      },
+      "power=12": {
+        "data": 12
+      },
+      "power=13": {
+        "data": 13
+      },
+      "power=14": {
+        "data": 14
+      },
+      "power=1": {
+        "data": 1
+      },
+      "power=2": {
+        "data": 2
+      },
+      "power=3": {
+        "data": 3
+      },
+      "power=10": {
+        "data": 10
+      },
+      "power=4": {
+        "data": 4
+      },
+      "power=5": {
+        "data": 5
+      },
+      "power=6": {
+        "data": 6
+      },
+      "power=7": {
+        "data": 7
       }
     }
   },
   "heavy_weighted_pressure_plate": {
     "id": 148,
     "properties": {
-      "power": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "power=8": {
+        "data": 8
+      },
+      "power=9": {
+        "data": 9
+      },
+      "power=15": {
+        "data": 15
+      },
+      "power=11": {
+        "data": 11
+      },
+      "power=12": {
+        "data": 12
+      },
+      "power=13": {
+        "data": 13
+      },
+      "power=14": {
+        "data": 14
+      },
+      "power=1": {
+        "data": 1
+      },
+      "power=2": {
+        "data": 2
+      },
+      "power=3": {
+        "data": 3
+      },
+      "power=10": {
+        "data": 10
+      },
+      "power=4": {
+        "data": 4
+      },
+      "power=5": {
+        "data": 5
+      },
+      "power=6": {
+        "data": 6
+      },
+      "power=7": {
+        "data": 7
       }
     }
   },
   "comparator": {
     "id": 149,
     "properties": {
-      "facing": {
-        "east": {
-          "data": "|3"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "mode": {
-        "substract": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "mode=substract": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "daylight_detector": {
     "id": 151,
     "properties": {
-      "power": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "power=8": {
+        "data": 8
+      },
+      "power=9": {
+        "data": 9
+      },
+      "power=15": {
+        "data": 15
+      },
+      "power=11": {
+        "data": 11
+      },
+      "power=12": {
+        "data": 12
+      },
+      "power=13": {
+        "data": 13
+      },
+      "power=14": {
+        "data": 14
+      },
+      "power=1": {
+        "data": 1
+      },
+      "power=2": {
+        "data": 2
+      },
+      "power=3": {
+        "data": 3
+      },
+      "power=10": {
+        "data": 10
+      },
+      "power=4": {
+        "data": 4
+      },
+      "power=5": {
+        "data": 5
+      },
+      "power=6": {
+        "data": 6
+      },
+      "power=7": {
+        "data": 7
       }
     }
   },
@@ -4828,27 +4295,23 @@
   "hopper": {
     "id": 154,
     "properties": {
-      "facing": {
-        "up": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "facing=south": {
+        "data": "|3"
       },
-      "enabled": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "enabled=true": {
+        "data": "|8"
+      },
+      "facing=up": {
+        "data": "|1"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     }
   },
@@ -4869,70 +4332,60 @@
   "quartz_stairs": {
     "id": 156,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "activator_rail": {
     "id": 157,
     "properties": {
-      "shape": {
-        "east_west": {
-          "data": "|1"
-        },
-        "ascending_east": {
-          "data": "|2"
-        },
-        "ascending_west": {
-          "data": "|3"
-        },
-        "ascending_north": {
-          "data": "|4"
-        },
-        "ascending_south": {
-          "data": "|5"
-        }
+      "shape=east_west": {
+        "data": "|1"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "shape=ascending_west": {
+        "data": "|3"
+      },
+      "powered=true": {
+        "data": "|8"
+      },
+      "shape=ascending_south": {
+        "data": "|5"
+      },
+      "shape=ascending_east": {
+        "data": "|2"
+      },
+      "shape=ascending_north": {
+        "data": "|4"
       }
     }
   },
   "dropper": {
     "id": 158,
     "properties": {
-      "facing": {
-        "up": {
-          "data": 1
-        },
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "west": {
-          "data": 4
-        },
-        "east": {
-          "data": 5
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=up": {
+        "data": 1
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
@@ -5062,42 +4515,34 @@
   "acacia_stairs": {
     "id": 163,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "dark_oak_stairs": {
     "id": 164,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
@@ -5110,26 +4555,20 @@
   "iron_trapdoor": {
     "id": 167,
     "properties": {
-      "facing": {
-        "west": {
-          "data": 2
-        },
-        "north": {
-          "data": 0
-        },
-        "south": {
-          "data": 1
-        }
+      "facing=south": {
+        "data": 1
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": 0
       },
-      "half": {
-        "top": {
-          "data": "|8"
-        }
+      "half=top": {
+        "data": "|8"
+      },
+      "facing=west": {
+        "data": 2
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
@@ -5150,13 +4589,11 @@
   "hay_block": {
     "id": 170,
     "properties": {
-      "axis": {
-        "x": {
-          "data": 4
-        },
-        "z": {
-          "data": 8
-        }
+      "axis=z": {
+        "data": 8
+      },
+      "axis=x": {
+        "data": 4
       }
     }
   },
@@ -5235,10 +4672,8 @@
   "sunflower": {
     "id": 175,
     "properties": {
-      "half": {
-        "upper": {
-          "data": 10
-        }
+      "half=upper": {
+        "data": 10
       }
     }
   },
@@ -5246,10 +4681,8 @@
     "id": 175,
     "data": 1,
     "properties": {
-      "half": {
-        "upper": {
-          "data": 10
-        }
+      "half=upper": {
+        "data": 10
       }
     }
   },
@@ -5257,10 +4690,8 @@
     "id": 175,
     "data": 2,
     "properties": {
-      "half": {
-        "upper": {
-          "data": 10
-        }
+      "half=upper": {
+        "data": 10
       }
     }
   },
@@ -5268,10 +4699,8 @@
     "id": 175,
     "data": 3,
     "properties": {
-      "half": {
-        "upper": {
-          "data": 10
-        }
+      "half=upper": {
+        "data": 10
       }
     }
   },
@@ -5279,10 +4708,8 @@
     "id": 175,
     "data": 4,
     "properties": {
-      "half": {
-        "upper": {
-          "data": 10
-        }
+      "half=upper": {
+        "data": 10
       }
     }
   },
@@ -5290,1146 +4717,1080 @@
     "id": 175,
     "data": 5,
     "properties": {
-      "half": {
-        "upper": {
-          "data": 10
-        }
+      "half=upper": {
+        "data": 10
       }
     }
   },
   "white_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "orange_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "magenta_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "light_blue_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "yellow_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "lime_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "pink_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "gray_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "light_gray_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "cyan_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "purple_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "blue_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "brown_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "green_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "red_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "black_banner": {
     "id": 176,
     "properties": {
-      "rotation": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        },
-        "6": {
-          "data": 6
-        },
-        "7": {
-          "data": 7
-        },
-        "8": {
-          "data": 8
-        },
-        "9": {
-          "data": 9
-        },
-        "10": {
-          "data": 10
-        },
-        "11": {
-          "data": 11
-        },
-        "12": {
-          "data": 12
-        },
-        "13": {
-          "data": 13
-        },
-        "14": {
-          "data": 14
-        },
-        "15": {
-          "data": 15
-        }
+      "rotation=2": {
+        "data": 2
+      },
+      "rotation=1": {
+        "data": 1
+      },
+      "rotation=6": {
+        "data": 6
+      },
+      "rotation=5": {
+        "data": 5
+      },
+      "rotation=4": {
+        "data": 4
+      },
+      "rotation=3": {
+        "data": 3
+      },
+      "rotation=9": {
+        "data": 9
+      },
+      "rotation=8": {
+        "data": 8
+      },
+      "rotation=7": {
+        "data": 7
+      },
+      "rotation=10": {
+        "data": 10
+      },
+      "rotation=11": {
+        "data": 11
+      },
+      "rotation=14": {
+        "data": 14
+      },
+      "rotation=15": {
+        "data": 15
+      },
+      "rotation=12": {
+        "data": 12
+      },
+      "rotation=13": {
+        "data": 13
       }
     }
   },
   "white_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "orange_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "magenta_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "light_blue_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "yellow_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "lime_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "pink_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "gray_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "light_gray_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "cyan_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "purple_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "blue_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "brown_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "green_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "red_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
   "black_wall_banner": {
     "id": 177,
     "properties": {
-      "facing": {
-        "north": {
-          "data": 2
-        },
-        "south": {
-          "data": 3
-        },
-        "east": {
-          "data": 5
-        },
-        "west": {
-          "data": 4
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
@@ -6447,21 +5808,17 @@
   "red_sandstone_stairs": {
     "id": 180,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
@@ -6469,13 +5826,11 @@
     "id": 182,
     "data": 2,
     "properties": {
-      "type": {
-        "top": {
-          "data": 10
-        },
-        "double": {
-          "id": 181
-        }
+      "type=double": {
+        "id": 181
+      },
+      "type=top": {
+        "data": 10
       }
     }
   },
@@ -6483,13 +5838,11 @@
     "id": 182,
     "data": 3,
     "properties": {
-      "type": {
-        "top": {
-          "data": 11
-        },
-        "double": {
-          "id": 181
-        }
+      "type=double": {
+        "id": 181
+      },
+      "type=top": {
+        "data": 11
       }
     }
   },
@@ -6497,143 +5850,111 @@
     "id": 182,
     "data": 4,
     "properties": {
-      "type": {
-        "top": {
-          "data": 12
-        },
-        "double": {
-          "id": 181
-        }
+      "type=double": {
+        "id": 181
+      },
+      "type=top": {
+        "data": 12
       }
     }
   },
   "spruce_fence_gate": {
     "id": 183,
     "properties": {
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
   "birch_fence_gate": {
     "id": 184,
     "properties": {
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
   "jungle_fence_gate": {
     "id": 185,
     "properties": {
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
   "dark_oak_fence_gate": {
     "id": 186,
     "properties": {
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
   "acacia_fence_gate": {
     "id": 187,
     "properties": {
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|3"
       },
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|1"
-        }
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|1"
+      },
+      "open=true": {
+        "data": "|4"
       }
     }
   },
@@ -6655,206 +5976,150 @@
   "spruce_door": {
     "id": 193,
     "properties": {
-      "hinge": {
-        "right": {
-          "data": "|1"
-        }
+      "half=upper": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|2"
-        }
+      "half=upper|hinge=right": {
+        "data": "|1"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "half=upper|powered=true": {
+        "data": "|2"
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "half=lower|facing=south": {
+        "data": "|1"
       },
-      "half": {
-        "upper": {
-          "data": "|8"
-        }
+      "half=lower|facing=north": {
+        "data": "|3"
+      },
+      "half=lower|facing=west": {
+        "data": "|2"
+      },
+      "half=lower|open=true": {
+        "data": "|4"
       }
     }
   },
   "birch_door": {
     "id": 194,
     "properties": {
-      "hinge": {
-        "right": {
-          "data": "|1"
-        }
+      "half=upper": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|2"
-        }
+      "half=upper|hinge=right": {
+        "data": "|1"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "half=upper|powered=true": {
+        "data": "|2"
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "half=lower|facing=south": {
+        "data": "|1"
       },
-      "half": {
-        "upper": {
-          "data": "|8"
-        }
+      "half=lower|facing=north": {
+        "data": "|3"
+      },
+      "half=lower|facing=west": {
+        "data": "|2"
+      },
+      "half=lower|open=true": {
+        "data": "|4"
       }
     }
   },
   "jungle_door": {
     "id": 195,
     "properties": {
-      "hinge": {
-        "right": {
-          "data": "|1"
-        }
+      "half=upper": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|2"
-        }
+      "half=upper|hinge=right": {
+        "data": "|1"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "half=upper|powered=true": {
+        "data": "|2"
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "half=lower|facing=south": {
+        "data": "|1"
       },
-      "half": {
-        "upper": {
-          "data": "|8"
-        }
+      "half=lower|facing=north": {
+        "data": "|3"
+      },
+      "half=lower|facing=west": {
+        "data": "|2"
+      },
+      "half=lower|open=true": {
+        "data": "|4"
       }
     }
   },
   "acacia_door": {
     "id": 196,
     "properties": {
-      "hinge": {
-        "right": {
-          "data": "|1"
-        }
+      "half=upper": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|2"
-        }
+      "half=upper|hinge=right": {
+        "data": "|1"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "half=upper|powered=true": {
+        "data": "|2"
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "half=lower|facing=south": {
+        "data": "|1"
       },
-      "half": {
-        "upper": {
-          "data": "|8"
-        }
+      "half=lower|facing=north": {
+        "data": "|3"
+      },
+      "half=lower|facing=west": {
+        "data": "|2"
+      },
+      "half=lower|open=true": {
+        "data": "|4"
       }
     }
   },
   "dark_oak_door": {
     "id": 197,
     "properties": {
-      "hinge": {
-        "right": {
-          "data": "|1"
-        }
+      "half=upper": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|2"
-        }
+      "half=upper|hinge=right": {
+        "data": "|1"
       },
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "east": {
-          "data": "|3"
-        }
+      "half=upper|powered=true": {
+        "data": "|2"
       },
-      "open": {
-        "true": {
-          "data": "|4"
-        }
+      "half=lower|facing=south": {
+        "data": "|1"
       },
-      "half": {
-        "upper": {
-          "data": "|8"
-        }
+      "half=lower|facing=north": {
+        "data": "|3"
+      },
+      "half=lower|facing=west": {
+        "data": "|2"
+      },
+      "half=lower|open=true": {
+        "data": "|4"
       }
     }
   },
   "end_rod": {
     "id": 198,
     "properties": {
-      "facing": {
-        "up": {
-          "values": {
-            "up": {
-              "data": 1
-            },
-            "north": {
-              "data": 2
-            },
-            "south": {
-              "data": 3
-            },
-            "west": {
-              "data": 4
-            },
-            "east": {
-              "data": 5
-            }
-          }
-        }
+      "facing=south": {
+        "data": 3
+      },
+      "facing=east": {
+        "data": 5
+      },
+      "facing=north": {
+        "data": 2
+      },
+      "facing=up": {
+        "data": 1
+      },
+      "facing=west": {
+        "data": 4
       }
     }
   },
@@ -6864,22 +6129,20 @@
   "chorus_flower": {
     "id": 200,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        },
-        "4": {
-          "data": 4
-        },
-        "5": {
-          "data": 5
-        }
+      "age=5": {
+        "data": 5
+      },
+      "age=4": {
+        "data": 4
+      },
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
       }
     }
   },
@@ -6892,37 +6155,31 @@
   "purpur_stairs": {
     "id": 203,
     "properties": {
-      "facing": {
-        "west": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|3"
-        },
-        "south": {
-          "data": "|2"
-        }
+      "facing=south": {
+        "data": "|2"
       },
-      "half": {
-        "top": {
-          "data": "|4"
-        }
+      "facing=north": {
+        "data": "|3"
+      },
+      "half=top": {
+        "data": "|4"
+      },
+      "facing=west": {
+        "data": "|1"
       }
     }
   },
   "beetroots": {
     "id": 207,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        }
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
       }
     }
   },
@@ -6935,64 +6192,54 @@
   "repeating_command_block": {
     "id": 210,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "facing=south": {
+        "data": "|3"
       },
-      "conditional": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|4"
+      },
+      "conditional=true": {
+        "data": "|8"
       }
     }
   },
   "chain_command_block": {
     "id": 211,
     "properties": {
-      "facing": {
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "facing=south": {
+        "data": "|3"
       },
-      "conditional": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=west": {
+        "data": "|4"
+      },
+      "conditional=true": {
+        "data": "|8"
       }
     }
   },
   "frosted_ice": {
     "id": 212,
     "properties": {
-      "age": {
-        "1": {
-          "data": 1
-        },
-        "2": {
-          "data": 2
-        },
-        "3": {
-          "data": 3
-        }
+      "age=3": {
+        "data": 3
+      },
+      "age=2": {
+        "data": 2
+      },
+      "age=1": {
+        "data": 1
       }
     }
   },
@@ -7008,13 +6255,11 @@
   "bone_block": {
     "id": 216,
     "properties": {
-      "axis": {
-        "x": {
-          "data": 4
-        },
-        "z": {
-          "data": 8
-        }
+      "axis=z": {
+        "data": 8
+      },
+      "axis=x": {
+        "data": 4
       }
     }
   },
@@ -7024,27 +6269,23 @@
   "observer": {
     "id": 218,
     "properties": {
-      "facing": {
-        "up": {
-          "data": "|1"
-        },
-        "north": {
-          "data": "|2"
-        },
-        "south": {
-          "data": "|3"
-        },
-        "west": {
-          "data": "|4"
-        },
-        "east": {
-          "data": "|5"
-        }
+      "powered=true": {
+        "data": "|8"
       },
-      "powered": {
-        "true": {
-          "data": "|8"
-        }
+      "facing=south": {
+        "data": "|3"
+      },
+      "facing=east": {
+        "data": "|5"
+      },
+      "facing=north": {
+        "data": "|2"
+      },
+      "facing=up": {
+        "data": "|1"
+      },
+      "facing=west": {
+        "data": "|4"
       }
     }
   },
@@ -7276,16 +6517,14 @@
   "structure_block": {
     "id": 255,
     "properties": {
-      "mode": {
-        "load": {
-          "data": 1
-        },
-        "corner": {
-          "data": 2
-        },
-        "data": {
-          "data": 3
-        }
+      "mode=corner": {
+        "data": 2
+      },
+      "mode=load": {
+        "data": 1
+      },
+      "mode=data": {
+        "data": 3
       }
     }
   }

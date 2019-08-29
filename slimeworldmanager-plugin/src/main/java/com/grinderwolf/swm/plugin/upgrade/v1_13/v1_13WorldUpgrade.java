@@ -26,8 +26,6 @@ import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.upgrade.Upgrade;
 import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.BlockEntryDeserializer;
 import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.DowngradeDataDeserializer;
-import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.PropertyDeserializer;
-import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.PropertyValueDeserializer;
 import com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers.SetActionDeserializer;
 import org.bukkit.ChatColor;
 
@@ -214,32 +212,29 @@ public class v1_13WorldUpgrade implements Upgrade {
                                                 isPresent).map(Optional::get).collect(Collectors.toMap(Tag::getName, StringTag::getValue));
 
                                         if (blockEntry.getProperties() != null) {
-                                            for (String[] propNames : blockEntry.getProperties().keySet()) {
-                                                DowngradeData.BlockProperty prop = blockEntry.getProperties().get(propNames);
+                                            mainLoop:
+                                            for (DowngradeData.BlockProperty property : blockEntry.getProperties()) {
+                                                for (Map.Entry<String, String> conditionEntry : property.getConditions().entrySet()) {
+                                                    String propertyName = conditionEntry.getKey();
+                                                    String propertyValue = conditionEntry.getValue();
+                                                    boolean inverted = propertyName.startsWith("!");
 
-                                                mainLoop:
-                                                for (String value : prop.getValues().keySet()) {
-                                                    for (String propName : propNames) {
-                                                        boolean inverted = propName.startsWith("!");
-
-                                                        if ((inverted && value.equals(properties.get(propName.substring(1)))) || (!inverted && !value.equals(properties.get(propName)))) {
-                                                            continue mainLoop;
-                                                        }
+                                                    if ((inverted && propertyValue.equals(properties.get(propertyName.substring(1))))
+                                                            || (!inverted && !propertyValue.equals(properties.get(propertyName)))) {
+                                                        continue mainLoop;
                                                     }
+                                                }
 
-                                                    // If we get to this point, all specified properties have the required value
-                                                    DowngradeData.BlockPropertyValue propValue = prop.getValues().get(value);
+                                                // If we get to this point, all specified properties have the required value
+                                                if (property.getId() != -1) {
+                                                    id = property.getId();
+                                                }
 
-                                                    if (propValue.getId() != -1) {
-                                                        id = propValue.getId();
-                                                    }
-
-                                                    if (propValue.getData() != -1) {
-                                                        if (propValue.getOperation() == DowngradeData.PropertyOperation.OR) {
-                                                            data |= propValue.getData();
-                                                        } else {
-                                                            data = (byte) propValue.getData();
-                                                        }
+                                                if (property.getData() != -1) {
+                                                    if (property.getOperation() == DowngradeData.Operation.OR) {
+                                                        data |= property.getData();
+                                                    } else {
+                                                        data = (byte) property.getData();
                                                     }
                                                 }
                                             }
@@ -299,7 +294,8 @@ public class v1_13WorldUpgrade implements Upgrade {
                                                 // Retrieve value from property
                                                 if (nbtValue.startsWith("@prop:")) {
                                                     if (properties == null) {
-                                                        throw new IllegalStateException("Block " + name + " doesn't have any properties");
+                                                        continue;
+                                                        //throw new IllegalStateException("Block " + name + " doesn't have any properties");
                                                     }
 
                                                     String propName = nbtValue.substring(6);
@@ -377,8 +373,6 @@ public class v1_13WorldUpgrade implements Upgrade {
         // Type Adapters
         builder.registerTypeAdapter(DowngradeData.class, new DowngradeDataDeserializer());
         builder.registerTypeAdapter(DowngradeData.BlockEntry.class, new BlockEntryDeserializer());
-        builder.registerTypeAdapter(DowngradeData.BlockProperty.class, new PropertyDeserializer());
-        builder.registerTypeAdapter(DowngradeData.BlockPropertyValue.class, new PropertyValueDeserializer());
         builder.registerTypeAdapter(DowngradeData.TileSetAction.class, new SetActionDeserializer());
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(SWMPlugin.getInstance().getResource("1_13to1_12_blocks.json"), StandardCharsets.UTF_8))) {

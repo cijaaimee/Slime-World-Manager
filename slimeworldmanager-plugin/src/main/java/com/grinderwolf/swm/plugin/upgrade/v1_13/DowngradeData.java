@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -19,7 +20,7 @@ public class DowngradeData {
         private final int id;
         private final int data;
 
-        private final Map<String[], BlockProperty> properties;
+        private final List<BlockProperty> properties;
         private final TileEntityData tileEntityData;
 
     }
@@ -28,22 +29,17 @@ public class DowngradeData {
     @RequiredArgsConstructor
     public static class BlockProperty {
 
-        private final Map<String, BlockPropertyValue> values;
-
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    public static class BlockPropertyValue {
+        private final Map<String, String> conditions;
 
         private final int id;
         private final int data;
 
-        private final PropertyOperation operation;
+        private final Operation operation;
+
     }
 
     @Getter
-    public enum PropertyOperation {
+    public enum Operation {
         REPLACE, OR;
     }
 
