@@ -64,7 +64,7 @@ public class v1_13_R2SlimeNMS implements SlimeNMS {
         int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worldServer.size();
 
         for (WorldServer server : mcServer.getWorlds()) {
-            if (server.dimension.getDimensionID() == dimension) {
+            if (server.dimension.getDimensionID() + 1 == dimension) { // getDimensionID() returns the dimension - 1
                 dimension++;
             }
         }
