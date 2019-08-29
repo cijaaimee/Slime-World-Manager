@@ -91,7 +91,18 @@ public class NMSTransformer implements ClassFileTransformer {
                         System.out.println("Loaded " + changeArray.length + " changes for class " + clazz + ".");
                     }
 
-                    changes.put(clazz, changeArray);
+                    Change[] oldChanges = changes.get(clazz);
+
+                    if (oldChanges == null) {
+                        changes.put(clazz, changeArray);
+                    } else {
+                        Change[] newChanges = new Change[oldChanges.length + changeArray.length];
+
+                        System.arraycopy(oldChanges, 0, newChanges, 0, oldChanges.length);
+                        System.arraycopy(changeArray, 0, newChanges, oldChanges.length, changeArray.length);
+
+                        changes.put(clazz, newChanges);
+                    }
                 }
             }
         } catch (IOException ex) {
@@ -160,7 +171,7 @@ public class NMSTransformer implements ClassFileTransformer {
                             break;
                         }
 
-                        if (!found) {
+                        if (!found && !change.isOptional()) {
                             throw new NotFoundException("Unknown method " + change.getMethodName());
                         }
                     }
