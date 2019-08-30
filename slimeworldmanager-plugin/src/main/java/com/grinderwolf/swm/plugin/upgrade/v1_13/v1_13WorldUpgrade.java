@@ -295,7 +295,6 @@ public class v1_13WorldUpgrade implements Upgrade {
                                                 if (nbtValue.startsWith("@prop:")) {
                                                     if (properties == null) {
                                                         continue;
-                                                        //throw new IllegalStateException("Block " + name + " doesn't have any properties");
                                                     }
 
                                                     String propName = nbtValue.substring(6);
