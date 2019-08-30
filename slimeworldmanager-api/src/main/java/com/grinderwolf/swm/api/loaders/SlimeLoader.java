@@ -25,7 +25,7 @@ public interface SlimeLoader {
      * @throws WorldInUseException   if the world is locked
      * @throws IOException           if the world could not be obtained.
      */
-    public byte[] loadWorld(String worldName, boolean readOnly) throws UnknownWorldException, WorldInUseException, IOException;
+    byte[] loadWorld(String worldName, boolean readOnly) throws UnknownWorldException, WorldInUseException, IOException;
 
     /**
      * Checks whether or not a world exists
@@ -35,7 +35,7 @@ public interface SlimeLoader {
      * @return <code>true</code> if the world exists inside the data source, <code>false</code> otherwhise.
      * @throws IOException if the world could not be obtained.
      */
-    public boolean worldExists(String worldName) throws IOException;
+    boolean worldExists(String worldName) throws IOException;
 
     /**
      * Returns the current saved world names.
@@ -43,7 +43,7 @@ public interface SlimeLoader {
      * @return a list containing all the world names
      * @throws IOException if the list could not be obtained
      */
-    public List<String> listWorlds() throws IOException;
+    List<String> listWorlds() throws IOException;
 
     /**
      * Saves the world's data file. This method will also
@@ -54,7 +54,7 @@ public interface SlimeLoader {
      * @param lock            Whether or not the world should be relocked.
      * @throws IOException if the world could not be saved.
      */
-    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException;
+    void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException;
 
     /**
      * Unlocks a world.
@@ -63,7 +63,7 @@ public interface SlimeLoader {
      * @throws UnknownWorldException if the world could not be found.
      * @throws IOException           if the world could not be locked/unlocked.
      */
-    public void unlockWorld(String worldName) throws UnknownWorldException, IOException;
+    void unlockWorld(String worldName) throws UnknownWorldException, IOException;
 
     /**
      * Checks whether or not a world is locked.
@@ -73,7 +73,7 @@ public interface SlimeLoader {
      * @throws UnknownWorldException if the world could not be found.
      * @throws IOException           if the world could not be obtained.
      */
-    public boolean isWorldLocked(String worldName) throws UnknownWorldException, IOException;
+    boolean isWorldLocked(String worldName) throws UnknownWorldException, IOException;
 
     /**
      * Deletes a world from the data source.
@@ -82,6 +82,6 @@ public interface SlimeLoader {
      * @throws UnknownWorldException if the world could not be found.
      * @throws IOException           if the world could not be deleted.
      */
-    public void deleteWorld(String worldName) throws UnknownWorldException, IOException;
+    void deleteWorld(String worldName) throws UnknownWorldException, IOException;
 
 }

@@ -1,10 +1,14 @@
 package com.grinderwolf.swm.nms.v1_12_R1;
 
+import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.StringTag;
+import com.flowpowered.nbt.Tag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.minecraft.server.v1_12_R1.EntityHuman;
+import net.minecraft.server.v1_12_R1.GameRules;
 import net.minecraft.server.v1_12_R1.IChunkLoader;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_12_R1.WorldData;
@@ -12,10 +16,23 @@ import net.minecraft.server.v1_12_R1.WorldNBTStorage;
 import net.minecraft.server.v1_12_R1.WorldProvider;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 public class CustomDataManager extends WorldNBTStorage {
+
+    private static final Map<String, String> defaultValues;
+
+    static {
+        GameRules emptyRules = new GameRules();
+        String[] rules = emptyRules.getGameRules();
+
+        defaultValues = Arrays.stream(rules).collect(Collectors.toMap((rule) -> rule, emptyRules::get));
+    }
 
     @Getter(value = AccessLevel.NONE)
     private final UUID uuid = UUID.randomUUID();
@@ -28,7 +45,7 @@ public class CustomDataManager extends WorldNBTStorage {
     // WorldNBTStorage with a fake file instead of just implementing the IDataManager interface
     //
     // Thanks Spigot!
-    public CustomDataManager(SlimeWorld world) {
+    CustomDataManager(SlimeWorld world) {
         super(new File("temp_" + world.getName()), world.getName(), false, null);
 
         // The WorldNBTStorage automatically creates some files inside the base dir, so we have to delete them
@@ -62,10 +79,35 @@ public class CustomDataManager extends WorldNBTStorage {
     }
 
     @Override
-    public void saveWorldData(WorldData worldData, NBTTagCompound nbtTagCompound) { }
+    public void saveWorldData(WorldData worldData, NBTTagCompound nbtTagCompound) {
+        CompoundTag gameRules = (CompoundTag) Converter.convertTag("gamerules", worldData.w().a()).getAsCompoundTag().get();
+        CompoundTag extraData = this.world.getExtraData();
+
+        extraData.getValue().remove("gamerules");
+
+        if (!gameRules.getValue().isEmpty()) {
+            // Remove default values to save space
+            for (Map.Entry<String, Tag<?>> entry : new ArrayList<>(gameRules.getValue().entrySet())) {
+                String rule = entry.getKey();
+                StringTag valueTag = (StringTag) entry.getValue();
+                String defaultValue = defaultValues.get(rule);
+
+                if (valueTag.getValue().equalsIgnoreCase(defaultValue)) {
+                    gameRules.getValue().remove(rule);
+                }
+            }
+
+            // Maybe all the gamerules stored were the default values
+            if (!gameRules.getValue().isEmpty()) {
+                extraData.getValue().put("gamerules", gameRules);
+            }
+        }
+    }
 
     @Override
-    public void saveWorldData(WorldData worldData) { }
+    public void saveWorldData(WorldData worldData) {
+        this.saveWorldData(worldData, null);
+    }
 
     @Override
     public void a() {

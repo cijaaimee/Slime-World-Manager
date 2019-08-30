@@ -19,7 +19,8 @@ public class v1_9_R1SlimeNMS implements SlimeNMS {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM");
 
-    private final boolean v1_13WorldFormat = false;
+    private final byte worldVersion = 0x02;
+
     private WorldServer defaultWorld;
     private WorldServer defaultNetherWorld;
     private WorldServer defaultEndWorld;

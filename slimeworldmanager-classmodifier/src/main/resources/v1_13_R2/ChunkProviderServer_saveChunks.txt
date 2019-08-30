@@ -1,0 +1,22 @@
+{
+    if (com.grinderwolf.swm.clsm.ClassModifier.isCustomWorld($0.world)) {
+        int i = 0;
+        $0.chunkScheduler.a(com.grinderwolf.swm.clsm.ClassModifier.BOOLEAN_SUPPLIER);
+
+        synchronized ($0.chunkLoader) {
+            it.unimi.dsi.fastutil.objects.ObjectIterator objectiterator = $0.chunks.values().iterator();
+
+            while (objectiterator.hasNext()) {
+                net.minecraft.server.v1_13_R2.Chunk chunk = (net.minecraft.server.v1_13_R2.Chunk) objectiterator.next();
+
+                if (chunk.c($1)) {
+                    $0.saveChunk(chunk, false);
+                    chunk.a(false);
+                    i++;
+                }
+            }
+
+            return true;
+        }
+    }
+}

@@ -24,7 +24,12 @@ public class CraftCLSMBridge implements CLSMBridge {
         return null;
     }
 
-    public static void initialize(v1_11_R1SlimeNMS instance) {
+    @Override
+    public boolean isCustomWorld(Object world) {
+        return world instanceof CustomWorldServer;
+    }
+
+    static void initialize(v1_11_R1SlimeNMS instance) {
         ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
 }

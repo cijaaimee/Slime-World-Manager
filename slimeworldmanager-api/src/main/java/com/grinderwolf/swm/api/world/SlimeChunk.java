@@ -14,21 +14,21 @@ public interface SlimeChunk {
      *
      * @return X coordinate of the chunk.
      */
-    public int getX();
+    int getX();
 
     /**
      * Returns the Z coordinate of the chunk.
      *
      * @return Z coordinate of the chunk.
      */
-    public int getZ();
+    int getZ();
 
     /**
      * Returns all the sections of the chunk.
      *
      * @return A {@link SlimeChunkSection} array.
      */
-    public SlimeChunkSection[] getSections();
+    SlimeChunkSection[] getSections();
 
     /**
      * Returns the height maps of the chunk. If it's a pre 1.13 world,
@@ -37,7 +37,7 @@ public interface SlimeChunk {
      *
      * @return A {@link CompoundTag} containing all the height maps of the chunk.
      */
-    public CompoundTag getHeightMaps();
+    CompoundTag getHeightMaps();
 
     /**
      * Returns all the biomes of the chunk. In case it's a pre 1.13 world,
@@ -46,19 +46,19 @@ public interface SlimeChunk {
      *
      * @return A <code>int[]</code> containing all the biomes of the chunk.
      */
-    public int[] getBiomes();
+    int[] getBiomes();
 
     /**
      * Returns all the tile entities of the chunk.
      *
      * @return A {@link CompoundTag} containing all the tile entities of the chunk.
      */
-    public List<CompoundTag> getTileEntities();
+    List<CompoundTag> getTileEntities();
 
     /**
      * Returns all the entities of the chunk.
      *
      * @return A {@link CompoundTag} containing all the entities of the chunk.
      */
-    public List<CompoundTag> getEntities();
+    List<CompoundTag> getEntities();
 }

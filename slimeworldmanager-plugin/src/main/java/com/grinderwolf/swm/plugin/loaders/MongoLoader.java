@@ -110,8 +110,8 @@ public class MongoLoader implements SlimeLoader {
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
+            MongoCursor<Document> documents = mongoCollection.find().cursor();
 
-            MongoCursor<Document> documents = mongoCollection.find(Filters.text("name")).cursor();
             while(documents.hasNext()) {
                 worldList.add(documents.next().getString("name"));
             }

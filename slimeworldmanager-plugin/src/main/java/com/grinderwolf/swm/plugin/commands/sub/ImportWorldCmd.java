@@ -33,11 +33,11 @@ public class ImportWorldCmd implements Subcommand {
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length > 1) {
-            String loaderString = args[1];
-            SlimeLoader loader = LoaderUtils.getLoader(loaderString);
+            String dataSource = args[1];
+            SlimeLoader loader = LoaderUtils.getLoader(dataSource);
 
             if (loader == null) {
-                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + loaderString + " does not exist.");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + dataSource + " does not exist.");
 
                 return true;
             }
@@ -57,8 +57,7 @@ public class ImportWorldCmd implements Subcommand {
 
                 if (Arrays.equals(args, oldArgs)) { // Make sure it's exactly the same command
                     String worldName = (args.length > 2 ? args[2] : worldDir.getName());
-
-                    sender.sendMessage(Logging.COMMAND_PREFIX + "Importing world " + worldDir.getName() + " into data source " + loaderString + "...");
+                    sender.sendMessage(Logging.COMMAND_PREFIX + "Importing world " + worldDir.getName() + " into data source " + dataSource + "...");
 
                     Bukkit.getScheduler().runTaskAsynchronously(SWMPlugin.getInstance(), () -> {
 
@@ -68,9 +67,9 @@ public class ImportWorldCmd implements Subcommand {
 
                             sender.sendMessage(Logging.COMMAND_PREFIX +  ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " imported " +
                                     "successfully in " + (System.currentTimeMillis() - start) + "ms. Remember to add it to the worlds config file before loading it.");
-                        } catch (WorldAlreadyExistsException e) {
-                            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + loaderString + " already contains a world called " + worldName + ".");
-                        } catch (InvalidWorldException e) {
+                        } catch (WorldAlreadyExistsException ex) {
+                            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + dataSource + " already contains a world called " + worldName + ".");
+                        } catch (InvalidWorldException ex) {
                             sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Directory " + worldDir.getName() + " does not contain a valid Minecraft world.");
                         } catch (WorldLoadedException ex) {
                             sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldDir.getName() + " is loaded on this server. Please unload it before importing it.");

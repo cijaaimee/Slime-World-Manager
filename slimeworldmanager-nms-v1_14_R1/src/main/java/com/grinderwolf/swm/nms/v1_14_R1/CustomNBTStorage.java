@@ -1,5 +1,6 @@
 package com.grinderwolf.swm.nms.v1_14_R1;
 
+import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.AccessLevel;
@@ -38,10 +39,21 @@ public class CustomNBTStorage extends WorldNBTStorage {
     @Override public void checkSession() { }
 
     @Override
-    public void saveWorldData(WorldData worldData, NBTTagCompound nbtTagCompound) { }
+    public void saveWorldData(WorldData worldData, NBTTagCompound nbtTagCompound) {
+        CompoundTag gameRules = (CompoundTag) Converter.convertTag("", worldData.v().a()).getAsCompoundTag().get();
+        CompoundTag extraData = this.world.getExtraData();
+
+        extraData.getValue().remove("gamerules");
+
+        if (!gameRules.getValue().isEmpty()) {
+            extraData.getValue().put("gamerules", gameRules);
+        }
+    }
 
     @Override
-    public void saveWorldData(WorldData worldData) { }
+    public void saveWorldData(WorldData worldData) {
+        this.saveWorldData(worldData, null);
+    }
 
     @Override
     public UUID getUUID() {

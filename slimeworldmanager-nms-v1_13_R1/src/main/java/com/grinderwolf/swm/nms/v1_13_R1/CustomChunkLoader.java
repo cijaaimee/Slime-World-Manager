@@ -5,6 +5,7 @@ import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.LongArrayTag;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
+import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_13_R1.BiomeBase;
@@ -57,7 +58,7 @@ public class CustomChunkLoader implements IChunkLoader {
     public Chunk a(GeneratorAccess generatorAccess, int x, int z, Consumer<Chunk> consumer) {
         LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + world.getName());
 
-        SlimeChunk chunk = world.getChunk(x, z);
+        CraftSlimeChunk chunk = (CraftSlimeChunk) world.getChunk(x, z);
         BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
 
         // ProtoChunkTickLists
@@ -77,7 +78,6 @@ public class CustomChunkLoader implements IChunkLoader {
             }
 
             Chunk nmsChunk = new Chunk(generatorAccess.getMinecraftWorld(), x, z, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L);
-
 
             nmsChunk.c("postprocessed");
 
@@ -102,12 +102,14 @@ public class CustomChunkLoader implements IChunkLoader {
             }
         }
 
-        Chunk nmsChunk = new Chunk(generatorAccess.getMinecraftWorld(), x, z, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L);
+        CompoundTag upgradeDataTag = chunk.getUpgradeData();
+        Chunk nmsChunk = new Chunk(generatorAccess.getMinecraftWorld(), x, z, biomeBaseArray, upgradeDataTag == null ? ChunkConverter.a
+                : new ChunkConverter((NBTTagCompound) Converter.convertTag(upgradeDataTag)), airChunkTickList, fluidChunkTickList, 0L);
 
         // Chunk status
         nmsChunk.c("postprocessed");
 
-        // chunk sections
+        // Chunk sections
         LOGGER.debug("Loading chunk sections for chunk (" + x + ", " + z + ") on world " + world.getName());
         ChunkSection[] sections = new ChunkSection[16];
 

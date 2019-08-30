@@ -47,6 +47,11 @@ public class CustomWorldServer extends WorldServer {
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
 
         this.pvpMode = properties.isPvp();
+
+        // Disable auto save period as it's constantly saving the world
+        if (v1_11_R1SlimeNMS.IS_PAPER) {
+            this.paperConfig.autoSavePeriod = 0;
+        }
     }
 
     @Override

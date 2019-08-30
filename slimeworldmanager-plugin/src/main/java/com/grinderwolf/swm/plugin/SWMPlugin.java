@@ -11,7 +11,6 @@ import com.grinderwolf.swm.api.exceptions.InvalidVersionException;
 import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.exceptions.UnsupportedWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
@@ -41,10 +40,12 @@ import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.update.Updater;
+import com.grinderwolf.swm.plugin.upgrade.WorldUpgrader;
 import com.grinderwolf.swm.plugin.world.WorldImporter;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -79,23 +80,16 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             return;
         }
 
-        try {
-            LoaderUtils.registerLoaders();
-        } catch (IOException ex) {
-            Logging.error("Failed to register data sources:");
-            ex.printStackTrace();
-            return;
-        }
+        LoaderUtils.registerLoaders();
 
         try {
             nms = getNMSBridge();
         } catch (InvalidVersionException ex) {
-            Logging.error("Couldn't get nms bridge:");
-            ex.printStackTrace();
+            Logging.error(ex.getMessage());
             return;
         }
 
-        loadWorlds();
+        List<String> erroredWorlds = loadWorlds();
 
         // Default world override
         try {
@@ -103,6 +97,17 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
             props.load(new FileInputStream("server.properties"));
             String defaultWorldName = props.getProperty("level-name");
+
+            if (erroredWorlds.contains(defaultWorldName)) {
+                Logging.error("Shutting down server, as the default world could not be loaded.");
+                System.exit(1);
+            } else if (getServer().getAllowNether() && erroredWorlds.contains(defaultWorldName + "_nether")) {
+                Logging.error("Shutting down server, as the default nether world could not be loaded.");
+                System.exit(1);
+            } else if (getServer().getAllowEnd() && erroredWorlds.contains(defaultWorldName + "_the_end")) {
+                Logging.error("Shutting down server, as the default end world could not be loaded.");
+                System.exit(1);
+            }
 
             SlimeWorld defaultWorld = worlds.stream().filter(world -> world.getName().equals(defaultWorldName)).findFirst().orElse(null);
             SlimeWorld netherWorld = (getServer().getAllowNether() ? worlds.stream().filter(world -> world.getName().equals(defaultWorldName + "_nether")).findFirst().orElse(null) : null);
@@ -122,6 +127,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             return;
         }
 
+        new Metrics(this);
+
         getCommand("swm").setExecutor(new CommandManager());
         getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
         getServer().getPluginManager().registerEvents(new Updater(), this);
@@ -138,8 +145,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     private SlimeNMS getNMSBridge() throws InvalidVersionException {
         String version = Bukkit.getServer().getClass().getPackage().getName();
         String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
-
-        Logging.info("Minecraft version: " + nmsVersion);
 
         switch (nmsVersion) {
             case "v1_8_R3":
@@ -165,7 +170,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
     }
 
-    private void loadWorlds() {
+    private List<String> loadWorlds() {
+        List<String> erroredWorlds = new ArrayList<>();
         WorldsConfig config = ConfigManager.getWorldConfig();
 
         for (Map.Entry<String, WorldData> entry : config.getWorlds().entrySet()) {
@@ -184,43 +190,58 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
                     SlimeWorld world = loadWorld(loader, worldName, properties);
 
                     worlds.add(world);
-                } catch (IllegalArgumentException ex) {
-                    Logging.error("Couldn't load world " + worldName + ": " + ex.getMessage());
-                } catch (UnknownWorldException ex) {
-                    Logging.error("Couldn't load world " + worldName + ": world does not exist, are you sure you've set the correct data source?");
-                } catch (NewerFormatException ex) {
-                    Logging.error("Couldn't load world " + worldName + ": world is serialized in a newer Slime Format version ("
-                            + ex.getMessage() + ") that SWM does not understand.");
-                } catch (WorldInUseException e) {
-                    Logging.error("Couldn't load world " + worldName + ": world is in use! If you are sure this is a mistake, run the command /swm unlock " + worldName);
-                } catch (UnsupportedWorldException e) {
-                    Logging.error("Couldn't load world " + worldName + ": world is meant to be used on a " + (e.isV1_13() ? "1.13 or newer" : "1.12.2 or older") + " server.");
-                } catch (CorruptedWorldException ex) {
-                    Logging.error("Couldn't load world " + worldName + ": world seems to be corrupted.");
+                } catch (IllegalArgumentException | UnknownWorldException | NewerFormatException | WorldInUseException | CorruptedWorldException | IOException ex) {
+                    String message;
 
-                    ex.printStackTrace();
-                } catch (IOException ex) {
-                    Logging.error("Couldn't load world " + worldName + ":");
+                    if (ex instanceof IllegalArgumentException) {
+                        message = ex.getMessage();
+                    } else if (ex instanceof UnknownWorldException) {
+                        message = "world does not exist, are you sure you've set the correct data source?";
+                    } else if (ex instanceof NewerFormatException) {
+                        message = "world is serialized in a newer Slime Format version (" + ex.getMessage() + ") that SWM does not understand.";
+                    } else if (ex instanceof WorldInUseException) {
+                        message = "world is in use! If you are sure this is a mistake, run the command /swm unlock " + worldName;
+                    } else if (ex instanceof CorruptedWorldException) {
+                        message = "world seems to be corrupted.";
+                    } else {
+                        message = "";
 
-                    ex.printStackTrace();
+                        ex.printStackTrace();
+                    }
+
+                    Logging.error("Failed to load world " + worldName + (message.isEmpty() ? "." : ": " + message));
+                    erroredWorlds.add(worldName);
                 }
             }
         }
 
         config.save();
+        return erroredWorlds;
     }
 
     @Override
     public SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws UnknownWorldException,
-            IOException, CorruptedWorldException, NewerFormatException, WorldInUseException, UnsupportedWorldException {
+            IOException, CorruptedWorldException, NewerFormatException, WorldInUseException {
         long start = System.currentTimeMillis();
 
         Logging.info("Loading world " + worldName + ".");
         byte[] serializedWorld = loader.loadWorld(worldName, properties.isReadOnly());
-        CraftSlimeWorld world = LoaderUtils.deserializeWorld(loader, worldName, serializedWorld, properties);
+        CraftSlimeWorld world;
 
-        if ((world.isV1_13() && !nms.isV1_13WorldFormat()) || (!world.isV1_13() && nms.isV1_13WorldFormat())) {
-            throw new UnsupportedWorldException(worldName, world.isV1_13());
+        try {
+            world = LoaderUtils.deserializeWorld(loader, worldName, serializedWorld, properties);
+        } catch (Exception ex) {
+            if (!properties.isReadOnly()) { // Unlock the world as we're not using it
+                loader.unlockWorld(worldName);
+            }
+
+            throw ex;
+        }
+
+        if (world.getVersion() > nms.getWorldVersion()) {
+            WorldUpgrader.downgradeWorld(world);
+        } else if (world.getVersion() < nms.getWorldVersion()) {
+            WorldUpgrader.upgradeWorld(world);
         }
 
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
@@ -246,7 +267,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         CompoundTag heightMaps = new CompoundTag("", new CompoundMap());
         int[] biomes;
 
-        if (nms.isV1_13WorldFormat()) {
+        if (nms.getWorldVersion() >= 0x04) {
             biomes = new int[256];
         } else {
             heightMaps.getValue().put("heightMap", new IntArrayTag("heightMap", new int[256]));
@@ -257,7 +278,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         Map<Long, SlimeChunk> chunkMap = new HashMap<>();
         chunkMap.put(0L, chunk);
 
-        CraftSlimeWorld world = new CraftSlimeWorld(loader, worldName, chunkMap, new CompoundTag("", new CompoundMap()), nms.isV1_13WorldFormat(), properties);
+        CraftSlimeWorld world = new CraftSlimeWorld(loader, worldName, chunkMap, new CompoundTag("", new CompoundMap()), nms.getWorldVersion(), properties);
         loader.saveWorld(worldName, world.serialize(), !properties.isReadOnly());
 
         Logging.info("World " + worldName + " created in " + (System.currentTimeMillis() - start) + "ms.");

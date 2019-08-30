@@ -7,6 +7,7 @@ import com.flowpowered.nbt.TagType;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import com.flowpowered.nbt.stream.NBTOutputStream;
 import com.github.luben.zstd.Zstd;
+import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.utils.SlimeFormat;
 import com.grinderwolf.swm.api.world.SlimeChunk;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,7 +41,9 @@ public class CraftSlimeWorld implements SlimeWorld {
     private final String name;
     private final Map<Long, SlimeChunk> chunks;
     private final CompoundTag extraData;
-    private final boolean v1_13;
+
+    @Setter
+    private byte version;
 
     @Setter
     private SlimeProperties properties;
@@ -65,6 +69,44 @@ public class CraftSlimeWorld implements SlimeWorld {
         }
     }
 
+    @Override
+    public SlimeWorld clone(String worldName) {
+        try {
+            return clone(worldName, null);
+        } catch (WorldAlreadyExistsException | IOException ignored) {
+            return null; // Never going to happen
+        }
+    }
+
+    @Override
+    public SlimeWorld clone(String worldName, SlimeLoader loader) throws WorldAlreadyExistsException, IOException {
+        if (name.equals(worldName)) {
+            throw new IllegalArgumentException("The clone world cannot have the same name as the original world!");
+        }
+
+        if (worldName == null) {
+            throw new IllegalArgumentException("The world name cannot be null!");
+        }
+
+        if (loader != null) {
+            if (loader.worldExists(worldName)) {
+                throw new WorldAlreadyExistsException(worldName);
+            }
+        }
+
+        CraftSlimeWorld world;
+
+        synchronized (chunks) {
+            world = new CraftSlimeWorld(loader == null ? this.loader : loader, worldName, new HashMap<>(chunks), extraData.clone(), version, properties.withReadOnly(loader == null));
+        }
+
+        if (loader != null) {
+            loader.saveWorld(worldName, world.serialize(), true);
+        }
+
+        return world;
+    }
+
     // World Serialization methods
 
     public byte[] serialize() {
@@ -85,8 +127,8 @@ public class CraftSlimeWorld implements SlimeWorld {
             outStream.write(SlimeFormat.SLIME_HEADER);
             outStream.write(SlimeFormat.SLIME_VERSION);
 
-            // v1.13 world
-            outStream.writeBoolean(v1_13);
+            // World version
+            outStream.writeByte(version);
 
             // Lowest chunk coordinates
             int minX = sortedChunks.stream().mapToInt(SlimeChunk::getX).min().getAsInt();
@@ -117,7 +159,7 @@ public class CraftSlimeWorld implements SlimeWorld {
             writeBitSetAsBytes(outStream, chunkBitset, chunkMaskSize);
 
             // Chunks
-            byte[] chunkData = serializeChunks(sortedChunks, v1_13);
+            byte[] chunkData = serializeChunks(sortedChunks, version);
             byte[] compressedChunkData = Zstd.compress(chunkData);
 
             outStream.writeInt(compressedChunkData.length);
@@ -176,13 +218,13 @@ public class CraftSlimeWorld implements SlimeWorld {
         }
     }
 
-    private static byte[] serializeChunks(List<SlimeChunk> chunks, boolean v1_13World) throws IOException {
+    private static byte[] serializeChunks(List<SlimeChunk> chunks, byte worldVersion) throws IOException {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream(16384);
         DataOutputStream outStream = new DataOutputStream(outByteStream);
 
         for (SlimeChunk chunk : chunks) {
             // Height Maps
-            if (v1_13World) {
+            if (worldVersion >= 0x04) {
                 byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
                 outStream.writeInt(heightMaps.length);
                 outStream.write(heightMaps);
@@ -225,7 +267,7 @@ public class CraftSlimeWorld implements SlimeWorld {
                 }
 
                 // Block Data
-                if (v1_13World) {
+                if (worldVersion >= 0x04) {
                     // Palette
                     List<CompoundTag> palette = section.getPalette().getValue();
                     outStream.writeInt(palette.size());

@@ -4,7 +4,6 @@ import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.exceptions.UnsupportedWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
@@ -39,10 +38,9 @@ public interface SlimePlugin {
      * @throws CorruptedWorldException if the world retrieved cannot be parsed into a {@link SlimeWorld} object.
      * @throws NewerFormatException if the world uses a newer version of the SRF.
      * @throws WorldInUseException if the world is already being used on another server when trying to open it without read-only mode enabled.
-     * @throws UnsupportedWorldException if the world is saved using the 1.13 format and the server version is 1.12.2 (or older) and vice versa.
      */
-    public SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties)
-            throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException, UnsupportedWorldException;
+    SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws
+            UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException;
 
     /**
      * Creates an empty world and stores it using a specified
@@ -58,7 +56,7 @@ public interface SlimePlugin {
      * @throws WorldAlreadyExistsException if the provided data source already contains a world with the same name.
      * @throws IOException if the world could not be stored.
      */
-    public SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws WorldAlreadyExistsException, IOException;
+    SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws WorldAlreadyExistsException, IOException;
 
     /**
      * Generates a Minecraft World from a {@link SlimeWorld} and
@@ -66,7 +64,7 @@ public interface SlimePlugin {
      *
      * @param world {@link SlimeWorld} world to be added to the server's world list
      */
-    public void generateWorld(SlimeWorld world);
+    void generateWorld(SlimeWorld world);
 
     /**
      * Migrates a {@link SlimeWorld} to another datasource.
@@ -80,7 +78,7 @@ public interface SlimePlugin {
      * @throws WorldAlreadyExistsException if a world with the same name already exists inside the new data source.
      * @throws UnknownWorldException if the world has been removed from the old data source.
      */
-    public void migrateWorld(String worldName, SlimeLoader currentLoader, SlimeLoader newLoader) throws IOException, WorldInUseException, WorldAlreadyExistsException, UnknownWorldException;
+    void migrateWorld(String worldName, SlimeLoader currentLoader, SlimeLoader newLoader) throws IOException, WorldInUseException, WorldAlreadyExistsException, UnknownWorldException;
 
     /**
      * Returns the {@link SlimeLoader} that is able to
@@ -90,7 +88,7 @@ public interface SlimePlugin {
      *
      * @return The {@link SlimeLoader} capable of reading and writing to the data source.
      */
-    public SlimeLoader getLoader(String dataSource);
+    SlimeLoader getLoader(String dataSource);
 
     /**
      * Registers a custom {@link SlimeLoader}. This loader can
@@ -99,7 +97,7 @@ public interface SlimePlugin {
      * @param dataSource The data source this loader is capable of reading and writing to.
      * @param loader The {@link SlimeLoader} that is going to be registered.
      */
-    public void registerLoader(String dataSource, SlimeLoader loader);
+    void registerLoader(String dataSource, SlimeLoader loader);
 
     /**
      * Imports a world into the SRF and saves it in a data source.
@@ -114,6 +112,6 @@ public interface SlimePlugin {
      * @throws WorldTooBigException if the world is too big to be imported into the SRF.
      * @throws IOException if the world could not be read or stored.
      */
-    public void importWorld(File worldDir, String worldName, SlimeLoader loader) throws WorldAlreadyExistsException,
+    void importWorld(File worldDir, String worldName, SlimeLoader loader) throws WorldAlreadyExistsException,
             InvalidWorldException, WorldLoadedException, WorldTooBigException, IOException;
 }

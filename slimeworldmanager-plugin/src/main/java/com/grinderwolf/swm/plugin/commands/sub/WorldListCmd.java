@@ -57,6 +57,12 @@ public class WorldListCmd implements Subcommand {
         List<String> worldsList = new ArrayList<>(loadedWorlds.keySet());
         ConfigManager.getWorldConfig().getWorlds().keySet().stream().filter((world) -> !worldsList.contains(world)).forEach(worldsList::add);
 
+        if (worldsList.isEmpty()) {
+            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "There are no worlds configured.");
+
+            return true;
+        }
+
         int offset = (page - 1) * MAX_ITEMS_PER_PAGE;
         double d = worldsList.size() / (double) MAX_ITEMS_PER_PAGE;
         int maxPages = ((int) d) + ((d > (int) d) ? 1 : 0);
@@ -85,4 +91,3 @@ public class WorldListCmd implements Subcommand {
         return true;
     }
 }
-

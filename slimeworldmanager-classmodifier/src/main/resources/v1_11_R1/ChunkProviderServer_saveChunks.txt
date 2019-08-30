@@ -1,0 +1,20 @@
+{
+    if (com.grinderwolf.swm.clsm.ClassModifier.isCustomWorld($0.world)) {
+        java.util.Iterator iterator = $0.chunks.values().iterator();
+
+        while (iterator.hasNext()) {
+            net.minecraft.server.v1_11_R1.Chunk chunk = (net.minecraft.server.v1_11_R1.Chunk) iterator.next();
+
+            if ($1) {
+                $0.saveChunkNOP(chunk);
+            }
+
+            if (chunk.a($1)) {
+                $0.saveChunk(chunk);
+                chunk.f(false);
+            }
+        }
+
+        return true;
+    }
+}

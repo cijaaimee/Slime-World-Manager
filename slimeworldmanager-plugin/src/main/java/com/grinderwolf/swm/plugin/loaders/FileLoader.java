@@ -67,7 +67,7 @@ public class FileLoader implements SlimeLoader {
             throw new NotDirectoryException(worldDir.getPath());
         }
 
-        return Arrays.stream(worldDir.list()).filter(c -> c.endsWith(".slime")).collect(Collectors.toList());
+        return Arrays.stream(worldDir.list()).filter(c -> c.endsWith(".slime")).map((c) -> c.substring(0, c.length() - 6)).collect(Collectors.toList());
     }
 
     @Override
