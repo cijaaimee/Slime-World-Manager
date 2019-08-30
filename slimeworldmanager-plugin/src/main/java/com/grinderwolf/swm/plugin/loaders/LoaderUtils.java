@@ -107,8 +107,16 @@ public class LoaderUtils {
                 throw new NewerFormatException(version);
             }
 
-            // v1.13 world
-            boolean v1_13World = version >= 4 && dataStream.readBoolean();
+            // World version
+            byte worldVersion;
+
+            if (version >= 6) {
+                worldVersion = dataStream.readByte();
+            } else if (version >= 4) { // In v4 there's just a boolean indicating whether the world is pre-1.13 or post-1.13
+                worldVersion = (byte) (dataStream.readBoolean() ? 0x04 : 0x01);
+            } else {
+                worldVersion = 0; // We'll try to automatically detect it later
+            }
 
             // Chunk
             short minX = dataStream.readShort();
@@ -181,7 +189,7 @@ public class LoaderUtils {
             Zstd.decompress(extraTag, compressedExtraTag);
 
             // Chunk deserialization
-            Map<Long, SlimeChunk> chunks = readChunks(v1_13World, version, worldName, minX, minZ, width, depth, chunkBitset, chunkData);
+            Map<Long, SlimeChunk> chunks = readChunks(worldVersion, version, worldName, minX, minZ, width, depth, chunkBitset, chunkData);
 
             // Entity deserialization
             CompoundTag entitiesCompound = readCompoundTag(entities);
@@ -234,21 +242,21 @@ public class LoaderUtils {
                 extraCompound = new CompoundTag("", new CompoundMap());
             }
 
-            // v1_13 world format detection
-            boolean v1_13 = false;
+            // v1_13 world format detection for old versions
+            if (worldVersion == 0) {
+                mainLoop:
+                for (SlimeChunk chunk : chunks.values()) {
+                    for (SlimeChunkSection section : chunk.getSections()) {
+                        if (section != null) {
+                            worldVersion = (byte) (section.getBlocks() == null ? 0x04 : 0x01);
 
-            mainLoop:
-            for (SlimeChunk chunk : chunks.values()) {
-                for (SlimeChunkSection section : chunk.getSections()) {
-                    if (section != null) {
-                        v1_13 = section.getBlocks() == null;
-
-                        break mainLoop;
+                            break mainLoop;
+                        }
                     }
                 }
             }
 
-            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, v1_13, properties);
+            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, worldVersion, properties);
         } catch (EOFException ex) {
             throw new CorruptedWorldException(worldName);
         }
@@ -259,7 +267,7 @@ public class LoaderUtils {
         return floor == num ? floor : floor - (int) (Double.doubleToRawLongBits(num) >>> 63);
     }
 
-    private static Map<Long, SlimeChunk> readChunks(boolean v1_13World, int version, String worldName, int minX, int minZ, int width, int depth, BitSet chunkBitset, byte[] chunkData) throws IOException {
+    private static Map<Long, SlimeChunk> readChunks(byte worldVersion, int version, String worldName, int minX, int minZ, int width, int depth, BitSet chunkBitset, byte[] chunkData) throws IOException {
         DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(chunkData));
         Map<Long, SlimeChunk> chunkMap = new HashMap<>();
 
@@ -271,11 +279,16 @@ public class LoaderUtils {
                     // Height Maps
                     CompoundTag heightMaps;
 
-                    if (v1_13World) {
+                    if (worldVersion >= 0x04) {
                         int heightMapsLength = dataStream.readInt();
                         byte[] heightMapsArray = new byte[heightMapsLength];
                         dataStream.read(heightMapsArray);
                         heightMaps = readCompoundTag(heightMapsArray);
+
+                        // Height Maps might be null if empty
+                        if (heightMaps == null) {
+                            heightMaps = new CompoundTag("", new CompoundMap());
+                        }
                     } else {
                         int[] heightMap = new int[256];
 
@@ -292,7 +305,7 @@ public class LoaderUtils {
                     // Biome array
                     int[] biomes;
 
-                    if (v1_13World) {
+                    if (worldVersion >= 0x04) {
                         biomes = new int[256];
 
                         for (int i = 0; i < biomes.length; i++) {
@@ -305,7 +318,7 @@ public class LoaderUtils {
                     }
 
                     // Chunk Sections
-                    SlimeChunkSection[] sections = readChunkSections(dataStream, v1_13World, version);
+                    SlimeChunkSection[] sections = readChunkSections(dataStream, worldVersion, version);
 
                     chunkMap.put(((long) minZ + z) * Integer.MAX_VALUE + ((long) minX + x), new CraftSlimeChunk(worldName,minX + x, minZ + z,
                             sections, heightMaps, biomes, new ArrayList<>(), new ArrayList<>()));
@@ -325,7 +338,7 @@ public class LoaderUtils {
         return ret;
     }
 
-    private static SlimeChunkSection[] readChunkSections(DataInputStream dataStream, boolean v1_13World, int version) throws IOException {
+    private static SlimeChunkSection[] readChunkSections(DataInputStream dataStream, byte worldVersion, int version) throws IOException {
         SlimeChunkSection[] chunkSectionArray = new SlimeChunkSection[16];
         byte[] sectionBitmask = new byte[2];
         dataStream.read(sectionBitmask);
@@ -352,7 +365,7 @@ public class LoaderUtils {
                 long[] blockStatesArray;
 
                 // Post 1.13 block format
-                if (v1_13World) {
+                if (worldVersion >= 0x04) {
                     // Palette
                     int paletteLength = dataStream.readInt();
                     List<CompoundTag> paletteList = new ArrayList<>(paletteLength);

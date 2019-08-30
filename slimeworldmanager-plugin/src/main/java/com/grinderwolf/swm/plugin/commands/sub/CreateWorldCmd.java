@@ -97,7 +97,7 @@ public class CreateWorldCmd implements Subcommand {
                             sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to create world " + worldName + ": " + ex.getMessage() + ".");
                         }
                     });
-                } catch (WorldAlreadyExistsException e) {
+                } catch (WorldAlreadyExistsException ex) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to create world " + worldName +
                             ": world already exists (using data source '" + dataSource + "').");
                 } catch (IOException ex) {

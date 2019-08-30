@@ -67,9 +67,9 @@ public class ImportWorldCmd implements Subcommand {
 
                             sender.sendMessage(Logging.COMMAND_PREFIX +  ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName + ChatColor.GREEN + " imported " +
                                     "successfully in " + (System.currentTimeMillis() - start) + "ms. Remember to add it to the worlds config file before loading it.");
-                        } catch (WorldAlreadyExistsException e) {
+                        } catch (WorldAlreadyExistsException ex) {
                             sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + dataSource + " already contains a world called " + worldName + ".");
-                        } catch (InvalidWorldException e) {
+                        } catch (InvalidWorldException ex) {
                             sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Directory " + worldDir.getName() + " does not contain a valid Minecraft world.");
                         } catch (WorldLoadedException ex) {
                             sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldDir.getName() + " is loaded on this server. Please unload it before importing it.");

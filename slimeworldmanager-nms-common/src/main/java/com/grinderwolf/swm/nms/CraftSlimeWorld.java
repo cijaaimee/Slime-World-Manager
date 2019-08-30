@@ -41,7 +41,9 @@ public class CraftSlimeWorld implements SlimeWorld {
     private final String name;
     private final Map<Long, SlimeChunk> chunks;
     private final CompoundTag extraData;
-    private final boolean v1_13;
+
+    @Setter
+    private byte version;
 
     @Setter
     private SlimeProperties properties;
@@ -95,7 +97,7 @@ public class CraftSlimeWorld implements SlimeWorld {
         CraftSlimeWorld world;
 
         synchronized (chunks) {
-            world = new CraftSlimeWorld(loader == null ? this.loader : loader, worldName, new HashMap<>(chunks), extraData.clone(), v1_13, properties.withReadOnly(loader == null));
+            world = new CraftSlimeWorld(loader == null ? this.loader : loader, worldName, new HashMap<>(chunks), extraData.clone(), version, properties.withReadOnly(loader == null));
         }
 
         if (loader != null) {
@@ -125,8 +127,8 @@ public class CraftSlimeWorld implements SlimeWorld {
             outStream.write(SlimeFormat.SLIME_HEADER);
             outStream.write(SlimeFormat.SLIME_VERSION);
 
-            // v1.13 world
-            outStream.writeBoolean(v1_13);
+            // World version
+            outStream.writeByte(version);
 
             // Lowest chunk coordinates
             int minX = sortedChunks.stream().mapToInt(SlimeChunk::getX).min().getAsInt();
@@ -157,7 +159,7 @@ public class CraftSlimeWorld implements SlimeWorld {
             writeBitSetAsBytes(outStream, chunkBitset, chunkMaskSize);
 
             // Chunks
-            byte[] chunkData = serializeChunks(sortedChunks, v1_13);
+            byte[] chunkData = serializeChunks(sortedChunks, version);
             byte[] compressedChunkData = Zstd.compress(chunkData);
 
             outStream.writeInt(compressedChunkData.length);
@@ -216,13 +218,13 @@ public class CraftSlimeWorld implements SlimeWorld {
         }
     }
 
-    private static byte[] serializeChunks(List<SlimeChunk> chunks, boolean v1_13World) throws IOException {
+    private static byte[] serializeChunks(List<SlimeChunk> chunks, byte worldVersion) throws IOException {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream(16384);
         DataOutputStream outStream = new DataOutputStream(outByteStream);
 
         for (SlimeChunk chunk : chunks) {
             // Height Maps
-            if (v1_13World) {
+            if (worldVersion >= 0x04) {
                 byte[] heightMaps = serializeCompoundTag(chunk.getHeightMaps());
                 outStream.writeInt(heightMaps.length);
                 outStream.write(heightMaps);
@@ -265,7 +267,7 @@ public class CraftSlimeWorld implements SlimeWorld {
                 }
 
                 // Block Data
-                if (v1_13World) {
+                if (worldVersion >= 0x04) {
                     // Palette
                     List<CompoundTag> palette = section.getPalette().getValue();
                     outStream.writeInt(palette.size());

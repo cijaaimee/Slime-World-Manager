@@ -19,12 +19,13 @@ import net.minecraft.server.v1_13_R2.WorldProvider;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.UUID;
 
 @Getter
 public class CustomDataManager extends WorldNBTStorage {
 
+    private static final GameRules EMPTY_GAMERULES = new GameRules();
+    
     @Getter(value = AccessLevel.NONE)
     private final UUID uuid = UUID.randomUUID();
     private final SlimeWorld world;
@@ -78,14 +79,12 @@ public class CustomDataManager extends WorldNBTStorage {
 
         if (!gameRules.getValue().isEmpty()) {
             // Remove default values to save space
-            TreeMap<String, GameRules.GameRuleDefinition> defaultValues = GameRules.getGameRules();
-
             for (Map.Entry<String, Tag<?>> entry : new ArrayList<>(gameRules.getValue().entrySet())) {
                 String rule = entry.getKey();
                 StringTag valueTag = (StringTag) entry.getValue();
-                GameRules.GameRuleDefinition defaultValue = defaultValues.get(rule);
+                String defaultValue = EMPTY_GAMERULES.get(rule).a();
 
-                if (defaultValue != null && defaultValue.a().a().equalsIgnoreCase(valueTag.getValue())) {
+                if (defaultValue != null && defaultValue.equalsIgnoreCase(valueTag.getValue())) {
                     gameRules.getValue().remove(rule);
                 }
             }

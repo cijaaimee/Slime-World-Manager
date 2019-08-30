@@ -48,14 +48,17 @@ public class NMSTransformer implements ClassFileTransformer {
             try (InputStreamReader reader = new InputStreamReader(fileStream)) {
                 Map<String, Object> data = yaml.load(reader);
 
-                for (String clazz : data.keySet()) {
-                    if (!(data.get(clazz) instanceof ArrayList)) {
+                for (String originalClazz : data.keySet()) {
+                    boolean optional = originalClazz.startsWith("__optional__");
+                    String clazz = originalClazz.substring(optional ? 12 : 0);
+
+                    if (!(data.get(originalClazz) instanceof ArrayList)) {
                         System.err.println("Invalid change list for class " + clazz + ".");
 
                         continue;
                     }
 
-                    List<String> changeList = (List<String>) data.get(clazz);
+                    List<String> changeList = (List<String>) data.get(originalClazz);
                     Change[] changeArray = new Change[changeList.size()];
 
                     for (int i = 0; i < changeList.size(); i++) {
@@ -81,14 +84,25 @@ public class NMSTransformer implements ClassFileTransformer {
                             content = new String(contentByteArray, StandardCharsets.UTF_8);
                         }
 
-                        changeArray[i] = new Change(methodName, parameters, content);
+                        changeArray[i] = new Change(methodName, parameters, content, optional);
                     }
 
                     if (DEBUG) {
                         System.out.println("Loaded " + changeArray.length + " changes for class " + clazz + ".");
                     }
 
-                    changes.put(clazz, changeArray);
+                    Change[] oldChanges = changes.get(clazz);
+
+                    if (oldChanges == null) {
+                        changes.put(clazz, changeArray);
+                    } else {
+                        Change[] newChanges = new Change[oldChanges.length + changeArray.length];
+
+                        System.arraycopy(oldChanges, 0, newChanges, 0, oldChanges.length);
+                        System.arraycopy(changeArray, 0, newChanges, oldChanges.length, changeArray.length);
+
+                        changes.put(clazz, newChanges);
+                    }
                 }
             }
         } catch (IOException ex) {
@@ -145,12 +159,19 @@ public class NMSTransformer implements ClassFileTransformer {
                             }
 
                             found = true;
-                            method.insertBefore(change.getContent());
+
+                            try {
+                                method.insertBefore(change.getContent());
+                            } catch (CannotCompileException ex) {
+                                if (!change.isOptional()) { // If it's an optional change we can ignore it
+                                    throw ex;
+                                }
+                            }
 
                             break;
                         }
 
-                        if (!found) {
+                        if (!found && !change.isOptional()) {
                             throw new NotFoundException("Unknown method " + change.getMethodName());
                         }
                     }
@@ -173,6 +194,7 @@ public class NMSTransformer implements ClassFileTransformer {
         private final String methodName;
         private final String[] params;
         private final String content;
+        private final boolean optional;
 
     }
 }

@@ -18,8 +18,22 @@ import org.bukkit.event.world.WorldLoadEvent;
 public class v1_11_R1SlimeNMS implements SlimeNMS {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM");
+    public static final boolean IS_PAPER;
 
-    private final boolean v1_13WorldFormat = false;
+    static {
+        boolean paper = true;
+
+        try {
+            Class.forName("com.destroystokyo.paper.PaperWorldConfig");
+        } catch (ClassNotFoundException e) {
+            paper = false;
+        }
+
+        IS_PAPER = paper;
+    }
+
+    private final byte worldVersion = 0x03;
+
     private WorldServer defaultWorld;
     private WorldServer defaultNetherWorld;
     private WorldServer defaultEndWorld;
@@ -28,6 +42,11 @@ public class v1_11_R1SlimeNMS implements SlimeNMS {
         try {
             CraftCLSMBridge.initialize(this);
         }  catch (NoClassDefFoundError ex) {
+            if (IS_PAPER) {
+                LOGGER.error("Failed to find ClassModifier classes. Are you sure you installed it correctly?");
+                System.exit(1); // No ClassModifier, no party
+            }
+
             LOGGER.warn("Failed to find ClassModifier classes. Overriding default worlds is disabled.");
         }
     }

@@ -4,7 +4,6 @@ package com.grinderwolf.swm.plugin.commands.sub;
 import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.exceptions.UnsupportedWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
@@ -107,8 +106,6 @@ public class LoadTemplateWorldCmd implements Subcommand {
                 } catch (UnknownWorldException ex) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + templateWorldName +
                             ": world could not be found (using data source '" + worldData.getDataSource() + "').");
-                } catch (UnsupportedWorldException ex) {
-                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + templateWorldName + ": " + ex.getMessage().toLowerCase() + ".");
                 } catch (IOException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
                         sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + templateWorldName
