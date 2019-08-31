@@ -1,8 +1,8 @@
 ---
-name: Issue template
-about: SWM issue template.
+name: Bug report
+about: Report a bug
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
