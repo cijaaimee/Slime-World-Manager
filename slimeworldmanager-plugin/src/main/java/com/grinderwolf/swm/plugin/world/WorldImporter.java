@@ -95,7 +95,11 @@ public class WorldImporter {
                     return 0x03; // 1.11 world
                 }
 
-                return 0x04; // 1.13 world
+                if (version < 1517) {
+                    return 0x04; // 1.13 world
+                }
+
+                return 0x05; // 1.14 world
             }
         }
 
