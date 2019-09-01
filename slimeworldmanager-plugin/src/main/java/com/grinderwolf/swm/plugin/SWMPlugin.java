@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
@@ -222,6 +223,10 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     @Override
     public SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws UnknownWorldException,
             IOException, CorruptedWorldException, NewerFormatException, WorldInUseException {
+        Objects.requireNonNull(loader, "Loader cannot be null");
+        Objects.requireNonNull(worldName, "World name cannot be null");
+        Objects.requireNonNull(properties, "Properties cannot be null");
+
         long start = System.currentTimeMillis();
 
         Logging.info("Loading world " + worldName + ".");
@@ -251,6 +256,10 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Override
     public SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws WorldAlreadyExistsException, IOException {
+        Objects.requireNonNull(loader, "Loader cannot be null");
+        Objects.requireNonNull(worldName, "World name cannot be null");
+        Objects.requireNonNull(properties, "Properties cannot be null");
+
         if (loader.worldExists(worldName)) {
             throw new WorldAlreadyExistsException(worldName);
         }
@@ -288,11 +297,17 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Override
     public void generateWorld(SlimeWorld world) {
+        Objects.requireNonNull(world, "SlimeWorld cannot be null");
         nms.generateWorld(world);
     }
 
     @Override
-    public void migrateWorld(String worldName, SlimeLoader currentLoader, SlimeLoader newLoader) throws IOException, WorldInUseException, WorldAlreadyExistsException, UnknownWorldException {
+    public void migrateWorld(String worldName, SlimeLoader currentLoader, SlimeLoader newLoader) throws IOException,
+            WorldInUseException, WorldAlreadyExistsException, UnknownWorldException {
+        Objects.requireNonNull(worldName, "World name cannot be null");
+        Objects.requireNonNull(currentLoader, "Current loader cannot be null");
+        Objects.requireNonNull(newLoader, "New loader cannot be null");
+
         if (newLoader.worldExists(worldName)) {
             throw new WorldAlreadyExistsException(worldName);
         }
@@ -323,17 +338,26 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Override
     public SlimeLoader getLoader(String dataSource) {
+        Objects.requireNonNull(dataSource, "Data source cannot be null");
+
         return LoaderUtils.getLoader(dataSource);
     }
 
     @Override
     public void registerLoader(String dataSource, SlimeLoader loader) {
+        Objects.requireNonNull(dataSource, "Data source cannot be null");
+        Objects.requireNonNull(loader, "Loader cannot be null");
+
         LoaderUtils.registerLoader(dataSource, loader);
     }
 
     @Override
     public void importWorld(File worldDir, String worldName, SlimeLoader loader) throws WorldAlreadyExistsException,
             InvalidWorldException, WorldLoadedException, WorldTooBigException, IOException {
+        Objects.requireNonNull(worldDir, "World directory cannot be null");
+        Objects.requireNonNull(worldName, "World name cannot be null");
+        Objects.requireNonNull(loader, "Loader cannot be null");
+
         if (loader.worldExists(worldName)) {
             throw new WorldAlreadyExistsException(worldName);
         }
