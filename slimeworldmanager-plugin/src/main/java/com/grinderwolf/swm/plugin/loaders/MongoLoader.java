@@ -38,8 +38,10 @@ public class MongoLoader implements SlimeLoader {
         this.database = config.getDatabase();
         this.collection = config.getCollection();
 
-        this.client = MongoClients.create("mongodb://" + config.getUsername() + ":" + config.getPassword() + "@" + config.getHost()
-                + ":" + config.getPort() + "/?authSource=" + config.getAuthSource());
+        String authParams = !config.getUsername().isEmpty() && !config.getPassword().isEmpty() ? config.getUsername() + ":" + config.getPassword() + "@" : "";
+        String authSource = !config.getAuthSource().isEmpty() ? "/?authSource=" + config.getAuthSource() : "";
+
+        this.client = MongoClients.create("mongodb://" + authParams + config.getHost() + ":" + config.getPort() + authSource);
 
         MongoDatabase mongoDatabase = client.getDatabase(database);
         MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
