@@ -14,10 +14,6 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>sponge</id>
-            <url>https://repo.spongepowered.org/maven</url>
-        </repository>
-        <repository>
             <id>CodeMC</id>
             <url>https://repo.codemc.org/repository/maven-public</url>
         </repository>
@@ -101,14 +97,9 @@
             <version>3.11.0-rc0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.olivergondza</groupId>
-            <artifactId>maven-jdk-tools-wrapper</artifactId>
-            <version>0.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>configurate-yaml</artifactId>
-            <version>3.6</version>
+            <version>3.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
@@ -151,6 +142,30 @@
                         <relocation>
                             <pattern>org.bstats</pattern>
                             <shadedPattern>com.grinderwolf.swm.internal.org.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>ninja.leaping.configurate</pattern>
+                            <shadedPattern>com.grinderwolf.swm.internal.ninja.leaping.configurate</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.flowpowered.nbt</pattern>
+                            <shadedPattern>com.grinderwolf.swm.internal.com.flowpowered.nbt</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.github.luben.zstd</pattern>
+                            <shadedPattern>com.grinderwolf.swm.internal.com.github.luben.zstd</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.zaxxer.hikari</pattern>
+                            <shadedPattern>com.grinderwolf.swm.internal.com.zaxxer.hikari</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.mongodb</pattern>
+                            <shadedPattern>com.grinderwolf.swm.internal.com.mongodb</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bson</pattern>
+                            <shadedPattern>com.grinderwolf.swm.internal.org.bson</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
