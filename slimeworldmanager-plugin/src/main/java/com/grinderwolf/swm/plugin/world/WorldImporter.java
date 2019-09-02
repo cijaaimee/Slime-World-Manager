@@ -61,7 +61,7 @@ public class WorldImporter {
         Map<Long, SlimeChunk> chunks = new HashMap<>();
 
         for (File file : regionDir.listFiles((dir, name) -> name.endsWith(".mca"))) {
-            chunks.putAll(loadChunks(file).stream().collect(Collectors.toMap((chunk) -> ((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()), (chunk) -> chunk)));
+            chunks.putAll(loadChunks(file, worldVersion).stream().collect(Collectors.toMap((chunk) -> ((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()), (chunk) -> chunk)));
         }
 
         if (chunks.isEmpty()) {
@@ -106,7 +106,7 @@ public class WorldImporter {
         throw new InvalidWorldException(file.getParentFile());
     }
 
-    private static List<SlimeChunk> loadChunks(File file) throws IOException {
+    private static List<SlimeChunk> loadChunks(File file, byte worldVersion) throws IOException {
         byte[] regionByteArray = Files.readAllBytes(file.toPath());
         DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(regionByteArray));
 
@@ -143,7 +143,7 @@ public class WorldImporter {
 
                 CompoundTag levelCompound = (CompoundTag) globalMap.get("Level");
 
-                return readChunk(levelCompound);
+                return readChunk(levelCompound, worldVersion);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -153,7 +153,7 @@ public class WorldImporter {
         return loadedChunks;
     }
 
-    private static SlimeChunk readChunk(CompoundTag compound) {
+    private static SlimeChunk readChunk(CompoundTag compound, byte worldVersion) {
         int chunkX = compound.getAsIntTag("xPos").get().getValue();
         int chunkZ = compound.getAsIntTag("zPos").get().getValue();
         Optional<String> status = compound.getStringValue("Status");
@@ -178,8 +178,8 @@ public class WorldImporter {
         Optional<CompoundTag> optionalHeightMaps = compound.getAsCompoundTag("Heightmaps");
         CompoundTag heightMapsCompound;
 
-        if (optionalHeightMaps.isPresent()) {
-            heightMapsCompound = optionalHeightMaps.get();
+        if (worldVersion >= 0x04) {
+            heightMapsCompound = optionalHeightMaps.orElse(new CompoundTag("", new CompoundMap()));
         } else {
             // Pre 1.13 world
 
@@ -189,7 +189,7 @@ public class WorldImporter {
         }
 
         List<CompoundTag> tileEntities = ((ListTag<CompoundTag>) compound.getAsListTag("TileEntities")
-                .orElse(new ListTag<>("Entities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
+                .orElse(new ListTag<>("TileEntities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
         List<CompoundTag> entities = ((ListTag<CompoundTag>) compound.getAsListTag("Entities")
                 .orElse(new ListTag<>("Entities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
         ListTag<CompoundTag> sectionsTag = (ListTag<CompoundTag>) compound.getAsListTag("Sections").get();
@@ -208,8 +208,7 @@ public class WorldImporter {
             ListTag<CompoundTag> paletteTag;
             long[] blockStatesArray;
 
-            if (blocks != null) {
-                // Pre 1.13 world
+            if (worldVersion < 0x04) {
                 dataArray = new NibbleArray(sectionTag.getByteArrayValue("Data").get());
 
                 if (isEmpty(blocks)) { // Just skip it
@@ -224,12 +223,12 @@ public class WorldImporter {
                 paletteTag = (ListTag<CompoundTag>) sectionTag.getAsListTag("Palette").orElse(null);
                 blockStatesArray = sectionTag.getLongArrayValue("BlockStates").orElse(null);
 
-                if (paletteTag == null || blockStatesArray == null) { // Skip it
+                if (paletteTag == null || blockStatesArray == null || isEmpty(blockStatesArray)) { // Skip it
                     continue;
                 }
             }
 
-            NibbleArray blockLightArray= sectionTag.getValue().containsKey("BlockLight") ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get()) : null;
+            NibbleArray blockLightArray = sectionTag.getValue().containsKey("BlockLight") ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get()) : null;
             NibbleArray skyLightArray = sectionTag.getValue().containsKey("SkyLight") ? new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get()) : null;
 
             sectionArray[index] = new CraftSlimeChunkSection(blocks, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
@@ -242,7 +241,6 @@ public class WorldImporter {
         }
 
         // Chunk is empty
-
         return null;
     }
 
@@ -258,6 +256,16 @@ public class WorldImporter {
     private static boolean isEmpty(byte[] array) {
         for (byte b : array) {
             if (b != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean isEmpty(long[] array) {
+        for (long b : array) {
+            if (b != 0L) {
                 return false;
             }
         }
