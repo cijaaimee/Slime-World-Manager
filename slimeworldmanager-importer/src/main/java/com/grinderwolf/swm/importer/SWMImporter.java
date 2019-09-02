@@ -4,6 +4,7 @@ import com.flowpowered.nbt.ByteArrayTag;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.IntArrayTag;
+import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
 import com.flowpowered.nbt.Tag;
 import com.flowpowered.nbt.TagType;
@@ -11,6 +12,7 @@ import com.flowpowered.nbt.stream.NBTInputStream;
 import com.flowpowered.nbt.stream.NBTOutputStream;
 import com.github.luben.zstd.Zstd;
 import com.github.tomaslanger.chalk.Chalk;
+import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.utils.SlimeFormat;
 import com.grinderwolf.swm.api.world.SlimeChunk;
@@ -23,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,29 +90,33 @@ public class SWMImporter {
 
         if (response.equalsIgnoreCase("Y")) {
             System.out.println("Loading world...");
+            File levelFile = new File(worldDir, "level.dat");
+
+            if (!levelFile.exists() || !levelFile.isFile()) {
+                System.err.println("Provided world seems to be corrupted.");
+
+                return;
+            }
+
+            byte worldVersion = 0;
+
+            try {
+                worldVersion = getWorldVersion(levelFile);
+            } catch (IOException ex) {
+                System.err.println("Failed to load world level file:");
+                ex.printStackTrace();
+            } catch (InvalidWorldException ex) {
+                System.err.println("Failed to find world version.");
+            }
+
+            System.out.println("World version: " + worldVersion);
             List<SlimeChunk> chunks = new ArrayList<>();
 
             for (File file : regionDir.listFiles((dir, name) -> name.endsWith(".mca"))) {
                 try {
-                    chunks.addAll(loadChunks(file));
+                    chunks.addAll(loadChunks(file, worldVersion));
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                }
-            }
-
-            byte worldVersion = 0x01;
-
-            mainLoop:
-            for (SlimeChunk chunk : chunks) {
-                for (SlimeChunkSection section : chunk.getSections()) {
-                    if (section != null) {
-                        if (section.getBlocks() == null) {
-                            section.getBlocks();
-                            worldVersion = 0x04;
-                        }
-
-                        break mainLoop;
-                    }
                 }
             }
 
@@ -141,7 +148,42 @@ public class SWMImporter {
         }
     }
 
-    private static List<SlimeChunk> loadChunks(File file) throws IOException {
+    private static byte getWorldVersion(File file) throws IOException, InvalidWorldException {
+        NBTInputStream nbtStream = new NBTInputStream(new FileInputStream(file));
+        Optional<CompoundTag> tag = nbtStream.readTag().getAsCompoundTag();
+
+        if (tag.isPresent()) {
+            Optional<CompoundTag> dataTag = tag.get().getAsCompoundTag("Data");
+
+            if (dataTag.isPresent()) {
+                Optional<IntTag> versionTag = dataTag.get().getAsIntTag("DataVersion");
+
+                if (!versionTag.isPresent()) { // DataVersion tag was added in 1.9
+                    return 0x01;
+                }
+
+                int version = versionTag.get().getValue();
+
+                if (version < 818) {
+                    return 0x02; // 1.9 world
+                }
+
+                if (version < 1501) {
+                    return 0x03; // 1.11 world
+                }
+
+                if (version < 1517) {
+                    return 0x04; // 1.13 world
+                }
+
+                return 0x05; // 1.14 world
+            }
+        }
+
+        throw new InvalidWorldException(file.getParentFile());
+    }
+
+    private static List<SlimeChunk> loadChunks(File file, byte worldVersion) throws IOException {
         System.out.println("Loading chunks from region file '" + file.getName() + "':");
         byte[] regionByteArray = Files.readAllBytes(file.toPath());
         DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(regionByteArray));
@@ -179,7 +221,7 @@ public class SWMImporter {
 
                 CompoundTag levelCompound = (CompoundTag) globalMap.get("Level");
 
-                return readChunk(levelCompound);
+                return readChunk(levelCompound, worldVersion);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -190,7 +232,7 @@ public class SWMImporter {
         return loadedChunks;
     }
 
-    private static SlimeChunk readChunk(CompoundTag compound) {
+    private static SlimeChunk readChunk(CompoundTag compound, byte worldVersion) {
         int chunkX = compound.getAsIntTag("xPos").get().getValue();
         int chunkZ = compound.getAsIntTag("zPos").get().getValue();
         Optional<String> status = compound.getStringValue("Status");
@@ -215,8 +257,8 @@ public class SWMImporter {
         Optional<CompoundTag> optionalHeightMaps = compound.getAsCompoundTag("Heightmaps");
         CompoundTag heightMapsCompound;
 
-        if (optionalHeightMaps.isPresent()) {
-            heightMapsCompound = optionalHeightMaps.get();
+        if (worldVersion >= 0x04) {
+            heightMapsCompound = optionalHeightMaps.orElse(new CompoundTag("", new CompoundMap()));
         } else {
             // Pre 1.13 world
 
@@ -226,7 +268,7 @@ public class SWMImporter {
         }
 
         List<CompoundTag> tileEntities = ((ListTag<CompoundTag>) compound.getAsListTag("TileEntities")
-                .orElse(new ListTag<>("Entities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
+                .orElse(new ListTag<>("TileEntities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
         List<CompoundTag> entities = ((ListTag<CompoundTag>) compound.getAsListTag("Entities")
                 .orElse(new ListTag<>("Entities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
         ListTag<CompoundTag> sectionsTag = (ListTag<CompoundTag>) compound.getAsListTag("Sections").get();
@@ -245,8 +287,7 @@ public class SWMImporter {
             ListTag<CompoundTag> paletteTag;
             long[] blockStatesArray;
 
-            if (blocks != null) {
-                // Pre 1.13 world
+            if (worldVersion < 0x04) {
                 dataArray = new NibbleArray(sectionTag.getByteArrayValue("Data").get());
 
                 if (isEmpty(blocks)) { // Just skip it
@@ -261,12 +302,12 @@ public class SWMImporter {
                 paletteTag = (ListTag<CompoundTag>) sectionTag.getAsListTag("Palette").orElse(null);
                 blockStatesArray = sectionTag.getLongArrayValue("BlockStates").orElse(null);
 
-                if (paletteTag == null || blockStatesArray == null) { // Skip it
+                if (paletteTag == null || blockStatesArray == null || isEmpty(blockStatesArray)) { // Skip it
                     continue;
                 }
             }
 
-            NibbleArray blockLightArray= sectionTag.getValue().containsKey("BlockLight") ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get()) : null;
+            NibbleArray blockLightArray = sectionTag.getValue().containsKey("BlockLight") ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get()) : null;
             NibbleArray skyLightArray = sectionTag.getValue().containsKey("SkyLight") ? new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get()) : null;
 
             sectionArray[index] = new CraftSlimeChunkSection(blocks, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
@@ -279,7 +320,6 @@ public class SWMImporter {
         }
 
         // Chunk is empty
-
         return null;
     }
 
@@ -295,6 +335,16 @@ public class SWMImporter {
     private static boolean isEmpty(byte[] array) {
         for (byte b : array) {
             if (b != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean isEmpty(long[] array) {
+        for (long b : array) {
+            if (b != 0L) {
                 return false;
             }
         }
