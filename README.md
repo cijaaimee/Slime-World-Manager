@@ -1,37 +1,32 @@
 # Slime World Manager [![Build Status](https://travis-ci.com/Grinderwolf/Slime-World-Manager.svg?branch=master)](https://travis-ci.com/Grinderwolf/Slime-World-Manager)
-Slime World Manager is a Minecraft plugin that implements the Slime Region Format, developed by the Hypixel Dev Team. Its goal is to provide server administrators with an easy-to-use tool to load worlds faster and save space.
+Slime World Manager is a Minecraft plugin that implements the Slime Region Format, developed by the Hypixel Dev Team.
+ Its goal is to provide server administrators with an easy-to-use tool to load worlds faster and save space.
 
-## Building
-
-To build SWM, use the command:
-
-```
-mvn clean install
-```
-
-## Releases
+#### Releases
 
 SWM releases can be found [here](https://www.spigotmc.org/resources/slimeworldmanager.69974/history).
 
-## Maven
-```
-<repository>
-    <id>swm-repo</id>
-    <url>https://repo.glaremasters.me/repository/concuncan/</url>
-</repository>
-```
-```
-<dependency>
-    <groupId>com.grinderwolf</groupId>
-    <artifactId>slimeworldmanager-api</artifactId>
-    <version>(insert latest version here)</version>
-    <scope>provided</scope>
-</dependency>
-```
-
-## Javadocs
+#### Javadocs
 
 Javadocs can be found [here](https://grinderwolf.github.io/Slime-World-Manager/apidocs/).
+
+## Overview
+ * Plugin Usage
+    * [Installing Slime World Manager](.docs/usage/install.md)
+    * [Using Slime World Manager](.docs/usage/using.md)
+    * [Commands and permissions](.docs/usage/commands-and-permissions.md)
+ * Configuration
+    * [Setting up the data sources](.docs/config/setup-data-sources.md)
+    * [Converting traditional worlds into the SRF](.docs/config/convert-world-to-srf.md)
+    * [Configuring worlds](.docs/config/configure-world.md)
+ * SWM API
+    * [Getting started](.docs/api/setup-dev.md)
+    * [Loading a world](.docs/api/load-world.md)
+    * [Migrating a world](.docs/api/migrate-world.md)
+    * [Importing a world](.docs/api/import-world.md)
+    * [Using other data sources](.docs/api/use-data-source.md)
+ * [FAQ](.docs/faq.md)
+ 
 
 ## Credits
 
