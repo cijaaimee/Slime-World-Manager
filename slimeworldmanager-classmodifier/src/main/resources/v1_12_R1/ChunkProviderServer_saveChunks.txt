@@ -1,5 +1,4 @@
 {
-    java.lang.System.out.println("Hello");
     if (com.grinderwolf.swm.clsm.ClassModifier.isCustomWorld($0.world)) {
         java.util.Iterator iterator = $0.chunks.values().iterator();
 
@@ -11,7 +10,7 @@
             }
 
             if (chunk.a($1)) {
-                $0.saveChunk(chunk);
+                $0.saveChunk(chunk, false);
                 chunk.f(false);
             }
         }
