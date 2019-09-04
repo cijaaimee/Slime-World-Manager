@@ -53,6 +53,14 @@ public class v1_11WorldUpgrade implements Upgrade {
                 String oldType = entityTag.getAsStringTag("id").get().getValue();
                 String newType = oldToNewMap.get(oldType);
 
+                if (newType == null) {
+                    if (newToOldMap.containsKey(oldType)) { // Maybe it's in the new format for some reason?
+                        continue;
+                    }
+
+                    throw new IllegalStateException("Failed to find 1.11 upgrade for tile entity " + oldType);
+                }
+
                 entityTag.getValue().put("id", new StringTag("id", newType));
             }
         }

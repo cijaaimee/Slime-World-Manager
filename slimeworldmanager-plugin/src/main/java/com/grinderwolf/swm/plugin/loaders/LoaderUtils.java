@@ -195,11 +195,10 @@ public class LoaderUtils {
             CompoundTag entitiesCompound = readCompoundTag(entities);
 
             if (entitiesCompound != null) {
-                ListTag<CompoundTag> tileEntitiesList = (ListTag<CompoundTag>) entitiesCompound.getValue().get("entities");
+                ListTag<CompoundTag> entitiesList = (ListTag<CompoundTag>) entitiesCompound.getValue().get("entities");
 
-                for (CompoundTag entityCompound : tileEntitiesList.getValue()) {
-                    CompoundMap map = entityCompound.getValue();
-                    ListTag<DoubleTag> listTag = (ListTag<DoubleTag>) map.get("Pos");
+                for (CompoundTag entityCompound : entitiesList.getValue()) {
+                    ListTag<DoubleTag> listTag = (ListTag<DoubleTag>) entityCompound.getAsListTag("Pos").get();
 
                     int chunkX = floor(listTag.getValue().get(0).getValue()) >> 4;
                     int chunkZ = floor(listTag.getValue().get(2).getValue()) >> 4;
@@ -225,7 +224,6 @@ public class LoaderUtils {
                     int chunkZ = ((IntTag) tileEntityCompound.getValue().get("z")).getValue() >> 4;
                     long chunkKey = ((long) chunkZ) * Integer.MAX_VALUE + ((long) chunkX);
                     SlimeChunk chunk = chunks.get(chunkKey);
-
 
                     if (chunk == null) {
                         throw new CorruptedWorldException(worldName);

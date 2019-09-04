@@ -35,7 +35,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -182,16 +181,11 @@ public class CustomChunkLoader implements IChunkLoader {
 
         if (tileEntities != null) {
             for (CompoundTag tag : tileEntities) {
-                Optional<String> type = tag.getStringValue("id");
+                TileEntity entity = TileEntity.create((NBTTagCompound) Converter.convertTag(tag));
 
-                // Sometimes null tile entities are saved
-                if (type.isPresent()) {
-                    TileEntity entity = TileEntity.create((NBTTagCompound) Converter.convertTag(tag));
-
-                    if (entity != null) {
-                        nmsChunk.a(entity);
-                        loadedEntities++;
-                    }
+                if (entity != null) {
+                    nmsChunk.a(entity);
+                    loadedEntities++;
                 }
             }
         }

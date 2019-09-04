@@ -235,18 +235,18 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         try {
             world = LoaderUtils.deserializeWorld(loader, worldName, serializedWorld, properties);
+
+            if (world.getVersion() > nms.getWorldVersion()) {
+                WorldUpgrader.downgradeWorld(world);
+            } else if (world.getVersion() < nms.getWorldVersion()) {
+                WorldUpgrader.upgradeWorld(world);
+            }
         } catch (Exception ex) {
             if (!properties.isReadOnly()) { // Unlock the world as we're not using it
                 loader.unlockWorld(worldName);
             }
 
             throw ex;
-        }
-
-        if (world.getVersion() > nms.getWorldVersion()) {
-            WorldUpgrader.downgradeWorld(world);
-        } else if (world.getVersion() < nms.getWorldVersion()) {
-            WorldUpgrader.upgradeWorld(world);
         }
 
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
