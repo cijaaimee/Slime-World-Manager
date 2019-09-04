@@ -48,6 +48,7 @@
                 } else {
                     org.spigotmc.SpigotConfig.disableStatSaving = true;
                     org.spigotmc.SpigotConfig.disableAdvancementSaving = true;
+                    $0.a(new java.io.File(""), world.getWorldData());
                 }
                 
                 $0.initializeScoreboards(world.getWorldPersistentData());
