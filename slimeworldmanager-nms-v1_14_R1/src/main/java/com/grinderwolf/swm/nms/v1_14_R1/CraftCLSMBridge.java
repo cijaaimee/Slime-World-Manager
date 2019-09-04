@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -147,11 +148,16 @@ public class CraftCLSMBridge implements CLSMBridge {
 
             if (tileEntities != null) {
                 for (CompoundTag tag : tileEntities) {
-                    TileEntity entity = TileEntity.create((NBTTagCompound) Converter.convertTag(tag));
+                    Optional<String> type = tag.getStringValue("id");
 
-                    if (entity != null) {
-                        nmsChunk.a(entity);
-                        loadedEntities++;
+                    // Sometimes null tile entities are saved
+                    if (type.isPresent()) {
+                        TileEntity entity = TileEntity.create((NBTTagCompound) Converter.convertTag(tag));
+
+                        if (entity != null) {
+                            nmsChunk.a(entity);
+                            loadedEntities++;
+                        }
                     }
                 }
             }

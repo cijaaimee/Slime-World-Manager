@@ -39,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -197,7 +198,12 @@ public class CustomChunkLoader implements IChunkLoader {
                 NBTTagList tileEntities = new NBTTagList();
 
                 for (CompoundTag tileEntityTag : chunk.getTileEntities()) {
-                    tileEntities.add(Converter.convertTag(tileEntityTag));
+                    Optional<String> type = tileEntityTag.getStringValue("id");
+
+                    // Sometimes null tile entities are saved
+                    if (type.isPresent()) {
+                        tileEntities.add(Converter.convertTag(tileEntityTag));
+                    }
                 }
 
                 levelCompound.set("TileEntities", tileEntities);
