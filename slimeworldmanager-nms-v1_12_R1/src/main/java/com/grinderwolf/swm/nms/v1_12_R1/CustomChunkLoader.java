@@ -21,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class CustomChunkLoader implements IChunkLoader {
@@ -95,16 +94,11 @@ public class CustomChunkLoader implements IChunkLoader {
 
         if (tileEntities != null) {
             for (CompoundTag tag : tileEntities) {
-                Optional<String> type = tag.getStringValue("id");
+                TileEntity entity = TileEntity.create(nmsWorld, (NBTTagCompound) Converter.convertTag(tag));
 
-                // Sometimes null tile entities are saved
-                if (type.isPresent()) {
-                    TileEntity entity = TileEntity.create(nmsWorld, (NBTTagCompound) Converter.convertTag(tag));
-
-                    if (entity != null) {
-                        nmsChunk.a(entity);
-                        loadedEntities++;
-                    }
+                if (entity != null) {
+                    nmsChunk.a(entity);
+                    loadedEntities++;
                 }
             }
         }

@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -272,8 +271,6 @@ public class v1_13WorldUpgrade implements Upgrade {
                                             if (createAction == null) {
                                                 throw new IllegalStateException("No create action was specified for block " + name + " but no tile entity was found");
                                             }
-
-                                            Objects.requireNonNull(createAction.getName(), "Tile entity type cannot be null (" + name + ")");
 
                                             CompoundMap tileMap = new CompoundMap();
                                             tileMap.put("id", new StringTag("id", "minecraft:" + createAction.getName()));

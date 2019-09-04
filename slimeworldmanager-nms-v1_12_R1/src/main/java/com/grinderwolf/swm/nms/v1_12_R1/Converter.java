@@ -36,8 +36,6 @@ import net.minecraft.server.v1_12_R1.NBTTagLong;
 import net.minecraft.server.v1_12_R1.NBTTagShort;
 import net.minecraft.server.v1_12_R1.NBTTagString;
 import net.minecraft.server.v1_12_R1.TileEntity;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -45,8 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Converter {
-
-    private static final Logger LOGGER = LogManager.getLogger("SWM Converter");
 
     static net.minecraft.server.v1_12_R1.NibbleArray convertArray(NibbleArray array) {
         return new net.minecraft.server.v1_12_R1.NibbleArray(array.getBacking());
@@ -57,45 +53,38 @@ public class Converter {
     }
 
     static NBTBase convertTag(Tag tag) {
-        try {
-            switch (tag.getType()) {
-                case TAG_BYTE:
-                    return new NBTTagByte(((ByteTag) tag).getValue());
-                case TAG_SHORT:
-                    return new NBTTagShort(((ShortTag) tag).getValue());
-                case TAG_INT:
-                    return new NBTTagInt(((IntTag) tag).getValue());
-                case TAG_LONG:
-                    return new NBTTagLong(((LongTag) tag).getValue());
-                case TAG_FLOAT:
-                    return new NBTTagFloat(((FloatTag) tag).getValue());
-                case TAG_DOUBLE:
-                    return new NBTTagDouble(((DoubleTag) tag).getValue());
-                case TAG_BYTE_ARRAY:
-                    return new NBTTagByteArray(((ByteArrayTag) tag).getValue());
-                case TAG_STRING:
-                    return new NBTTagString(((StringTag) tag).getValue());
-                case TAG_INT_ARRAY:
-                    return new NBTTagIntArray(((IntArrayTag) tag).getValue());
-                case TAG_LIST:
-                    NBTTagList list = new NBTTagList();
-                    ((ListTag<?>) tag).getValue().stream().map(Converter::convertTag).forEach(list::add);
+        switch (tag.getType()) {
+            case TAG_BYTE:
+                return new NBTTagByte(((ByteTag) tag).getValue());
+            case TAG_SHORT:
+                return new NBTTagShort(((ShortTag) tag).getValue());
+            case TAG_INT:
+                return new NBTTagInt(((IntTag) tag).getValue());
+            case TAG_LONG:
+                return new NBTTagLong(((LongTag) tag).getValue());
+            case TAG_FLOAT:
+                return new NBTTagFloat(((FloatTag) tag).getValue());
+            case TAG_DOUBLE:
+                return new NBTTagDouble(((DoubleTag) tag).getValue());
+            case TAG_BYTE_ARRAY:
+                return new NBTTagByteArray(((ByteArrayTag) tag).getValue());
+            case TAG_STRING:
+                return new NBTTagString(((StringTag) tag).getValue());
+            case TAG_INT_ARRAY:
+                return new NBTTagIntArray(((IntArrayTag) tag).getValue());
+            case TAG_LIST:
+                NBTTagList list = new NBTTagList();
+                ((ListTag<?>) tag).getValue().stream().map(Converter::convertTag).forEach(list::add);
 
-                    return list;
-                case TAG_COMPOUND:
-                    NBTTagCompound compound = new NBTTagCompound();
+                return list;
+            case TAG_COMPOUND:
+                NBTTagCompound compound = new NBTTagCompound();
 
-                    ((CompoundTag) tag).getValue().forEach((key, value) -> compound.set(key, convertTag(value)));
+                ((CompoundTag) tag).getValue().forEach((key, value) -> compound.set(key, convertTag(value)));
 
-                    return compound;
-                default:
-                    throw new IllegalArgumentException("Invalid tag type " + tag.getType().name());
-            }
-        } catch (Exception ex) {
-            LOGGER.error("Failed to convert NBT object:");
-            LOGGER.error(tag.toString());
-
-            throw ex;
+                return compound;
+            default:
+                throw new IllegalArgumentException("Invalid tag type " + tag.getType().name());
         }
     }
 
