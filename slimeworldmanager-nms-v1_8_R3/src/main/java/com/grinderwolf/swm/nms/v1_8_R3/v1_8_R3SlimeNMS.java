@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.spigotmc.AsyncCatcher;
 
 @Getter
 public class v1_8_R3SlimeNMS implements SlimeNMS {
@@ -82,8 +83,10 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
                         timeMillis = currentTime;
                     }
 
+                    AsyncCatcher.enabled = false;
                     BlockPosition spawn = server.getSpawn();
                     server.chunkProviderServer.getChunkAt(spawn.getX() + x >> 4, spawn.getZ() + z >> 4);
+                    AsyncCatcher.enabled = true;
                 }
             }
         }
