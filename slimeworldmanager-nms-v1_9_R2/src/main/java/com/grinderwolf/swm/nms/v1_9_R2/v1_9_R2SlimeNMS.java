@@ -4,6 +4,7 @@ import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
+import net.minecraft.server.v1_9_R2.BlockPosition;
 import net.minecraft.server.v1_9_R2.MinecraftServer;
 import net.minecraft.server.v1_9_R2.WorldServer;
 import org.apache.logging.log4j.LogManager;
@@ -92,6 +93,9 @@ public class v1_9_R2SlimeNMS implements SlimeNMS {
                         LOGGER.debug("Preparing spawn area for " + worldName + ": " + (done * 100 / total) + "%");
                         timeMillis = currentTime;
                     }
+
+                    BlockPosition spawn = server.getSpawn();
+                    server.getChunkProviderServer().getChunkAt(spawn.getX() + x >> 4, spawn.getZ() + z >> 4);
                 }
             }
         }

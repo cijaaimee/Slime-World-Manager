@@ -134,6 +134,10 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
         getServer().getPluginManager().registerEvents(new Updater(), this);
 
+        if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
+            Logging.warning("You've enabled async world generation. Although it's quite faster, this feature is EXPERIMENTAL and might interfere with other world manager plugins. Use at your own risk.");
+        }
+
         for (SlimeWorld world : worlds) {
             if (Bukkit.getWorld(world.getName()) == null) {
                 generateWorld(world);
@@ -264,9 +268,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             throw new WorldAlreadyExistsException(worldName);
         }
 
-        long start = System.currentTimeMillis();
-
         Logging.info("Creating empty world " + worldName + ".");
+        long start = System.currentTimeMillis();
 
         // The world must contain at least one chunk
         SlimeChunkSection[] chunkSections = new SlimeChunkSection[16];
@@ -298,7 +301,17 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     @Override
     public void generateWorld(SlimeWorld world) {
         Objects.requireNonNull(world, "SlimeWorld cannot be null");
-        nms.generateWorld(world);
+
+        if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
+            Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+
+                Object nmsWorld = nms.createNMSWorld(world);
+                Bukkit.getScheduler().runTask(this, () -> nms.addWorldToServerList(nmsWorld));
+
+            });
+        } else {
+            nms.generateWorld(world);
+        }
     }
 
     @Override

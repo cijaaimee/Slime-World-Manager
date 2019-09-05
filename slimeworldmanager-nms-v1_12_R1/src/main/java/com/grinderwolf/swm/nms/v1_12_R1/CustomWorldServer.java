@@ -37,6 +37,7 @@ public class CustomWorldServer extends WorldServer {
     public CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, int dimension) {
         super(MinecraftServer.getServer(), dataManager, dataManager.getWorldData(), dimension, MinecraftServer.getServer().methodProfiler, World.Environment.NORMAL, null);
 
+        this.keepSpawnInMemory = false;
         this.D = new CustomFunctionData(null, MinecraftServer.getServer());
         this.slimeWorld = world;
         this.tracker = new EntityTracker(this);

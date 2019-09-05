@@ -5,6 +5,7 @@ import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
 import net.minecraft.server.v1_12_R1.AdvancementDataWorld;
+import net.minecraft.server.v1_12_R1.BlockPosition;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
 import net.minecraft.server.v1_12_R1.WorldServer;
 import org.apache.logging.log4j.LogManager;
@@ -68,15 +69,12 @@ public class v1_12_R1SlimeNMS implements SlimeNMS {
     }
 
     @Override
-    public void generateWorld(SlimeWorld world) {
+    public Object createNMSWorld(SlimeWorld world) {
         String worldName = world.getName();
 
         if (Bukkit.getWorld(worldName) != null) {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
-
-        LOGGER.info("Loading world " + world.getName());
-        long startTime = System.currentTimeMillis();
 
         CustomDataManager dataManager = new CustomDataManager(world);
         MinecraftServer mcServer = MinecraftServer.getServer();
@@ -89,11 +87,6 @@ public class v1_12_R1SlimeNMS implements SlimeNMS {
         }
 
         WorldServer server = (WorldServer) new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimension).b();
-
-        mcServer.worlds.add(server);
-
-        Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
-        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
 
         if (server.getWorld().getKeepSpawnInMemory()) {
             LOGGER.debug("Preparing start region for world " + worldName);
@@ -110,11 +103,36 @@ public class v1_12_R1SlimeNMS implements SlimeNMS {
                         LOGGER.debug("Preparing spawn area for " + worldName + ": " + (done * 100 / total) + "%");
                         timeMillis = currentTime;
                     }
+
+                    BlockPosition spawn = server.getSpawn();
+                    server.getChunkProviderServer().getChunkAt(spawn.getX() + x >> 4, spawn.getZ() + z >> 4);
                 }
             }
         }
 
-        LOGGER.info("World " + world.getName() + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+        return server;
+    }
+
+    @Override
+    public void generateWorld(SlimeWorld world) {
+        WorldServer server = (WorldServer) createNMSWorld(world);
+        MinecraftServer.getServer().worlds.add(server);
+
+        Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
+        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
+    }
+
+    @Override
+    public void addWorldToServerList(Object worldObject) {
+        if (!(worldObject instanceof WorldServer)) {
+            throw new IllegalArgumentException("World object must be an instance of WorldServer!");
+        }
+
+        WorldServer world = (WorldServer) worldObject;
+        MinecraftServer.getServer().worlds.add(world);
+
+        Bukkit.getPluginManager().callEvent(new WorldInitEvent(world.getWorld()));
+        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(world.getWorld()));
     }
 
     @Override
@@ -126,7 +144,6 @@ public class v1_12_R1SlimeNMS implements SlimeNMS {
         }
 
         CustomWorldServer worldServer = (CustomWorldServer) craftWorld.getHandle();
-
         return worldServer.getSlimeWorld();
     }
 }
