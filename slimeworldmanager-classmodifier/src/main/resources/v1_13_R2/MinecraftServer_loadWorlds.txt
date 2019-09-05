@@ -48,7 +48,7 @@
                 } else {
                     org.spigotmc.SpigotConfig.disableStatSaving = true;
                     org.spigotmc.SpigotConfig.disableAdvancementSaving = true;
-                    $0.a(new java.io.File(""), world.getWorldData());
+                    $0.a(new java.io.File("."), world.getWorldData());
                 }
                 
                 $0.server.scoreboardManager = new org.bukkit.craftbukkit.v1_13_R2.scoreboard.CraftScoreboardManager($0, world.getScoreboard());
