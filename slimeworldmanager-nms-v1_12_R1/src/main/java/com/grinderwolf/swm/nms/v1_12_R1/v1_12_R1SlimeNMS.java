@@ -112,25 +112,7 @@ public class v1_12_R1SlimeNMS implements SlimeNMS {
 
     @Override
     public void generateWorld(SlimeWorld world) {
-        String worldName = world.getName();
-
-        if (Bukkit.getWorld(worldName) != null) {
-            throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
-        }
-
-        LOGGER.info("Loading world " + worldName);
-        long startTime = System.currentTimeMillis();
-        CustomWorldServer server = (CustomWorldServer) createNMSWorld(world);
-        server.setReady(true);
-
-        MinecraftServer mcServer = MinecraftServer.getServer();
-
-        mcServer.server.addWorld(server.getWorld());
-        mcServer.worlds.add(server);
-
-        Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
-        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
-        LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+        addWorldToServerList(createNMSWorld(world));
     }
 
     @Override
