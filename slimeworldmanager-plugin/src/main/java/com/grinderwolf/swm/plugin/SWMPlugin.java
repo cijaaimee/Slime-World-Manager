@@ -135,7 +135,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         getServer().getPluginManager().registerEvents(new Updater(), this);
 
         if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
-            Logging.warning("You've enabled async world generation. Although it's quite faster, this feature is EXPERIMENTAL and might interfere with other world manager plugins. Use at your own risk.");
+            Logging.warning("You've enabled async world generation. Although it's quite faster, this feature is EXPERIMENTAL. Use at your own risk.");
         }
 
         for (SlimeWorld world : worlds) {
