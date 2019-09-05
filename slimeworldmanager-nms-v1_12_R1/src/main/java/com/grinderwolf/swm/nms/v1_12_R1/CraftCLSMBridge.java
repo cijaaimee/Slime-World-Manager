@@ -29,10 +29,6 @@ public class CraftCLSMBridge implements CLSMBridge {
         return world instanceof CustomWorldServer;
     }
 
-    static void initialize(v1_12_R1SlimeNMS instance) {
-        ClassModifier.setLoader(new CraftCLSMBridge(instance));
-    }
-
     @Override
     public boolean skipWorldAdd(Object world) {
         if (!isCustomWorld(world)) {
@@ -41,5 +37,9 @@ public class CraftCLSMBridge implements CLSMBridge {
 
         CustomWorldServer worldServer = (CustomWorldServer) world;
         return !worldServer.isReady();
+    }
+
+    static void initialize(v1_12_R1SlimeNMS instance) {
+        ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
 }

@@ -21,6 +21,8 @@ __optional__net/minecraft/server/v1_12_R1/ChunkProviderServer: # Patch for Paper
   - a(boolean)@v1_12_R1/ChunkProviderServer_saveChunks.txt
 net/minecraft/server/v1_11_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_11_R1.WorldType, java.lang.String)@v1_11_R1/MinecraftServer_loadWorlds.txt
+org/bukkit/craftbukkit/v1_11_R1/CraftServer:
+  - addWorld(org.bukkit.World)@v1_11_R1/CraftServer_addWorld.txt
 __optional__net/minecraft/server/v1_11_R1/ChunkProviderServer: # Patch for PaperSpigot
   - a(boolean)@v1_11_R1/ChunkProviderServer_saveChunks.txt
 net/minecraft/server/v1_10_R1/MinecraftServer:
