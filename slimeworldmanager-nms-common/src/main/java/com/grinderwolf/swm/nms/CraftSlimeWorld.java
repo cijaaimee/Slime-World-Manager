@@ -131,10 +131,10 @@ public class CraftSlimeWorld implements SlimeWorld {
             outStream.writeByte(version);
 
             // Lowest chunk coordinates
-            int minX = sortedChunks.stream().mapToInt(SlimeChunk::getX).min().getAsInt();
-            int minZ = sortedChunks.stream().mapToInt(SlimeChunk::getZ).min().getAsInt();
-            int maxX = sortedChunks.stream().mapToInt(SlimeChunk::getX).max().getAsInt();
-            int maxZ = sortedChunks.stream().mapToInt(SlimeChunk::getZ).max().getAsInt();
+            int minX = sortedChunks.stream().mapToInt(SlimeChunk::getX).min().orElse(0);
+            int minZ = sortedChunks.stream().mapToInt(SlimeChunk::getZ).min().orElse(0);
+            int maxX = sortedChunks.stream().mapToInt(SlimeChunk::getX).max().orElse(0);
+            int maxZ = sortedChunks.stream().mapToInt(SlimeChunk::getZ).max().orElse(0);
 
             outStream.writeShort(minX);
             outStream.writeShort(minZ);
