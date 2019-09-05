@@ -50,18 +50,10 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
     }
 
     @Override
-    public void generateWorld(SlimeWorld world) {
-        String worldName = world.getName();
-
-        if (Bukkit.getWorld(worldName) != null) {
-            throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
-        }
-
-        LOGGER.info("Loading world " + world.getName());
-        long startTime = System.currentTimeMillis();
-
+    public Object createNMSWorld(SlimeWorld world) {
         CustomDataManager dataManager = new CustomDataManager(world);
         MinecraftServer mcServer = MinecraftServer.getServer();
+
         int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worlds.size();
 
         for (WorldServer server : mcServer.worlds) {
@@ -72,13 +64,10 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
 
         WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimension);
 
-        mcServer.worlds.add(server);
-
-        Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
-        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
-
         if (server.getWorld().getKeepSpawnInMemory()) {
+            String worldName = world.getName();
             LOGGER.debug("Preparing start region for world " + worldName);
+
             long timeMillis = System.currentTimeMillis();
 
             for (int x = -196; x <= 196; x += 16) {
@@ -99,7 +88,40 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
             }
         }
 
-        LOGGER.info("World " + world.getName() + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+        return server;
+    }
+
+    @Override
+    public void generateWorld(SlimeWorld world) {
+        addWorldToServerList(createNMSWorld(world));
+    }
+
+    @Override
+    public void addWorldToServerList(Object worldObject) {
+        if (!(worldObject instanceof WorldServer)) {
+            throw new IllegalArgumentException("World object must be an instance of WorldServer!");
+        }
+
+        CustomWorldServer server = (CustomWorldServer) worldObject;
+        String worldName = server.getWorldData().getName();
+
+        if (Bukkit.getWorld(worldName) != null) {
+            throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
+        }
+
+        LOGGER.info("Loading world " + worldName);
+        long startTime = System.currentTimeMillis();
+
+        server.setReady(true);
+        MinecraftServer mcServer = MinecraftServer.getServer();
+
+        mcServer.server.addWorld(server.getWorld());
+        mcServer.worlds.add(server);
+
+        Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
+        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
+
+        LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     @Override

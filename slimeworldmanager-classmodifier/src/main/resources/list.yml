@@ -45,5 +45,9 @@ org/bukkit/craftbukkit/v1_9_R2/CraftServer:
   - addWorld(org.bukkit.World)@v1_9_R2/CraftServer_addWorld.txt
 net/minecraft/server/v1_9_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_9_R1.WorldType, java.lang.String)@v1_9_R1/MinecraftServer_loadWorlds.txt
+org/bukkit/craftbukkit/v1_9_R1/CraftServer:
+  - addWorld(org.bukkit.World)@v1_9_R1/CraftServer_addWorld.txt
 net/minecraft/server/v1_8_R3/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_8_R3.WorldType, java.lang.String)@v1_8_R3/MinecraftServer_loadWorlds.txt
+org/bukkit/craftbukkit/v1_8_R3/CraftServer:
+  - addWorld(org.bukkit.World)@v1_8_R3/CraftServer_addWorld.txt
