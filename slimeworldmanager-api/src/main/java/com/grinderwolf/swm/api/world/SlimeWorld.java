@@ -99,13 +99,16 @@ public interface SlimeWorld {
         private int difficulty;
 
         @Accessors(fluent = true)
+        @Builder.Default
         private boolean allowMonsters = true;
         @Accessors(fluent = true)
+        @Builder.Default
         private boolean allowAnimals = true;
 
         @Wither
         private boolean readOnly;
 
+        @Builder.Default
         private boolean pvp = true;
 
         @Builder.Default

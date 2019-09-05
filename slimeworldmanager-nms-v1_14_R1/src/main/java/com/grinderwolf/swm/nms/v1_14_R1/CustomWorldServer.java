@@ -5,6 +5,7 @@ import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.DimensionManager;
 import net.minecraft.server.v1_14_R1.EnumDifficulty;
@@ -31,7 +32,11 @@ public class CustomWorldServer extends WorldServer {
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
 
-    public CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, DimensionManager dimensionManager) {
+    @Getter
+    @Setter
+    private boolean ready = false;
+
+    CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, DimensionManager dimensionManager) {
         super(MinecraftServer.getServer(), MinecraftServer.getServer().executorService, nbtStorage, nbtStorage.getWorldData(),
                 dimensionManager, MinecraftServer.getServer().getMethodProfiler(), MinecraftServer.getServer().worldLoadListenerFactory.create(11), World.Environment.NORMAL, null);
 
@@ -43,7 +48,6 @@ public class CustomWorldServer extends WorldServer {
         worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
         worldData.d(true);
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
-        MinecraftServer.getServer().worldServer.put(dimensionManager, this);
 
         new File(nbtStorage.getDirectory(), "session.lock").delete();
         new File(nbtStorage.getDirectory(), "data").delete();

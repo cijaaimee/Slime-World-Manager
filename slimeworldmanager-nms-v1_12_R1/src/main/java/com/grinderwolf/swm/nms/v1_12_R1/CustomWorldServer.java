@@ -5,6 +5,7 @@ import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.v1_12_R1.AdvancementDataWorld;
 import net.minecraft.server.v1_12_R1.BlockPosition;
 import net.minecraft.server.v1_12_R1.CustomFunctionData;
@@ -34,7 +35,11 @@ public class CustomWorldServer extends WorldServer {
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
 
-    public CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, int dimension) {
+    @Getter
+    @Setter
+    private boolean ready = false;
+
+    CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, int dimension) {
         super(MinecraftServer.getServer(), dataManager, dataManager.getWorldData(), dimension, MinecraftServer.getServer().methodProfiler, World.Environment.NORMAL, null);
 
         this.D = new CustomFunctionData(null, MinecraftServer.getServer());
@@ -56,7 +61,7 @@ public class CustomWorldServer extends WorldServer {
         }
     }
 
-    public CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, AdvancementDataWorld advancementData) {
+    CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, AdvancementDataWorld advancementData) {
         this(world, dataManager, 0);
 
         this.C = advancementData;

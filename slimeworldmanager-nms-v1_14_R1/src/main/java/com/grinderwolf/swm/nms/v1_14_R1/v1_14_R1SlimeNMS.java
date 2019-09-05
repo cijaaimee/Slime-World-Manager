@@ -62,6 +62,28 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
     }
 
     @Override
+    public Object createNMSWorld(SlimeWorld world) {
+        CustomNBTStorage dataManager = new CustomNBTStorage(world);
+        MinecraftServer mcServer = MinecraftServer.getServer();
+
+        int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worldServer.size();
+
+        for (WorldServer server : mcServer.getWorlds()) {
+            if (server.getWorldProvider().getDimensionManager().getDimensionID() + 1 == dimension) { // getDimensionID() returns the dimension - 1
+                dimension++;
+            }
+        }
+
+        String worldName = world.getName();
+        DimensionManager actualDimension = DimensionManager.a(0);
+        DimensionManager dimensionManager = DimensionManager.register(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
+                actualDimension.folder, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension));
+        WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager);
+
+        return server;
+    }
+
+    @Override
     public void generateWorld(SlimeWorld world) {
         String worldName = world.getName();
 
@@ -69,11 +91,9 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
-        LOGGER.info("Loading world " + world.getName());
-        long startTime = System.currentTimeMillis();
-
         CustomNBTStorage dataManager = new CustomNBTStorage(world);
         MinecraftServer mcServer = MinecraftServer.getServer();
+
         int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worldServer.size();
 
         for (WorldServer server : mcServer.getWorlds()) {
@@ -85,14 +105,21 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
         DimensionManager actualDimension = DimensionManager.a(0);
         DimensionManager dimensionManager = DimensionManager.register(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
                 actualDimension.folder, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension));
-        WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager);
+        CustomWorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager);
 
+        LOGGER.info("Loading world " + worldName);
+        long startTime = System.currentTimeMillis();
+
+        server.setReady(true);
         mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings(dataManager.getWorldData()));
+
+        mcServer.server.addWorld(server.getWorld());
+        mcServer.worldServer.put(dimensionManager, server);
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
 
         if (server.getWorld().getKeepSpawnInMemory()) {
-            LOGGER.info("Preparing start region for dimension '{}'/{}", worldName, actualDimension);
+            LOGGER.debug("Preparing start region for dimension '{}'/{}", worldName, DimensionManager.a(0));
             BlockPosition spawn = server.getSpawn();
             ChunkProviderServer provider = server.getChunkProvider();
             provider.addTicket(TicketType.START, new ChunkCoordIntPair(spawn), 11, Unit.INSTANCE);
@@ -100,7 +127,7 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
 
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
 
-        LOGGER.info("World " + world.getName() + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+        LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     @Override

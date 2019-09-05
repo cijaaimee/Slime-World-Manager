@@ -59,6 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
@@ -68,6 +70,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     private SlimeNMS nms;
 
     private final List<SlimeWorld> worlds = new ArrayList<>();
+    private final ExecutorService worldGeneratorService = Executors.newFixedThreadPool(1);
 
     @Override
     public void onLoad() {
@@ -133,6 +136,17 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         getCommand("swm").setExecutor(new CommandManager());
         getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
         getServer().getPluginManager().registerEvents(new Updater(), this);
+
+        if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
+            try {
+                nms.addWorldToServerList(null);
+            } catch (IllegalArgumentException ignored) { // This exception is thrown as null is not a WorldServer object
+                Logging.warning("You've enabled async world generation. Although it's quite faster, this feature is EXPERIMENTAL. Use at your own risk.");
+            } catch (UnsupportedOperationException ex) {
+                Logging.error("Async world generation does not support this spigot version.");
+                ConfigManager.getMainConfig().setAsyncWorldGenerate(false);
+            }
+        }
 
         for (SlimeWorld world : worlds) {
             if (Bukkit.getWorld(world.getName()) == null) {
@@ -264,9 +278,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             throw new WorldAlreadyExistsException(worldName);
         }
 
-        long start = System.currentTimeMillis();
-
         Logging.info("Creating empty world " + worldName + ".");
+        long start = System.currentTimeMillis();
 
         // The world must contain at least one chunk
         SlimeChunkSection[] chunkSections = new SlimeChunkSection[16];
@@ -298,7 +311,17 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     @Override
     public void generateWorld(SlimeWorld world) {
         Objects.requireNonNull(world, "SlimeWorld cannot be null");
-        nms.generateWorld(world);
+
+        if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
+            worldGeneratorService.submit(() -> {
+
+                Object nmsWorld = nms.createNMSWorld(world);
+                Bukkit.getScheduler().runTask(this, () -> nms.addWorldToServerList(nmsWorld));
+
+            });
+        } else {
+            nms.generateWorld(world);
+        }
     }
 
     @Override
