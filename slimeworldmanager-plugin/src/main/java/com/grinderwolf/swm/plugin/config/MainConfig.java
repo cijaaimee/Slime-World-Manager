@@ -1,10 +1,10 @@
 package com.grinderwolf.swm.plugin.config;
 
-import lombok.Getter;
+import lombok.Data;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
-@Getter
+@Data
 @ConfigSerializable
 public class MainConfig {
 

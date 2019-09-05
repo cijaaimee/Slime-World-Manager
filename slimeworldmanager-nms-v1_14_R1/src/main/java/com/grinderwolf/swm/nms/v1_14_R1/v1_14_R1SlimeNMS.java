@@ -85,32 +85,36 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
 
     @Override
     public void generateWorld(SlimeWorld world) {
-        addWorldToServerList(createNMSWorld(world));
-    }
-
-    @Override
-    public void addWorldToServerList(Object worldObject) {
-        if (!(worldObject instanceof WorldServer)) {
-            throw new IllegalArgumentException("World object must be an instance of WorldServer!");
-        }
-
-        CustomWorldServer server = (CustomWorldServer) worldObject;
-        String worldName = server.getWorldData().getName();
+        String worldName = world.getName();
 
         if (Bukkit.getWorld(worldName) != null) {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
+        CustomNBTStorage dataManager = new CustomNBTStorage(world);
+        MinecraftServer mcServer = MinecraftServer.getServer();
+
+        int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worldServer.size();
+
+        for (WorldServer server : mcServer.getWorlds()) {
+            if (server.getWorldProvider().getDimensionManager().getDimensionID() + 1 == dimension) { // getDimensionID() returns the dimension - 1
+                dimension++;
+            }
+        }
+
+        DimensionManager actualDimension = DimensionManager.a(0);
+        DimensionManager dimensionManager = DimensionManager.register(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
+                actualDimension.folder, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension));
+        CustomWorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager);
+
         LOGGER.info("Loading world " + worldName);
         long startTime = System.currentTimeMillis();
 
         server.setReady(true);
-        MinecraftServer.getServer().initWorld(server, server.getWorldData(), new WorldSettings(server.getWorldData()));
-
-        MinecraftServer mcServer = MinecraftServer.getServer();
+        mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings(dataManager.getWorldData()));
 
         mcServer.server.addWorld(server.getWorld());
-        MinecraftServer.getServer().worldServer.put(server.getWorldProvider().getDimensionManager(), server);
+        mcServer.worldServer.put(dimensionManager, server);
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
 

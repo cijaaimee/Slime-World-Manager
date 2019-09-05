@@ -138,7 +138,14 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         getServer().getPluginManager().registerEvents(new Updater(), this);
 
         if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
-            Logging.warning("You've enabled async world generation. Although it's quite faster, this feature is EXPERIMENTAL. Use at your own risk.");
+            try {
+                nms.addWorldToServerList(null);
+            } catch (IllegalArgumentException ignored) { // This exception is thrown as null is not a WorldServer object
+                Logging.warning("You've enabled async world generation. Although it's quite faster, this feature is EXPERIMENTAL. Use at your own risk.");
+            } catch (UnsupportedOperationException ex) {
+                Logging.error("Async world generation does not support this spigot version.");
+                ConfigManager.getMainConfig().setAsyncWorldGenerate(false);
+            }
         }
 
         for (SlimeWorld world : worlds) {
