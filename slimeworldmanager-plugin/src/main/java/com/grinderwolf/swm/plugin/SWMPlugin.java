@@ -59,6 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
@@ -68,6 +70,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     private SlimeNMS nms;
 
     private final List<SlimeWorld> worlds = new ArrayList<>();
+    private final ExecutorService worldGeneratorService = Executors.newFixedThreadPool(1);
 
     @Override
     public void onLoad() {
@@ -303,7 +306,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         Objects.requireNonNull(world, "SlimeWorld cannot be null");
 
         if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
-            Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            worldGeneratorService.submit(() -> {
 
                 Object nmsWorld = nms.createNMSWorld(world);
                 Bukkit.getScheduler().runTask(this, () -> nms.addWorldToServerList(nmsWorld));
