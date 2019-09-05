@@ -61,11 +61,18 @@ public class CraftSlimeWorld implements SlimeWorld {
         CraftSlimeChunk craftChunk = (CraftSlimeChunk) chunk;
 
         if (!craftChunk.getWorldName().equals(getName())) {
-            throw new IllegalArgumentException("Chunk (" + chunk.getX() + ", " + chunk.getZ() + ") belongs to world '" + ((CraftSlimeChunk) chunk).getWorldName() + "', not to '" + getName() + "'!");
+            throw new IllegalArgumentException("Chunk (" + chunk.getX() + ", " + chunk.getZ() + ") belongs to world '"
+                    + ((CraftSlimeChunk) chunk).getWorldName() + "', not to '" + getName() + "'!");
         }
 
         synchronized (chunks) {
             chunks.put(((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()), chunk);
+        }
+    }
+
+    public void clearChunks() {
+        synchronized (chunks) {
+            chunks.clear();
         }
     }
 
