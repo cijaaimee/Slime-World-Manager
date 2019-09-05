@@ -70,13 +70,8 @@ public class v1_12_R1SlimeNMS implements SlimeNMS {
 
     @Override
     public Object createNMSWorld(SlimeWorld world) {
-        String worldName = world.getName();
-
-        if (Bukkit.getWorld(worldName) != null) {
-            throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
-        }
-
         CustomDataManager dataManager = new CustomDataManager(world);
+
         MinecraftServer mcServer = MinecraftServer.getServer();
         int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worlds.size();
 
@@ -89,7 +84,9 @@ public class v1_12_R1SlimeNMS implements SlimeNMS {
         WorldServer server = (WorldServer) new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimension).b();
 
         if (server.getWorld().getKeepSpawnInMemory()) {
+            String worldName = world.getName();
             LOGGER.debug("Preparing start region for world " + worldName);
+
             long timeMillis = System.currentTimeMillis();
 
             for (int x = -196; x <= 196; x += 16) {
@@ -115,8 +112,19 @@ public class v1_12_R1SlimeNMS implements SlimeNMS {
 
     @Override
     public void generateWorld(SlimeWorld world) {
-        WorldServer server = (WorldServer) createNMSWorld(world);
-        MinecraftServer.getServer().worlds.add(server);
+        String worldName = world.getName();
+
+        if (Bukkit.getWorld(worldName) != null) {
+            throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
+        }
+
+        CustomWorldServer server = (CustomWorldServer) createNMSWorld(world);
+        server.setReady(true);
+
+        MinecraftServer mcServer = MinecraftServer.getServer();
+
+        mcServer.server.addWorld(server.getWorld());
+        mcServer.worlds.add(server);
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
@@ -128,11 +136,21 @@ public class v1_12_R1SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World object must be an instance of WorldServer!");
         }
 
-        WorldServer world = (WorldServer) worldObject;
-        MinecraftServer.getServer().worlds.add(world);
+        CustomWorldServer server = (CustomWorldServer) worldObject;
+        String worldName = server.getWorldData().getName();
 
-        Bukkit.getPluginManager().callEvent(new WorldInitEvent(world.getWorld()));
-        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(world.getWorld()));
+        if (Bukkit.getWorld(worldName) != null) {
+            throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
+        }
+
+        server.setReady(true);
+        MinecraftServer mcServer = MinecraftServer.getServer();
+
+        mcServer.server.addWorld(server.getWorld());
+        mcServer.worlds.add(server);
+
+        Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
+        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
     }
 
     @Override

@@ -1,0 +1,7 @@
+{
+    if (com.grinderwolf.swm.clsm.ClassModifier.skipWorldAdd($1.getHandle())) {
+        java.lang.System.out.println("Skipping world add");
+
+        return;
+    }
+}
