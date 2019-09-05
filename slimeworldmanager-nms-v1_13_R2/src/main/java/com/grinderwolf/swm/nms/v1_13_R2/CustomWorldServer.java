@@ -5,6 +5,7 @@ import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.v1_13_R2.BlockPosition;
 import net.minecraft.server.v1_13_R2.DimensionManager;
 import net.minecraft.server.v1_13_R2.EntityTracker;
@@ -34,7 +35,11 @@ public class CustomWorldServer extends WorldServer {
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
 
-    public CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, DimensionManager dimensionManager) {
+    @Getter
+    @Setter
+    private boolean ready = false;
+
+    CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, DimensionManager dimensionManager) {
         super(MinecraftServer.getServer(), dataManager, new PersistentCollection(dataManager), dataManager.getWorldData(), dimensionManager, MinecraftServer.getServer().methodProfiler, World.Environment.NORMAL, null);
         i_();
         this.slimeWorld = world;
@@ -46,7 +51,6 @@ public class CustomWorldServer extends WorldServer {
         worldData.setDifficulty(EnumDifficulty.getById(properties.getDifficulty()));
         worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
-        MinecraftServer.getServer().worldServer.put(dimension, this);
 
         this.pvpMode = properties.isPvp();
 
