@@ -26,6 +26,8 @@ import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
+import java.util.Locale;
+
 @Getter
 public class v1_14_R1SlimeNMS implements SlimeNMS {
 
@@ -83,7 +85,7 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
         }
 
         DimensionManager actualDimension = DimensionManager.a(0);
-        DimensionManager dimensionManager = DimensionManager.register(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
+        DimensionManager dimensionManager = DimensionManager.register(worldName.toLowerCase(Locale.ENGLISH), new DimensionManager(dimension, actualDimension.getSuffix(),
                 actualDimension.folder, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension));
         WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager);
 
