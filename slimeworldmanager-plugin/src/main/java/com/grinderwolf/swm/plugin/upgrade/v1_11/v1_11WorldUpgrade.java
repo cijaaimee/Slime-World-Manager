@@ -38,10 +38,14 @@ public class v1_11WorldUpgrade implements Upgrade {
         rename("Structure", "minecraft:structure_block");
         rename("EndGateway", "minecraft:end_gateway");
         rename("Control", "minecraft:command_block");
+        rename(null, "minecraft:bed"); // Patch for issue s#62
     }
 
     private static void rename(String oldName, String newName) {
-        oldToNewMap.put(oldName, newName);
+        if (oldName != null) {
+            oldToNewMap.put(oldName, newName);
+        }
+
         newToOldMap.put(newName, oldName);
     }
 
