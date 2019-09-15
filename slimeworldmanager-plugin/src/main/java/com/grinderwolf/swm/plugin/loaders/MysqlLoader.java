@@ -18,7 +18,7 @@ import java.util.List;
 public class MysqlLoader implements SlimeLoader {
 
     private static final String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS `worlds` (`id` INT NOT NULL AUTO_INCREMENT, " +
-            "`name` VARCHAR(255) UNIQUE, `world` MEDIUMBLOB, `locked` TINYINT(1), PRIMARY KEY(id));";
+            "`name` VARCHAR(255) UNIQUE, `world` MEDIUMBLOB, `locked` INT(11), PRIMARY KEY(id));";
     private static final String SELECT_WORLD_QUERY = "SELECT `world`, `locked` FROM `worlds` WHERE `name` = ?;";
     private static final String UPDATE_WORLD_QUERY = "INSERT INTO `worlds` (`name`, `world`, `locked`) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE `world` = ?;";
     private static final String UPDATE_LOCK_QUERY = "UPDATE `worlds` SET `locked` = ? WHERE `name` = ?;";
@@ -65,12 +65,14 @@ public class MysqlLoader implements SlimeLoader {
             }
 
             if (!readOnly) {
-                if (set.getBoolean("locked")) {
+                long lockedMillis = set.getLong("locked");
+
+                if (System.currentTimeMillis() - lockedMillis <= LoaderUtils.MAX_LOCK_TIME) {
                     throw new WorldInUseException(worldName);
                 }
 
                 try (PreparedStatement updateStatement = con.prepareStatement(UPDATE_LOCK_QUERY)) {
-                    updateStatement.setBoolean(1, true);
+                    updateStatement.setLong(1, System.currentTimeMillis());
                     updateStatement.setString(2, worldName);
                     updateStatement.executeUpdate();
                 }
@@ -98,16 +100,18 @@ public class MysqlLoader implements SlimeLoader {
     @Override
     public List<String> listWorlds() throws IOException {
         List<String> worldList = new ArrayList<>();
+
         try (Connection con = source.getConnection();
              PreparedStatement statement = con.prepareStatement(LIST_WORLDS_QUERY)) {
             ResultSet set = statement.executeQuery();
 
-            while(set.next()) {
+            while (set.next()) {
                 worldList.add(set.getString("name"));
             }
         } catch (SQLException ex) {
             throw new IOException(ex);
         }
+
         return worldList;
     }
 
@@ -122,7 +126,7 @@ public class MysqlLoader implements SlimeLoader {
 
             if (lock) {
                 try (PreparedStatement updateStatement = con.prepareStatement(UPDATE_LOCK_QUERY)) {
-                    updateStatement.setBoolean(1, true);
+                    updateStatement.setLong(1, System.currentTimeMillis());
                     updateStatement.setString(2, worldName);
                     updateStatement.executeUpdate();
                 }
@@ -136,7 +140,7 @@ public class MysqlLoader implements SlimeLoader {
     public void unlockWorld(String worldName) throws IOException, UnknownWorldException {
         try (Connection con = source.getConnection();
              PreparedStatement statement = con.prepareStatement(UPDATE_LOCK_QUERY)) {
-            statement.setBoolean(1, false);
+            statement.setLong(1, 0L);
             statement.setString(2, worldName);
 
             if (statement.executeUpdate() == 0) {
@@ -158,7 +162,7 @@ public class MysqlLoader implements SlimeLoader {
                 throw new UnknownWorldException(worldName);
             }
 
-            return set.getBoolean("locked");
+            return System.currentTimeMillis() - set.getLong("locked") <= LoaderUtils.MAX_LOCK_TIME;
         } catch (SQLException ex) {
             throw new IOException(ex);
         }

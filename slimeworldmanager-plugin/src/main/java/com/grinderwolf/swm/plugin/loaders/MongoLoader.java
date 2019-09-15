@@ -61,6 +61,16 @@ public class MongoLoader implements SlimeLoader {
                 break;
             }
         }
+
+        // Old world lock importing
+        MongoCursor<Document> documents = mongoCollection.find(Filters.or(Filters.eq("locked", true),
+                Filters.eq("locked", false))).cursor();
+
+        if (documents.hasNext()) {
+            while (documents.hasNext()) {
+                // TODO update
+            }
+        }
     }
 
     @Override
@@ -75,11 +85,13 @@ public class MongoLoader implements SlimeLoader {
             }
 
             if (!readOnly) {
-                if (worldDoc.getBoolean("locked")) {
+                long lockedMillis = worldDoc.getLong("locked");
+
+                if (System.currentTimeMillis() - lockedMillis <= LoaderUtils.MAX_LOCK_TIME) {
                     throw new WorldInUseException(worldName);
                 }
 
-                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", true));
+                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", System.currentTimeMillis()));
             }
 
             GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection);
@@ -114,7 +126,7 @@ public class MongoLoader implements SlimeLoader {
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
             MongoCursor<Document> documents = mongoCollection.find().cursor();
 
-            while(documents.hasNext()) {
+            while (documents.hasNext()) {
                 worldList.add(documents.next().getString("name"));
             }
         } catch (MongoException ex) {
@@ -140,10 +152,12 @@ public class MongoLoader implements SlimeLoader {
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
             Document worldDoc = mongoCollection.find(Filters.eq("name", worldName)).first();
 
+            long lockMillis = lock ? System.currentTimeMillis() : 0L;
+
             if (worldDoc == null) {
-                mongoCollection.insertOne(new Document().append("name", worldName).append("locked", lock));
-            } else if (!worldDoc.getBoolean("locked") && lock) {
-                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", true));
+                mongoCollection.insertOne(new Document().append("name", worldName).append("locked", lockMillis));
+            } else if (System.currentTimeMillis() - worldDoc.getLong("locked") > LoaderUtils.MAX_LOCK_TIME && lock) {
+                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", lockMillis));
             }
         } catch (MongoException ex) {
             throw new IOException(ex);
@@ -155,7 +169,7 @@ public class MongoLoader implements SlimeLoader {
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
-            UpdateResult result = mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", false));
+            UpdateResult result = mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", 0L));
 
             if (result.getMatchedCount() == 0) {
                 throw new UnknownWorldException(worldName);
@@ -176,7 +190,7 @@ public class MongoLoader implements SlimeLoader {
                 throw new UnknownWorldException(worldName);
             }
 
-            return worldDoc.getBoolean("locked");
+            return System.currentTimeMillis() - worldDoc.getLong("locked") <= LoaderUtils.MAX_LOCK_TIME;
         } catch (MongoException ex) {
             throw new IOException(ex);
         }

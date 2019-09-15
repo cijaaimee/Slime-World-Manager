@@ -42,6 +42,9 @@ import java.util.Map;
 
 public class LoaderUtils {
 
+    public static final long MAX_LOCK_TIME = 300000L; // Max time difference between current time millis and world lock
+    public static final long LOCK_INTERVAL = 60000L;
+
     private static Map<String, SlimeLoader> loaderMap = new HashMap<>();
 
     public static void registerLoaders() {
@@ -53,7 +56,6 @@ public class LoaderUtils {
 
         // Mysql loader
         DatasourcesConfig.MysqlConfig mysqlConfig = config.getMysqlConfig();
-
         if (mysqlConfig.isEnabled()) {
             try {
                 registerLoader("mysql", new MysqlLoader(mysqlConfig));

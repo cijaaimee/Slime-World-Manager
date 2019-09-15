@@ -97,11 +97,10 @@ public class FileLoader implements SlimeLoader {
     @Override
     public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException {
         RandomAccessFile worldFile = worldFiles.get(worldName);
-        boolean closeOnFinish = false;
+        boolean tempFile = worldFile == null;
 
-        if (worldFile == null) {
+        if (tempFile) {
             worldFile = new RandomAccessFile(new File(worldDir, worldName + ".slime"), "rw");
-            closeOnFinish = true;
         }
 
         worldFile.seek(0); // Make sure we're at the start of the file
@@ -118,32 +117,9 @@ public class FileLoader implements SlimeLoader {
             }
         }
 
-        if (closeOnFinish) {
+        if (tempFile) {
             worldFile.close();
         }
-
-        // Delete old backup
-        /*File lastBackup = new File(worldDir, worldName + ".slime_old");
-
-        if (lastBackup.exists()) {
-            lastBackup.delete();
-        }
-
-        // Rename the world to to the backup file in case something goes wrong
-        File file = new File(worldDir, worldName + ".slime");
-
-        if (file.exists()) {
-            file.renameTo(lastBackup);
-        }
-
-        // Save the world file
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw")) {
-            randomAccessFile.write(serializedWorld);
-            lastBackup.delete();
-
-            // Lock the file again
-            worldLocks.put(worldName, randomAccessFile.getChannel().tryLock());
-        }*/
     }
 
     @Override
