@@ -1,4 +1,4 @@
-package com.grinderwolf.swm.plugin.loaders;
+package com.grinderwolf.swm.plugin.loaders.file;
 
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
@@ -27,7 +27,7 @@ public class FileLoader implements SlimeLoader {
     private final Map<String, RandomAccessFile> worldFiles = new HashMap<>();
     private final File worldDir;
 
-    FileLoader(File worldDir) {
+    public FileLoader(File worldDir) {
         this.worldDir = worldDir;
 
         if (worldDir.exists() && !worldDir.isDirectory()) {
@@ -46,7 +46,6 @@ public class FileLoader implements SlimeLoader {
 
         RandomAccessFile file = worldFiles.computeIfAbsent(worldName, (world) -> {
 
-            System.out.println("Generating new RandomAccessFile");
             try {
                 return new RandomAccessFile(new File(worldDir, worldName + ".slime"), "rw");
             } catch (FileNotFoundException ex) {
