@@ -1,5 +1,6 @@
 package com.grinderwolf.swm.plugin.loaders.mongo;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
@@ -27,9 +28,21 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class MongoLoader extends UpdatableLoader {
+
+    // World locking executor service
+    private static final ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool(2, new ThreadFactoryBuilder()
+            .setNameFormat("SWM MongoDB Lock Pool Thread #%1$d").build());
+
+    private final Map<String, ScheduledFuture> lockedWorlds = new HashMap<>();
 
     private final MongoClient client;
     private final String database;
@@ -111,7 +124,7 @@ public class MongoLoader extends UpdatableLoader {
                     throw new WorldInUseException(worldName);
                 }
 
-                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", System.currentTimeMillis()));
+                updateLock(worldName, true);
             }
 
             GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection);
@@ -121,6 +134,21 @@ public class MongoLoader extends UpdatableLoader {
             return stream.toByteArray();
         } catch (MongoException ex) {
             throw new IOException(ex);
+        }
+    }
+
+    private void updateLock(String worldName, boolean forceSchedule) {
+        try {
+            MongoDatabase mongoDatabase = client.getDatabase(database);
+            MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
+            mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", System.currentTimeMillis()));
+        } catch (MongoException ex) {
+            Logging.error("Failed to update the lock for world " + worldName + ":");
+            ex.printStackTrace();
+        }
+
+        if (forceSchedule || lockedWorlds.containsKey(worldName)) { // Only schedule another update if the world is still on the map
+            lockedWorlds.put(worldName, SERVICE.schedule(() -> updateLock(worldName, false), LoaderUtils.LOCK_INTERVAL, TimeUnit.MILLISECONDS));
         }
     }
 
@@ -177,7 +205,7 @@ public class MongoLoader extends UpdatableLoader {
             if (worldDoc == null) {
                 mongoCollection.insertOne(new Document().append("name", worldName).append("locked", lockMillis));
             } else if (System.currentTimeMillis() - worldDoc.getLong("locked") > LoaderUtils.MAX_LOCK_TIME && lock) {
-                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", lockMillis));
+                updateLock(worldName, true);
             }
         } catch (MongoException ex) {
             throw new IOException(ex);
@@ -186,6 +214,12 @@ public class MongoLoader extends UpdatableLoader {
 
     @Override
     public void unlockWorld(String worldName) throws IOException, UnknownWorldException {
+        ScheduledFuture future = lockedWorlds.remove(worldName);
+
+        if (future != null) {
+            future.cancel(false);
+        }
+
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
@@ -201,6 +235,10 @@ public class MongoLoader extends UpdatableLoader {
 
     @Override
     public boolean isWorldLocked(String worldName) throws IOException, UnknownWorldException {
+        if (lockedWorlds.containsKey(worldName)) {
+            return true;
+        }
+
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
@@ -218,6 +256,12 @@ public class MongoLoader extends UpdatableLoader {
 
     @Override
     public void deleteWorld(String worldName) throws IOException, UnknownWorldException {
+        ScheduledFuture future = lockedWorlds.remove(worldName);
+
+        if (future != null) {
+            future.cancel(false);
+        }
+
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection);

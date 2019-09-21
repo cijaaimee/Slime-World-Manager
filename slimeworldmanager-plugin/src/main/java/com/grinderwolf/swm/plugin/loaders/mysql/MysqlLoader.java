@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class MysqlLoader extends UpdatableLoader {
 
     // World locking executor service
-    private static final ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool(4, new ThreadFactoryBuilder()
+    private static final ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool(2, new ThreadFactoryBuilder()
             .setNameFormat("SWM MySQL Lock Pool Thread #%1$d").build());
 
     private static final int CURRENT_DB_VERSION = 1;
