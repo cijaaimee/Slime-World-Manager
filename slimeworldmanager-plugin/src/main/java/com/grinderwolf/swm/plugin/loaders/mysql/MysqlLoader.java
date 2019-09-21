@@ -1,9 +1,11 @@
-package com.grinderwolf.swm.plugin.loaders;
+package com.grinderwolf.swm.plugin.loaders.mysql;
 
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
-import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
+import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
+import com.grinderwolf.swm.plugin.loaders.UpdatableLoader;
+import com.grinderwolf.swm.plugin.log.Logging;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -15,10 +17,22 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MysqlLoader implements SlimeLoader {
+public class MysqlLoader extends UpdatableLoader {
 
-    private static final String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS `worlds` (`id` INT NOT NULL AUTO_INCREMENT, " +
-            "`name` VARCHAR(255) UNIQUE, `world` MEDIUMBLOB, `locked` INT(11), PRIMARY KEY(id));";
+    private static final int CURRENT_DB_VERSION = 1;
+
+    // Database version handling queries
+    private static final String CREATE_VERSIONING_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS `database_version` (`id` INT NOT NULL AUTO_INCREMENT, " +
+            "`version` INT(11), PRIMARY KEY(id));";
+    private static final String INSERT_VERSION_QUERY = "INSERT INTO `database_version` (`id`, `version`) VALUES (1, ?) ON DUPLICATE KEY UPDATE `id` = ?;";
+    private static final String GET_VERSION_QUERY = "SELECT `version` FROM `database_version` WHERE `id` = 1;";
+
+    // v1 update query
+    private static final String ALTER_LOCKED_COLUMN_QUERY = "ALTER TABLE `smw`.`worlds` CHANGE COLUMN `locked` `locked` BIGINT NOT NULL DEFAULT 0;";
+
+    // World handling queries
+    private static final String CREATE_WORLDS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS `worlds` (`id` INT NOT NULL AUTO_INCREMENT, " +
+            "`name` VARCHAR(255) UNIQUE, `world` MEDIUMBLOB, `locked` BIGINT, PRIMARY KEY(id));";
     private static final String SELECT_WORLD_QUERY = "SELECT `world`, `locked` FROM `worlds` WHERE `name` = ?;";
     private static final String UPDATE_WORLD_QUERY = "INSERT INTO `worlds` (`name`, `world`, `locked`) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE `world` = ?;";
     private static final String UPDATE_LOCK_QUERY = "UPDATE `worlds` SET `locked` = ? WHERE `name` = ?;";
@@ -27,7 +41,7 @@ public class MysqlLoader implements SlimeLoader {
 
     private final HikariDataSource source;
 
-    MysqlLoader(DatasourcesConfig.MysqlConfig config) throws SQLException {
+    public MysqlLoader(DatasourcesConfig.MysqlConfig config) throws SQLException {
         HikariConfig hikariConfig = new HikariConfig();
 
         hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabase() + "?autoReconnect=true&allowMultiQueries=true");
@@ -47,9 +61,59 @@ public class MysqlLoader implements SlimeLoader {
 
         source = new HikariDataSource(hikariConfig);
 
-        try (Connection con = source.getConnection();
-             PreparedStatement statement = con.prepareStatement(CREATE_TABLE_QUERY)) {
-            statement.execute();
+        try (Connection con = source.getConnection()) {
+            // Create worlds table
+            try (PreparedStatement statement = con.prepareStatement(CREATE_WORLDS_TABLE_QUERY)) {
+                statement.execute();
+            }
+
+            // Create versioning table
+            try (PreparedStatement statement = con.prepareStatement(CREATE_VERSIONING_TABLE_QUERY)) {
+                statement.execute();
+            }
+        }
+    }
+
+    @Override
+    public void update() throws IOException, NewerDatabaseException {
+        try (Connection con = source.getConnection()) {
+            int version;
+
+            try (PreparedStatement statement = con.prepareStatement(GET_VERSION_QUERY);
+                 ResultSet set = statement.executeQuery()) {
+                version = set.next() ? set.getInt(1) : -1;
+            }
+
+            if (version > CURRENT_DB_VERSION) {
+                throw new NewerDatabaseException(CURRENT_DB_VERSION, version);
+            }
+
+            if (version < CURRENT_DB_VERSION) {
+                Logging.warning("Your SWM MySQL database is outdated. The update process will start in 10 seconds.");
+                Logging.warning("Note that this update might make your database incompatible with older SWM versions.");
+                Logging.warning("Make sure no other servers with older SWM versions are using this database.");
+                Logging.warning("Shut down the server to prevent your database from being updated.");
+
+                try {
+                    Thread.sleep(10000L);
+                } catch (InterruptedException ignored) {
+
+                }
+
+                // Update to v1: alter locked column to store a long
+                try (PreparedStatement statement = con.prepareStatement(ALTER_LOCKED_COLUMN_QUERY)) {
+                    statement.executeUpdate();
+                }
+
+                // Insert/update database version table
+                try (PreparedStatement statement = con.prepareStatement(INSERT_VERSION_QUERY)) {
+                    statement.setInt(1, CURRENT_DB_VERSION);
+                    statement.setInt(2, CURRENT_DB_VERSION);
+                    statement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new IOException(ex);
         }
     }
 

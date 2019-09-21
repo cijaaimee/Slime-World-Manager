@@ -22,6 +22,9 @@ import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
+import com.grinderwolf.swm.plugin.loaders.file.FileLoader;
+import com.grinderwolf.swm.plugin.loaders.mongo.MongoLoader;
+import com.grinderwolf.swm.plugin.loaders.mysql.MysqlLoader;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.mongodb.MongoException;
 
@@ -85,6 +88,20 @@ public class LoaderUtils {
     public static void registerLoader(String dataSource, SlimeLoader loader) {
         if (loaderMap.containsKey(dataSource)) {
             throw new IllegalArgumentException("Data source " + dataSource + " already has a declared loader!");
+        }
+
+        if (loader instanceof UpdatableLoader) {
+            try {
+                ((UpdatableLoader) loader).update();
+            } catch (UpdatableLoader.NewerDatabaseException e) {
+                Logging.error("Data source " + dataSource + " version is " + e.getDatabaseVersion() + ", while" +
+                        " this SWM version only supports up to version " + e.getCurrentVersion() + ".");
+                return;
+            } catch (IOException ex) {
+                Logging.error("Failed to check if data source " + dataSource + " is updated:");
+                ex.printStackTrace();
+                return;
+            }
         }
 
         loaderMap.put(dataSource, loader);
