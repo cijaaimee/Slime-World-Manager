@@ -1,9 +1,10 @@
-package com.grinderwolf.swm.plugin.loaders;
+package com.grinderwolf.swm.plugin.loaders.mongo;
 
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
-import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
+import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
+import com.grinderwolf.swm.plugin.loaders.UpdatableLoader;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.mongodb.MongoException;
 import com.mongodb.MongoNamespace;
@@ -28,13 +29,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MongoLoader implements SlimeLoader {
+public class MongoLoader extends UpdatableLoader {
 
     private final MongoClient client;
     private final String database;
     private final String collection;
 
-    MongoLoader(DatasourcesConfig.MongoDBConfig config) throws MongoException {
+    public MongoLoader(DatasourcesConfig.MongoDBConfig config) throws MongoException {
         this.database = config.getDatabase();
         this.collection = config.getCollection();
 
@@ -47,6 +48,11 @@ public class MongoLoader implements SlimeLoader {
         MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
 
         mongoCollection.createIndex(Indexes.ascending("name"), new IndexOptions().unique(true));
+    }
+
+    @Override
+    public void update() {
+        MongoDatabase mongoDatabase = client.getDatabase(database);
 
         // Old GridFS importing
         for (String collectionName : mongoDatabase.listCollectionNames()) {
@@ -62,13 +68,27 @@ public class MongoLoader implements SlimeLoader {
             }
         }
 
+        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
+
         // Old world lock importing
         MongoCursor<Document> documents = mongoCollection.find(Filters.or(Filters.eq("locked", true),
                 Filters.eq("locked", false))).cursor();
 
         if (documents.hasNext()) {
+            Logging.warning("Your SWM MongoDB database is outdated. The update process will start in 10 seconds.");
+            Logging.warning("Note that this update will make your database incompatible with older SWM versions.");
+            Logging.warning("Make sure no other servers with older SWM versions are using this database.");
+            Logging.warning("Shut down the server to prevent your database from being updated.");
+
+            try {
+                Thread.sleep(10000L);
+            } catch (InterruptedException ignored) {
+
+            }
+
             while (documents.hasNext()) {
-                // TODO update
+                String worldName = documents.next().getString("name");
+                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", 0L));
             }
         }
     }
