@@ -3,6 +3,7 @@ package com.grinderwolf.swm.plugin.update;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.grinderwolf.swm.plugin.SWMPlugin;
+import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.log.Logging;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -64,7 +65,7 @@ public class Updater implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        if (outdatedVersion && player.hasPermission("swm.updater")) {
+        if (outdatedVersion && ConfigManager.getMainConfig().getUpdaterOptions().isMessageEnabled() && player.hasPermission("swm.updater")) {
             player.sendMessage(Logging.COMMAND_PREFIX + "This server is running an outdated of Slime World Manager. Please download the latest version at SpigotMC.org.");
         }
     }
