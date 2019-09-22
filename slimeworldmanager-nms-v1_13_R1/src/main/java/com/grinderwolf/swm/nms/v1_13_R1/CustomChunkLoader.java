@@ -275,8 +275,30 @@ public class CustomChunkLoader implements IChunkLoader {
             return; // Not saving protochunks, only full chunks
         }
 
-        SlimeChunk slimeChunk = Converter.convertChunk((Chunk) chunkAccess);
-        this.world.updateChunk(slimeChunk);
+        boolean empty = true;
+
+        for (int sectionId = 0; sectionId < chunkAccess.getSections().length; sectionId++) {
+            ChunkSection section = chunkAccess.getSections()[sectionId];
+
+            if (section != null) {
+                section.recalcBlockCounts();
+
+                if (!section.a()) {
+                    empty = false;
+                    break;
+                }
+            }
+        }
+
+        long index = (((long) chunkAccess.getPos().z) * Integer.MAX_VALUE + ((long) chunkAccess.getPos().x));
+
+        synchronized (chunks) {
+            if (empty) {
+                chunks.remove(index);
+            } else {
+                chunks.putIfAbsent(index, (Chunk) chunkAccess);
+            }
+        }
     }
 
     // Save all chunks
