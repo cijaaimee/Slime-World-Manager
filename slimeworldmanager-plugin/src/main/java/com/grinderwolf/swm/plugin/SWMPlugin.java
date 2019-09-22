@@ -207,7 +207,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
                     } else if (ex instanceof NewerFormatException) {
                         message = "world is serialized in a newer Slime Format version (" + ex.getMessage() + ") that SWM does not understand.";
                     } else if (ex instanceof WorldInUseException) {
-                        message = "world is in use! If you are think this is a mistake, please wait some time and try again.";
+                        message = "world is in use! If you think this is a mistake, please wait some time and try again.";
                     } else if (ex instanceof CorruptedWorldException) {
                         message = "world seems to be corrupted.";
                     } else {
