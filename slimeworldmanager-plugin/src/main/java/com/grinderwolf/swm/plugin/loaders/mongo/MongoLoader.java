@@ -1,9 +1,11 @@
-package com.grinderwolf.swm.plugin.loaders;
+package com.grinderwolf.swm.plugin.loaders.mongo;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.exceptions.WorldInUseException;
-import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
+import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
+import com.grinderwolf.swm.plugin.loaders.UpdatableLoader;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.mongodb.MongoException;
 import com.mongodb.MongoNamespace;
@@ -26,15 +28,27 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-public class MongoLoader implements SlimeLoader {
+public class MongoLoader extends UpdatableLoader {
+
+    // World locking executor service
+    private static final ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool(2, new ThreadFactoryBuilder()
+            .setNameFormat("SWM MongoDB Lock Pool Thread #%1$d").build());
+
+    private final Map<String, ScheduledFuture> lockedWorlds = new HashMap<>();
 
     private final MongoClient client;
     private final String database;
     private final String collection;
 
-    MongoLoader(DatasourcesConfig.MongoDBConfig config) throws MongoException {
+    public MongoLoader(DatasourcesConfig.MongoDBConfig config) throws MongoException {
         this.database = config.getDatabase();
         this.collection = config.getCollection();
 
@@ -47,6 +61,11 @@ public class MongoLoader implements SlimeLoader {
         MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
 
         mongoCollection.createIndex(Indexes.ascending("name"), new IndexOptions().unique(true));
+    }
+
+    @Override
+    public void update() {
+        MongoDatabase mongoDatabase = client.getDatabase(database);
 
         // Old GridFS importing
         for (String collectionName : mongoDatabase.listCollectionNames()) {
@@ -59,6 +78,30 @@ public class MongoLoader implements SlimeLoader {
                 Logging.info("MongoDB database updated!");
 
                 break;
+            }
+        }
+
+        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
+
+        // Old world lock importing
+        MongoCursor<Document> documents = mongoCollection.find(Filters.or(Filters.eq("locked", true),
+                Filters.eq("locked", false))).cursor();
+
+        if (documents.hasNext()) {
+            Logging.warning("Your SWM MongoDB database is outdated. The update process will start in 10 seconds.");
+            Logging.warning("Note that this update will make your database incompatible with older SWM versions.");
+            Logging.warning("Make sure no other servers with older SWM versions are using this database.");
+            Logging.warning("Shut down the server to prevent your database from being updated.");
+
+            try {
+                Thread.sleep(10000L);
+            } catch (InterruptedException ignored) {
+
+            }
+
+            while (documents.hasNext()) {
+                String worldName = documents.next().getString("name");
+                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", 0L));
             }
         }
     }
@@ -75,11 +118,13 @@ public class MongoLoader implements SlimeLoader {
             }
 
             if (!readOnly) {
-                if (worldDoc.getBoolean("locked")) {
+                long lockedMillis = worldDoc.getLong("locked");
+
+                if (System.currentTimeMillis() - lockedMillis <= LoaderUtils.MAX_LOCK_TIME) {
                     throw new WorldInUseException(worldName);
                 }
 
-                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", true));
+                updateLock(worldName, true);
             }
 
             GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection);
@@ -89,6 +134,21 @@ public class MongoLoader implements SlimeLoader {
             return stream.toByteArray();
         } catch (MongoException ex) {
             throw new IOException(ex);
+        }
+    }
+
+    private void updateLock(String worldName, boolean forceSchedule) {
+        try {
+            MongoDatabase mongoDatabase = client.getDatabase(database);
+            MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
+            mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", System.currentTimeMillis()));
+        } catch (MongoException ex) {
+            Logging.error("Failed to update the lock for world " + worldName + ":");
+            ex.printStackTrace();
+        }
+
+        if (forceSchedule || lockedWorlds.containsKey(worldName)) { // Only schedule another update if the world is still on the map
+            lockedWorlds.put(worldName, SERVICE.schedule(() -> updateLock(worldName, false), LoaderUtils.LOCK_INTERVAL, TimeUnit.MILLISECONDS));
         }
     }
 
@@ -114,7 +174,7 @@ public class MongoLoader implements SlimeLoader {
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
             MongoCursor<Document> documents = mongoCollection.find().cursor();
 
-            while(documents.hasNext()) {
+            while (documents.hasNext()) {
                 worldList.add(documents.next().getString("name"));
             }
         } catch (MongoException ex) {
@@ -140,10 +200,12 @@ public class MongoLoader implements SlimeLoader {
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
             Document worldDoc = mongoCollection.find(Filters.eq("name", worldName)).first();
 
+            long lockMillis = lock ? System.currentTimeMillis() : 0L;
+
             if (worldDoc == null) {
-                mongoCollection.insertOne(new Document().append("name", worldName).append("locked", lock));
-            } else if (!worldDoc.getBoolean("locked") && lock) {
-                mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", true));
+                mongoCollection.insertOne(new Document().append("name", worldName).append("locked", lockMillis));
+            } else if (System.currentTimeMillis() - worldDoc.getLong("locked") > LoaderUtils.MAX_LOCK_TIME && lock) {
+                updateLock(worldName, true);
             }
         } catch (MongoException ex) {
             throw new IOException(ex);
@@ -152,10 +214,16 @@ public class MongoLoader implements SlimeLoader {
 
     @Override
     public void unlockWorld(String worldName) throws IOException, UnknownWorldException {
+        ScheduledFuture future = lockedWorlds.remove(worldName);
+
+        if (future != null) {
+            future.cancel(false);
+        }
+
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
-            UpdateResult result = mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", false));
+            UpdateResult result = mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", 0L));
 
             if (result.getMatchedCount() == 0) {
                 throw new UnknownWorldException(worldName);
@@ -167,6 +235,10 @@ public class MongoLoader implements SlimeLoader {
 
     @Override
     public boolean isWorldLocked(String worldName) throws IOException, UnknownWorldException {
+        if (lockedWorlds.containsKey(worldName)) {
+            return true;
+        }
+
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
@@ -176,7 +248,7 @@ public class MongoLoader implements SlimeLoader {
                 throw new UnknownWorldException(worldName);
             }
 
-            return worldDoc.getBoolean("locked");
+            return System.currentTimeMillis() - worldDoc.getLong("locked") <= LoaderUtils.MAX_LOCK_TIME;
         } catch (MongoException ex) {
             throw new IOException(ex);
         }
@@ -184,6 +256,12 @@ public class MongoLoader implements SlimeLoader {
 
     @Override
     public void deleteWorld(String worldName) throws IOException, UnknownWorldException {
+        ScheduledFuture future = lockedWorlds.remove(worldName);
+
+        if (future != null) {
+            future.cancel(false);
+        }
+
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection);
