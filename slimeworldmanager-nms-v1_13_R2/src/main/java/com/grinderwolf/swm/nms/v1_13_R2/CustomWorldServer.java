@@ -54,6 +54,10 @@ public class CustomWorldServer extends WorldServer {
 
         this.pvpMode = properties.isPvp();
 
+        // Load all chunks
+        CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
+        chunkLoader.loadAllChunks(this);
+
         // Disable auto save period as it's constantly saving the world
         if (v1_13_R2SlimeNMS.IS_PAPER) {
             this.paperConfig.autoSavePeriod = 0;
