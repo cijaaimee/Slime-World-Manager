@@ -20,33 +20,45 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class CustomChunkLoader implements IChunkLoader {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
 
+    private final Map<Long, Chunk> chunks = new HashMap<>();
     private final CraftSlimeWorld world;
 
-    // Load chunk
-    @Override
-    public Chunk a(World nmsWorld, int x, int z) {
+    void loadAllChunks(CustomWorldServer server) {
+        for (SlimeChunk chunk : world.getChunks().values()) {
+            Chunk nmsChunk = createChunk(server, chunk);
+
+            long index = (((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()));
+            chunks.put(index, nmsChunk);
+        }
+
+        // Now that we've converted every SlimeChunk to its nms counterpart, we can empty the chunk list
+        world.clearChunks();
+    }
+
+    Chunk[] getChunks() {
+        synchronized (chunks) {
+            return chunks.values().toArray(new Chunk[0]);
+        }
+    }
+    private Chunk createChunk(CustomWorldServer server, SlimeChunk chunk) {
+        int x = chunk.getX();
+        int z = chunk.getZ();
+
         LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + world.getName());
 
-        SlimeChunk chunk = world.getChunk(x, z);
-        Chunk nmsChunk = new Chunk(nmsWorld, x, z);
+        Chunk nmsChunk = new Chunk(server, x, z);
 
         nmsChunk.d(true);
         nmsChunk.e(true);
-
-        if (chunk == null) {
-            long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
-
-            LOGGER.debug("Failed to load chunk (" + x + ", " + z + ") (" + index + ") on world " + world.getName() + ": chunk does not exist. Generating empty one...");
-
-            return nmsChunk;
-        }
 
         CompoundTag heightMapsCompound = chunk.getHeightMaps();
         int[] heightMap = heightMapsCompound.getIntArrayValue("heightMap").get();
@@ -94,7 +106,7 @@ public class CustomChunkLoader implements IChunkLoader {
 
         if (tileEntities != null) {
             for (CompoundTag tag : tileEntities) {
-                TileEntity entity = TileEntity.create(nmsWorld, (NBTTagCompound) Converter.convertTag(tag));
+                TileEntity entity = TileEntity.create(server, (NBTTagCompound) Converter.convertTag(tag));
 
                 if (entity != null) {
                     nmsChunk.a(entity);
@@ -112,7 +124,7 @@ public class CustomChunkLoader implements IChunkLoader {
 
         if (entities != null) {
             for (CompoundTag tag : entities) {
-                loadEntity(tag, nmsWorld, nmsChunk);
+                loadEntity(tag, server, nmsChunk);
             }
         }
 
@@ -154,10 +166,53 @@ public class CustomChunkLoader implements IChunkLoader {
         return entity;
     }
 
+    // Load chunk
+    @Override
+    public Chunk a(World nmsWorld, int x, int z) {
+        long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
+
+        Chunk chunk;
+
+        synchronized (chunks) {
+            chunk = chunks.get(index);
+        }
+
+        if (chunk == null) {
+            chunk = new Chunk(nmsWorld, x, z);
+
+            chunk.d(true);
+            chunk.e(true);
+        }
+
+        return chunk;
+    }
+
     @Override
     public void saveChunk(World world, Chunk chunk, boolean unloaded) {
-        SlimeChunk slimeChunk = Converter.convertChunk(chunk);
-        this.world.updateChunk(slimeChunk);
+        boolean empty = true;
+
+        for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
+            ChunkSection section = chunk.getSections()[sectionId];
+
+            if (section != null) {
+                section.recalcBlockCounts();
+
+                if (!section.a()) {
+                    empty = false;
+                    break;
+                }
+            }
+        }
+
+        long index = (((long) chunk.locZ) * Integer.MAX_VALUE + ((long) chunk.locX));
+
+        synchronized (chunks) {
+            if (empty) {
+                chunks.remove(index);
+            } else {
+                chunks.putIfAbsent(index, chunk);
+            }
+        }
     }
 
 
@@ -168,7 +223,7 @@ public class CustomChunkLoader implements IChunkLoader {
     }
 
     @Override
-    public boolean chunkExists(int i, int i1) {
+    public boolean chunkExists(int x, int z) {
         return true;
     }
 
