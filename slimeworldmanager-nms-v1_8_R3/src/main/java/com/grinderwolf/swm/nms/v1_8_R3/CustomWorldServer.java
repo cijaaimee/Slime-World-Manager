@@ -90,6 +90,8 @@ public class CustomWorldServer extends WorldServer {
         synchronized (saveLock) { // Don't want to save the slimeWorld from multiple threads simultaneously
             try {
                 LOGGER.info("Saving world " + slimeWorld.getName() + "...");
+                long start = System.currentTimeMillis();
+
                 CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
 
                 for (Chunk nmsChunk : chunkLoader.getChunks()) {
@@ -97,7 +99,6 @@ public class CustomWorldServer extends WorldServer {
                     slimeWorld.updateChunk(chunk);
                 }
 
-                long start = System.currentTimeMillis();
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
 
