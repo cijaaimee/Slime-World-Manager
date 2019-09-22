@@ -81,15 +81,6 @@ Permission required: `swm.migrate`<br>
 Usage: `/swm migrate <world> <new-data-source>`<br>
 Description: Transfers a world from the current data source it's stored in to the specified.
 
-### /swm unlock
-Permission required: `swm.unlockworld`<br>
-Usage: `/swm unlock <world> [data-source]`<br>
-Description: Removes the lock from a world, so it can be accessed without read-only mode.
-
-When loading a world without read-only mode enabled, SWM locks the world so no other server can load it at the same time, to prevent world corruption. However, if the server crashes, there is a possibility that this lock is never deleted.
-
-**Note that you must only use this command when SWM tells you to, and your world might get corrupted if otherwise.** To make sure you are not doing this by mistake, you'll have to type the command twice.
-
 ### /swm delete
 Permission required: `swm.deleteworld`<br>
 Usage: `/swm delete <world> [data-source]`<br>
