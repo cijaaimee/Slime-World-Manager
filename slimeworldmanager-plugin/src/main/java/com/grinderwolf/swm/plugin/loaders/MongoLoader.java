@@ -142,7 +142,7 @@ public class MongoLoader implements SlimeLoader {
 
             if (worldDoc == null) {
                 mongoCollection.insertOne(new Document().append("name", worldName).append("locked", lock));
-            } else if (!worldDoc.getBoolean("lock") && lock) {
+            } else if (!worldDoc.getBoolean("locked") && lock) {
                 mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", true));
             }
         } catch (MongoException ex) {

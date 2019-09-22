@@ -33,7 +33,7 @@ import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.update.Updater;
 import com.grinderwolf.swm.plugin.upgrade.WorldUpgrader;
-import com.grinderwolf.swm.plugin.world.WorldImporter;
+import com.grinderwolf.swm.plugin.world.importer.WorldImporter;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -127,7 +127,10 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         getCommand("swm").setExecutor(new CommandManager());
         getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
-        getServer().getPluginManager().registerEvents(new Updater(), this);
+
+        if (ConfigManager.getMainConfig().getUpdaterOptions().isEnabled()) {
+            getServer().getPluginManager().registerEvents(new Updater(), this);
+        }
 
         if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
             try {

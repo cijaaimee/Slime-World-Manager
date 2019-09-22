@@ -82,13 +82,19 @@ public class CustomChunkLoader implements IChunkLoader {
                 LOGGER.debug("Blocks:");
                 LOGGER.debug(blocks);
                 LOGGER.debug("Block light array:");
-                LOGGER.debug(slimeSection.getBlockLight().getBacking());
+                LOGGER.debug(slimeSection.getBlockLight() != null ? slimeSection.getBlockLight().getBacking() : "Not present");
                 LOGGER.debug("Sky light array:");
-                LOGGER.debug(slimeSection.getSkyLight().getBacking());
+                LOGGER.debug(slimeSection.getSkyLight() != null ? slimeSection.getSkyLight().getBacking() : "Not present");
 
                 section.getBlocks().a(blocks, Converter.convertArray(data), new net.minecraft.server.v1_11_R1.NibbleArray());
-                section.a(Converter.convertArray(slimeSection.getBlockLight()));
-                section.b(Converter.convertArray(slimeSection.getSkyLight()));
+
+                if (slimeSection.getBlockLight() != null) {
+                    section.a(Converter.convertArray(slimeSection.getBlockLight()));
+                }
+
+                if (slimeSection.getSkyLight() != null) {
+                    section.b(Converter.convertArray(slimeSection.getSkyLight()));
+                }
 
                 section.recalcBlockCounts();
                 sections[sectionId] = section;

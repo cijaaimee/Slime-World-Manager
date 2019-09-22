@@ -18,7 +18,7 @@ import java.util.List;
 public class MysqlLoader implements SlimeLoader {
 
     private static final String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS `worlds` (`id` INT NOT NULL AUTO_INCREMENT, " +
-            "`name` VARCHAR(256) UNIQUE, `world` MEDIUMBLOB, `locked` TINYINT(1), PRIMARY KEY(id));";
+            "`name` VARCHAR(255) UNIQUE, `world` MEDIUMBLOB, `locked` TINYINT(1), PRIMARY KEY(id));";
     private static final String SELECT_WORLD_QUERY = "SELECT `world`, `locked` FROM `worlds` WHERE `name` = ?;";
     private static final String UPDATE_WORLD_QUERY = "INSERT INTO `worlds` (`name`, `world`, `locked`) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE `world` = ?;";
     private static final String UPDATE_LOCK_QUERY = "UPDATE `worlds` SET `locked` = ? WHERE `name` = ?;";
