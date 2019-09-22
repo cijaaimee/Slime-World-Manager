@@ -181,7 +181,7 @@ public class CustomChunkLoader implements IChunkLoader {
         }
 
         LOGGER.debug("Loaded " + loadedEntities + " entities for chunk (" + x + ", " + z + ") on world " + world.getName());
-        LOGGER.info("Loaded chunk (" + x + ", " + z + ") on world " + world.getName());
+        LOGGER.debug("Loaded chunk (" + x + ", " + z + ") on world " + world.getName());
 
         return nmsChunk;
     }

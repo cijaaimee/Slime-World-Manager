@@ -272,7 +272,6 @@ public class CustomWorldServer extends WorldServer {
             }
 
             LOGGER.debug("Loaded " + loadedEntities + " entities for chunk (" + pos.x + ", " + pos.z + ") on world " + slimeWorld.getName());
-            LOGGER.debug("Loaded chunk (" + pos.x + ", " + pos.z + ") on world " + slimeWorld.getName());
 
         };
 
@@ -297,6 +296,7 @@ public class CustomWorldServer extends WorldServer {
         }
 
         HeightMap.a(nmsChunk, unsetHeightMaps);
+        LOGGER.debug("Loaded chunk (" + pos.x + ", " + pos.z + ") on world " + slimeWorld.getName());
 
         return nmsChunk;
     }
