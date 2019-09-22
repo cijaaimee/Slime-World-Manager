@@ -37,6 +37,7 @@ public class CustomDataManager extends WorldNBTStorage {
     @Getter(value = AccessLevel.NONE)
     private final UUID uuid = UUID.randomUUID();
     private final SlimeWorld world;
+    private final CustomChunkLoader chunkLoader;
     private WorldData worldData;
 
     // When unloading a world, Spigot tries to remove the region file from its cache.
@@ -60,6 +61,7 @@ public class CustomDataManager extends WorldNBTStorage {
         baseDir.getParentFile().delete();
 
         this.world = world;
+        this.chunkLoader = new CustomChunkLoader((CraftSlimeWorld) world);
     }
 
     @Override
@@ -75,7 +77,7 @@ public class CustomDataManager extends WorldNBTStorage {
 
     @Override
     public IChunkLoader createChunkLoader(WorldProvider worldProvider) {
-        return new CustomChunkLoader((CraftSlimeWorld) world);
+        return chunkLoader;
     }
 
     @Override

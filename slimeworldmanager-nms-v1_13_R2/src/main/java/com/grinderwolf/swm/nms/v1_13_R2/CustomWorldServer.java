@@ -2,11 +2,13 @@ package com.grinderwolf.swm.nms.v1_13_R2;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
+import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_13_R2.BlockPosition;
+import net.minecraft.server.v1_13_R2.Chunk;
 import net.minecraft.server.v1_13_R2.DimensionManager;
 import net.minecraft.server.v1_13_R2.EntityTracker;
 import net.minecraft.server.v1_13_R2.EnumDifficulty;
@@ -54,6 +56,10 @@ public class CustomWorldServer extends WorldServer {
 
         this.pvpMode = properties.isPvp();
 
+        // Load all chunks
+        CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
+        chunkLoader.loadAllChunks(this);
+
         // Disable auto save period as it's constantly saving the world
         if (v1_13_R2SlimeNMS.IS_PAPER) {
             this.paperConfig.autoSavePeriod = 0;
@@ -89,8 +95,18 @@ public class CustomWorldServer extends WorldServer {
             try {
                 LOGGER.info("Saving world " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
+
+                CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
+
+                for (Object[] data : chunkLoader.getChunks()) {
+                    SlimeChunk chunk = Converter.convertChunk((Chunk) data[0]);
+                    slimeWorld.updateChunk(chunk);
+                }
+
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
+
+                slimeWorld.clearChunks();
                 LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();

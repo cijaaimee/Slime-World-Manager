@@ -2,11 +2,13 @@ package com.grinderwolf.swm.nms.v1_8_R3;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
+import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.Chunk;
 import net.minecraft.server.v1_8_R3.EntityTracker;
 import net.minecraft.server.v1_8_R3.EnumDifficulty;
 import net.minecraft.server.v1_8_R3.ExceptionWorldConflict;
@@ -46,6 +48,7 @@ public class CustomWorldServer extends WorldServer {
         this.tracker = new EntityTracker(this);
         addIWorldAccess(new WorldManager(MinecraftServer.getServer(), this));
 
+        // Set world properties
         SlimeWorld.SlimeProperties properties = world.getProperties();
 
         worldData.setDifficulty(EnumDifficulty.getById(properties.getDifficulty()));
@@ -53,6 +56,10 @@ public class CustomWorldServer extends WorldServer {
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
 
         this.pvpMode = properties.isPvp();
+
+        // Load all chunks
+        CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
+        chunkLoader.loadAllChunks(this);
     }
 
     @Override
@@ -60,7 +67,7 @@ public class CustomWorldServer extends WorldServer {
         if (!slimeWorld.getProperties().isReadOnly()) {
             super.save(forceSave, progressUpdate);
 
-            if (MinecraftServer.getServer().isStopped()) { // Make sure the slimeWorld gets saved before stopping the server by running it from the main thread
+            if (MinecraftServer.getServer().isStopped()) { // Make sure the SlimeWorld gets saved before stopping the server by running it from the main thread
                 save();
 
                 // Have to manually unlock the world as well
@@ -84,8 +91,18 @@ public class CustomWorldServer extends WorldServer {
             try {
                 LOGGER.info("Saving world " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
+
+                CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
+
+                for (Chunk nmsChunk : chunkLoader.getChunks()) {
+                    SlimeChunk chunk = Converter.convertChunk(nmsChunk);
+                    slimeWorld.updateChunk(chunk);
+                }
+
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
+
+                slimeWorld.clearChunks();
                 LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();
