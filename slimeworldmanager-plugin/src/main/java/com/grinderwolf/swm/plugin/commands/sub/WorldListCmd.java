@@ -77,7 +77,7 @@ public class WorldListCmd implements Subcommand {
         worldsList.sort(String::compareTo);
         sender.sendMessage(Logging.COMMAND_PREFIX + "World list " + ChatColor.YELLOW + "[" + page + "/" + maxPages + "]" + ChatColor.GRAY + ":");
 
-        for (int i = offset; i < MAX_ITEMS_PER_PAGE && i < worldsList.size(); i++) {
+        for (int i = offset; (i - offset) < MAX_ITEMS_PER_PAGE && i < worldsList.size(); i++) {
             String world = worldsList.get(i);
 
             if (loadedWorlds.containsKey(world)) {
