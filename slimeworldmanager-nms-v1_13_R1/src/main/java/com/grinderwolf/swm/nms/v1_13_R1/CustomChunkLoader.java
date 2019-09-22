@@ -34,7 +34,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -42,52 +44,38 @@ public class CustomChunkLoader implements IChunkLoader {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
 
+    private final Map<Long, Chunk> chunks = new HashMap<>();
     private final CraftSlimeWorld world;
 
-    @Nullable
-    @Override
-    public ProtoChunk b(GeneratorAccess generatorAccess, int x, int z, Consumer<IChunkAccess> consumer) {
-        Chunk chunk = this.a(generatorAccess, x, z, null);
-        consumer.accept(chunk);
+    void loadAllChunks(CustomWorldServer server) {
+        for (SlimeChunk chunk : world.getChunks().values()) {
+            Chunk nmsChunk = createChunk(server, chunk);
 
-        return null;
+            long index = (((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()));
+            chunks.put(index, nmsChunk);
+        }
+
+        // Now that we've converted every SlimeChunk to its nms counterpart, we can empty the chunk list
+        world.clearChunks();
     }
 
-    // Load full chunk
-    @Override
-    public Chunk a(GeneratorAccess generatorAccess, int x, int z, Consumer<Chunk> consumer) {
+    Chunk[] getChunks() {
+        synchronized (chunks) {
+            return chunks.values().toArray(new Chunk[0]);
+        }
+    }
+
+    private Chunk createChunk(CustomWorldServer server, SlimeChunk chunk) {
+        int x = chunk.getX();
+        int z = chunk.getZ();
+
         LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + world.getName());
 
-        CraftSlimeChunk chunk = (CraftSlimeChunk) world.getChunk(x, z);
         BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
 
         // ProtoChunkTickLists
         ProtoChunkTickList<Block> airChunkTickList = new ProtoChunkTickList<>((block) -> block.getBlockData().isAir(), Block.REGISTRY::b, Block.REGISTRY::get, new ChunkCoordIntPair(x, z));
         ProtoChunkTickList<FluidType> fluidChunkTickList = new ProtoChunkTickList<>((fluidType) -> fluidType == FluidTypes.a, FluidType.c::b, FluidType.c::get, new ChunkCoordIntPair(x, z));
-
-        if (chunk == null) {
-            long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
-
-            LOGGER.debug("Failed to load chunk (" + x + ", " + z + ") (" + index + ") on world " + world.getName() + ": chunk does not exist. Generating empty one...");
-
-            BiomeBase[] biomeBaseArray = new BiomeBase[256];
-
-            for (int i = 0; i < biomeBaseArray.length; i++) {
-                biomeBaseArray[i] = generatorAccess.getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(mutableBlockPosition
-                        .c((i & 15) + (x << 4), 0, (i >> 4 & 15) + (z << 4)), Biomes.c);
-            }
-
-            Chunk nmsChunk = new Chunk(generatorAccess.getMinecraftWorld(), x, z, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L);
-
-            nmsChunk.c("postprocessed");
-
-            // Chunk consumer
-            if (consumer != null) {
-                consumer.accept(nmsChunk);
-            }
-
-            return nmsChunk;
-        }
 
         // Biomes
         BiomeBase[] biomeBaseArray = new BiomeBase[256];
@@ -97,13 +85,13 @@ public class CustomChunkLoader implements IChunkLoader {
             biomeBaseArray[i] = BiomeBase.a(biomeIntArray[i]);
 
             if (biomeBaseArray[i] == null) {
-                biomeBaseArray[i] = generatorAccess.getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(mutableBlockPosition
+                biomeBaseArray[i] = server.getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(mutableBlockPosition
                         .c((i & 15) + (x << 4), 0, (i >> 4 & 15) + (z << 4)), Biomes.c);
             }
         }
 
-        CompoundTag upgradeDataTag = chunk.getUpgradeData();
-        Chunk nmsChunk = new Chunk(generatorAccess.getMinecraftWorld(), x, z, biomeBaseArray, upgradeDataTag == null ? ChunkConverter.a
+        CompoundTag upgradeDataTag = ((CraftSlimeChunk) chunk).getUpgradeData();
+        Chunk nmsChunk = new Chunk(server, x, z, biomeBaseArray, upgradeDataTag == null ? ChunkConverter.a
                 : new ChunkConverter((NBTTagCompound) Converter.convertTag(upgradeDataTag)), airChunkTickList, fluidChunkTickList, 0L);
 
         // Chunk status
@@ -169,11 +157,6 @@ public class CustomChunkLoader implements IChunkLoader {
             }
         }
 
-        // Chunk consumer
-        if (consumer != null) {
-            consumer.accept(nmsChunk);
-        }
-
         // Load tile entities
         LOGGER.debug("Loading tile entities for chunk (" + x + ", " + z + ") on world " + world.getName());
         List<CompoundTag> tileEntities = chunk.getTileEntities();
@@ -199,7 +182,7 @@ public class CustomChunkLoader implements IChunkLoader {
 
         if (entities != null) {
             for (CompoundTag tag : entities) {
-                loadEntity(tag, generatorAccess.getMinecraftWorld(), nmsChunk);
+                loadEntity(tag, server.getMinecraftWorld(), nmsChunk);
             }
         }
 
@@ -234,6 +217,53 @@ public class CustomChunkLoader implements IChunkLoader {
         return entity;
     }
 
+    @Nullable
+    @Override
+    public ProtoChunk b(GeneratorAccess generatorAccess, int x, int z, Consumer<IChunkAccess> consumer) {
+        Chunk chunk = this.a(generatorAccess, x, z, null);
+        consumer.accept(chunk);
+
+        return null;
+    }
+
+    // Load full chunk
+    @Override
+    public Chunk a(GeneratorAccess generatorAccess, int x, int z, Consumer<Chunk> consumer) {
+        long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
+        Chunk chunk;
+
+        synchronized (chunks) {
+            chunk = chunks.get(index);
+        }
+
+        if (chunk == null) {
+            BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
+
+            // Biomes
+            BiomeBase[] biomeBaseArray = new BiomeBase[256];
+
+            for (int i = 0; i < biomeBaseArray.length; i++) {
+                biomeBaseArray[i] = generatorAccess.getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(mutableBlockPosition
+                        .c((i & 15) + (x << 4), 0, (i >> 4 & 15) + (z << 4)), Biomes.c);
+            }
+
+            // ProtoChunkTickLists
+            ProtoChunkTickList<Block> airChunkTickList = new ProtoChunkTickList<>((block) -> block.getBlockData().isAir(), Block.REGISTRY::b, Block.REGISTRY::get, new ChunkCoordIntPair(x, z));
+            ProtoChunkTickList<FluidType> fluidChunkTickList = new ProtoChunkTickList<>((fluidType) -> fluidType == FluidTypes.a, FluidType.c::b, FluidType.c::get, new ChunkCoordIntPair(x, z));
+
+            chunk = new Chunk(generatorAccess.getMinecraftWorld(), x, z, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L);
+            chunk.c("postprocessed");
+        }
+
+
+        // Chunk consumer
+        if (consumer != null) {
+            consumer.accept(chunk);
+        }
+
+        return chunk;
+    }
+
     @Override
     public void saveChunk(World world, IChunkAccess chunkAccess) {
         this.saveChunk(world, chunkAccess, false);
@@ -256,7 +286,7 @@ public class CustomChunkLoader implements IChunkLoader {
     }
 
     @Override
-    public boolean chunkExists(int i, int i1) {
+    public boolean chunkExists(int x, int z) {
         return true;
     }
 
