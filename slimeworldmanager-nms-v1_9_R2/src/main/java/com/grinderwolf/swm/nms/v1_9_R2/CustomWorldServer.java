@@ -2,11 +2,13 @@ package com.grinderwolf.swm.nms.v1_9_R2;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
+import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_9_R2.BlockPosition;
+import net.minecraft.server.v1_9_R2.Chunk;
 import net.minecraft.server.v1_9_R2.EntityTracker;
 import net.minecraft.server.v1_9_R2.EnumDifficulty;
 import net.minecraft.server.v1_9_R2.ExceptionWorldConflict;
@@ -52,6 +54,10 @@ public class CustomWorldServer extends WorldServer {
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
 
         this.pvpMode = properties.isPvp();
+
+        // Load all chunks
+        CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
+        chunkLoader.loadAllChunks(this);
     }
 
     @Override
@@ -83,8 +89,18 @@ public class CustomWorldServer extends WorldServer {
             try {
                 LOGGER.info("Saving world " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
+
+                CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
+
+                for (Chunk nmsChunk : chunkLoader.getChunks()) {
+                    SlimeChunk chunk = Converter.convertChunk(nmsChunk);
+                    slimeWorld.updateChunk(chunk);
+                }
+
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
+
+                slimeWorld.clearChunks();
                 LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();
