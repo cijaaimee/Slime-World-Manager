@@ -55,7 +55,7 @@ public class Updater implements Listener {
         if (result == 0) {
             Logging.info("You are running the latest version of Slime World Manager.");
         } else if (outdatedVersion) {
-            Logging.warning("You are running an outdated of Slime World Manager. Please download the latest version at SpigotMC.org.");
+            Logging.warning("You are running an outdated version of Slime World Manager. Please download the latest version at SpigotMC.org.");
         } else {
             Logging.warning("You are running an unreleased version of Slime World Manager.");
         }
