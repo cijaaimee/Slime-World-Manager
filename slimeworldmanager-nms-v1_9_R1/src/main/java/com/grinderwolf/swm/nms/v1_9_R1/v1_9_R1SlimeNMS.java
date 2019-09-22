@@ -4,7 +4,6 @@ import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
-import net.minecraft.server.v1_9_R1.BlockPosition;
 import net.minecraft.server.v1_9_R1.MinecraftServer;
 import net.minecraft.server.v1_9_R1.WorldServer;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +13,6 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
-import org.spigotmc.AsyncCatcher;
 
 @Getter
 public class v1_9_R1SlimeNMS implements SlimeNMS {
@@ -63,35 +61,7 @@ public class v1_9_R1SlimeNMS implements SlimeNMS {
             }
         }
 
-        WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimension);
-
-        if (server.getWorld().getKeepSpawnInMemory()) {
-            String worldName = world.getName();
-            LOGGER.debug("Preparing start region for world " + worldName);
-
-            long timeMillis = System.currentTimeMillis();
-
-            for (int x = -196; x <= 196; x += 16) {
-                for (int z = -196; z <= 196; z += 16) {
-                    long currentTime = System.currentTimeMillis();
-
-                    if (currentTime > timeMillis + 1000L) {
-                        int total = (196 * 2 + 1) * (196 * 2 + 1);
-                        int done = (x + 196) * (196 * 2 + 1) + z + 1;
-
-                        LOGGER.debug("Preparing spawn area for " + worldName + ": " + (done * 100 / total) + "%");
-                        timeMillis = currentTime;
-                    }
-
-                    AsyncCatcher.enabled = false;
-                    BlockPosition spawn = server.getSpawn();
-                    server.getChunkProviderServer().getChunkAt(spawn.getX() + x >> 4, spawn.getZ() + z >> 4);
-                    AsyncCatcher.enabled = true;
-                }
-            }
-        }
-
-        return server;
+        return new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimension);
     }
 
     @Override

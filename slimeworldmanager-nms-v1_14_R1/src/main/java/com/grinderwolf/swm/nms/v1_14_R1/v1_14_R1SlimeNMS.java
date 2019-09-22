@@ -79,10 +79,9 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
         String worldName = world.getName();
         DimensionManager actualDimension = DimensionManager.a(0);
         DimensionManager dimensionManager = DimensionManager.register(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
-                actualDimension.folder, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension));
-        WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager);
+                actualDimension.folder, actualDimension.providerFactory, actualDimension.hasSkyLight(), actualDimension));
 
-        return server;
+        return new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager);
     }
 
     @Override

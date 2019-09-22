@@ -39,6 +39,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -46,7 +48,159 @@ public class CustomChunkLoader implements IChunkLoader {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
 
+    private final Map<Long, Object[]> chunks = new HashMap<>();
+    private final NBTTagCompound emptyWorldCompound = new NBTTagCompound();
     private final CraftSlimeWorld world;
+
+    {
+        emptyWorldCompound.set("Level", new NBTTagCompound());
+    }
+
+    void loadAllChunks(CustomWorldServer server) {
+        for (SlimeChunk chunk : world.getChunks().values()) {
+            Object[] data = createChunk(server, chunk);
+
+            long index = (((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()));
+            chunks.put(index, data);
+        }
+
+        // Now that we've converted every SlimeChunk to its nms counterpart, we can empty the chunk list
+        world.clearChunks();
+    }
+
+    Object[][] getChunks() {
+        synchronized (chunks) {
+            return chunks.values().toArray(new Object[2][0]);
+        }
+    }
+
+    private Object[] createChunk(CustomWorldServer server, SlimeChunk chunk) {
+        int x = chunk.getX();
+        int z = chunk.getZ();
+
+        LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + world.getName());
+        Object[] data = new Object[2];
+
+        // Fake level compound
+        NBTTagCompound levelCompound = new NBTTagCompound();
+        NBTTagCompound globalCompound = new NBTTagCompound();
+
+        globalCompound.set("Level", levelCompound);
+        data[1] = globalCompound;
+
+        BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
+
+        // ProtoChunkTickLists
+        ProtoChunkTickList<Block> airChunkTickList = new ProtoChunkTickList<>((block) -> block.getBlockData().isAir(), IRegistry.BLOCK::getKey, IRegistry.BLOCK::getOrDefault, new ChunkCoordIntPair(x, z));
+        ProtoChunkTickList<FluidType> fluidChunkTickList = new ProtoChunkTickList<>((fluidType) -> fluidType == FluidTypes.EMPTY, IRegistry.FLUID::getKey, IRegistry.FLUID::getOrDefault, new ChunkCoordIntPair(x, z));
+
+        // Biomes
+        BiomeBase[] biomeBaseArray = new BiomeBase[256];
+        int[] biomeIntArray = chunk.getBiomes();
+
+        for (int i = 0; i < biomeIntArray.length; i++) {
+            biomeBaseArray[i] = IRegistry.BIOME.fromId(biomeIntArray[i]);
+
+            if (biomeBaseArray[i] == null) {
+                biomeBaseArray[i] = server.getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(mutableBlockPosition
+                        .c((i & 15) + (x << 4), 0, (i >> 4 & 15) + (z << 4)), Biomes.PLAINS);
+            }
+        }
+
+        CompoundTag upgradeDataTag = ((CraftSlimeChunk) chunk).getUpgradeData();
+        Chunk nmsChunk = new Chunk(server.getMinecraftWorld(), x, z, biomeBaseArray, upgradeDataTag == null ? ChunkConverter.a
+                : new ChunkConverter((NBTTagCompound) Converter.convertTag(upgradeDataTag)), airChunkTickList, fluidChunkTickList, 0L);
+
+        // Chunk status
+        nmsChunk.c("postprocessed");
+
+        // Chunk sections
+        LOGGER.debug("Loading chunk sections for chunk (" + x + ", " + z + ") on world " + world.getName());
+        ChunkSection[] sections = new ChunkSection[16];
+
+        for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
+            SlimeChunkSection slimeSection = chunk.getSections()[sectionId];
+
+            if (slimeSection != null && slimeSection.getBlockStates().length > 0) { // If block states array is empty, it's just a fake chunk made by the createEmptyWorld method
+                ChunkSection section = new ChunkSection(sectionId << 4, true);
+
+                LOGGER.debug("ChunkSection #" + sectionId + " - Chunk (" + x + ", " + z + ") - World " + world.getName() + ":");
+                LOGGER.debug("Block palette:");
+                LOGGER.debug(slimeSection.getPalette().toString());
+                LOGGER.debug("Block states array:");
+                LOGGER.debug(slimeSection.getBlockStates());
+                LOGGER.debug("Block light array:");
+                LOGGER.debug(slimeSection.getBlockLight() != null ? slimeSection.getBlockLight().getBacking() : "Not present");
+                LOGGER.debug("Sky light array:");
+                LOGGER.debug(slimeSection.getSkyLight() != null ? slimeSection.getSkyLight().getBacking() : "Not present");
+
+                NBTTagCompound sectionCompound = new NBTTagCompound();
+
+                sectionCompound.set("Palette", Converter.convertTag(slimeSection.getPalette()));
+                sectionCompound.a("BlockStates", slimeSection.getBlockStates());
+
+                section.getBlocks().a(sectionCompound, "Palette", "BlockStates");
+
+                if (slimeSection.getBlockLight() != null) {
+                    section.a(Converter.convertArray(slimeSection.getBlockLight()));
+                }
+
+                if (slimeSection.getSkyLight() != null) {
+                    section.b(Converter.convertArray(slimeSection.getSkyLight()));
+                }
+
+                section.recalcBlockCounts();
+                sections[sectionId] = section;
+            }
+        }
+
+        nmsChunk.a(sections);
+
+        // Height Maps
+        HeightMap.Type[] heightMapTypes = HeightMap.Type.values();
+        CompoundMap heightMaps = chunk.getHeightMaps().getValue();
+
+        for (HeightMap.Type type : heightMapTypes) {
+            if (type.c() == HeightMap.Use.LIVE_WORLD) {
+                String name = type.b();
+
+                if (heightMaps.containsKey(name)) {
+                    LongArrayTag heightMap = (LongArrayTag) heightMaps.get(name);
+
+                    nmsChunk.a(type, heightMap.getValue());
+                } else {
+                    nmsChunk.b(type).a();
+                }
+            }
+        }
+
+        // Tile Entities
+        if (chunk.getTileEntities() != null) {
+            NBTTagList tileEntities = new NBTTagList();
+
+            for (CompoundTag tileEntityTag : chunk.getTileEntities()) {
+                tileEntities.add(Converter.convertTag(tileEntityTag));
+            }
+
+            levelCompound.set("TileEntities", tileEntities);
+        }
+
+        // Entities
+        if (chunk.getEntities() != null) {
+            NBTTagList entities = new NBTTagList();
+
+            for (CompoundTag entityTag : chunk.getEntities()) {
+                entities.add(Converter.convertTag(entityTag));
+            }
+
+            levelCompound.set("Entities", entities);
+        }
+
+        LOGGER.debug("Loaded chunk (" + x + ", " + z + ") on world " + world.getName());
+        data[0] = nmsChunk;
+
+        return data;
+    }
 
     @Nullable
     @Override
@@ -78,28 +232,20 @@ public class CustomChunkLoader implements IChunkLoader {
     // PaperSpigot adds these methods to the IChunkLoader interface, so they have to be implemented as well
 
     public Object[] loadChunk(GeneratorAccess generatorAccess, int x, int z, Consumer<Chunk> consumer) { // Paper method
-        LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + world.getName());
-        Object[] data = new Object[2];
+        long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
 
-        // Fake level compound
-        NBTTagCompound levelCompound = new NBTTagCompound();
-        NBTTagCompound globalCompound = new NBTTagCompound();
+        Object[] data;
 
-        globalCompound.set("Level", levelCompound);
-        data[1] = globalCompound;
+        synchronized (chunks) {
+            data = chunks.get(index);
+        }
 
-        CraftSlimeChunk chunk = (CraftSlimeChunk) world.getChunk(x, z);
-        BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
+        if (data == null) {
+            data = new Object[2];
 
-        // ProtoChunkTickLists
-        ProtoChunkTickList<Block> airChunkTickList = new ProtoChunkTickList<>((block) -> block.getBlockData().isAir(), IRegistry.BLOCK::getKey, IRegistry.BLOCK::getOrDefault, new ChunkCoordIntPair(x, z));
-        ProtoChunkTickList<FluidType> fluidChunkTickList = new ProtoChunkTickList<>((fluidType) -> fluidType == FluidTypes.EMPTY, IRegistry.FLUID::getKey, IRegistry.FLUID::getOrDefault, new ChunkCoordIntPair(x, z));
+            BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
 
-        if (chunk == null) {
-            long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
-
-            LOGGER.debug("Failed to load chunk (" + x + ", " + z + ") (" + index + ") on world " + world.getName() + ": chunk does not exist. Generating empty one...");
-
+            // Biomes
             BiomeBase[] biomeBaseArray = new BiomeBase[256];
 
             for (int i = 0; i < biomeBaseArray.length; i++) {
@@ -107,115 +253,15 @@ public class CustomChunkLoader implements IChunkLoader {
                         .c((i & 15) + (x << 4), 0, (i >> 4 & 15) + (z << 4)), Biomes.PLAINS);
             }
 
+            // ProtoChunkTickLists
+            ProtoChunkTickList<Block> airChunkTickList = new ProtoChunkTickList<>((block) -> block.getBlockData().isAir(), IRegistry.BLOCK::getKey, IRegistry.BLOCK::getOrDefault, new ChunkCoordIntPair(x, z));
+            ProtoChunkTickList<FluidType> fluidChunkTickList = new ProtoChunkTickList<>((fluidType) -> fluidType == FluidTypes.EMPTY, IRegistry.FLUID::getKey, IRegistry.FLUID::getOrDefault, new ChunkCoordIntPair(x, z));
+
             Chunk nmsChunk = new Chunk(generatorAccess.getMinecraftWorld(), x, z, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L);
             nmsChunk.c("postprocessed");
 
             data[0] = nmsChunk;
-        } else {
-            // Biomes
-            BiomeBase[] biomeBaseArray = new BiomeBase[256];
-            int[] biomeIntArray = chunk.getBiomes();
-
-            for (int i = 0; i < biomeIntArray.length; i++) {
-                biomeBaseArray[i] = IRegistry.BIOME.fromId(biomeIntArray[i]);
-
-                if (biomeBaseArray[i] == null) {
-                    biomeBaseArray[i] = generatorAccess.getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(mutableBlockPosition
-                            .c((i & 15) + (x << 4), 0, (i >> 4 & 15) + (z << 4)), Biomes.PLAINS);
-                }
-            }
-
-            CompoundTag upgradeDataTag = chunk.getUpgradeData();
-            Chunk nmsChunk = new Chunk(generatorAccess.getMinecraftWorld(), x, z, biomeBaseArray, upgradeDataTag == null ? ChunkConverter.a
-                    : new ChunkConverter((NBTTagCompound) Converter.convertTag(upgradeDataTag)), airChunkTickList, fluidChunkTickList, 0L);
-
-            // Chunk status
-            nmsChunk.c("postprocessed");
-
-            // Chunk sections
-            LOGGER.debug("Loading chunk sections for chunk (" + x + ", " + z + ") on world " + world.getName());
-            ChunkSection[] sections = new ChunkSection[16];
-
-            for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
-                SlimeChunkSection slimeSection = chunk.getSections()[sectionId];
-
-                if (slimeSection != null && slimeSection.getBlockStates().length > 0) { // If block states array is empty, it's just a fake chunk made by the createEmptyWorld method
-                    ChunkSection section = new ChunkSection(sectionId << 4, true);
-
-                    LOGGER.debug("ChunkSection #" + sectionId + " - Chunk (" + x + ", " + z + ") - World " + world.getName() + ":");
-                    LOGGER.debug("Block palette:");
-                    LOGGER.debug(slimeSection.getPalette().toString());
-                    LOGGER.debug("Block states array:");
-                    LOGGER.debug(slimeSection.getBlockStates());
-                    LOGGER.debug("Block light array:");
-                    LOGGER.debug(slimeSection.getBlockLight() != null ? slimeSection.getBlockLight().getBacking() : "Not present");
-                    LOGGER.debug("Sky light array:");
-                    LOGGER.debug(slimeSection.getSkyLight() != null ? slimeSection.getSkyLight().getBacking() : "Not present");
-
-                    NBTTagCompound sectionCompound = new NBTTagCompound();
-
-                    sectionCompound.set("Palette", Converter.convertTag(slimeSection.getPalette()));
-                    sectionCompound.a("BlockStates", slimeSection.getBlockStates());
-
-                    section.getBlocks().a(sectionCompound, "Palette", "BlockStates");
-
-                    if (slimeSection.getBlockLight() != null) {
-                        section.a(Converter.convertArray(slimeSection.getBlockLight()));
-                    }
-
-                    if (slimeSection.getSkyLight() != null) {
-                        section.b(Converter.convertArray(slimeSection.getSkyLight()));
-                    }
-
-                    section.recalcBlockCounts();
-                    sections[sectionId] = section;
-                }
-            }
-
-            nmsChunk.a(sections);
-
-            // Height Maps
-            HeightMap.Type[] heightMapTypes = HeightMap.Type.values();
-            CompoundMap heightMaps = chunk.getHeightMaps().getValue();
-
-            for (HeightMap.Type type : heightMapTypes) {
-                if (type.c() == HeightMap.Use.LIVE_WORLD) {
-                    String name = type.b();
-
-                    if (heightMaps.containsKey(name)) {
-                        LongArrayTag heightMap = (LongArrayTag) heightMaps.get(name);
-
-                        nmsChunk.a(type, heightMap.getValue());
-                    } else {
-                        nmsChunk.b(type).a();
-                    }
-                }
-            }
-
-            // Tile Entities
-            if (chunk.getTileEntities() != null) {
-                NBTTagList tileEntities = new NBTTagList();
-
-                for (CompoundTag tileEntityTag : chunk.getTileEntities()) {
-                    tileEntities.add(Converter.convertTag(tileEntityTag));
-                }
-
-                levelCompound.set("TileEntities", tileEntities);
-            }
-
-            // Entities
-            if (chunk.getEntities() != null) {
-                NBTTagList entities = new NBTTagList();
-
-                for (CompoundTag entityTag : chunk.getEntities()) {
-                    entities.add(Converter.convertTag(entityTag));
-                }
-
-                levelCompound.set("Entities", entities);
-            }
-
-            LOGGER.debug("Loaded chunk (" + x + ", " + z + ") on world " + world.getName());
-            data[0] = nmsChunk;
+            data[1] = emptyWorldCompound;
         }
 
         return data;
@@ -292,8 +338,30 @@ public class CustomChunkLoader implements IChunkLoader {
             return; // Not saving protochunks, only full chunks
         }
 
-        SlimeChunk slimeChunk = Converter.convertChunk((Chunk) chunkAccess);
-        this.world.updateChunk(slimeChunk);
+        boolean empty = true;
+
+        for (int sectionId = 0; sectionId < chunkAccess.getSections().length; sectionId++) {
+            ChunkSection section = chunkAccess.getSections()[sectionId];
+
+            if (section != null) {
+                section.recalcBlockCounts();
+
+                if (!section.a()) {
+                    empty = false;
+                    break;
+                }
+            }
+        }
+
+        long index = (((long) chunkAccess.getPos().z) * Integer.MAX_VALUE + ((long) chunkAccess.getPos().x));
+
+        synchronized (chunks) {
+            if (empty) {
+                chunks.remove(index);
+            } else {
+                chunks.putIfAbsent(index, new Object[] { chunkAccess, emptyWorldCompound }); // There should be no need to create a nbt compound with all entities as they're already loaded
+            }
+        }
     }
 
     // Save all chunks

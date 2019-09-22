@@ -6,7 +6,6 @@ import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import com.mojang.datafixers.DataFixTypes;
 import lombok.Getter;
-import net.minecraft.server.v1_13_R2.BlockPosition;
 import net.minecraft.server.v1_13_R2.DataConverterRegistry;
 import net.minecraft.server.v1_13_R2.DimensionManager;
 import net.minecraft.server.v1_13_R2.GameProfileSerializer;
@@ -88,32 +87,8 @@ public class v1_13_R2SlimeNMS implements SlimeNMS {
 
         String worldName = world.getName();
         DimensionManager dimensionManager = new DimensionManager(dimension, worldName, worldName, DimensionManager.OVERWORLD::e);
-        WorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager);
 
-        if (server.getWorld().getKeepSpawnInMemory()) {
-            LOGGER.debug("Preparing start region for world " + worldName);
-
-            long timeMillis = System.currentTimeMillis();
-
-            for (int x = -196; x <= 196; x += 16) {
-                for (int z = -196; z <= 196; z += 16) {
-                    long currentTime = System.currentTimeMillis();
-
-                    if (currentTime > timeMillis + 1000L) {
-                        int total = (196 * 2 + 1) * (196 * 2 + 1);
-                        int done = (x + 196) * (196 * 2 + 1) + z + 1;
-
-                        LOGGER.debug("Preparing spawn area for " + worldName + ": " + (done * 100 / total) + "%");
-                        timeMillis = currentTime;
-                    }
-
-                    BlockPosition spawn = server.getSpawn();
-                    server.getChunkProvider().getChunkAt(spawn.getX() + x >> 4, spawn.getZ() + z >> 4, true, true);
-                }
-            }
-        }
-
-        return server;
+        return new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager);
     }
 
     @Override
