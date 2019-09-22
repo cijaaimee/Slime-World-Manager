@@ -61,14 +61,6 @@ public class CustomChunkLoader implements IChunkLoader {
         nmsChunk.d(true);
         nmsChunk.e(true);
 
-        if (chunk == null) {
-            long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
-
-            LOGGER.debug("Failed to load chunk (" + x + ", " + z + ") (" + index + ") on world " + world.getName() + ": chunk does not exist. Generating empty one...");
-
-            return nmsChunk;
-        }
-
         CompoundTag heightMapsCompound = chunk.getHeightMaps();
         int[] heightMap = heightMapsCompound.getIntArrayValue("heightMap").get();
 
