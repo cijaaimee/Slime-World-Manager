@@ -99,7 +99,7 @@ public class LoadWorldCmd implements Subcommand {
                             ": world could not be found (using data source '" + worldData.getDataSource() + "').");
                 } catch (WorldInUseException ex) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
-                            ": world is already in use. If you are sure this is a mistake, run the command /swm unlock " + worldName);
+                            ": world is already in use. If you are think this is a mistake, please wait some time and try again.");
                 } catch (IOException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
                         sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName
