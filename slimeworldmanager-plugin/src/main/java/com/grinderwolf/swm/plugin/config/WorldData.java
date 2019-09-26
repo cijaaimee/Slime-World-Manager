@@ -1,6 +1,7 @@
 package com.grinderwolf.swm.plugin.config;
 
-import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimeProperties;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import lombok.Data;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -36,11 +37,9 @@ public class WorldData {
     @Setting("readOnly")
     private boolean readOnly = false;
 
-    public SlimeWorld.SlimeProperties toProperties() {
-        Difficulty difficulty;
-
+    public SlimePropertyMap toPropertyMap() {
         try {
-            difficulty = Enum.valueOf(Difficulty.class, this.difficulty.toUpperCase());
+            Enum.valueOf(Difficulty.class, this.difficulty.toUpperCase());
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("unknown difficulty '" + this.difficulty + "'");
         }
@@ -75,7 +74,18 @@ public class WorldData {
             }
         }
 
-        return SlimeWorld.SlimeProperties.builder().spawnX(spawnX).spawnY(spawnY).spawnZ(spawnZ).difficulty(difficulty.getValue())
-                .allowMonsters(allowMonsters).allowAnimals(allowAnimals).pvp(pvp).environment(environment).readOnly(readOnly).build();
+        SlimePropertyMap propertyMap = new SlimePropertyMap();
+
+        propertyMap.setInt(SlimeProperties.SPAWN_X, (int) spawnX);
+        propertyMap.setInt(SlimeProperties.SPAWN_Y, (int) spawnY);
+        propertyMap.setInt(SlimeProperties.SPAWN_Z, (int) spawnZ);
+
+        propertyMap.setString(SlimeProperties.DIFFICULTY, difficulty);
+        propertyMap.setBoolean(SlimeProperties.ALLOW_MONSTERS, allowMonsters);
+        propertyMap.setBoolean(SlimeProperties.ALLOW_ANIMALS, allowAnimals);
+        propertyMap.setBoolean(SlimeProperties.PVP, pvp);
+        propertyMap.setString(SlimeProperties.ENVIRONMENT, environment);
+
+        return propertyMap;
     }
 }

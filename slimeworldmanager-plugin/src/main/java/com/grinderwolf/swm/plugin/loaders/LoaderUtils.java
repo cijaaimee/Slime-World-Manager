@@ -16,7 +16,7 @@ import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.utils.SlimeFormat;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
@@ -107,7 +107,7 @@ public class LoaderUtils {
         loaderMap.put(dataSource, loader);
     }
 
-    public static CraftSlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimeWorld.SlimeProperties properties)
+    public static CraftSlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimePropertyMap propertyMap, boolean readOnly)
             throws IOException, CorruptedWorldException, NewerFormatException {
         DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(serializedWorld));
 
@@ -273,7 +273,7 @@ public class LoaderUtils {
                 }
             }
 
-            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, worldVersion, properties);
+            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, worldVersion, propertyMap, readOnly);
         } catch (EOFException ex) {
             throw new CorruptedWorldException(worldName);
         }
