@@ -42,6 +42,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class LoaderUtils {
 
@@ -273,7 +274,18 @@ public class LoaderUtils {
                 }
             }
 
-            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, worldVersion, propertyMap, readOnly);
+            // World properties
+            SlimePropertyMap worldPropertyMap = propertyMap;
+            Optional<CompoundTag> propertiesTag = extraCompound.getAsCompoundTag("properties");
+
+            if (propertiesTag.isPresent()) {
+                worldPropertyMap = SlimePropertyMap.fromCompound(propertiesTag.get());
+                worldPropertyMap.merge(propertyMap); // Override world properties
+            } else if (propertyMap == null) { // Make sure the property map is never null
+                worldPropertyMap = new SlimePropertyMap();
+            }
+
+            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, worldVersion, worldPropertyMap, readOnly);
         } catch (EOFException ex) {
             throw new CorruptedWorldException(worldName);
         }

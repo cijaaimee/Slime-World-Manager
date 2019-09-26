@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.function.Function;
 
 @Getter
-class SlimeProperty {
+public class SlimeProperty {
 
     private final String nbtName;
     private final PropertyType type;

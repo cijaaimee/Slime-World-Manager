@@ -6,6 +6,7 @@ import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.StringTag;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.Objects;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class SlimePropertyMap {
 
+    @Getter(value = AccessLevel.PRIVATE)
     private final Map<SlimeProperty, Object> values;
 
     public SlimePropertyMap() {
@@ -98,6 +100,10 @@ public class SlimePropertyMap {
         if (property.getType() != requiredType) {
             throw new IllegalArgumentException("Property " + property.getNbtName() + " type is " + property.getType().name() + ", not " + requiredType.name());
         }
+    }
+
+    public void merge(SlimePropertyMap propertyMap) {
+        values.putAll(propertyMap.getValues());
     }
 
     public CompoundTag toCompound() {
