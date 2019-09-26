@@ -33,7 +33,12 @@ public class SlimePropertyMap {
     }
 
     public void setString(SlimeProperty property, String value) {
+        Objects.requireNonNull(value, "Property value cannot be null");
         ensureType(property, PropertyType.STRING);
+
+        if (property.getValidator() != null && !property.getValidator().apply(value)) {
+            throw new IllegalArgumentException("'" + value + "' is not a valid property value.");
+        }
 
         if (Objects.equals(property.getDefaultValue(), value)) {
             values.remove(property);
@@ -53,8 +58,9 @@ public class SlimePropertyMap {
         return value;
     }
 
-    public void setBoolean(SlimeProperty property, Boolean value) {
+    public void setBoolean(SlimeProperty property, boolean value) {
         ensureType(property, PropertyType.BOOLEAN);
+        // There's no need to validate the value, why'd you ever have a validator for a boolean?
 
         if (Objects.equals(property.getDefaultValue(), value)) {
             values.remove(property);
@@ -63,7 +69,7 @@ public class SlimePropertyMap {
         }
     }
 
-    public Integer getInt(SlimeProperty property) {
+    public int getInt(SlimeProperty property) {
         ensureType(property, PropertyType.INT);
         Integer value = (Integer) values.get(property);
 
@@ -74,8 +80,12 @@ public class SlimePropertyMap {
         return value;
     }
 
-    public void setInt(SlimeProperty property, Integer value) {
+    public void setInt(SlimeProperty property, int value) {
         ensureType(property, PropertyType.INT);
+
+        if (property.getValidator() != null && !property.getValidator().apply(value)) {
+            throw new IllegalArgumentException("'" + value + "' is not a valid property value.");
+        }
 
         if (Objects.equals(property.getDefaultValue(), value)) {
             values.remove(property);
