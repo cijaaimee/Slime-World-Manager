@@ -79,7 +79,7 @@ public class LoadTemplateWorldCmd implements Subcommand {
                         throw new IllegalArgumentException("invalid data source " + worldData.getDataSource());
                     }
 
-                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorld(loader, templateWorldName, worldData.toProperties().withReadOnly(true)).clone(worldName);
+                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorld(loader, templateWorldName, true, worldData.toPropertyMap()).clone(worldName);
                     Bukkit.getScheduler().runTask(SWMPlugin.getInstance(), () -> {
                         try {
                             SWMPlugin.getInstance().generateWorld(slimeWorld);
