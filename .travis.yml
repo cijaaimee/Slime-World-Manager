@@ -12,6 +12,11 @@ install:
 jdk: 
    - oraclejdk8
 dist: trusty
+before_deploy:
+  - export TOTAL=$(ls .)
+  - export JAR_FILE=$(ls */target/slimeworldmanager*.jar)
+  - echo "$JAR_FILE"
+  - echo "$TOTAL"
 deploy:
     skip_cleanup: true
     api_key: "${GITHUB_KEY}"
