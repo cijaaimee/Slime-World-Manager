@@ -12,3 +12,11 @@ install:
 jdk: 
    - oraclejdk8
 dist: trusty
+deploy:
+    skip_cleanup: true
+    api_key: "${GITHUB_KEY}"
+    provider: releases
+    file: "*/target/slimeworldmanager-*.jar"
+    file_glob: true
+    on:
+        tags: true
