@@ -4,6 +4,9 @@ import lombok.Getter;
 
 import java.util.function.Function;
 
+/**
+ * A property object.
+ */
 @Getter
 public class SlimeProperty {
 

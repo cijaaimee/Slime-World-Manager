@@ -1,5 +1,8 @@
 package com.grinderwolf.swm.api.world.properties;
 
+/**
+ * Class with all existing properties.
+ */
 public class SlimeProperties {
 
     public static final SlimeProperty SPAWN_X = new SlimeProperty("spawnX", PropertyType.INT, 0);
