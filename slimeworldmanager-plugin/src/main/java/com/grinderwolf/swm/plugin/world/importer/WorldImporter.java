@@ -13,7 +13,7 @@ import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
@@ -94,7 +94,7 @@ public class WorldImporter {
         }
 
         return new CraftSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", extraData),
-                worldVersion, SlimeWorld.SlimeProperties.builder().build());
+                worldVersion, new SlimePropertyMap(), false);
     }
 
     private static LevelData readLevelData(File file) throws IOException, InvalidWorldException {

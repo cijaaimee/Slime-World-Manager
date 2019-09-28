@@ -3,6 +3,7 @@ package com.grinderwolf.swm.api.world;
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -54,8 +55,24 @@ public interface SlimeWorld {
      * kept up-to-date when the world is loaded and its properties are updated.
      *
      * @return A {@link SlimeProperties} object with all the current properties of the world.
+     * @deprecated see {@link #getPropertyMap()}.
      */
+    @Deprecated
     SlimeProperties getProperties();
+
+    /**
+     * Returns the property map.
+     *
+     * @return A {@link SlimePropertyMap} object containing all the properties of the world.
+     */
+    SlimePropertyMap getPropertyMap();
+
+    /**
+     * Returns whether or not read-only is enabled.
+     *
+     * @return true if read-only is enabled, false otherwise.
+     */
+    boolean isReadOnly();
 
     /**
      * Returns a clone of the world with the given name. This world will never be
@@ -86,9 +103,12 @@ public interface SlimeWorld {
 
     /**
      * All the currently-available properties of the world.
+     *
+     * @deprecated see {@link SlimePropertyMap}
      */
     @Getter
     @Builder(toBuilder = true)
+    @Deprecated
     class SlimeProperties {
 
         private double spawnX;

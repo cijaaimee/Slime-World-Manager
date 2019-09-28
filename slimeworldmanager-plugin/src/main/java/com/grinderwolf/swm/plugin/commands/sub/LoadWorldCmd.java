@@ -70,7 +70,7 @@ public class LoadWorldCmd implements Subcommand {
                         throw new IllegalArgumentException("invalid data source " + worldData.getDataSource());
                     }
 
-                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorld(loader, worldName, worldData.toProperties());
+                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorld(loader, worldName, worldData.isReadOnly(), worldData.toPropertyMap());
                     Bukkit.getScheduler().runTask(SWMPlugin.getInstance(), () -> {
                         try {
                             SWMPlugin.getInstance().generateWorld(slimeWorld);
