@@ -10,6 +10,7 @@ import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
 import com.grinderwolf.swm.api.exceptions.WorldTooBigException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,8 +39,32 @@ public interface SlimePlugin {
      * @throws CorruptedWorldException if the world retrieved cannot be parsed into a {@link SlimeWorld} object.
      * @throws NewerFormatException if the world uses a newer version of the SRF.
      * @throws WorldInUseException if the world is already being used on another server when trying to open it without read-only mode enabled.
+     *
+     * @deprecated see {@link #loadWorld(SlimeLoader, String, boolean, SlimePropertyMap)}
      */
+    @Deprecated
     SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws
+            UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException;
+
+    /**
+     * Loads a world using a specificied {@link SlimeLoader}.
+     * This world can then be added to the server's world
+     * list by using the {@link #generateWorld(SlimeWorld)} method.
+     *
+     * @param loader {@link SlimeLoader} used to retrieve the world.
+     * @param worldName Name of the world.
+     * @param readOnly Whether or not read-only mode is enabled.
+     * @param propertyMap A {@link SlimePropertyMap} object containing all the properties of the world.
+     *
+     * @return A {@link SlimeWorld}, which is the in-memory representation of the world.
+     *
+     * @throws UnknownWorldException if the world cannot be found.
+     * @throws IOException if the world cannot be obtained from the speficied data source.
+     * @throws CorruptedWorldException if the world retrieved cannot be parsed into a {@link SlimeWorld} object.
+     * @throws NewerFormatException if the world uses a newer version of the SRF.
+     * @throws WorldInUseException if the world is already being used on another server when trying to open it without read-only mode enabled.
+     */
+    SlimeWorld loadWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap) throws
             UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException;
 
     /**
@@ -55,8 +80,28 @@ public interface SlimePlugin {
      *
      * @throws WorldAlreadyExistsException if the provided data source already contains a world with the same name.
      * @throws IOException if the world could not be stored.
+     *
+     * @deprecated see {@link #createEmptyWorld(SlimeLoader, String, boolean, SlimePropertyMap)}
      */
+    @Deprecated
     SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws WorldAlreadyExistsException, IOException;
+
+    /**
+     * Creates an empty world and stores it using a specified
+     * {@link SlimeLoader}. This world can then be added to
+     * the server's world list by using the {@link #generateWorld(SlimeWorld)} method.
+     *
+     * @param loader {@link SlimeLoader} used to store the world.
+     * @param worldName Name of the world.
+     * @param readOnly Whether or not read-only mode is enabled.
+     * @param propertyMap A {@link SlimePropertyMap} object containing all the properties of the world.
+     *
+     * @return A {@link SlimeWorld}, which is the in-memory representation of the world.
+     *
+     * @throws WorldAlreadyExistsException if the provided data source already contains a world with the same name.
+     * @throws IOException if the world could not be stored.
+     */
+    SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap) throws WorldAlreadyExistsException, IOException;
 
     /**
      * Generates a Minecraft World from a {@link SlimeWorld} and

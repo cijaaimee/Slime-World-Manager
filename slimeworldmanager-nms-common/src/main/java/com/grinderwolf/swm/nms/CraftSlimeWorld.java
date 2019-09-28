@@ -13,9 +13,11 @@ import com.grinderwolf.swm.api.utils.SlimeFormat;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Difficulty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -45,8 +47,10 @@ public class CraftSlimeWorld implements SlimeWorld {
     @Setter
     private byte version;
 
-    @Setter
-    private SlimeProperties properties;
+    //@Setter
+    private final SlimePropertyMap propertyMap;
+
+    private final boolean readOnly;
 
     @Override
     public SlimeChunk getChunk(int x, int z) {
@@ -104,7 +108,7 @@ public class CraftSlimeWorld implements SlimeWorld {
         CraftSlimeWorld world;
 
         synchronized (chunks) {
-            world = new CraftSlimeWorld(loader == null ? this.loader : loader, worldName, new HashMap<>(chunks), extraData.clone(), version, properties.withReadOnly(loader == null));
+            world = new CraftSlimeWorld(loader == null ? this.loader : loader, worldName, new HashMap<>(chunks), extraData.clone(), version, propertyMap, loader == null);
         }
 
         if (loader != null) {
@@ -112,6 +116,19 @@ public class CraftSlimeWorld implements SlimeWorld {
         }
 
         return world;
+    }
+
+    @Override
+    public SlimeWorld.SlimeProperties getProperties() {
+        return SlimeWorld.SlimeProperties.builder().spawnX(propertyMap.getInt(com.grinderwolf.swm.api.world.properties.SlimeProperties.SPAWN_X))
+                .spawnY(propertyMap.getInt(com.grinderwolf.swm.api.world.properties.SlimeProperties.SPAWN_Y))
+                .spawnZ(propertyMap.getInt(com.grinderwolf.swm.api.world.properties.SlimeProperties.SPAWN_Z))
+                .environment(propertyMap.getString(com.grinderwolf.swm.api.world.properties.SlimeProperties.ENVIRONMENT))
+                .pvp(propertyMap.getBoolean(com.grinderwolf.swm.api.world.properties.SlimeProperties.PVP))
+                .allowMonsters(propertyMap.getBoolean(com.grinderwolf.swm.api.world.properties.SlimeProperties.ALLOW_MONSTERS))
+                .allowAnimals(propertyMap.getBoolean(com.grinderwolf.swm.api.world.properties.SlimeProperties.ALLOW_ANIMALS))
+                .difficulty(Difficulty.valueOf(propertyMap.getString(com.grinderwolf.swm.api.world.properties.SlimeProperties.DIFFICULTY).toUpperCase()).getValue())
+                .readOnly(readOnly).build();
     }
 
     // World Serialization methods
@@ -125,6 +142,9 @@ public class CraftSlimeWorld implements SlimeWorld {
 
         sortedChunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
         sortedChunks.removeIf(chunk -> chunk == null || Arrays.stream(chunk.getSections()).allMatch(Objects::isNull)); // Remove empty chunks to save space
+
+        // Store world properties
+        extraData.getValue().put("properties", propertyMap.toCompound());
 
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         DataOutputStream outStream = new DataOutputStream(outByteStream);

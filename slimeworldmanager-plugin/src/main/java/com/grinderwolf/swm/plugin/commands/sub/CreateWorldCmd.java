@@ -4,6 +4,7 @@ package com.grinderwolf.swm.plugin.commands.sub;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
@@ -76,8 +77,8 @@ public class CreateWorldCmd implements Subcommand {
                     WorldData worldData = new WorldData();
                     worldData.setSpawn("0, 64, 0");
 
-                    SlimeWorld.SlimeProperties props = worldData.toProperties();
-                    SlimeWorld slimeWorld = SWMPlugin.getInstance().createEmptyWorld(loader, worldName, props);
+                    SlimePropertyMap propertyMap = worldData.toPropertyMap();
+                    SlimeWorld slimeWorld = SWMPlugin.getInstance().createEmptyWorld(loader, worldName, false, propertyMap);
 
                     Bukkit.getScheduler().runTask(SWMPlugin.getInstance(), () -> {
                         try {

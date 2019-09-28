@@ -114,12 +114,4 @@ public class CustomWorldServer extends WorldServer {
         }
     }
 
-    @Override
-    public void setSpawnFlags(boolean allowMonsters, boolean allowAnimals) {
-        super.setSpawnFlags(allowMonsters, allowAnimals);
-
-        // Keep properties updated
-        SlimeWorld.SlimeProperties newProps = slimeWorld.getProperties().toBuilder().allowMonsters(allowMonsters).allowAnimals(allowAnimals).build();
-        slimeWorld.setProperties(newProps);
-    }
 }
