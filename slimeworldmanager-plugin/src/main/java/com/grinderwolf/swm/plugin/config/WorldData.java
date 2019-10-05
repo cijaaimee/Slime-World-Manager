@@ -32,7 +32,7 @@ public class WorldData {
     @Setting("environment")
     private String environment = "NORMAL";
     @Setting("worldType")
-    private String worldType = "NORMAL";
+    private String worldType = "DEFAULT";
 
     @Setting("loadOnStartup")
     private boolean loadOnStartup = true;
