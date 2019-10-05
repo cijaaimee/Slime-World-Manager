@@ -24,7 +24,7 @@ public class SlimeProperty {
         this.type = type;
 
         if (defaultValue != null) {
-            if (!type.getValueClazz().isInstance(type)) {
+            if (!type.getValueClazz().isInstance(defaultValue)) {
                 throw new IllegalArgumentException(defaultValue + " does not match class " + type.getValueClazz().getName());
             }
 
