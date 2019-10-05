@@ -29,5 +29,14 @@ public class SlimeProperties {
 
     });
 
-    public static final SlimeProperty[] VALUES = { SPAWN_X, SPAWN_Y, SPAWN_Z, DIFFICULTY, ALLOW_MONSTERS, ALLOW_ANIMALS, PVP, ENVIRONMENT };
+    public static final SlimeProperty WORLD_TYPE = new SlimeProperty("worldtype", PropertyType.STRING, "normal", (value) -> {
+
+        String worldType = (String) value;
+        return worldType.equalsIgnoreCase("normal") || worldType.equalsIgnoreCase("flat") || worldType.equalsIgnoreCase("large_biomes")
+                || worldType.equalsIgnoreCase("amplified") || worldType.equalsIgnoreCase("customized")
+                || worldType.equalsIgnoreCase("debug_all_block_states") || worldType.equalsIgnoreCase("normal_1_1");
+
+    });
+
+    public static final SlimeProperty[] VALUES = { SPAWN_X, SPAWN_Y, SPAWN_Z, DIFFICULTY, ALLOW_MONSTERS, ALLOW_ANIMALS, PVP, ENVIRONMENT, WORLD_TYPE };
 }

@@ -31,6 +31,8 @@ public class WorldData {
 
     @Setting("environment")
     private String environment = "NORMAL";
+    @Setting("worldType")
+    private String worldType = "NORMAL";
 
     @Setting("loadOnStartup")
     private boolean loadOnStartup = true;
@@ -85,6 +87,7 @@ public class WorldData {
         propertyMap.setBoolean(SlimeProperties.ALLOW_ANIMALS, allowAnimals);
         propertyMap.setBoolean(SlimeProperties.PVP, pvp);
         propertyMap.setString(SlimeProperties.ENVIRONMENT, environment);
+        propertyMap.setString(SlimeProperties.WORLD_TYPE, worldType);
 
         return propertyMap;
     }

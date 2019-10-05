@@ -1,11 +1,10 @@
 package com.grinderwolf.swm.nms.v1_14_R1;
 
 import com.flowpowered.nbt.CompoundTag;
+import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
-import net.minecraft.server.v1_14_R1.EnumGamemode;
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
-import net.minecraft.server.v1_14_R1.WorldData;
+import net.minecraft.server.v1_14_R1.*;
 
 import java.util.Optional;
 
@@ -13,9 +12,11 @@ import java.util.Optional;
 public class CustomWorldData extends WorldData {
 
     private final CraftSlimeWorld world;
+    private final WorldType type;
 
     CustomWorldData(CraftSlimeWorld world) {
         this.world = world;
+        this.type = WorldType.getType(world.getPropertyMap().getString(SlimeProperties.WORLD_TYPE).toUpperCase());
         this.setGameType(EnumGamemode.NOT_SET);
 
         // Game rules
