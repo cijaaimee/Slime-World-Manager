@@ -19,6 +19,7 @@ Javadocs can be found [here](https://grinderwolf.github.io/Slime-World-Manager/a
     * [Setting up the data sources](.docs/config/setup-data-sources.md)
     * [Converting traditional worlds into the SRF](.docs/config/convert-world-to-srf.md)
     * [Configuring worlds](.docs/config/configure-world.md)
+    * [Async world generation](.docs/config/async-world-generation.md)
  * SWM API
     * [Getting started](.docs/api/setup-dev.md)
     * [Loading a world](.docs/api/load-world.md)
