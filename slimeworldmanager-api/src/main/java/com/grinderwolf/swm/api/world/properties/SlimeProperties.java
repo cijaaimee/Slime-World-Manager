@@ -29,12 +29,12 @@ public class SlimeProperties {
 
     });
 
-    public static final SlimeProperty WORLD_TYPE = new SlimeProperty("worldtype", PropertyType.STRING, "normal", (value) -> {
+    public static final SlimeProperty WORLD_TYPE = new SlimeProperty("worldtype", PropertyType.STRING, "default", (value) -> {
 
         String worldType = (String) value;
-        return worldType.equalsIgnoreCase("normal") || worldType.equalsIgnoreCase("flat") || worldType.equalsIgnoreCase("large_biomes")
+        return worldType.equalsIgnoreCase("default") || worldType.equalsIgnoreCase("flat") || worldType.equalsIgnoreCase("large_biomes")
                 || worldType.equalsIgnoreCase("amplified") || worldType.equalsIgnoreCase("customized")
-                || worldType.equalsIgnoreCase("debug_all_block_states") || worldType.equalsIgnoreCase("normal_1_1");
+                || worldType.equalsIgnoreCase("debug_all_block_states") || worldType.equalsIgnoreCase("default_1_1");
 
     });
 
