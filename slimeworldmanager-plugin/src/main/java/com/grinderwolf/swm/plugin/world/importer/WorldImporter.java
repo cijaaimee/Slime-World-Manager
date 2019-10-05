@@ -13,6 +13,7 @@ import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
+import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
@@ -115,7 +116,11 @@ public class WorldImporter {
                 rulesList.ifPresent(compoundTag -> compoundTag.getValue().forEach((ruleName, ruleTag) ->
                         gameRules.put(ruleName, ruleTag.getAsStringTag().get().getValue())));
 
-                return new LevelData(dataVersion, gameRules);
+                int spawnX = dataTag.get().getIntValue("SpawnX").orElse(0);
+                int spawnY = dataTag.get().getIntValue("SpawnY").orElse(255);
+                int spawnZ = dataTag.get().getIntValue("SpawnZ").orElse(0);
+
+                return new LevelData(dataVersion, gameRules, spawnX, spawnY, spawnZ);
             }
         }
 
