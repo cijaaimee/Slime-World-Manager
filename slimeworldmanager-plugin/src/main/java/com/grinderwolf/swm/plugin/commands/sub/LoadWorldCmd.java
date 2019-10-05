@@ -100,6 +100,9 @@ public class LoadWorldCmd implements Subcommand {
                 } catch (WorldInUseException ex) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
                             ": world is already in use. If you think this is a mistake, please wait some time and try again.");
+                } catch (IllegalArgumentException ex) {
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
+                            ": " + ex.getMessage());
                 } catch (IOException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
                         sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName

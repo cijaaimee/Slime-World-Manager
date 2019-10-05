@@ -106,6 +106,9 @@ public class LoadTemplateWorldCmd implements Subcommand {
                 } catch (UnknownWorldException ex) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + templateWorldName +
                             ": world could not be found (using data source '" + worldData.getDataSource() + "').");
+                } catch (IllegalArgumentException ex) {
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + templateWorldName +
+                            ": " + ex.getMessage());
                 } catch (IOException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
                         sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + templateWorldName
