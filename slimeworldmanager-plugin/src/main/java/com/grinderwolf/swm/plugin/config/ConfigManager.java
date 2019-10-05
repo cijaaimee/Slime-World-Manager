@@ -22,6 +22,8 @@ public class ConfigManager {
 
     @Getter
     private static MainConfig mainConfig;
+    @Getter(value = AccessLevel.PACKAGE)
+    private static YAMLConfigurationLoader mainConfigLoader;
 
     @Getter
     private static WorldsConfig worldConfig;
@@ -34,7 +36,7 @@ public class ConfigManager {
     public static void initialize() throws IOException, ObjectMappingException {
         copyDefaultConfigs();
 
-        YAMLConfigurationLoader mainConfigLoader = YAMLConfigurationLoader.builder().setPath(MAIN_FILE.toPath())
+        mainConfigLoader = YAMLConfigurationLoader.builder().setPath(MAIN_FILE.toPath())
                 .setFlowStyle(DumperOptions.FlowStyle.BLOCK).setHeaderMode(HeaderMode.PRESERVE).build();
         mainConfig = mainConfigLoader.load().getValue(TypeToken.of(MainConfig.class));
 
