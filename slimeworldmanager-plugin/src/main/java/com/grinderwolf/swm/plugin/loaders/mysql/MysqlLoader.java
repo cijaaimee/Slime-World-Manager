@@ -39,7 +39,7 @@ public class MysqlLoader extends UpdatableLoader {
     private static final String GET_VERSION_QUERY = "SELECT `version` FROM `database_version` WHERE `id` = 1;";
 
     // v1 update query
-    private static final String ALTER_LOCKED_COLUMN_QUERY = "ALTER TABLE `smw`.`worlds` CHANGE COLUMN `locked` `locked` BIGINT NOT NULL DEFAULT 0;";
+    private static final String ALTER_LOCKED_COLUMN_QUERY = "ALTER TABLE `worlds` CHANGE COLUMN `locked` `locked` BIGINT NOT NULL DEFAULT 0;";
 
     // World handling queries
     private static final String CREATE_WORLDS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS `worlds` (`id` INT NOT NULL AUTO_INCREMENT, " +
