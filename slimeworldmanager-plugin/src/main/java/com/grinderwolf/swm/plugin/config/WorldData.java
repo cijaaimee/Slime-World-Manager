@@ -61,7 +61,7 @@ public class WorldData {
         String environment = this.environment;
 
         try {
-            Enum.valueOf(World.Environment.class, environment);
+            Enum.valueOf(World.Environment.class, environment.toUpperCase());
         } catch (IllegalArgumentException ex) {
             try {
                 int envId = Integer.parseInt(environment);
