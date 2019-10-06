@@ -1,17 +1,9 @@
 package com.grinderwolf.swm.api.world.properties;
 
-import com.flowpowered.nbt.ByteTag;
-import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
-import com.flowpowered.nbt.IntTag;
-import com.flowpowered.nbt.StringTag;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.flowpowered.nbt.*;
+import lombok.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A Property Map object.
@@ -173,10 +165,13 @@ public class SlimePropertyMap {
             switch (property.getType()) {
                 case STRING:
                     map.put(property.getNbtName(), new StringTag(property.getNbtName(), (String) value));
+                    break;
                 case BOOLEAN:
                     map.put(property.getNbtName(), new ByteTag(property.getNbtName(), (byte) (((Boolean) value) ? 1 : 0)));
+                    break;
                 case INT:
                     map.put(property.getNbtName(), new IntTag(property.getNbtName(), (Integer) value));
+                    break;
             }
         }
 
