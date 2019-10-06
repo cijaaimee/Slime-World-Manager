@@ -358,7 +358,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             if (slimeWorld != null && currentLoader.equals(slimeWorld.getLoader())) {
                 slimeWorld.setLoader(newLoader);
 
-                if (!slimeWorld.getProperties().isReadOnly()) { // We have to manually unlock the world so no WorldInUseException is thrown
+                if (!slimeWorld.isReadOnly()) { // We have to manually unlock the world so no WorldInUseException is thrown
                     currentLoader.unlockWorld(worldName);
                     leaveLock = true;
                 }

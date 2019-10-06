@@ -1,54 +1,24 @@
 package com.grinderwolf.swm.nms.v1_14_R1;
 
-import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
-import com.flowpowered.nbt.LongArrayTag;
+import com.flowpowered.nbt.*;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimeProperties;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.server.v1_14_R1.BiomeBase;
-import net.minecraft.server.v1_14_R1.Block;
-import net.minecraft.server.v1_14_R1.BlockPosition;
-import net.minecraft.server.v1_14_R1.Chunk;
-import net.minecraft.server.v1_14_R1.ChunkConverter;
-import net.minecraft.server.v1_14_R1.ChunkCoordIntPair;
-import net.minecraft.server.v1_14_R1.ChunkSection;
-import net.minecraft.server.v1_14_R1.DimensionManager;
-import net.minecraft.server.v1_14_R1.EntityTypes;
-import net.minecraft.server.v1_14_R1.EnumDifficulty;
-import net.minecraft.server.v1_14_R1.EnumSkyBlock;
-import net.minecraft.server.v1_14_R1.FluidType;
-import net.minecraft.server.v1_14_R1.HeightMap;
-import net.minecraft.server.v1_14_R1.IProgressUpdate;
-import net.minecraft.server.v1_14_R1.IRegistry;
-import net.minecraft.server.v1_14_R1.LightEngine;
-import net.minecraft.server.v1_14_R1.MinecraftServer;
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
-import net.minecraft.server.v1_14_R1.NBTTagList;
-import net.minecraft.server.v1_14_R1.ProtoChunkExtension;
-import net.minecraft.server.v1_14_R1.SectionPosition;
-import net.minecraft.server.v1_14_R1.TickListChunk;
-import net.minecraft.server.v1_14_R1.TileEntity;
-import net.minecraft.server.v1_14_R1.WorldNBTStorage;
-import net.minecraft.server.v1_14_R1.WorldServer;
+import net.minecraft.server.v1_14_R1.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.World;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -71,16 +41,17 @@ public class CustomWorldServer extends WorldServer {
 
     CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, DimensionManager dimensionManager) {
         super(MinecraftServer.getServer(), MinecraftServer.getServer().executorService, nbtStorage, nbtStorage.getWorldData(),
-                dimensionManager, MinecraftServer.getServer().getMethodProfiler(), MinecraftServer.getServer().worldLoadListenerFactory.create(11), World.Environment.valueOf(world.getProperties().getEnvironment()), null);
+                dimensionManager, MinecraftServer.getServer().getMethodProfiler(), MinecraftServer.getServer().worldLoadListenerFactory.create(11), World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase()), null);
 
         this.slimeWorld = world;
 
-        SlimeWorld.SlimeProperties properties = world.getProperties();
+        SlimePropertyMap propertyMap = world.getPropertyMap();
 
-        worldData.setDifficulty(EnumDifficulty.getById(properties.getDifficulty()));
-        worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
-        worldData.d(true);
-        super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
+        worldData.setDifficulty(EnumDifficulty.valueOf(propertyMap.getString(SlimeProperties.DIFFICULTY)));
+        worldData.setSpawn(new BlockPosition(propertyMap.getInt(SlimeProperties.SPAWN_X), propertyMap.getInt(SlimeProperties.SPAWN_Y), propertyMap.getInt(SlimeProperties.SPAWN_Z)));
+        super.setSpawnFlags(propertyMap.getBoolean(SlimeProperties.ALLOW_MONSTERS), propertyMap.getBoolean(SlimeProperties.ALLOW_ANIMALS));
+
+        this.pvpMode = propertyMap.getBoolean(SlimeProperties.PVP);
 
         new File(nbtStorage.getDirectory(), "session.lock").delete();
         new File(nbtStorage.getDirectory(), "data").delete();
@@ -88,14 +59,12 @@ public class CustomWorldServer extends WorldServer {
         nbtStorage.getDirectory().delete();
         nbtStorage.getDirectory().getParentFile().delete();
 
-        this.pvpMode = properties.isPvp();
-
         loadAllChunks();
     }
 
     @Override
     public void save(IProgressUpdate progressUpdate, boolean forceSave, boolean flag1) {
-        if (!slimeWorld.getProperties().isReadOnly()) {
+        if (!slimeWorld.isReadOnly()) {
             org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
             this.getChunkProvider().save(forceSave);
 
