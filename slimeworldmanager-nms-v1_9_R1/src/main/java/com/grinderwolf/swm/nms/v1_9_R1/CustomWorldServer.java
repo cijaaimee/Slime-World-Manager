@@ -2,10 +2,13 @@ package com.grinderwolf.swm.nms.v1_9_R1;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
+import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.v1_9_R1.BlockPosition;
+import net.minecraft.server.v1_9_R1.Chunk;
 import net.minecraft.server.v1_9_R1.EntityTracker;
 import net.minecraft.server.v1_9_R1.EnumDifficulty;
 import net.minecraft.server.v1_9_R1.ExceptionWorldConflict;
@@ -32,7 +35,11 @@ public class CustomWorldServer extends WorldServer {
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
 
-    public CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, int dimension) {
+    @Getter
+    @Setter
+    private boolean ready = false;
+
+    CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, int dimension) {
         super(MinecraftServer.getServer(), dataManager, dataManager.getWorldData(), dimension, MinecraftServer.getServer().methodProfiler, World.Environment.NORMAL, null);
 
         b();
@@ -47,6 +54,10 @@ public class CustomWorldServer extends WorldServer {
         super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
 
         this.pvpMode = properties.isPvp();
+
+        // Load all chunks
+        CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
+        chunkLoader.loadAllChunks(this);
     }
 
     @Override
@@ -78,21 +89,22 @@ public class CustomWorldServer extends WorldServer {
             try {
                 LOGGER.info("Saving world " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
+
+                CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
+
+                for (Chunk nmsChunk : chunkLoader.getChunks()) {
+                    SlimeChunk chunk = Converter.convertChunk(nmsChunk);
+                    slimeWorld.updateChunk(chunk);
+                }
+
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
+
+                slimeWorld.clearChunks();
                 LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void setSpawnFlags(boolean allowMonsters, boolean allowAnimals) {
-        super.setSpawnFlags(allowMonsters, allowAnimals);
-
-        // Keep properties updated
-        SlimeWorld.SlimeProperties newProps = slimeWorld.getProperties().toBuilder().allowMonsters(allowMonsters).allowAnimals(allowAnimals).build();
-        slimeWorld.setProperties(newProps);
     }
 }

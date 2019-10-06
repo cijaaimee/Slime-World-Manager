@@ -12,3 +12,9 @@ install:
 jdk: 
    - oraclejdk8
 dist: trusty
+deploy:
+   provider: script
+   script: .travis/release.sh
+   skip_cleanup: true
+   on:
+    tags: true

@@ -10,6 +10,8 @@ worlds:
         allowAnimals: false
         difficulty: peaceful
         pvp: false
+        environment: NORMAL
+        worldType: default
 ```
 
 Then, save it and reload it by using the /swm reload command. You're good to go!
@@ -53,3 +55,13 @@ Defaults to: `peaceful`.
 Description: if true, PvP will be allowed on this world.<br>
 Available options: `true` and `false`.<br>
 Defaults to: `true`.
+
+#### `environment`
+Description: sets the world environment.<br>
+Available options: `normal`, `nether`, `the_end`.<br>
+Defaults to: `normal`.
+
+#### `worldType`
+Description: sets the level type.<br>
+Available options: `default`, `flat`, `large_biomes`, `amplified`, `customized`, `debug_all_block_states`, `default_1_1`.<br>
+Defaults to: `default`.

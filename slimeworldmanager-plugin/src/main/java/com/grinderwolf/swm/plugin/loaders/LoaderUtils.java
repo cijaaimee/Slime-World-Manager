@@ -16,12 +16,15 @@ import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.utils.SlimeFormat;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
+import com.grinderwolf.swm.plugin.loaders.file.FileLoader;
+import com.grinderwolf.swm.plugin.loaders.mongo.MongoLoader;
+import com.grinderwolf.swm.plugin.loaders.mysql.MysqlLoader;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.mongodb.MongoException;
 
@@ -39,8 +42,12 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class LoaderUtils {
+
+    public static final long MAX_LOCK_TIME = 300000L; // Max time difference between current time millis and world lock
+    public static final long LOCK_INTERVAL = 60000L;
 
     private static Map<String, SlimeLoader> loaderMap = new HashMap<>();
 
@@ -53,7 +60,6 @@ public class LoaderUtils {
 
         // Mysql loader
         DatasourcesConfig.MysqlConfig mysqlConfig = config.getMysqlConfig();
-
         if (mysqlConfig.isEnabled()) {
             try {
                 registerLoader("mysql", new MysqlLoader(mysqlConfig));
@@ -85,10 +91,24 @@ public class LoaderUtils {
             throw new IllegalArgumentException("Data source " + dataSource + " already has a declared loader!");
         }
 
+        if (loader instanceof UpdatableLoader) {
+            try {
+                ((UpdatableLoader) loader).update();
+            } catch (UpdatableLoader.NewerDatabaseException e) {
+                Logging.error("Data source " + dataSource + " version is " + e.getDatabaseVersion() + ", while" +
+                        " this SWM version only supports up to version " + e.getCurrentVersion() + ".");
+                return;
+            } catch (IOException ex) {
+                Logging.error("Failed to check if data source " + dataSource + " is updated:");
+                ex.printStackTrace();
+                return;
+            }
+        }
+
         loaderMap.put(dataSource, loader);
     }
 
-    public static CraftSlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimeWorld.SlimeProperties properties)
+    public static CraftSlimeWorld deserializeWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimePropertyMap propertyMap, boolean readOnly)
             throws IOException, CorruptedWorldException, NewerFormatException {
         DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(serializedWorld));
 
@@ -254,7 +274,18 @@ public class LoaderUtils {
                 }
             }
 
-            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, worldVersion, properties);
+            // World properties
+            SlimePropertyMap worldPropertyMap = propertyMap;
+            Optional<CompoundTag> propertiesTag = extraCompound.getAsCompoundTag("properties");
+
+            if (propertiesTag.isPresent()) {
+                worldPropertyMap = SlimePropertyMap.fromCompound(propertiesTag.get());
+                worldPropertyMap.merge(propertyMap); // Override world properties
+            } else if (propertyMap == null) { // Make sure the property map is never null
+                worldPropertyMap = new SlimePropertyMap();
+            }
+
+            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, worldVersion, worldPropertyMap, readOnly);
         } catch (EOFException ex) {
             throw new CorruptedWorldException(worldName);
         }

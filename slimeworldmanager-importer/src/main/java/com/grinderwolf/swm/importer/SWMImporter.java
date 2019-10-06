@@ -4,8 +4,8 @@ import com.flowpowered.nbt.ByteArrayTag;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.IntArrayTag;
-import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.StringTag;
 import com.flowpowered.nbt.Tag;
 import com.flowpowered.nbt.TagType;
 import com.flowpowered.nbt.stream.NBTInputStream;
@@ -36,7 +36,9 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
@@ -98,15 +100,32 @@ public class SWMImporter {
                 return;
             }
 
-            byte worldVersion = 0;
+            LevelData data;
 
             try {
-                worldVersion = getWorldVersion(levelFile);
+                data = readLevelData(levelFile);
             } catch (IOException ex) {
                 System.err.println("Failed to load world level file:");
                 ex.printStackTrace();
+                return;
             } catch (InvalidWorldException ex) {
                 System.err.println("Failed to find world version.");
+                return;
+            }
+
+            // World version
+            byte worldVersion;
+
+            if (data.getVersion() == -1) { // DataVersion tag was added in 1.9
+                worldVersion = 0x01;
+            } else if (data.getVersion() < 818) {
+                worldVersion = 0x02; // 1.9 world
+            } else if (data.getVersion() < 1501) {
+                worldVersion = 0x03; // 1.11 world
+            } else if (data.getVersion() < 1517) {
+                worldVersion = 0x04; // 1.13 world
+            } else {
+                worldVersion = 0x05; // 1.14 world
             }
 
             System.out.println("World version: " + worldVersion);
@@ -124,7 +143,7 @@ public class SWMImporter {
 
             try {
                 long start = System.currentTimeMillis();
-                byte[] slimeFormattedWorld = generateSlimeWorld(chunks, worldVersion);
+                byte[] slimeFormattedWorld = generateSlimeWorld(chunks, worldVersion, data);
 
                 System.out.println(Chalk.on("World " + worldDir.getName() + " successfully serialized to the Slime Format in "
                         + (System.currentTimeMillis() - start) + "ms!").green());
@@ -148,7 +167,7 @@ public class SWMImporter {
         }
     }
 
-    private static byte getWorldVersion(File file) throws IOException, InvalidWorldException {
+    private static LevelData readLevelData(File file) throws IOException, InvalidWorldException {
         NBTInputStream nbtStream = new NBTInputStream(new FileInputStream(file));
         Optional<CompoundTag> tag = nbtStream.readTag().getAsCompoundTag();
 
@@ -156,27 +175,17 @@ public class SWMImporter {
             Optional<CompoundTag> dataTag = tag.get().getAsCompoundTag("Data");
 
             if (dataTag.isPresent()) {
-                Optional<IntTag> versionTag = dataTag.get().getAsIntTag("DataVersion");
+                // Data version
+                int dataVersion = dataTag.get().getIntValue("DataVersion").orElse(-1);
 
-                if (!versionTag.isPresent()) { // DataVersion tag was added in 1.9
-                    return 0x01;
-                }
+                // Game rules
+                Map<String, String> gameRules = new HashMap<>();
+                Optional<CompoundTag> rulesList = dataTag.get().getAsCompoundTag("GameRules");
 
-                int version = versionTag.get().getValue();
+                rulesList.ifPresent(compoundTag -> compoundTag.getValue().forEach((ruleName, ruleTag) ->
+                        gameRules.put(ruleName, ruleTag.getAsStringTag().get().getValue())));
 
-                if (version < 818) {
-                    return 0x02; // 1.9 world
-                }
-
-                if (version < 1501) {
-                    return 0x03; // 1.11 world
-                }
-
-                if (version < 1517) {
-                    return 0x04; // 1.13 world
-                }
-
-                return 0x05; // 1.14 world
+                return new LevelData(dataVersion, gameRules);
             }
         }
 
@@ -352,7 +361,7 @@ public class SWMImporter {
         return true;
     }
 
-    private static byte[] generateSlimeWorld(List<SlimeChunk> chunks, byte worldVersion) {
+    private static byte[] generateSlimeWorld(List<SlimeChunk> chunks, byte worldVersion, LevelData levelData) {
         List<SlimeChunk> sortedChunks = new ArrayList<>(chunks);
         sortedChunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
 
@@ -431,8 +440,21 @@ public class SWMImporter {
             }
 
             // Extra Tag
-            outStream.writeInt(0);
-            outStream.writeInt(0);
+            CompoundMap extraMap = new CompoundMap();
+
+            if (!levelData.getGameRules().isEmpty()) {
+                CompoundMap gamerules = new CompoundMap();
+                levelData.getGameRules().forEach((rule, value) -> gamerules.put(rule, new StringTag(rule, value)));
+
+                extraMap.put("gamerules", new CompoundTag("gamerules", gamerules));
+            }
+
+            byte[] extraData = serializeCompoundTag(new CompoundTag("", extraMap));
+            byte[] compressedExtraData = Zstd.compress(extraData);
+
+            outStream.writeInt(compressedExtraData.length);
+            outStream.writeInt(extraData.length);
+            outStream.write(compressedExtraData);
         } catch (IOException ex) { // Ignore
             ex.printStackTrace();
         }

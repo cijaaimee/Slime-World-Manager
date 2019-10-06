@@ -5,7 +5,7 @@
     <groupId>com.grinderwolf</groupId>
     <artifactId>slimeworldmanager</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.6-SNAPSHOT</version>
+    <version>2.1.1-SNAPSHOT</version>
     <modules>
         <module>slimeworldmanager-api</module>
         <module>slimeworldmanager-nms-common</module>
@@ -33,6 +33,13 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>bintray-cy6ergn0m-maven</id>
+            <name>bintray-plugins</name>
+            <url>http://dl.bintray.com/cy6ergn0m/maven</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencies>
         <dependency>
@@ -76,6 +83,34 @@
             </plugin>
         </plugins>
   </build>
+
+  <profiles>
+      <profile>
+          <id>release</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>cy.github</groupId>
+                      <artifactId>github-release-plugin</artifactId>
+                      <version>0.5.1</version>
+                      <configuration>
+                          <tagName>${project.version}</tagName>
+                          <releaseTitle>${project.artifactId}-${project.version}</releaseTitle>
+                          <serverId>github</serverId>
+                      </configuration>
+                      <executions>
+                          <execution>
+                              <goals>
+                                  <goal>gh-upload</goal>
+                              </goals>
+                              <phase>deploy</phase>
+                          </execution>
+                      </executions>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+  </profiles>
 
   <distributionManagement>
         <repository>

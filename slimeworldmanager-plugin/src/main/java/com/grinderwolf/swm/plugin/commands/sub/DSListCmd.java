@@ -92,7 +92,7 @@ public class DSListCmd implements Subcommand {
                 worldList.sort(String::compareTo);
                 sender.sendMessage(Logging.COMMAND_PREFIX + "World list " + ChatColor.YELLOW + "[" + page + "/" + maxPages + "]" + ChatColor.GRAY + ":");
 
-                for (int i = offset; i < MAX_ITEMS_PER_PAGE && i < worldList.size(); i++) {
+                for (int i = offset; (i - offset) < MAX_ITEMS_PER_PAGE && i < worldList.size(); i++) {
                     String world = worldList.get(i);
                     sender.sendMessage(ChatColor.GRAY + " - " + (isLoaded(loader, world) ? ChatColor.GREEN : ChatColor.RED) + world);
                 }

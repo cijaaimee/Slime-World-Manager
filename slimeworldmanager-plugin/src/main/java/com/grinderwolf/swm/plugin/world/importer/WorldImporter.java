@@ -1,40 +1,22 @@
-package com.grinderwolf.swm.plugin.world;
+package com.grinderwolf.swm.plugin.world.importer;
 
-import com.flowpowered.nbt.ByteArrayTag;
-import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
-import com.flowpowered.nbt.IntArrayTag;
-import com.flowpowered.nbt.IntTag;
-import com.flowpowered.nbt.ListTag;
-import com.flowpowered.nbt.Tag;
-import com.flowpowered.nbt.TagType;
+import com.flowpowered.nbt.*;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.api.world.SlimeWorld;
-import com.grinderwolf.swm.nms.CraftSlimeChunk;
-import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
-import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimeProperties;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
+import com.grinderwolf.swm.nms.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
@@ -50,7 +32,22 @@ public class WorldImporter {
             throw new InvalidWorldException(worldDir);
         }
 
-        byte worldVersion = getWorldVersion(levelFile);
+        LevelData data = readLevelData(levelFile);
+
+        // World version
+        byte worldVersion;
+
+        if (data.getVersion() == -1) { // DataVersion tag was added in 1.9
+            worldVersion = 0x01;
+        } else if (data.getVersion() < 818) {
+            worldVersion = 0x02; // 1.9 world
+        } else if (data.getVersion() < 1501) {
+            worldVersion = 0x03; // 1.11 world
+        } else if (data.getVersion() < 1517) {
+            worldVersion = 0x04; // 1.13 world
+        } else {
+            worldVersion = 0x05; // 1.14 world
+        }
 
         File regionDir = new File(worldDir, "region");
 
@@ -68,10 +65,27 @@ public class WorldImporter {
             throw new InvalidWorldException(worldDir);
         }
 
-        return new CraftSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", new CompoundMap()), worldVersion, SlimeWorld.SlimeProperties.builder().build());
+        // Extra Data
+        CompoundMap extraData = new CompoundMap();
+
+        if (!data.getGameRules().isEmpty()) {
+            CompoundMap gamerules = new CompoundMap();
+            data.getGameRules().forEach((rule, value) -> gamerules.put(rule, new StringTag(rule, value)));
+
+            extraData.put("gamerules", new CompoundTag("gamerules", gamerules));
+        }
+
+        SlimePropertyMap propertyMap = new SlimePropertyMap();
+
+        propertyMap.setInt(SlimeProperties.SPAWN_X, data.getSpawnX());
+        propertyMap.setInt(SlimeProperties.SPAWN_Y, data.getSpawnY());
+        propertyMap.setInt(SlimeProperties.SPAWN_Z, data.getSpawnZ());
+
+        return new CraftSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", extraData),
+                worldVersion, propertyMap, false);
     }
 
-    private static byte getWorldVersion(File file) throws IOException, InvalidWorldException {
+    private static LevelData readLevelData(File file) throws IOException, InvalidWorldException {
         NBTInputStream nbtStream = new NBTInputStream(new FileInputStream(file));
         Optional<CompoundTag> tag = nbtStream.readTag().getAsCompoundTag();
 
@@ -79,27 +93,21 @@ public class WorldImporter {
             Optional<CompoundTag> dataTag = tag.get().getAsCompoundTag("Data");
 
             if (dataTag.isPresent()) {
-                Optional<IntTag> versionTag = dataTag.get().getAsIntTag("DataVersion");
+                // Data version
+                int dataVersion = dataTag.get().getIntValue("DataVersion").orElse(-1);
 
-                if (!versionTag.isPresent()) { // DataVersion tag was added in 1.9
-                    return 0x01;
-                }
+                // Game rules
+                Map<String, String> gameRules = new HashMap<>();
+                Optional<CompoundTag> rulesList = dataTag.get().getAsCompoundTag("GameRules");
 
-                int version = versionTag.get().getValue();
+                rulesList.ifPresent(compoundTag -> compoundTag.getValue().forEach((ruleName, ruleTag) ->
+                        gameRules.put(ruleName, ruleTag.getAsStringTag().get().getValue())));
 
-                if (version < 818) {
-                    return 0x02; // 1.9 world
-                }
+                int spawnX = dataTag.get().getIntValue("SpawnX").orElse(0);
+                int spawnY = dataTag.get().getIntValue("SpawnY").orElse(255);
+                int spawnZ = dataTag.get().getIntValue("SpawnZ").orElse(0);
 
-                if (version < 1501) {
-                    return 0x03; // 1.11 world
-                }
-
-                if (version < 1517) {
-                    return 0x04; // 1.13 world
-                }
-
-                return 0x05; // 1.14 world
+                return new LevelData(dataVersion, gameRules, spawnX, spawnY, spawnZ);
             }
         }
 

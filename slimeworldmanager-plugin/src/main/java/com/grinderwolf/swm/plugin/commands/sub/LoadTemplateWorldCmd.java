@@ -79,7 +79,7 @@ public class LoadTemplateWorldCmd implements Subcommand {
                         throw new IllegalArgumentException("invalid data source " + worldData.getDataSource());
                     }
 
-                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorld(loader, templateWorldName, worldData.toProperties().withReadOnly(true)).clone(worldName);
+                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorld(loader, templateWorldName, true, worldData.toPropertyMap()).clone(worldName);
                     Bukkit.getScheduler().runTask(SWMPlugin.getInstance(), () -> {
                         try {
                             SWMPlugin.getInstance().generateWorld(slimeWorld);
@@ -106,6 +106,9 @@ public class LoadTemplateWorldCmd implements Subcommand {
                 } catch (UnknownWorldException ex) {
                     sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + templateWorldName +
                             ": world could not be found (using data source '" + worldData.getDataSource() + "').");
+                } catch (IllegalArgumentException ex) {
+                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + templateWorldName +
+                            ": " + ex.getMessage());
                 } catch (IOException ex) {
                     if (!(sender instanceof ConsoleCommandSender)) {
                         sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + templateWorldName
