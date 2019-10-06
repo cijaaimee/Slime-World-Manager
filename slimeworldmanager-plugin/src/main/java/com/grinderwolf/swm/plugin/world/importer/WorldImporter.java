@@ -1,41 +1,22 @@
 package com.grinderwolf.swm.plugin.world.importer;
 
-import com.flowpowered.nbt.ByteArrayTag;
-import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
-import com.flowpowered.nbt.IntArrayTag;
-import com.flowpowered.nbt.ListTag;
-import com.flowpowered.nbt.StringTag;
-import com.flowpowered.nbt.Tag;
-import com.flowpowered.nbt.TagType;
+import com.flowpowered.nbt.*;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
-import com.grinderwolf.swm.nms.CraftSlimeChunk;
-import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
-import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import com.grinderwolf.swm.nms.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
@@ -94,8 +75,14 @@ public class WorldImporter {
             extraData.put("gamerules", new CompoundTag("gamerules", gamerules));
         }
 
+        SlimePropertyMap propertyMap = new SlimePropertyMap();
+
+        propertyMap.setInt(SlimeProperties.SPAWN_X, data.getSpawnX());
+        propertyMap.setInt(SlimeProperties.SPAWN_Y, data.getSpawnY());
+        propertyMap.setInt(SlimeProperties.SPAWN_Z, data.getSpawnZ());
+
         return new CraftSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", extraData),
-                worldVersion, new SlimePropertyMap(), false);
+                worldVersion, propertyMap, false);
     }
 
     private static LevelData readLevelData(File file) throws IOException, InvalidWorldException {
