@@ -3,22 +3,12 @@ package com.grinderwolf.swm.nms.v1_13_R2;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.world.SlimeChunk;
-import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimeProperties;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.server.v1_13_R2.BlockPosition;
-import net.minecraft.server.v1_13_R2.Chunk;
-import net.minecraft.server.v1_13_R2.DimensionManager;
-import net.minecraft.server.v1_13_R2.EntityTracker;
-import net.minecraft.server.v1_13_R2.EnumDifficulty;
-import net.minecraft.server.v1_13_R2.ExceptionWorldConflict;
-import net.minecraft.server.v1_13_R2.IDataManager;
-import net.minecraft.server.v1_13_R2.IProgressUpdate;
-import net.minecraft.server.v1_13_R2.MinecraftServer;
-import net.minecraft.server.v1_13_R2.PersistentCollection;
-import net.minecraft.server.v1_13_R2.WorldManager;
-import net.minecraft.server.v1_13_R2.WorldServer;
+import net.minecraft.server.v1_13_R2.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.World;
@@ -42,19 +32,20 @@ public class CustomWorldServer extends WorldServer {
     private boolean ready = false;
 
     CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, DimensionManager dimensionManager) {
-        super(MinecraftServer.getServer(), dataManager, new PersistentCollection(dataManager), dataManager.getWorldData(), dimensionManager, MinecraftServer.getServer().methodProfiler, World.Environment.valueOf(world.getProperties().getEnvironment()), null);
+        super(MinecraftServer.getServer(), dataManager, new PersistentCollection(dataManager), dataManager.getWorldData(), dimensionManager,
+                MinecraftServer.getServer().methodProfiler, World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase()), null);
         i_();
         this.slimeWorld = world;
         this.tracker = new EntityTracker(this);
         addIWorldAccess(new WorldManager(MinecraftServer.getServer(), this));
 
-        SlimeWorld.SlimeProperties properties = world.getProperties();
+        SlimePropertyMap propertyMap = world.getPropertyMap();
 
-        worldData.setDifficulty(EnumDifficulty.getById(properties.getDifficulty()));
-        worldData.setSpawn(new BlockPosition(properties.getSpawnX(), properties.getSpawnY(), properties.getSpawnZ()));
-        super.setSpawnFlags(properties.allowMonsters(), properties.allowAnimals());
+        worldData.setDifficulty(EnumDifficulty.valueOf(propertyMap.getString(SlimeProperties.DIFFICULTY)));
+        worldData.setSpawn(new BlockPosition(propertyMap.getInt(SlimeProperties.SPAWN_X), propertyMap.getInt(SlimeProperties.SPAWN_Y), propertyMap.getInt(SlimeProperties.SPAWN_Z)));
+        super.setSpawnFlags(propertyMap.getBoolean(SlimeProperties.ALLOW_MONSTERS), propertyMap.getBoolean(SlimeProperties.ALLOW_ANIMALS));
 
-        this.pvpMode = properties.isPvp();
+        this.pvpMode = propertyMap.getBoolean(SlimeProperties.PVP);
 
         // Load all chunks
         CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
@@ -68,7 +59,7 @@ public class CustomWorldServer extends WorldServer {
 
     @Override
     public void save(boolean forceSave, IProgressUpdate progressUpdate) throws ExceptionWorldConflict {
-        if (!slimeWorld.getProperties().isReadOnly()) {
+        if (!slimeWorld.isReadOnly()) {
             super.save(forceSave, progressUpdate);
 
             if (MinecraftServer.getServer().isStopped()) { // Make sure the slimeWorld gets saved before stopping the server by running it from the main thread
