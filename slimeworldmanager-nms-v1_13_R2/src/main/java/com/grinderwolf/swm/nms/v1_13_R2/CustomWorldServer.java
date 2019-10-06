@@ -42,7 +42,7 @@ public class CustomWorldServer extends WorldServer {
     private boolean ready = false;
 
     CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, DimensionManager dimensionManager) {
-        super(MinecraftServer.getServer(), dataManager, new PersistentCollection(dataManager), dataManager.getWorldData(), dimensionManager, MinecraftServer.getServer().methodProfiler, World.Environment.NORMAL, null);
+        super(MinecraftServer.getServer(), dataManager, new PersistentCollection(dataManager), dataManager.getWorldData(), dimensionManager, MinecraftServer.getServer().methodProfiler, World.Environment.valueOf(world.getProperties().getEnvironment()), null);
         i_();
         this.slimeWorld = world;
         this.tracker = new EntityTracker(this);

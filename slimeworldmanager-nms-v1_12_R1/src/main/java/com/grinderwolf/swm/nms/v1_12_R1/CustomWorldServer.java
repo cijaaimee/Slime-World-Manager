@@ -42,7 +42,7 @@ public class CustomWorldServer extends WorldServer {
     private boolean ready = false;
 
     CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, int dimension) {
-        super(MinecraftServer.getServer(), dataManager, dataManager.getWorldData(), dimension, MinecraftServer.getServer().methodProfiler, World.Environment.NORMAL, null);
+        super(MinecraftServer.getServer(), dataManager, dataManager.getWorldData(), dimension, MinecraftServer.getServer().methodProfiler, World.Environment.valueOf(world.getProperties().getEnvironment()), null);
 
         this.D = new CustomFunctionData(null, MinecraftServer.getServer());
         this.slimeWorld = world;
