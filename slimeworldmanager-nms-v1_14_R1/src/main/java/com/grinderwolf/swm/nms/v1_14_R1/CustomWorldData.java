@@ -30,4 +30,8 @@ public class CustomWorldData extends WorldData {
         return world.getName();
     }
 
+    @Override
+    public boolean u() {
+        return true;
+    }
 }
