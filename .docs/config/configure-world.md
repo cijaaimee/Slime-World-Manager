@@ -62,6 +62,6 @@ Available options: `normal`, `nether`, `the_end`.<br>
 Defaults to: `normal`.
 
 #### `worldType`
-Description: sets the level type.w<br>
+Description: sets the level type.<br>
 Available options: `default`, `flat`, `large_biomes`, `amplified`, `customized`, `debug_all_block_states`, `default_1_1`.<br>
 Defaults to: `default`.
