@@ -2,7 +2,6 @@ package com.grinderwolf.swm.nms.v1_9_R1;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
@@ -82,18 +81,8 @@ public class CustomWorldServer extends WorldServer {
             try {
                 LOGGER.info("Saving world " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
-
-                CustomChunkLoader chunkLoader = ((CustomDataManager) this.getDataManager()).getChunkLoader();
-
-                for (Chunk nmsChunk : chunkLoader.getChunks()) {
-                    SlimeChunk chunk = Converter.convertChunk(nmsChunk);
-                    slimeWorld.updateChunk(chunk);
-                }
-
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
-
-                slimeWorld.clearChunks();
                 LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();
