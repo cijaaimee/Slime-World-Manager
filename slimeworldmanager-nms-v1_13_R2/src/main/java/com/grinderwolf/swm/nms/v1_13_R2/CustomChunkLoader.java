@@ -39,8 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -48,7 +47,6 @@ public class CustomChunkLoader implements IChunkLoader {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
 
-    private final Map<Long, Object[]> chunks = new HashMap<>();
     private final NBTTagCompound emptyWorldCompound = new NBTTagCompound();
     private final CraftSlimeWorld world;
 
@@ -57,20 +55,9 @@ public class CustomChunkLoader implements IChunkLoader {
     }
 
     void loadAllChunks(CustomWorldServer server) {
-        for (SlimeChunk chunk : world.getChunks().values()) {
+        for (SlimeChunk chunk : new ArrayList<>(world.getChunks().values())) {
             Object[] data = createChunk(server, chunk);
-
-            long index = (((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()));
-            chunks.put(index, data);
-        }
-
-        // Now that we've converted every SlimeChunk to its nms counterpart, we can empty the chunk list
-        world.clearChunks();
-    }
-
-    Object[][] getChunks() {
-        synchronized (chunks) {
-            return chunks.values().toArray(new Object[2][0]);
+            world.updateChunk(new NMSSlimeChunk((Chunk) data[0], (NBTTagCompound) data[1]));
         }
     }
 
@@ -225,24 +212,17 @@ public class CustomChunkLoader implements IChunkLoader {
         }
 
         loadEntities(compound.getCompound("Level"), chunk);
-
         return chunk;
     }
 
     // PaperSpigot adds these methods to the IChunkLoader interface, so they have to be implemented as well
 
     public Object[] loadChunk(GeneratorAccess generatorAccess, int x, int z, Consumer<Chunk> consumer) { // Paper method
-        long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
-
+        SlimeChunk slimeChunk = world.getChunk(x, z);
         Object[] data;
 
-        synchronized (chunks) {
-            data = chunks.get(index);
-        }
-
-        if (data == null) {
+        if (slimeChunk == null) {
             data = new Object[2];
-
             BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
 
             // Biomes
@@ -262,6 +242,11 @@ public class CustomChunkLoader implements IChunkLoader {
 
             data[0] = nmsChunk;
             data[1] = emptyWorldCompound;
+        } else if (slimeChunk instanceof NMSSlimeChunk) {
+            NMSSlimeChunk nmsSlimeChunk = (NMSSlimeChunk) slimeChunk;
+            data = new Object[] { nmsSlimeChunk.getChunk(), nmsSlimeChunk.getCompound() };
+        } else { // All SlimeChunk objects should be converted to NMSSlimeChunks when loading the world
+            throw new IllegalStateException("Chunk (" + x + ", " + z + ") has not been converted to a NMSSlimeChunk object!");
         }
 
         return data;
@@ -338,29 +323,12 @@ public class CustomChunkLoader implements IChunkLoader {
             return; // Not saving protochunks, only full chunks
         }
 
-        boolean empty = true;
+        SlimeChunk slimeChunk = this.world.getChunk(chunkAccess.getPos().x, chunkAccess.getPos().z);
 
-        for (int sectionId = 0; sectionId < chunkAccess.getSections().length; sectionId++) {
-            ChunkSection section = chunkAccess.getSections()[sectionId];
-
-            if (section != null) {
-                section.recalcBlockCounts();
-
-                if (!section.a()) {
-                    empty = false;
-                    break;
-                }
-            }
-        }
-
-        long index = (((long) chunkAccess.getPos().z) * Integer.MAX_VALUE + ((long) chunkAccess.getPos().x));
-
-        synchronized (chunks) {
-            if (empty) {
-                chunks.remove(index);
-            } else {
-                chunks.putIfAbsent(index, new Object[] { chunkAccess, emptyWorldCompound }); // There should be no need to create a nbt compound with all entities as they're already loaded
-            }
+        if (slimeChunk instanceof NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some reason)
+            ((NMSSlimeChunk) slimeChunk).setChunk((Chunk) chunkAccess);
+        } else {
+            this.world.updateChunk(new NMSSlimeChunk((Chunk) chunkAccess, emptyWorldCompound));
         }
     }
 

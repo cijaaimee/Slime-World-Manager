@@ -10,6 +10,13 @@ import java.util.List;
 public interface SlimeChunk {
 
     /**
+     * Returns the name of the world this chunk belongs to.
+     *
+     * @return The name of the world of this chunk.
+     */
+    String getWorldName();
+
+    /**
      * Returns the X coordinate of the chunk.
      *
      * @return X coordinate of the chunk.

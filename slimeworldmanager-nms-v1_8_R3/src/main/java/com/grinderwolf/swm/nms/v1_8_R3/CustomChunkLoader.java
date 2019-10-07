@@ -20,33 +20,19 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class CustomChunkLoader implements IChunkLoader {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
 
-    private final Map<Long, Chunk> chunks = new HashMap<>();
     private final CraftSlimeWorld world;
 
     void loadAllChunks(CustomWorldServer server) {
-        for (SlimeChunk chunk : world.getChunks().values()) {
+        for (SlimeChunk chunk : new ArrayList<>(world.getChunks().values())) {
             Chunk nmsChunk = createChunk(server, chunk);
-
-            long index = (((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()));
-            chunks.put(index, nmsChunk);
-        }
-
-        // Now that we've converted every SlimeChunk to its nms counterpart, we can empty the chunk list
-        world.clearChunks();
-    }
-
-    Chunk[] getChunks() {
-        synchronized (chunks) {
-            return chunks.values().toArray(new Chunk[0]);
+            world.updateChunk(new NMSSlimeChunk(nmsChunk));
         }
     }
 
@@ -196,19 +182,18 @@ public class CustomChunkLoader implements IChunkLoader {
     // Load chunk
     @Override
     public Chunk a(World nmsWorld, int x, int z) {
-        long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
-
+        SlimeChunk slimeChunk = world.getChunk(x, z);
         Chunk chunk;
 
-        synchronized (chunks) {
-            chunk = chunks.get(index);
-        }
-
-        if (chunk == null) {
+        if (slimeChunk == null) {
             chunk = new Chunk(nmsWorld, x, z);
 
             chunk.d(true);
             chunk.e(true);
+        } else if (slimeChunk instanceof NMSSlimeChunk) {
+            chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
+        } else { // All SlimeChunk objects should be converted to NMSSlimeChunks when loading the world
+            throw new IllegalStateException("Chunk (" + x + ", " + z + ") has not been converted to a NMSSlimeChunk object!");
         }
 
         return chunk;
@@ -217,29 +202,12 @@ public class CustomChunkLoader implements IChunkLoader {
     // Save chunk
     @Override
     public void a(World world, Chunk chunk) {
-        boolean empty = true;
+        SlimeChunk slimeChunk = this.world.getChunk(chunk.locX, chunk.locZ);
 
-        for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
-            ChunkSection section = chunk.getSections()[sectionId];
-
-            if (section != null) {
-                section.recalcBlockCounts();
-
-                if (!section.a()) {
-                    empty = false;
-                    break;
-                }
-            }
-        }
-
-        long index = (((long) chunk.locZ) * Integer.MAX_VALUE + ((long) chunk.locX));
-
-        synchronized (chunks) {
-            if (empty) {
-                chunks.remove(index);
-            } else {
-                chunks.putIfAbsent(index, chunk);
-            }
+        if (slimeChunk instanceof NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some reason)
+            ((NMSSlimeChunk) slimeChunk).setChunk(chunk);
+        } else {
+            this.world.updateChunk(new NMSSlimeChunk(chunk));
         }
     }
 

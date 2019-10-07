@@ -33,15 +33,14 @@ public class CustomWorldServer extends WorldServer {
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
 
-    private final Map<Long, Chunk> chunks = new HashMap<>();
-
     @Getter
     @Setter
     private boolean ready = false;
 
     CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, DimensionManager dimensionManager) {
         super(MinecraftServer.getServer(), MinecraftServer.getServer().executorService, nbtStorage, nbtStorage.getWorldData(),
-                dimensionManager, MinecraftServer.getServer().getMethodProfiler(), MinecraftServer.getServer().worldLoadListenerFactory.create(11), World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase()), null);
+                dimensionManager, MinecraftServer.getServer().getMethodProfiler(), MinecraftServer.getServer().worldLoadListenerFactory.create(11),
+                World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase()), null);
 
         this.slimeWorld = world;
 
@@ -58,8 +57,6 @@ public class CustomWorldServer extends WorldServer {
 
         nbtStorage.getDirectory().delete();
         nbtStorage.getDirectory().getParentFile().delete();
-
-        loadAllChunks();
     }
 
     @Override
@@ -88,22 +85,12 @@ public class CustomWorldServer extends WorldServer {
     }
 
     private void save() {
-        synchronized (saveLock) { // Don't want to save the slimeWorld from multiple threads simultaneously
+        synchronized (saveLock) { // Don't want to save the SlimeWorld from multiple threads simultaneously
             try {
                 LOGGER.info("Saving world " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
-
-                synchronized (chunks) {
-                    for (Chunk nmsChunk : chunks.values()) {
-                        SlimeChunk chunk = Converter.convertChunk(nmsChunk);
-                        slimeWorld.updateChunk(chunk);
-                    }
-                }
-
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
-
-                slimeWorld.clearChunks();
                 LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -111,16 +98,36 @@ public class CustomWorldServer extends WorldServer {
         }
     }
 
-    private void loadAllChunks() {
-        for (SlimeChunk chunk : slimeWorld.getChunks().values()) {
-            Chunk nmsChunk = createChunk(chunk);
+    ProtoChunkExtension getChunk(int x, int z) {
+        SlimeChunk slimeChunk = slimeWorld.getChunk(x, z);
+        Chunk chunk;
 
-            long index = (((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()));
-            chunks.put(index, nmsChunk);
+        if (slimeChunk == null) {
+            BiomeBase[] biomeBaseArray = new BiomeBase[256];
+            BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
+
+            for (int i = 0; i < biomeBaseArray.length; i++) {
+                biomeBaseArray[i] = getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(mutableBlockPosition
+                        .d((i & 15) + (x << 4), 0, (i >> 4 & 15) + (z << 4)));
+            }
+
+            // Tick lists
+            TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>());
+            TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>());
+
+            ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
+            chunk = new Chunk(this, pos, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, null, null);
+            HeightMap.a(chunk, chunk.getChunkStatus().h());
+
+            getChunkProvider().getLightEngine().b(pos, true);
+        } else if (slimeChunk instanceof NMSSlimeChunk) {
+            chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
+        } else {
+            chunk = createChunk(slimeChunk);
+            slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
 
-        // Now that we've converted every SlimeChunk to its nms counterpart, we can empty the chunk list
-        slimeWorld.clearChunks();
+        return new ProtoChunkExtension(chunk);
     }
 
     private Chunk createChunk(SlimeChunk chunk) {
@@ -261,62 +268,13 @@ public class CustomWorldServer extends WorldServer {
         return nmsChunk;
     }
 
-    ProtoChunkExtension getChunk(int x, int z) {
-        long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
-        Chunk chunk;
-
-        synchronized (chunks) {
-            chunk = chunks.get(index);
-        }
-
-        if (chunk == null) {
-            BiomeBase[] biomeBaseArray = new BiomeBase[256];
-
-            BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
-
-            for (int i = 0; i < biomeBaseArray.length; i++) {
-                biomeBaseArray[i] = getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(mutableBlockPosition
-                        .d((i & 15) + (x << 4), 0, (i >> 4 & 15) + (z << 4)));
-            }
-
-            // Tick lists
-            TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>());
-            TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>());
-
-            ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
-            chunk = new Chunk(this, pos, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, null, null);
-            HeightMap.a(chunk, chunk.getChunkStatus().h());
-
-            getChunkProvider().getLightEngine().b(pos, true);
-        }
-
-        return new ProtoChunkExtension(chunk);
-    }
-
     void saveChunk(Chunk chunk) {
-        boolean empty = true;
+        SlimeChunk slimeChunk = slimeWorld.getChunk(chunk.getPos().x, chunk.getPos().z);
 
-        for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
-            ChunkSection section = chunk.getSections()[sectionId];
-
-            if (section != null) {
-                section.recalcBlockCounts();
-
-                if (!section.c()) {
-                    empty = false;
-                    break;
-                }
-            }
-        }
-
-        long index = (((long) chunk.getPos().z) * Integer.MAX_VALUE + ((long) chunk.getPos().x));
-
-        synchronized (chunks) {
-            if (empty) {
-                chunks.remove(index);
-            } else {
-                chunks.putIfAbsent(index, chunk);
-            }
+        if (slimeChunk instanceof NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some reason)
+            ((NMSSlimeChunk) slimeChunk).setChunk(chunk);
+        } else {
+            slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
     }
 }

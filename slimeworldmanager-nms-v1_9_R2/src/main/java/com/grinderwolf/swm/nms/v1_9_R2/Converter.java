@@ -1,46 +1,11 @@
 package com.grinderwolf.swm.nms.v1_9_R2;
 
-import com.flowpowered.nbt.ByteArrayTag;
-import com.flowpowered.nbt.ByteTag;
-import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
-import com.flowpowered.nbt.DoubleTag;
-import com.flowpowered.nbt.FloatTag;
-import com.flowpowered.nbt.IntArrayTag;
-import com.flowpowered.nbt.IntTag;
-import com.flowpowered.nbt.ListTag;
-import com.flowpowered.nbt.LongTag;
-import com.flowpowered.nbt.ShortTag;
-import com.flowpowered.nbt.StringTag;
-import com.flowpowered.nbt.Tag;
-import com.flowpowered.nbt.TagType;
+import com.flowpowered.nbt.*;
 import com.grinderwolf.swm.api.utils.NibbleArray;
-import com.grinderwolf.swm.api.world.SlimeChunk;
-import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.nms.CraftSlimeChunk;
-import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
-import net.minecraft.server.v1_9_R2.Chunk;
-import net.minecraft.server.v1_9_R2.ChunkSection;
-import net.minecraft.server.v1_9_R2.DataPaletteBlock;
-import net.minecraft.server.v1_9_R2.Entity;
-import net.minecraft.server.v1_9_R2.NBTBase;
-import net.minecraft.server.v1_9_R2.NBTTagByte;
-import net.minecraft.server.v1_9_R2.NBTTagByteArray;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.NBTTagDouble;
-import net.minecraft.server.v1_9_R2.NBTTagFloat;
-import net.minecraft.server.v1_9_R2.NBTTagInt;
-import net.minecraft.server.v1_9_R2.NBTTagIntArray;
-import net.minecraft.server.v1_9_R2.NBTTagList;
-import net.minecraft.server.v1_9_R2.NBTTagLong;
-import net.minecraft.server.v1_9_R2.NBTTagShort;
-import net.minecraft.server.v1_9_R2.NBTTagString;
-import net.minecraft.server.v1_9_R2.TileEntity;
+import net.minecraft.server.v1_9_R2.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +17,7 @@ public class Converter {
         return new net.minecraft.server.v1_9_R2.NibbleArray(array.getBacking());
     }
 
-    private static NibbleArray convertArray(net.minecraft.server.v1_9_R2.NibbleArray array) {
+    static NibbleArray convertArray(net.minecraft.server.v1_9_R2.NibbleArray array) {
         return new NibbleArray(array.asBytes());
     }
 
@@ -143,77 +108,4 @@ public class Converter {
         }
     }
 
-    static SlimeChunk convertChunk(Chunk chunk) {
-        // Chunk sections
-        SlimeChunkSection[] sections = new SlimeChunkSection[16];
-
-        for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
-            ChunkSection section = chunk.getSections()[sectionId];
-
-            if (section != null) {
-                section.recalcBlockCounts();
-
-                if (!section.a()) { // If the section is empty, just ignore it to save space
-                    // Block Light Nibble Array
-                    NibbleArray blockLightArray = convertArray(section.getEmittedLightArray());
-
-                    // Sky light Nibble Array
-                    NibbleArray skyLightArray = convertArray(section.getSkyLightArray());
-
-                    // Block Data
-                    byte[] blocks = new byte[4096];
-
-                    net.minecraft.server.v1_9_R2.NibbleArray minecraftBlockDataArray = new net.minecraft.server.v1_9_R2.NibbleArray();
-                    DataPaletteBlock dataPaletteBlock = section.getBlocks();
-                    dataPaletteBlock.exportData(blocks, minecraftBlockDataArray);
-
-                    NibbleArray blockDataArray = convertArray(minecraftBlockDataArray);
-
-                    sections[sectionId] = new CraftSlimeChunkSection(blocks, blockDataArray, null, null, blockLightArray, skyLightArray);
-                }
-            }
-        }
-
-        // Tile Entities
-        ArrayList<CompoundTag> tileEntities = new ArrayList<>();
-
-        for (TileEntity entity : chunk.getTileEntities().values()) {
-            NBTTagCompound entityNbt = new NBTTagCompound();
-            entity.save(entityNbt);
-            tileEntities.add((CompoundTag) convertTag("", entityNbt));
-        }
-
-        // Entities
-        ArrayList<CompoundTag> entities = new ArrayList<>();
-
-        for (int i = 0; i < chunk.getEntitySlices().length; i++) {
-            for (Entity entity : chunk.getEntitySlices()[i]) {
-                NBTTagCompound entityNbt = new NBTTagCompound();
-
-                if (entity.d(entityNbt)) {
-                    chunk.g(true);
-                    entities.add((CompoundTag) convertTag("", entityNbt));
-                }
-            }
-        }
-
-        // Biomes
-        byte[] byteBiomes = chunk.getBiomeIndex();
-        int[] biomes = toIntArray(byteBiomes);
-
-        // HeightMap
-        CompoundTag heightMapsCompound = new CompoundTag("", new CompoundMap());
-        heightMapsCompound.getValue().put("heightMap", new IntArrayTag("heightMap", chunk.heightMap));
-
-        return new CraftSlimeChunk(chunk.world.worldData.getName(), chunk.locX, chunk.locZ, sections, heightMapsCompound, biomes, tileEntities, entities);
-    }
-
-    private static int[] toIntArray(byte[] buf) {
-        ByteBuffer buffer = ByteBuffer.wrap(buf).order(ByteOrder.BIG_ENDIAN);
-        int[] ret = new int[buf.length / 4];
-
-        buffer.asIntBuffer().get(ret);
-
-        return ret;
-    }
 }
