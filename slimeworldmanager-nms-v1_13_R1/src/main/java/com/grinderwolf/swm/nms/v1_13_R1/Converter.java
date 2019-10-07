@@ -54,7 +54,7 @@ public class Converter {
         return new net.minecraft.server.v1_13_R1.NibbleArray(array.getBacking());
     }
 
-    private static NibbleArray convertArray(net.minecraft.server.v1_13_R1.NibbleArray array) {
+    static NibbleArray convertArray(net.minecraft.server.v1_13_R1.NibbleArray array) {
         return new NibbleArray(array.asBytes());
     }
 

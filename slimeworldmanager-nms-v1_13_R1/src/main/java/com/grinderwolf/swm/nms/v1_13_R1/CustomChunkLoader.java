@@ -1,42 +1,17 @@
 package com.grinderwolf.swm.nms.v1_13_R1;
 
-import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
-import com.flowpowered.nbt.LongArrayTag;
+import com.flowpowered.nbt.*;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_13_R1.BiomeBase;
-import net.minecraft.server.v1_13_R1.Biomes;
-import net.minecraft.server.v1_13_R1.Block;
-import net.minecraft.server.v1_13_R1.BlockPosition;
-import net.minecraft.server.v1_13_R1.Chunk;
-import net.minecraft.server.v1_13_R1.ChunkConverter;
-import net.minecraft.server.v1_13_R1.ChunkCoordIntPair;
-import net.minecraft.server.v1_13_R1.ChunkSection;
-import net.minecraft.server.v1_13_R1.ChunkStatus;
-import net.minecraft.server.v1_13_R1.Entity;
-import net.minecraft.server.v1_13_R1.EntityTypes;
-import net.minecraft.server.v1_13_R1.FluidType;
-import net.minecraft.server.v1_13_R1.FluidTypes;
-import net.minecraft.server.v1_13_R1.GeneratorAccess;
-import net.minecraft.server.v1_13_R1.HeightMap;
-import net.minecraft.server.v1_13_R1.IChunkAccess;
-import net.minecraft.server.v1_13_R1.IChunkLoader;
-import net.minecraft.server.v1_13_R1.NBTTagCompound;
-import net.minecraft.server.v1_13_R1.ProtoChunk;
-import net.minecraft.server.v1_13_R1.ProtoChunkTickList;
-import net.minecraft.server.v1_13_R1.TileEntity;
-import net.minecraft.server.v1_13_R1.World;
+import net.minecraft.server.v1_13_R1.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -44,24 +19,12 @@ public class CustomChunkLoader implements IChunkLoader {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
 
-    private final Map<Long, Chunk> chunks = new HashMap<>();
     private final CraftSlimeWorld world;
 
     void loadAllChunks(CustomWorldServer server) {
         for (SlimeChunk chunk : world.getChunks().values()) {
             Chunk nmsChunk = createChunk(server, chunk);
-
-            long index = (((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()));
-            chunks.put(index, nmsChunk);
-        }
-
-        // Now that we've converted every SlimeChunk to its nms counterpart, we can empty the chunk list
-        world.clearChunks();
-    }
-
-    Chunk[] getChunks() {
-        synchronized (chunks) {
-            return chunks.values().toArray(new Chunk[0]);
+            world.updateChunk(new NMSSlimeChunk(nmsChunk));
         }
     }
 
@@ -229,14 +192,10 @@ public class CustomChunkLoader implements IChunkLoader {
     // Load full chunk
     @Override
     public Chunk a(GeneratorAccess generatorAccess, int x, int z, Consumer<Chunk> consumer) {
-        long index = (((long) z) * Integer.MAX_VALUE + ((long) x));
+        SlimeChunk slimeChunk = world.getChunk(x, z);
         Chunk chunk;
 
-        synchronized (chunks) {
-            chunk = chunks.get(index);
-        }
-
-        if (chunk == null) {
+        if (slimeChunk == null) {
             BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
 
             // Biomes
@@ -253,6 +212,10 @@ public class CustomChunkLoader implements IChunkLoader {
 
             chunk = new Chunk(generatorAccess.getMinecraftWorld(), x, z, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L);
             chunk.c("postprocessed");
+        } else if (slimeChunk instanceof NMSSlimeChunk) {
+            chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
+        } else { // All SlimeChunk objects should be converted to NMSSlimeChunks when loading the world
+            throw new IllegalStateException("Chunk (" + x + ", " + z + ") has not been converted to a NMSSlimeChunk object!");
         }
 
 
@@ -275,29 +238,12 @@ public class CustomChunkLoader implements IChunkLoader {
             return; // Not saving protochunks, only full chunks
         }
 
-        boolean empty = true;
+        SlimeChunk slimeChunk = this.world.getChunk(chunkAccess.getPos().x, chunkAccess.getPos().z);
 
-        for (int sectionId = 0; sectionId < chunkAccess.getSections().length; sectionId++) {
-            ChunkSection section = chunkAccess.getSections()[sectionId];
-
-            if (section != null) {
-                section.recalcBlockCounts();
-
-                if (!section.a()) {
-                    empty = false;
-                    break;
-                }
-            }
-        }
-
-        long index = (((long) chunkAccess.getPos().z) * Integer.MAX_VALUE + ((long) chunkAccess.getPos().x));
-
-        synchronized (chunks) {
-            if (empty) {
-                chunks.remove(index);
-            } else {
-                chunks.putIfAbsent(index, (Chunk) chunkAccess);
-            }
+        if (slimeChunk instanceof NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some reason)
+            ((NMSSlimeChunk) slimeChunk).setChunk((Chunk) chunkAccess);
+        } else {
+            this.world.updateChunk(new NMSSlimeChunk((Chunk) chunkAccess));
         }
     }
 
