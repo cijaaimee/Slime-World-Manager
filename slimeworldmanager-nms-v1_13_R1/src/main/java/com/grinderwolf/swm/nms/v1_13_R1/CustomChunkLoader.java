@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -22,7 +23,7 @@ public class CustomChunkLoader implements IChunkLoader {
     private final CraftSlimeWorld world;
 
     void loadAllChunks(CustomWorldServer server) {
-        for (SlimeChunk chunk : world.getChunks().values()) {
+        for (SlimeChunk chunk : new ArrayList<>(world.getChunks().values())) {
             Chunk nmsChunk = createChunk(server, chunk);
             world.updateChunk(new NMSSlimeChunk(nmsChunk));
         }
