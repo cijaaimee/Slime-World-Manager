@@ -87,8 +87,6 @@ public class CustomWorldServer extends WorldServer {
                 long start = System.currentTimeMillis();
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
-
-                slimeWorld.clearChunks();
                 LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();
