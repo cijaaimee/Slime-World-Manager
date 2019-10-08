@@ -31,7 +31,7 @@ public class CraftCLSMBridge implements CLSMBridge {
 
     @Override
     public boolean skipWorldAdd(Object world) {
-        if (!isCustomWorld(world)) {
+        if (!isCustomWorld(world) || nmsInstance.isLoadingDefaultWorlds()) {
             return false;
         }
 

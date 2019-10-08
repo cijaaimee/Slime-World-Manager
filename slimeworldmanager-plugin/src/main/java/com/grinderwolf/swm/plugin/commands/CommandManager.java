@@ -1,32 +1,13 @@
 package com.grinderwolf.swm.plugin.commands;
 
-import com.grinderwolf.swm.plugin.commands.sub.CreateWorldCmd;
-import com.grinderwolf.swm.plugin.commands.sub.DSListCmd;
-import com.grinderwolf.swm.plugin.commands.sub.DeleteWorldCmd;
-import com.grinderwolf.swm.plugin.commands.sub.GotoCmd;
-import com.grinderwolf.swm.plugin.commands.sub.HelpCmd;
-import com.grinderwolf.swm.plugin.commands.sub.ImportWorldCmd;
-import com.grinderwolf.swm.plugin.commands.sub.LoadTemplateWorldCmd;
-import com.grinderwolf.swm.plugin.commands.sub.LoadWorldCmd;
-import com.grinderwolf.swm.plugin.commands.sub.MigrateWorldCmd;
-import com.grinderwolf.swm.plugin.commands.sub.ReloadConfigCmd;
-import com.grinderwolf.swm.plugin.commands.sub.Subcommand;
-import com.grinderwolf.swm.plugin.commands.sub.UnloadWorldCmd;
-import com.grinderwolf.swm.plugin.commands.sub.VersionCmd;
-import com.grinderwolf.swm.plugin.commands.sub.WorldListCmd;
+import com.grinderwolf.swm.plugin.commands.sub.*;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CommandManager implements CommandExecutor {
 
