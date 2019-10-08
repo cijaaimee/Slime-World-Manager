@@ -4,10 +4,7 @@ import com.grinderwolf.swm.clsm.CLSMBridge;
 import com.grinderwolf.swm.clsm.ClassModifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_14_R1.Chunk;
-import net.minecraft.server.v1_14_R1.IChunkAccess;
-import net.minecraft.server.v1_14_R1.ProtoChunkExtension;
-import net.minecraft.server.v1_14_R1.WorldServer;
+import net.minecraft.server.v1_14_R1.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -76,7 +73,7 @@ public class CraftCLSMBridge implements CLSMBridge {
 
     @Override
     public boolean skipWorldAdd(Object world) {
-        if (!isCustomWorld(world)) {
+        if (!isCustomWorld(world) || nmsInstance.isLoadingDefaultWorlds()) {
             return false;
         }
 

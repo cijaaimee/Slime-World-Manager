@@ -2,6 +2,7 @@ package com.grinderwolf.swm.nms.v1_13_R1;
 
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import com.mojang.datafixers.DataFixTypes;
@@ -26,6 +27,8 @@ public class v1_13_R1SlimeNMS implements SlimeNMS {
 
     private final byte worldVersion = 0x04;
 
+    private boolean loadingDefaultWorlds = true; // If true, the addWorld method will not be skipped
+
     private WorldServer defaultWorld;
     private WorldServer defaultNetherWorld;
     private WorldServer defaultEndWorld;
@@ -41,16 +44,26 @@ public class v1_13_R1SlimeNMS implements SlimeNMS {
     @Override
     public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
         if (normalWorld != null) {
+            World.Environment env = World.Environment.valueOf(normalWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
+
+            if (env != World.Environment.NORMAL) {
+                LOGGER.warn("The environment for the default world must always be 'NORMAL'.");
+            }
+
             defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomDataManager(normalWorld), 0);
         }
 
         if (netherWorld != null) {
-            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomDataManager(netherWorld), -1);
+            World.Environment env = World.Environment.valueOf(netherWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
+            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomDataManager(netherWorld), env.getId());
         }
 
         if (endWorld != null) {
-            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomDataManager(endWorld), 1);
+            World.Environment env = World.Environment.valueOf(endWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
+            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomDataManager(endWorld), env.getId());
         }
+
+        loadingDefaultWorlds = false;
     }
 
     @Override
