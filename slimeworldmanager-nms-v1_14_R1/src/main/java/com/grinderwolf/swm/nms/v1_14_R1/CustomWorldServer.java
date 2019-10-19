@@ -63,6 +63,7 @@ public class CustomWorldServer extends WorldServer {
         if (!slimeWorld.isReadOnly()) {
             org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
             this.getChunkProvider().save(forceSave);
+            this.getDataManager().saveWorldData(this.worldData);
 
             if (MinecraftServer.getServer().isStopped()) { // Make sure the slimeWorld gets saved before stopping the server by running it from the main thread
                 save();
