@@ -5,16 +5,15 @@ import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.minecraft.server.v1_14_R1.EntityHuman;
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
-import net.minecraft.server.v1_14_R1.WorldData;
-import net.minecraft.server.v1_14_R1.WorldNBTStorage;
+import net.minecraft.server.v1_14_R1.*;
 
 import java.io.File;
 import java.util.UUID;
 
 @Getter
 public class CustomNBTStorage extends WorldNBTStorage {
+
+    private static final GameRules EMPTY_GAMERULES = new GameRules();
 
     @Getter(value = AccessLevel.NONE)
     private final UUID uuid = UUID.randomUUID();
@@ -40,7 +39,7 @@ public class CustomNBTStorage extends WorldNBTStorage {
 
     @Override
     public void saveWorldData(WorldData worldData, NBTTagCompound nbtTagCompound) {
-        CompoundTag gameRules = (CompoundTag) Converter.convertTag("", worldData.v().a()).getAsCompoundTag().get();
+        CompoundTag gameRules = (CompoundTag) Converter.convertTag("gamerules", worldData.v().a()).getAsCompoundTag().get();
         CompoundTag extraData = this.world.getExtraData();
 
         extraData.getValue().remove("gamerules");

@@ -3,7 +3,8 @@ package com.grinderwolf.swm.nms.v1_14_R1;
 import com.flowpowered.nbt.*;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.world.*;
+import com.grinderwolf.swm.api.world.SlimeChunk;
+import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
@@ -56,13 +57,6 @@ public class CustomWorldServer extends WorldServer {
 
         nbtStorage.getDirectory().delete();
         nbtStorage.getDirectory().getParentFile().delete();
-
-        for (CompoundTag mapTag : world.getWorldMaps()) {
-            int id = mapTag.getIntValue("id").get();
-            WorldMap map = new WorldMap("map_" + id);
-            map.a((NBTTagCompound) Converter.convertTag(mapTag));
-            a(map);
-        }
     }
 
     @Override
@@ -83,7 +77,7 @@ public class CustomWorldServer extends WorldServer {
                 slimeWorld.getWorldMaps().add((CompoundTag) Converter.convertTag("", compound));
             }
 
-            if (MinecraftServer.getServer().isStopped()) { // Make sure the SlimeWorld gets saved before stopping the server by running it from the main thread
+            if (MinecraftServer.getServer().isStopped()) { // Make sure the slimeWorld gets saved before stopping the server by running it from the main thread
                 save();
 
                 // Have to manually unlock the world as well
