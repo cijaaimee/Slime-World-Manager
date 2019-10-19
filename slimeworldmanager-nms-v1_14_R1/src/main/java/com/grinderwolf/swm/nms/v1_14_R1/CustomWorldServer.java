@@ -57,6 +57,13 @@ public class CustomWorldServer extends WorldServer {
 
         nbtStorage.getDirectory().delete();
         nbtStorage.getDirectory().getParentFile().delete();
+
+        for (CompoundTag mapTag : world.getWorldMaps()) {
+            int id = mapTag.getIntValue("id").get();
+            WorldMap map = new WorldMap("map_" + id);
+            map.a((NBTTagCompound) Converter.convertTag(mapTag));
+            a(map);
+        }
     }
 
     @Override
