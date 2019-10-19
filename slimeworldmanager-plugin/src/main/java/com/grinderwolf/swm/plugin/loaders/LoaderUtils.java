@@ -198,6 +198,19 @@ public class LoaderUtils {
                 dataStream.read(compressedExtraTag);
             }
 
+            // World Map NBT tag
+            byte[] compressedMapsTag = new byte[0];
+            byte[] mapsTag = new byte[0];
+
+            if (version >= 7) {
+                int compressedMapsTagLength = dataStream.readInt();
+                int mapsTagLength = dataStream.readInt();
+                compressedMapsTag = new byte[compressedMapsTagLength];
+                mapsTag = new byte[mapsTagLength];
+
+                dataStream.read(compressedMapsTag);
+            }
+
             if (dataStream.read() != -1) {
                 throw new CorruptedWorldException(worldName);
             }
@@ -207,6 +220,7 @@ public class LoaderUtils {
             Zstd.decompress(tileEntities, compressedTileEntities);
             Zstd.decompress(entities, compressedEntities);
             Zstd.decompress(extraTag, compressedExtraTag);
+            Zstd.decompress(mapsTag, compressedMapsTag);
 
             // Chunk deserialization
             Map<Long, SlimeChunk> chunks = readChunks(worldVersion, version, worldName, minX, minZ, width, depth, chunkBitset, chunkData);
@@ -260,6 +274,16 @@ public class LoaderUtils {
                 extraCompound = new CompoundTag("", new CompoundMap());
             }
 
+            // World Maps
+            CompoundTag mapsCompound = readCompoundTag(mapsTag);
+            List<CompoundTag> mapList;
+
+            if (mapsCompound != null) {
+                mapList = (List<CompoundTag>) mapsCompound.getAsListTag("maps").map(ListTag::getValue).orElse(new ArrayList<>());
+            } else {
+                mapList = new ArrayList<>();
+            }
+
             // v1_13 world format detection for old versions
             if (worldVersion == 0) {
                 mainLoop:
@@ -285,9 +309,9 @@ public class LoaderUtils {
                 worldPropertyMap = new SlimePropertyMap();
             }
 
-            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, worldVersion, worldPropertyMap, readOnly);
+            return new CraftSlimeWorld(loader, worldName, chunks, extraCompound, mapList, worldVersion, worldPropertyMap, readOnly);
         } catch (EOFException ex) {
-            throw new CorruptedWorldException(worldName);
+            throw new CorruptedWorldException(worldName, ex);
         }
     }
 

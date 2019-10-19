@@ -1,13 +1,6 @@
 package com.grinderwolf.swm.importer;
 
-import com.flowpowered.nbt.ByteArrayTag;
-import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
-import com.flowpowered.nbt.IntArrayTag;
-import com.flowpowered.nbt.ListTag;
-import com.flowpowered.nbt.StringTag;
-import com.flowpowered.nbt.Tag;
-import com.flowpowered.nbt.TagType;
+import com.flowpowered.nbt.*;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import com.flowpowered.nbt.stream.NBTOutputStream;
 import com.github.luben.zstd.Zstd;
@@ -42,12 +35,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
 public class SWMImporter {
 
+    private static final Pattern MAP_FILE_PATTERN = Pattern.compile("^(?:map_([0-9]*).dat)$");
     private static final int SECTOR_SIZE = 4096;
 
     public static void main(String[] args) {
@@ -141,9 +136,29 @@ public class SWMImporter {
 
             System.out.println("World " + worldDir.getName() + " contains " + chunks.size() + " chunks.");
 
+            // World maps
+            File dataDir = new File(worldDir, "data");
+            List<CompoundTag> maps = new ArrayList<>();
+
+            if (dataDir.exists()) {
+                if (!dataDir.isDirectory()) {
+                    System.err.println("Failed to find world maps.");
+                    return;
+                }
+
+                try {
+                    for (File mapFile : dataDir.listFiles((dir, name) -> MAP_FILE_PATTERN.matcher(name).matches())) {
+                        maps.add(loadMap(mapFile));
+                    }
+                } catch (IOException ex) {
+                    System.err.println("Failed to read world maps.");
+                    return;
+                }
+            }
+
             try {
                 long start = System.currentTimeMillis();
-                byte[] slimeFormattedWorld = generateSlimeWorld(chunks, worldVersion, data);
+                byte[] slimeFormattedWorld = generateSlimeWorld(chunks, worldVersion, data, maps);
 
                 System.out.println(Chalk.on("World " + worldDir.getName() + " successfully serialized to the Slime Format in "
                         + (System.currentTimeMillis() - start) + "ms!").green());
@@ -190,6 +205,17 @@ public class SWMImporter {
         }
 
         throw new InvalidWorldException(file.getParentFile());
+    }
+
+    private static CompoundTag loadMap(File mapFile) throws IOException {
+        String fileName = mapFile.getName();
+        int mapId = Integer.parseInt(fileName.substring(4, fileName.length() - 4));
+
+        NBTInputStream nbtStream = new NBTInputStream(new FileInputStream(mapFile), NBTInputStream.GZIP_COMPRESSION, ByteOrder.BIG_ENDIAN);
+        CompoundTag tag = nbtStream.readTag().getAsCompoundTag().get().getAsCompoundTag("data").get();
+        tag.getValue().put("id", new IntTag("id", mapId));
+
+        return tag;
     }
 
     private static List<SlimeChunk> loadChunks(File file, byte worldVersion) throws IOException {
@@ -361,7 +387,7 @@ public class SWMImporter {
         return true;
     }
 
-    private static byte[] generateSlimeWorld(List<SlimeChunk> chunks, byte worldVersion, LevelData levelData) {
+    private static byte[] generateSlimeWorld(List<SlimeChunk> chunks, byte worldVersion, LevelData levelData, List<CompoundTag> worldMaps) {
         List<SlimeChunk> sortedChunks = new ArrayList<>(chunks);
         sortedChunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
 
@@ -455,6 +481,19 @@ public class SWMImporter {
             outStream.writeInt(compressedExtraData.length);
             outStream.writeInt(extraData.length);
             outStream.write(compressedExtraData);
+
+            // World Maps
+            CompoundMap map = new CompoundMap();
+            map.put("maps", new ListTag<>("maps", TagType.TAG_COMPOUND, worldMaps));
+
+            CompoundTag mapsCompound = new CompoundTag("", map);
+
+            byte[] mapArray = serializeCompoundTag(mapsCompound);
+            byte[] compressedMapArray = Zstd.compress(mapArray);
+
+            outStream.writeInt(compressedMapArray.length);
+            outStream.writeInt(mapArray.length);
+            outStream.write(compressedMapArray);
         } catch (IOException ex) { // Ignore
             ex.printStackTrace();
         }

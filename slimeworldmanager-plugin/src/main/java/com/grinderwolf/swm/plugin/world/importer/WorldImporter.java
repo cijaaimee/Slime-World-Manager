@@ -17,12 +17,14 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
 public class WorldImporter {
 
+    private static final Pattern MAP_FILE_PATTERN = Pattern.compile("^(?:map_([0-9]*).dat)$");
     private static final int SECTOR_SIZE = 4096;
 
     public static CraftSlimeWorld readFromDirectory(File worldDir) throws InvalidWorldException, IOException {
@@ -49,6 +51,7 @@ public class WorldImporter {
             worldVersion = 0x05; // 1.14 world
         }
 
+        // Chunks
         File regionDir = new File(worldDir, "region");
 
         if (!regionDir.exists() || !regionDir.isDirectory()) {
@@ -63,6 +66,20 @@ public class WorldImporter {
 
         if (chunks.isEmpty()) {
             throw new InvalidWorldException(worldDir);
+        }
+
+        // World maps
+        File dataDir = new File(worldDir, "data");
+        List<CompoundTag> maps = new ArrayList<>();
+
+        if (dataDir.exists()) {
+            if (!dataDir.isDirectory()) {
+                throw new InvalidWorldException(worldDir);
+            }
+
+            for (File mapFile : dataDir.listFiles((dir, name) -> MAP_FILE_PATTERN.matcher(name).matches())) {
+                maps.add(loadMap(mapFile));
+            }
         }
 
         // Extra Data
@@ -82,7 +99,18 @@ public class WorldImporter {
         propertyMap.setInt(SlimeProperties.SPAWN_Z, data.getSpawnZ());
 
         return new CraftSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", extraData),
-                worldVersion, propertyMap, false);
+                maps, worldVersion, propertyMap, false);
+    }
+
+    private static CompoundTag loadMap(File mapFile) throws IOException {
+        String fileName = mapFile.getName();
+        int mapId = Integer.parseInt(fileName.substring(4, fileName.length() - 4));
+
+        NBTInputStream nbtStream = new NBTInputStream(new FileInputStream(mapFile), NBTInputStream.GZIP_COMPRESSION, ByteOrder.BIG_ENDIAN);
+        CompoundTag tag = nbtStream.readTag().getAsCompoundTag().get().getAsCompoundTag("data").get();
+        tag.getValue().put("id", new IntTag("id", mapId));
+
+        return tag;
     }
 
     private static LevelData readLevelData(File file) throws IOException, InvalidWorldException {

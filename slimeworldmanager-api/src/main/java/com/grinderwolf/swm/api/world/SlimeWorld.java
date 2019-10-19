@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 import lombok.experimental.Wither;
 
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * In-memory representation of a SRF world.
@@ -49,6 +50,14 @@ public interface SlimeWorld {
      * @return A {@link CompoundTag} containing the extra data of the world.
      */
     CompoundTag getExtraData();
+
+    /**
+     * Returns a {@link Collection} with every world map, serialized
+     * in a {@link CompoundTag} object.
+     *
+     * @return A {@link Collection} containing every world map.
+     */
+    Collection<CompoundTag> getWorldMaps();
 
     /**
      * Returns the properties of the world. These properties are automatically
