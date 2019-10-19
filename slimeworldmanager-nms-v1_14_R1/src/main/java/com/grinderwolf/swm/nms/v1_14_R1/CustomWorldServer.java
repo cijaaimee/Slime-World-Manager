@@ -3,8 +3,7 @@ package com.grinderwolf.swm.nms.v1_14_R1;
 import com.flowpowered.nbt.*;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.world.SlimeChunk;
-import com.grinderwolf.swm.api.world.SlimeChunkSection;
+import com.grinderwolf.swm.api.world.*;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
@@ -32,6 +31,7 @@ public class CustomWorldServer extends WorldServer {
     @Getter
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
+    private final List<WorldMap> maps = new ArrayList<>();
 
     @Getter
     @Setter
@@ -56,6 +56,13 @@ public class CustomWorldServer extends WorldServer {
 
         nbtStorage.getDirectory().delete();
         nbtStorage.getDirectory().getParentFile().delete();
+
+        for (CompoundTag mapTag : world.getWorldMaps()) {
+            int id = mapTag.getIntValue("id").get();
+            WorldMap map = new WorldMap("map_" + id);
+            map.a((NBTTagCompound) Converter.convertTag(mapTag));
+            a(map);
+        }
     }
 
     @Override
@@ -63,8 +70,20 @@ public class CustomWorldServer extends WorldServer {
         if (!slimeWorld.isReadOnly()) {
             org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
             this.getChunkProvider().save(forceSave);
+            this.getDataManager().saveWorldData(worldData, null);
 
-            if (MinecraftServer.getServer().isStopped()) { // Make sure the slimeWorld gets saved before stopping the server by running it from the main thread
+            // Update the map compound list
+            slimeWorld.getWorldMaps().clear();
+
+            for (WorldMap map : maps) {
+                NBTTagCompound compound = map.b(new NBTTagCompound());
+                int id = Integer.parseInt(map.getId().substring(4));
+                compound.setInt("id", id);
+
+                slimeWorld.getWorldMaps().add((CompoundTag) Converter.convertTag("", compound));
+            }
+
+            if (MinecraftServer.getServer().isStopped()) { // Make sure the SlimeWorld gets saved before stopping the server by running it from the main thread
                 save();
 
                 // Have to manually unlock the world as well
@@ -275,5 +294,36 @@ public class CustomWorldServer extends WorldServer {
         } else {
             slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
+    }
+
+    @Override
+    public WorldMap a(String name) {
+        int id = Integer.parseInt(name.substring(4));
+
+        if (id >= maps.size()) {
+            return null;//super.a(name);
+        }
+
+        return maps.get(id);
+    }
+
+    @Override
+    public void a(WorldMap map) {
+        int id = Integer.parseInt(map.getId().substring(4));
+
+        if (maps.size() > id) {
+            maps.set(id, map);
+        } else {
+            while (maps.size() < id) {
+                maps.add(null);
+            }
+
+            maps.add(id, map);
+        }
+    }
+
+    @Override
+    public int getWorldMapCount() {
+        return maps.size();
     }
 }

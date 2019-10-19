@@ -43,11 +43,11 @@ public class CraftSlimeWorld implements SlimeWorld {
     private final String name;
     private final Map<Long, SlimeChunk> chunks;
     private final CompoundTag extraData;
+    private final List<CompoundTag> worldMaps;
 
     @Setter
     private byte version;
 
-    //@Setter
     private final SlimePropertyMap propertyMap;
 
     private final boolean readOnly;
@@ -100,7 +100,7 @@ public class CraftSlimeWorld implements SlimeWorld {
         CraftSlimeWorld world;
 
         synchronized (chunks) {
-            world = new CraftSlimeWorld(loader == null ? this.loader : loader, worldName, new HashMap<>(chunks), extraData.clone(), version, propertyMap, loader == null);
+            world = new CraftSlimeWorld(loader == null ? this.loader : loader, worldName, new HashMap<>(chunks), extraData.clone(), new ArrayList<>(worldMaps), version, propertyMap, loader == null);
         }
 
         if (loader != null) {
@@ -219,6 +219,19 @@ public class CraftSlimeWorld implements SlimeWorld {
             outStream.writeInt(compressedExtra.length);
             outStream.writeInt(extra.length);
             outStream.write(compressedExtra);
+
+            // World Maps
+            CompoundMap map = new CompoundMap();
+            map.put("maps", new ListTag<>("maps", TagType.TAG_COMPOUND, worldMaps));
+
+            CompoundTag mapsCompound = new CompoundTag("", map);
+
+            byte[] mapArray = serializeCompoundTag(mapsCompound);
+            byte[] compressedMapArray = Zstd.compress(mapArray);
+
+            outStream.writeInt(compressedMapArray.length);
+            outStream.writeInt(mapArray.length);
+            outStream.write(compressedMapArray);
         } catch (IOException ex) { // Ignore
             ex.printStackTrace();
         }

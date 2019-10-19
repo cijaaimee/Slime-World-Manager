@@ -455,6 +455,8 @@ public class SWMImporter {
             outStream.writeInt(compressedExtraData.length);
             outStream.writeInt(extraData.length);
             outStream.write(compressedExtraData);
+
+            // TODO store maps
         } catch (IOException ex) { // Ignore
             ex.printStackTrace();
         }

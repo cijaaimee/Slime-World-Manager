@@ -297,7 +297,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         Logging.info("Creating empty world " + worldName + ".");
         long start = System.currentTimeMillis();
-        CraftSlimeWorld world = new CraftSlimeWorld(loader, worldName, new HashMap<>(), new CompoundTag("", new CompoundMap()), nms.getWorldVersion(), propertyMap, readOnly);
+        CraftSlimeWorld world = new CraftSlimeWorld(loader, worldName, new HashMap<>(), new CompoundTag("",
+                new CompoundMap()), new ArrayList<>(), nms.getWorldVersion(), propertyMap, readOnly);
         loader.saveWorld(worldName, world.serialize(), !readOnly);
 
         Logging.info("World " + worldName + " created in " + (System.currentTimeMillis() - start) + "ms.");

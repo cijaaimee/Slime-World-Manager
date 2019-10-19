@@ -1,7 +1,7 @@
 -------------------------------------
 “Slime” file format
 2 bytes - magic = 0xB10B
-1 byte (ubyte) - version, current = 0x06
+1 byte (ubyte) - version, current = 0x07
 1 byte (ubyte) - world version (see version list below)
 2 bytes (short) - xPos of chunk lowest x & lowest z
 2 bytes (short) - zPos
@@ -37,6 +37,13 @@
 4 bytes (int) - compressed “extra” size
 4 bytes (int) - uncompressed “extra” size
 [depends] - compound tag compressed using zstd
+
+4 bytes (int) - compressed world maps size
+4 bytes (int) - uncompressed world maps size
+  <array of tile entity nbt compounds>
+    Same format as mc, with a new "id" int tag
+    inside an nbt list named “maps”, in a global compound, no gzip anywhere
+    compressed using zstd
 -------------------------------------
 
 Custom chunk format
@@ -84,3 +91,4 @@ Version history:
  - v4: Added support for 1.13 worlds and removed HypixelBlocks3.
  - v5: Skylight and blocklight might not always be present.
  - v6: Added world versioning
+ - v7: Added world maps
