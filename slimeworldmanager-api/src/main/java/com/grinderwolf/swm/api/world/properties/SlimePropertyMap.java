@@ -147,6 +147,12 @@ public class SlimePropertyMap {
      * @param propertyMap A {@link SlimePropertyMap}.
      */
     public void merge(SlimePropertyMap propertyMap) {
+        for (SlimeProperty property : new ArrayList<>(getValues().keySet())) {
+            if (!propertyMap.getValues().containsKey(property)) {
+                getValues().remove(property);
+            }
+        }
+
         values.putAll(propertyMap.getValues());
     }
 
