@@ -273,6 +273,13 @@ public class MongoLoader extends UpdatableLoader {
 
             bucket.delete(file.getObjectId());
 
+            // Delete backup file
+            file = bucket.find(Filters.eq("filename", worldName + "_backup")).first();
+
+            if (file != null) {
+                bucket.delete(file.getObjectId());
+            }
+
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
             mongoCollection.deleteOne(Filters.eq("name", worldName));
         } catch (MongoException ex) {
