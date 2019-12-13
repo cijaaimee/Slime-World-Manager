@@ -3,6 +3,8 @@ net/minecraft/server/v1_14_R1/PlayerChunkMap:
   - f(net.minecraft.server.v1_14_R1.ChunkCoordIntPair)@v1_14_R1/PlayerChunkMap_loadChunk.txt
 __optional__net/minecraft/server/v1_14_R1/PlayerChunkMap:
   - saveChunk(net.minecraft.server.v1_14_R1.IChunkAccess, boolean)@v1_14_R1/PlayerChunkMap_saveChunk.txt
+net/minecraft/server/v1_14_R1/MobSpawnerTrader:
+  - a()@v1_14_R1/MobSpawnerTrader_tickRaids.txt
 net/minecraft/server/v1_14_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_14_R1.WorldType, com.google.gson.JsonElement)@v1_14_R1/MinecraftServer_loadWorlds.txt
 net/minecraft/server/v1_14_R1/PersistentBase:
