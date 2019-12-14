@@ -70,7 +70,15 @@ public class NMSTransformer implements ClassFileTransformer {
                         }
 
                         String methodName = matcher.group(1);
-                        String[] parameters = matcher.group(2).split(",");
+                        String paramsString = matcher.group(2).trim();
+                        String[] parameters;
+
+                        if (paramsString.isEmpty()) {
+                            parameters = new String[0];
+                        } else {
+                            parameters = matcher.group(2).split(",");
+                        }
+
                         String location = matcher.group(3);
                         String content;
 
