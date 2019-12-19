@@ -81,6 +81,7 @@ World version list:
  - 3: 1.11 world
  - 4: 1.13 world
  - 5: 1.14 world
+ - 6: 1.15 world
 
 -------------------------------------
 
@@ -92,3 +93,4 @@ Version history:
  - v5: Skylight and blocklight might not always be present.
  - v6: Added world versioning
  - v7: Added world maps
+ - v8: 1.15
