@@ -74,12 +74,18 @@ public class v1_14_R1SlimeNMS implements SlimeNMS {
         MinecraftServer mcServer = MinecraftServer.getServer();
 
         int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worldServer.size();
+        boolean used = false;
 
-        for (WorldServer server : mcServer.getWorlds()) {
-            if (server.getWorldProvider().getDimensionManager().getDimensionID() + 1 == dimension) { // getDimensionID() returns the dimension - 1
-                dimension++;
+        do {
+            for (WorldServer server : mcServer.getWorlds()) {
+                used = server.getWorldProvider().getDimensionManager().getDimensionID() + 1 == dimension;
+
+                if (used) { // getDimensionID() returns the dimension - 1
+                    dimension++;
+                    break;
+                }
             }
-        }
+        } while (used);
 
         World.Environment env = World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
 
