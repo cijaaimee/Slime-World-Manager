@@ -298,7 +298,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         Logging.info("Creating empty world " + worldName + ".");
         long start = System.currentTimeMillis();
         CraftSlimeWorld world = new CraftSlimeWorld(loader, worldName, new HashMap<>(), new CompoundTag("",
-                new CompoundMap()), new ArrayList<>(), nms.getWorldVersion(), propertyMap, readOnly);
+                new CompoundMap()), new ArrayList<>(), nms.getWorldVersion(), propertyMap, readOnly, !readOnly);
         loader.saveWorld(worldName, world.serialize(), !readOnly);
 
         Logging.info("World " + worldName + " created in " + (System.currentTimeMillis() - start) + "ms.");
@@ -324,6 +324,10 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     @Override
     public void generateWorld(SlimeWorld world) {
         Objects.requireNonNull(world, "SlimeWorld cannot be null");
+
+        if (!world.isReadOnly() && world.isLocked()) {
+            throw new IllegalArgumentException("This world cannot be loaded, as it has not been locked.");
+        }
 
         if (asyncWorldGen) {
             worldGeneratorService.submit(() -> {

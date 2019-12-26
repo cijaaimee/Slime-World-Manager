@@ -111,6 +111,30 @@ public interface SlimeWorld {
     SlimeWorld clone(String worldName, SlimeLoader loader) throws WorldAlreadyExistsException, IOException;
 
     /**
+     * Returns a clone of the world with the given name. The world will be
+     * automatically stored inside the provided data source.
+     *
+     * @param worldName The name of the cloned world.
+     * @param loader The {@link SlimeLoader} used to store the world or <code>null</code> if the world is temporary.
+     * @param lock whether or not SWM should lock the world. If false, SWM will not let you load this world for security reasons.
+     *
+     * @return The clone of the world.
+     *
+     * @throws IllegalArgumentException if the name of the world is the same as the current one or is <code>null</code>.
+     * @throws WorldAlreadyExistsException if there's already a world with the same name inside the provided data source.
+     * @throws IOException if the world could not be stored.
+     */
+    SlimeWorld clone(String worldName, SlimeLoader loader, boolean lock) throws WorldAlreadyExistsException, IOException;
+
+    /**
+     * Returns whether or not this world is locked and, therefore, can be loaded on the server by
+     * using the {@link com.grinderwolf.swm.api.SlimePlugin#generateWorld(SlimeWorld)} method.
+     *
+     * @return true if the world is locked, false otherwise
+     */
+    boolean isLocked();
+
+    /**
      * All the currently-available properties of the world.
      *
      * @deprecated see {@link SlimePropertyMap}
