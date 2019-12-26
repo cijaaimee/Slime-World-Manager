@@ -532,6 +532,7 @@ public class SWMImporter {
 
             // Biomes
             int[] biomes = chunk.getBiomes();
+            outStream.writeInt(biomes.length);
 
             for (int biome : biomes) {
                 outStream.writeInt(biome);

@@ -357,15 +357,16 @@ public class LoaderUtils {
 
                     // Biome array
                     int[] biomes;
+                    int biomesArrayLength = version >= 8 ? dataStream.readInt() : 256;
 
                     if (worldVersion >= 0x04) {
-                        biomes = new int[256];
+                        biomes = new int[biomesArrayLength];
 
                         for (int i = 0; i < biomes.length; i++) {
                             biomes[i] = dataStream.readInt();
                         }
                     } else {
-                        byte[] byteBiomes = new byte[256];
+                        byte[] byteBiomes = new byte[biomesArrayLength];
                         dataStream.read(byteBiomes);
                         biomes = toIntArray(byteBiomes);
                     }

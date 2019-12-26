@@ -1,0 +1,96 @@
+{
+    net.minecraft.server.v1_15_R1.WorldServer[] defaultWorlds = (net.minecraft.server.v1_15_R1.WorldServer[]) com.grinderwolf.swm.clsm.ClassModifier.getDefaultWorlds();
+    
+    if (defaultWorlds != null) {
+        System.out.println("Overriding default worlds");
+        
+        for (int index = 0; index < 3; index++) {
+            if (index == 1 && !getAllowNether()) {
+                continue;
+            }
+
+            if (index == 2 && !server.getAllowEnd()) {
+                continue;
+            }
+
+            net.minecraft.server.v1_15_R1.WorldServer world = defaultWorlds[index];
+            byte dimension = (index == 1 ? -1 : (index == 2 ? 1 : 0));
+            
+            net.minecraft.server.v1_15_R1.WorldSettings worldSettings = new net.minecraft.server.v1_15_R1.WorldSettings($3, $0.getGamemode(), $0.getGenerateStructures(), $0.isHardcore(), $4);
+            java.lang.String worldTypeString = org.bukkit.World.Environment.getEnvironment(dimension).toString().toLowerCase();
+            java.lang.String name;
+            
+            if (dimension == 0) {
+                name = $1;
+            } else {
+                name = $1 + "_" + worldTypeString;
+            }
+            
+            if (world == null) {
+                $0.convertWorld(name);
+                
+                worldSettings.setGeneratorSettings($5);
+            }
+            
+            if (index == 0) {
+                if (world == null) {
+                    net.minecraft.server.v1_15_R1.WorldNBTStorage nbtStorage = new net.minecraft.server.v1_15_R1.WorldNBTStorage(server.getWorldContainer(), $2, $0, $0.dataConverterManager);
+                    net.minecraft.server.v1_15_R1.WorldData worldData = nbtStorage.getWorldData();
+                    
+                    if (worldData == null) {
+                        worldData = new net.minecraft.server.v1_15_R1.WorldData(worldSettings, $2);
+                    }
+                    
+                    worldData.checkName($2);
+                    $0.a(nbtStorage.getDirectory(), worldData);
+                    net.minecraft.server.v1_15_R1.WorldLoadListener worldLoadListener = $0.worldLoadListenerFactory.create(11);
+                    world = new net.minecraft.server.v1_15_R1.WorldServer($0, $0.executorService, nbtStorage, worldData, net.minecraft.server.v1_15_R1.DimensionManager.OVERWORLD, $0.methodProfiler, worldLoadListener, org.bukkit.World.Environment.getEnvironment(dimension), $0.server.getGenerator(name));
+                } else {
+                    org.spigotmc.SpigotConfig.disableStatSaving = true;
+                    org.spigotmc.SpigotConfig.disableAdvancementSaving = true;
+                    $0.a(new java.io.File("."), world.getWorldData());
+                }
+                
+                $0.initializeScoreboards(world.getWorldPersistentData());
+                $0.server.scoreboardManager = new org.bukkit.craftbukkit.v1_15_R1.scoreboard.CraftScoreboardManager($0, world.getScoreboard());
+                $0.persistentCommandStorage = new net.minecraft.server.v1_15_R1.PersistentCommandStorage(world.getWorldPersistentData());
+            } else if (world == null) {
+                net.minecraft.server.v1_15_R1.WorldNBTStorage nbtStorage = new net.minecraft.server.v1_15_R1.WorldNBTStorage(server.getWorldContainer(), name, $0, $0.dataConverterManager);
+                net.minecraft.server.v1_15_R1.WorldData worldData = nbtStorage.getWorldData();
+                
+                if (worldData == null) {
+                    worldData = new net.minecraft.server.v1_15_R1.WorldData(worldSettings, name);
+                }
+                
+                worldData.checkName(name);
+                net.minecraft.server.v1_15_R1.WorldLoadListener worldLoadListener = $0.worldLoadListenerFactory.create(11);
+                world = new net.minecraft.server.v1_15_R1.SecondaryWorldServer($0.getWorldServer(net.minecraft.server.v1_15_R1.DimensionManager.OVERWORLD), $0, $0.executorService, nbtStorage, net.minecraft.server.v1_15_R1.DimensionManager.a(dimension), $0.methodProfiler, worldLoadListener, worldData, org.bukkit.World.Environment.getEnvironment(dimension), $0.server.getGenerator(name));
+            }
+            
+            $0.initWorld(world, world.getWorldData(), worldSettings);
+            $0.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldInitEvent(world.getWorld()));
+            $0.worldServer.put(world.getWorldProvider().getDimensionManager(), world);
+            $0.getPlayerList().setPlayerFileData(world);
+            
+            if (world.getWorldData().getCustomBossEvents() != null) {
+                $0.getBossBattleCustomData().load(world.getWorldData().getCustomBossEvents());
+            }
+        }
+        
+        $0.a($0.getDifficulty(), true);
+        
+        java.util.Iterator worldList = $0.getWorlds().iterator();
+        
+        while (worldList.hasNext()) {
+            net.minecraft.server.v1_15_R1.WorldServer world = (net.minecraft.server.v1_15_R1.WorldServer) worldList.next();
+            $0.loadSpawn(world.getChunkProvider().playerChunkMap.worldLoadListener, world);
+            $0.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldLoadEvent(world.getWorld()));
+        }
+        
+        $0.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
+        $0.server.getPluginManager().callEvent(new org.bukkit.event.server.ServerLoadEvent(org.bukkit.event.server.ServerLoadEvent.LoadType.STARTUP));
+        $0.serverConnection.acceptConnections();
+        
+        return;
+    }
+}
