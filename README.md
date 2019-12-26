@@ -6,11 +6,44 @@ Slime World Manager is a Minecraft plugin that implements the Slime Region Forma
 
 SWM releases can be found [here](https://www.spigotmc.org/resources/slimeworldmanager.69974/history).
 
+## Using SWM in your plugin
+
+#### Maven
+```
+<repositories>
+  <repository>
+    <id>glaremasters</id>
+    <url>https://repo.glaremasters.me/repository/concuncan/</url>
+  </repository>
+</repositories>
+```
+
+```
+<dependencies>
+  <dependency>
+    <groupId>com.grinderwolf</groupId>
+    <artifactId>slimeworldmanager-api</artifactId>
+    <version>INSERT LATEST VERSION HERE</version>
+  </dependency>
+</dependencies>
+```
+
+#### Gradle
+```
+repositories {
+    maven { url "https://repo.glaremasters.me/repository/concuncan/" }
+}
+
+dependencies {
+    compileOnly group: "com.grinderwolf", name: "slimeworldmanager-api", version: "INSERT LATEST VERSION HERE";
+}
+```
+
 #### Javadocs
 
 Javadocs can be found [here](https://grinderwolf.github.io/Slime-World-Manager/apidocs/).
 
-## Overview
+## Wiki Overview
  * Plugin Usage
     * [Installing Slime World Manager](.docs/usage/install.md)
     * [Using Slime World Manager](.docs/usage/using.md)
