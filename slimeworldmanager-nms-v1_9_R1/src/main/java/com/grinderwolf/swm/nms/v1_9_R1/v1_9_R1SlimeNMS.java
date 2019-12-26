@@ -66,14 +66,19 @@ public class v1_9_R1SlimeNMS implements SlimeNMS {
     public Object createNMSWorld(SlimeWorld world) {
         CustomDataManager dataManager = new CustomDataManager(world);
         MinecraftServer mcServer = MinecraftServer.getServer();
-
         int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worlds.size();
+        boolean used = false;
 
-        for (WorldServer server : mcServer.worlds) {
-            if (server.dimension == dimension) {
-                dimension++;
+        do {
+            for (WorldServer server : mcServer.worlds) {
+                used = server.dimension == dimension;
+
+                if (used) {
+                    dimension++;
+                    break;
+                }
             }
-        }
+        } while (used);
 
         return new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimension);
     }
