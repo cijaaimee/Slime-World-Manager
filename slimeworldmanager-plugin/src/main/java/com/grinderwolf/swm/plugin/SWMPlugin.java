@@ -3,15 +3,7 @@ package com.grinderwolf.swm.plugin;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.SlimePlugin;
-import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
-import com.grinderwolf.swm.api.exceptions.InvalidVersionException;
-import com.grinderwolf.swm.api.exceptions.InvalidWorldException;
-import com.grinderwolf.swm.api.exceptions.NewerFormatException;
-import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
-import com.grinderwolf.swm.api.exceptions.WorldInUseException;
-import com.grinderwolf.swm.api.exceptions.WorldLoadedException;
-import com.grinderwolf.swm.api.exceptions.WorldTooBigException;
+import com.grinderwolf.swm.api.exceptions.*;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
@@ -24,36 +16,26 @@ import com.grinderwolf.swm.nms.v1_12_R1.v1_12_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_13_R1.v1_13_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_13_R2.v1_13_R2SlimeNMS;
 import com.grinderwolf.swm.nms.v1_14_R1.v1_14_R1SlimeNMS;
+import com.grinderwolf.swm.nms.v1_15_R1.v1_15_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_8_R3.v1_8_R3SlimeNMS;
 import com.grinderwolf.swm.nms.v1_9_R1.v1_9_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_9_R2.v1_9_R2SlimeNMS;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
-import com.grinderwolf.swm.plugin.config.ConfigManager;
-import com.grinderwolf.swm.plugin.config.WorldData;
-import com.grinderwolf.swm.plugin.config.WorldsConfig;
+import com.grinderwolf.swm.plugin.config.*;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.update.Updater;
 import com.grinderwolf.swm.plugin.upgrade.WorldUpgrader;
-import com.grinderwolf.swm.plugin.world.importer.WorldImporter;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
+import com.grinderwolf.swm.plugin.world.importer.WorldImporter;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -182,6 +164,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
                 return new v1_13_R2SlimeNMS();
             case "v1_14_R1":
                 return new v1_14_R1SlimeNMS();
+            case "v1_15_R1":
+                return new v1_15_R1SlimeNMS();
             default:
                 throw new InvalidVersionException(nmsVersion);
         }
@@ -325,7 +309,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     public void generateWorld(SlimeWorld world) {
         Objects.requireNonNull(world, "SlimeWorld cannot be null");
 
-        if (!world.isReadOnly() && world.isLocked()) {
+        if (!world.isReadOnly() && !world.isLocked()) {
             throw new IllegalArgumentException("This world cannot be loaded, as it has not been locked.");
         }
 

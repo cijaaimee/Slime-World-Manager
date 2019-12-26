@@ -51,7 +51,8 @@ Custom chunk format
   4 bytes (int) - heightmaps size
   <array of heightmap nbt compounds>
     same format as mc, uncompressed
-    256 ints - biomes
+    4 bytes (int) - biome array size
+    <array of biomes (ints)>
 [else]
   256 ints - heightmap
   256 bytes - biomes
@@ -92,3 +93,4 @@ Version history:
  - v5: Skylight and blocklight might not always be present.
  - v6: Added world versioning
  - v7: Added world maps
+ - v8: Variable biomes size
