@@ -1,56 +1,40 @@
 package com.grinderwolf.swm.nms;
 
-import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
-import com.flowpowered.nbt.ListTag;
-import com.flowpowered.nbt.TagType;
+import com.flowpowered.nbt.*;
 import com.flowpowered.nbt.stream.NBTInputStream;
 import com.flowpowered.nbt.stream.NBTOutputStream;
 import com.github.luben.zstd.Zstd;
 import com.grinderwolf.swm.api.exceptions.WorldAlreadyExistsException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.utils.SlimeFormat;
-import com.grinderwolf.swm.api.world.SlimeChunk;
-import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.*;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.bukkit.Difficulty;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
+@Setter
 @AllArgsConstructor
 public class CraftSlimeWorld implements SlimeWorld {
 
-    @Setter
     private SlimeLoader loader;
     private final String name;
     private final Map<Long, SlimeChunk> chunks;
     private final CompoundTag extraData;
     private final List<CompoundTag> worldMaps;
 
-    @Setter
     private byte version;
 
     private final SlimePropertyMap propertyMap;
 
     private final boolean readOnly;
+
+    private final boolean locked;
 
     @Override
     public SlimeChunk getChunk(int x, int z) {
@@ -83,9 +67,13 @@ public class CraftSlimeWorld implements SlimeWorld {
 
     @Override
     public SlimeWorld clone(String worldName, SlimeLoader loader) throws WorldAlreadyExistsException, IOException {
-        if (name.equals(worldName)) {
-            throw new IllegalArgumentException("The clone world cannot have the same name as the original world!");
-        }
+        return clone(worldName, loader, true);
+    }
+
+    @Override
+    public SlimeWorld clone(String worldName, SlimeLoader loader, boolean lock) throws WorldAlreadyExistsException, IOException {if (name.equals(worldName)) {
+        throw new IllegalArgumentException("The clone world cannot have the same name as the original world!");
+    }
 
         if (worldName == null) {
             throw new IllegalArgumentException("The world name cannot be null!");
@@ -100,11 +88,12 @@ public class CraftSlimeWorld implements SlimeWorld {
         CraftSlimeWorld world;
 
         synchronized (chunks) {
-            world = new CraftSlimeWorld(loader == null ? this.loader : loader, worldName, new HashMap<>(chunks), extraData.clone(), new ArrayList<>(worldMaps), version, propertyMap, loader == null);
+            world = new CraftSlimeWorld(loader == null ? this.loader : loader, worldName, new HashMap<>(chunks), extraData.clone(),
+                    new ArrayList<>(worldMaps), version, propertyMap, loader == null, lock);
         }
 
         if (loader != null) {
-            loader.saveWorld(worldName, world.serialize(), true);
+            loader.saveWorld(worldName, world.serialize(), lock);
         }
 
         return world;

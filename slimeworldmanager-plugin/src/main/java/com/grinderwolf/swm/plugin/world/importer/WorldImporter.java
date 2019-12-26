@@ -99,7 +99,7 @@ public class WorldImporter {
         propertyMap.setInt(SlimeProperties.SPAWN_Z, data.getSpawnZ());
 
         return new CraftSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", extraData),
-                maps, worldVersion, propertyMap, false);
+                maps, worldVersion, propertyMap, false, true);
     }
 
     private static CompoundTag loadMap(File mapFile) throws IOException {
