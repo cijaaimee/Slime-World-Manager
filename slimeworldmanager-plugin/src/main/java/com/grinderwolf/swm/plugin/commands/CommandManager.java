@@ -27,7 +27,7 @@ public class CommandManager implements CommandExecutor {
         commands.put("goto", new GotoCmd());
         commands.put("load", new LoadWorldCmd());
         commands.put("load-template", new LoadTemplateWorldCmd());
-        commands.put("clone", new CloneWorldCmd());
+        commands.put("clone-world", new CloneWorldCmd());
         commands.put("unload", new UnloadWorldCmd());
         commands.put("list", new WorldListCmd());
         commands.put("dslist", new DSListCmd());
