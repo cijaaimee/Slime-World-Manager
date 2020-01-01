@@ -54,8 +54,9 @@ public class MongoLoader extends UpdatableLoader {
 
         String authParams = !config.getUsername().isEmpty() && !config.getPassword().isEmpty() ? config.getUsername() + ":" + config.getPassword() + "@" : "";
         String authSource = !config.getAuthSource().isEmpty() ? "/?authSource=" + config.getAuthSource() : "";
+        String uri = !config.getUri().isEmpty() ? config.getUri() : "mongodb://" + authParams + config.getHost() + ":" + config.getPort() + authSource;
 
-        this.client = MongoClients.create("mongodb://" + authParams + config.getHost() + ":" + config.getPort() + authSource);
+        this.client = MongoClients.create(uri);
 
         MongoDatabase mongoDatabase = client.getDatabase(database);
         MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
