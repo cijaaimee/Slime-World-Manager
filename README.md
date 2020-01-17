@@ -55,6 +55,7 @@ Javadocs can be found [here](https://grinderwolf.github.io/Slime-World-Manager/a
     * [Async world generation](.docs/config/async-world-generation.md)
  * SWM API
     * [Getting started](.docs/api/setup-dev.md)
+    * [World Properties](.docs/api/properties.md)
     * [Loading a world](.docs/api/load-world.md)
     * [Migrating a world](.docs/api/migrate-world.md)
     * [Importing a world](.docs/api/import-world.md)
