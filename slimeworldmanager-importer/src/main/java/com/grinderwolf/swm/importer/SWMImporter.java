@@ -532,7 +532,9 @@ public class SWMImporter {
 
             // Biomes
             int[] biomes = chunk.getBiomes();
-            outStream.writeInt(biomes.length);
+            if (worldVersion >= 0x04) {
+                outStream.writeInt(biomes.length);
+            }
 
             for (int biome : biomes) {
                 outStream.writeInt(biome);
