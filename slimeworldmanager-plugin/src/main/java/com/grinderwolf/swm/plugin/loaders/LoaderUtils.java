@@ -358,6 +358,11 @@ public class LoaderUtils {
                     // Biome array
                     int[] biomes;
 
+                    if (version == 8 && worldVersion < 0x04) {
+                        // Patch the v8 bug: biome array size is wrong for old worlds
+                        dataStream.readInt();
+                    }
+
                     if (worldVersion >= 0x04) {
                         int biomesArrayLength = version >= 8 ? dataStream.readInt() : 256;
                         biomes = new int[biomesArrayLength];

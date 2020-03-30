@@ -1,7 +1,7 @@
 -------------------------------------
 “Slime” file format
 2 bytes - magic = 0xB10B
-1 byte (ubyte) - version, current = 0x07
+1 byte (ubyte) - version, current = 0x09
 1 byte (ubyte) - world version (see version list below)
 2 bytes (short) - xPos of chunk lowest x & lowest z
 2 bytes (short) - zPos
@@ -94,3 +94,4 @@ Version history:
  - v6: Added world versioning
  - v7: Added world maps
  - v8: Variable biomes size
+ - v9: Fix issue with biomes size, causing old worlds to be corrupted
