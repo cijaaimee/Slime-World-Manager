@@ -4,10 +4,7 @@ import com.grinderwolf.swm.plugin.commands.sub.*;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -95,6 +92,11 @@ public class CommandManager implements CommandExecutor, TabExecutor {
             commands.forEach((name, command) -> {
                 if (name.startsWith(typed) && !command.getPermission().equals("")
                         && (sender.hasPermission(command.getPermission()) || sender.hasPermission("swm.*"))) {
+
+                    if (name.equalsIgnoreCase("goto") && (sender instanceof ConsoleCommandSender)) {
+                        return;
+                    }
+
                     toReturn.add(name);
 
                 }

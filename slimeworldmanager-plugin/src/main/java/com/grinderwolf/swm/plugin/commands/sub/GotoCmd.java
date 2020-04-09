@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedList;
@@ -69,6 +70,10 @@ public class GotoCmd implements Subcommand {
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         final List<String> toReturn = new LinkedList<>();
+
+        if (sender instanceof ConsoleCommandSender) {
+            return toReturn;
+        }
 
         if (args.length == 2) {
             final String typed = args[1].toLowerCase();
