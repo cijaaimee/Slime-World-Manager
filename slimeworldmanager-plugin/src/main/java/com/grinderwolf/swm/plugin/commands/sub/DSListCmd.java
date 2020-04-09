@@ -11,8 +11,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -103,6 +106,17 @@ public class DSListCmd implements Subcommand {
         }
 
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        final List<String> toReturn = new LinkedList<>();
+
+        if (args.length == 2) {
+            toReturn.addAll(LoaderUtils.getAvailableLoadersNames());
+        }
+
+        return toReturn;
     }
 
     private boolean isLoaded(SlimeLoader loader, String worldName) {

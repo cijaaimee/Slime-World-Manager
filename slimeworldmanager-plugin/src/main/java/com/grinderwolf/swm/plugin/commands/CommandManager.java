@@ -4,12 +4,15 @@ import com.grinderwolf.swm.plugin.commands.sub.*;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.ChatColor;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class CommandManager implements CommandExecutor {
+public class CommandManager implements CommandExecutor, TabExecutor {
 
     @Getter
     private static CommandManager instance;
@@ -69,7 +72,7 @@ public class CommandManager implements CommandExecutor {
         }
 
         String[] subCmdArgs = new String[args.length - 1];
-        System.arraycopy(args,1, subCmdArgs, 0, subCmdArgs.length);
+        System.arraycopy(args, 1, subCmdArgs, 0, subCmdArgs.length);
 
         if (!command.onCommand(sender, subCmdArgs)) {
             sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Command usage: /swm " + ChatColor.GRAY + command.getUsage() + ChatColor.RED + ".");
@@ -80,5 +83,34 @@ public class CommandManager implements CommandExecutor {
 
     public Collection<Subcommand> getCommands() {
         return commands.values();
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        final List<String> toReturn = new LinkedList<>();
+
+        if (args.length == 1) {
+            final String typed = args[0].toLowerCase();
+
+            commands.forEach((name, command) -> {
+                if (name.startsWith(typed) && !command.getPermission().equals("")
+                        && (sender.hasPermission(command.getPermission()) || sender.hasPermission("swm.*"))) {
+                    toReturn.add(name);
+
+                }
+            });
+
+            return toReturn;
+        }
+
+        final String subName = args[0];
+        final Subcommand subcommand = commands.get(subName);
+
+        if (subcommand == null) {
+            return toReturn;
+        }
+
+        toReturn.addAll(subcommand.onTabComplete(sender, args));
+        return toReturn;
     }
 }

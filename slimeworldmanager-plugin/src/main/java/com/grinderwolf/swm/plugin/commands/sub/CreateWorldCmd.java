@@ -21,6 +21,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 public class CreateWorldCmd implements Subcommand {
@@ -118,6 +120,11 @@ public class CreateWorldCmd implements Subcommand {
         }
 
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        return new LinkedList<>();
     }
 }
 

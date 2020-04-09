@@ -36,13 +36,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class LoaderUtils {
 
@@ -81,6 +75,11 @@ public class LoaderUtils {
             }
         }
     }
+
+    public static List<String> getAvailableLoadersNames() {
+        return new LinkedList<>(loaderMap.keySet());
+    }
+
 
     public static SlimeLoader getLoader(String dataSource) {
         return loaderMap.get(dataSource);

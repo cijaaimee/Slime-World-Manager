@@ -20,6 +20,8 @@ import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -137,6 +139,28 @@ public class DeleteWorldCmd implements Subcommand {
         }
 
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        final List<String> toReturn = new LinkedList<>();
+
+        if (args.length == 2) {
+            final String typed = args[1].toLowerCase();
+            for (World world : Bukkit.getWorlds()) {
+                final String worldName = world.getName();
+
+                if (worldName.toLowerCase().startsWith(typed)) {
+                    toReturn.add(worldName);
+                }
+            }
+        }
+
+        if (args.length == 3) {
+            toReturn.addAll(LoaderUtils.getAvailableLoadersNames());
+        }
+
+        return toReturn;
     }
 }
 

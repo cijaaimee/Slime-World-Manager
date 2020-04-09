@@ -19,6 +19,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -108,6 +110,17 @@ public class ImportWorldCmd implements Subcommand {
         }
 
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        final List<String> toReturn = new LinkedList<>();
+
+        if (args.length == 3) {
+            toReturn.addAll(LoaderUtils.getAvailableLoadersNames());
+        }
+
+        return toReturn;
     }
 }
 

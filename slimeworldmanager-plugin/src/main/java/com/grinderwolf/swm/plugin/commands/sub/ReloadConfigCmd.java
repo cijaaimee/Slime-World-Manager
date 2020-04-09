@@ -10,6 +10,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 public class ReloadConfigCmd implements Subcommand {
@@ -36,6 +38,11 @@ public class ReloadConfigCmd implements Subcommand {
         sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GREEN + "Config reloaded.");
 
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        return new LinkedList<>();
     }
 }
 

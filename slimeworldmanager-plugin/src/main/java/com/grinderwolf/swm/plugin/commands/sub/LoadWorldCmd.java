@@ -21,6 +21,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 public class LoadWorldCmd implements Subcommand {
@@ -120,6 +122,24 @@ public class LoadWorldCmd implements Subcommand {
         }
 
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        final List<String> toReturn = new LinkedList<>();
+
+        if (args.length == 2) {
+            final String typed = args[1].toLowerCase();
+
+            for (World world : Bukkit.getWorlds()) {
+                final String worldName = world.getName();
+                if (worldName.toLowerCase().startsWith(typed)) {
+                    toReturn.add(worldName);
+                }
+            }
+        }
+
+        return toReturn;
     }
 }
 

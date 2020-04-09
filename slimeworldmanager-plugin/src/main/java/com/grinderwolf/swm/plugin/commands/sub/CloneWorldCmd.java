@@ -7,6 +7,7 @@ import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.*;
+import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.*;
@@ -14,6 +15,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 public class CloneWorldCmd implements Subcommand {
@@ -125,6 +128,17 @@ public class CloneWorldCmd implements Subcommand {
         }
 
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        final List<String> toReturn = new LinkedList<>();
+
+        if (args.length == 4) {
+            toReturn.addAll(LoaderUtils.getAvailableLoadersNames());
+        }
+
+        return toReturn;
     }
 }
 
