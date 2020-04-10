@@ -84,24 +84,28 @@ public class CommandManager implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        if (args.length == 1) {
-            final List<String> toReturn = new LinkedList<>();
-            final String typed = args[0].toLowerCase();
+        List<String> toReturn = null;
+        final String typed = args[0].toLowerCase();
 
-            commands.forEach((name, command) -> {
-                if (name.startsWith(typed) && !command.getPermission().equals("")
-                        && (sender.hasPermission(command.getPermission()) || sender.hasPermission("swm.*"))) {
+        if (args.length == 1) {
+            for (Map.Entry<String, Subcommand> entry : commands.entrySet()) {
+                final String name = entry.getKey();
+                final Subcommand subcommand = entry.getValue();
+
+                if (name.startsWith(typed) && !subcommand.getPermission().equals("")
+                        && (sender.hasPermission(subcommand.getPermission()) || sender.hasPermission("swm.*"))) {
 
                     if (name.equalsIgnoreCase("goto") && (sender instanceof ConsoleCommandSender)) {
-                        return;
+                        continue;
+                    }
+
+                    if (toReturn == null) {
+                        toReturn = new LinkedList<>();
                     }
 
                     toReturn.add(name);
-
                 }
-            });
-
-            return toReturn;
+            }
         }
 
         if (args.length > 1) {
@@ -109,10 +113,10 @@ public class CommandManager implements TabExecutor {
             final Subcommand subcommand = commands.get(subName);
 
             if (subcommand != null) {
-                return new LinkedList<>(subcommand.onTabComplete(sender, args));
+                toReturn = subcommand.onTabComplete(sender, args);
             }
         }
 
-        return Collections.emptyList();
+        return toReturn == null ? Collections.emptyList() : toReturn;
     }
 }

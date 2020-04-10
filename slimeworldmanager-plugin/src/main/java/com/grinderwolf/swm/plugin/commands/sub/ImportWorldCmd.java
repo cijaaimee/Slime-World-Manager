@@ -115,6 +115,8 @@ public class ImportWorldCmd implements Subcommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
+        List<String> toReturn = null;
+
         if (args.length == 3) {
             return new LinkedList<>(LoaderUtils.getAvailableLoadersNames());
         }

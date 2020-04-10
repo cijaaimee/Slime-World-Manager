@@ -116,24 +116,28 @@ public class MigrateWorldCmd implements Subcommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
+        List<String> toReturn = null;
+
         if (args.length == 2) {
-            final List<String> toReturn = new LinkedList<>();
             final String typed = args[1].toLowerCase();
 
             for (World world : Bukkit.getWorlds()) {
                 final String worldName = world.getName();
                 if (worldName.toLowerCase().startsWith(typed)) {
+                    if (toReturn == null) {
+                        toReturn = new LinkedList<>();
+                    }
+
                     toReturn.add(worldName);
                 }
             }
-            return toReturn;
         }
 
         if (args.length == 3) {
-            return new LinkedList<>(LoaderUtils.getAvailableLoadersNames());
+            toReturn = new LinkedList<>(LoaderUtils.getAvailableLoadersNames());
         }
 
-        return Collections.emptyList();
+        return toReturn == null ? Collections.emptyList() : toReturn;
     }
 }
 

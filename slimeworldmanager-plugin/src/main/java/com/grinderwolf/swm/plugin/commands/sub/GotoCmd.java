@@ -70,36 +70,40 @@ public class GotoCmd implements Subcommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
+        List<String> toReturn = null;
+
         if (sender instanceof ConsoleCommandSender) {
             return Collections.emptyList();
         }
 
         if (args.length == 2) {
-            final List<String> toReturn = new LinkedList<>();
             final String typed = args[1].toLowerCase();
 
             for (World world : Bukkit.getWorlds()) {
                 final String worldName = world.getName();
                 if (worldName.toLowerCase().startsWith(typed)) {
+                    if (toReturn == null) {
+                        toReturn = new LinkedList<>();
+                    }
                     toReturn.add(worldName);
                 }
             }
-            return toReturn;
         }
 
         if (args.length == 3) {
-            final List<String> toReturn = new LinkedList<>();
             final String typed = args[2].toLowerCase();
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 final String playerName = player.getName();
                 if (playerName.toLowerCase().startsWith(typed)) {
+                    if (toReturn == null) {
+                        toReturn = new LinkedList<>();
+                    }
                     toReturn.add(playerName);
                 }
             }
-            return toReturn;
         }
 
-        return Collections.emptyList();
+        return toReturn == null ? Collections.emptyList() : toReturn;
     }
 }
