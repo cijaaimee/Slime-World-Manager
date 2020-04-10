@@ -11,6 +11,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,9 +63,8 @@ public class UnloadWorldCmd implements Subcommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
-        final List<String> toReturn = new LinkedList<>();
-
         if (args.length == 2) {
+            final List<String> toReturn = new LinkedList<>();
             final String typed = args[1].toLowerCase();
 
             for (World world : Bukkit.getWorlds()) {
@@ -73,9 +73,10 @@ public class UnloadWorldCmd implements Subcommand {
                     toReturn.add(worldName);
                 }
             }
+            return toReturn;
         }
 
-        return toReturn;
+        return Collections.emptyList();
     }
 }
 

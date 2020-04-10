@@ -20,6 +20,7 @@ import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -143,10 +144,10 @@ public class DeleteWorldCmd implements Subcommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
-        final List<String> toReturn = new LinkedList<>();
-
         if (args.length == 2) {
+            final List<String> toReturn = new LinkedList<>();
             final String typed = args[1].toLowerCase();
+
             for (World world : Bukkit.getWorlds()) {
                 final String worldName = world.getName();
 
@@ -154,13 +155,19 @@ public class DeleteWorldCmd implements Subcommand {
                     toReturn.add(worldName);
                 }
             }
+
+            return toReturn;
         }
 
         if (args.length == 3) {
-            toReturn.addAll(LoaderUtils.getAvailableLoadersNames());
+            return new LinkedList<>(LoaderUtils.getAvailableLoadersNames());
         }
 
-        return toReturn;
+        if (args.length == 4) {
+            return new LinkedList<>(LoaderUtils.getAvailableLoadersNames());
+        }
+
+        return Collections.emptyList();
     }
 }
 

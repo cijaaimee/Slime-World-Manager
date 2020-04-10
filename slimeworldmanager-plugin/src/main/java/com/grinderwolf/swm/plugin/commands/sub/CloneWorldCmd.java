@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -132,13 +133,11 @@ public class CloneWorldCmd implements Subcommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
-        final List<String> toReturn = new LinkedList<>();
-
         if (args.length == 4) {
-            toReturn.addAll(LoaderUtils.getAvailableLoadersNames());
+            return new LinkedList<>(LoaderUtils.getAvailableLoadersNames());
         }
 
-        return toReturn;
+        return Collections.emptyList();
     }
 }
 

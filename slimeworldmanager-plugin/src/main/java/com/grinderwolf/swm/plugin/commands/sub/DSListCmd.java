@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -110,13 +111,11 @@ public class DSListCmd implements Subcommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
-        final List<String> toReturn = new LinkedList<>();
-
         if (args.length == 2) {
-            toReturn.addAll(LoaderUtils.getAvailableLoadersNames());
+            return new LinkedList<>(LoaderUtils.getAvailableLoadersNames());
         }
 
-        return toReturn;
+        return Collections.emptyList();
     }
 
     private boolean isLoaded(SlimeLoader loader, String worldName) {

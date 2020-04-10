@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class CommandManager implements CommandExecutor, TabExecutor {
+public class CommandManager implements TabExecutor {
 
     @Getter
     private static CommandManager instance;
@@ -84,9 +84,8 @@ public class CommandManager implements CommandExecutor, TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        final List<String> toReturn = new LinkedList<>();
-
         if (args.length == 1) {
+            final List<String> toReturn = new LinkedList<>();
             final String typed = args[0].toLowerCase();
 
             commands.forEach((name, command) -> {
@@ -105,14 +104,15 @@ public class CommandManager implements CommandExecutor, TabExecutor {
             return toReturn;
         }
 
-        final String subName = args[0];
-        final Subcommand subcommand = commands.get(subName);
+        if (args.length > 1) {
+            final String subName = args[0];
+            final Subcommand subcommand = commands.get(subName);
 
-        if (subcommand == null) {
-            return toReturn;
+            if (subcommand != null) {
+                return new LinkedList<>(subcommand.onTabComplete(sender, args));
+            }
         }
 
-        toReturn.addAll(subcommand.onTabComplete(sender, args));
-        return toReturn;
+        return Collections.emptyList();
     }
 }

@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,13 +70,12 @@ public class GotoCmd implements Subcommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
-        final List<String> toReturn = new LinkedList<>();
-
         if (sender instanceof ConsoleCommandSender) {
-            return toReturn;
+            return Collections.emptyList();
         }
 
         if (args.length == 2) {
+            final List<String> toReturn = new LinkedList<>();
             final String typed = args[1].toLowerCase();
 
             for (World world : Bukkit.getWorlds()) {
@@ -84,9 +84,11 @@ public class GotoCmd implements Subcommand {
                     toReturn.add(worldName);
                 }
             }
+            return toReturn;
         }
 
         if (args.length == 3) {
+            final List<String> toReturn = new LinkedList<>();
             final String typed = args[2].toLowerCase();
 
             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -95,8 +97,9 @@ public class GotoCmd implements Subcommand {
                     toReturn.add(playerName);
                 }
             }
+            return toReturn;
         }
 
-        return toReturn;
+        return Collections.emptyList();
     }
 }
