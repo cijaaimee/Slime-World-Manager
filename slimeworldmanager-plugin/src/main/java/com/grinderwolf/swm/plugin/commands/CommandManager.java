@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class CommandManager implements CommandExecutor {
+public class CommandManager implements TabExecutor {
 
     @Getter
     private static CommandManager instance;
@@ -69,7 +69,7 @@ public class CommandManager implements CommandExecutor {
         }
 
         String[] subCmdArgs = new String[args.length - 1];
-        System.arraycopy(args,1, subCmdArgs, 0, subCmdArgs.length);
+        System.arraycopy(args, 1, subCmdArgs, 0, subCmdArgs.length);
 
         if (!command.onCommand(sender, subCmdArgs)) {
             sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Command usage: /swm " + ChatColor.GRAY + command.getUsage() + ChatColor.RED + ".");
@@ -80,5 +80,43 @@ public class CommandManager implements CommandExecutor {
 
     public Collection<Subcommand> getCommands() {
         return commands.values();
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        List<String> toReturn = null;
+        final String typed = args[0].toLowerCase();
+
+        if (args.length == 1) {
+            for (Map.Entry<String, Subcommand> entry : commands.entrySet()) {
+                final String name = entry.getKey();
+                final Subcommand subcommand = entry.getValue();
+
+                if (name.startsWith(typed) && !subcommand.getPermission().equals("")
+                        && (sender.hasPermission(subcommand.getPermission()) || sender.hasPermission("swm.*"))) {
+
+                    if (name.equalsIgnoreCase("goto") && (sender instanceof ConsoleCommandSender)) {
+                        continue;
+                    }
+
+                    if (toReturn == null) {
+                        toReturn = new LinkedList<>();
+                    }
+
+                    toReturn.add(name);
+                }
+            }
+        }
+
+        if (args.length > 1) {
+            final String subName = args[0];
+            final Subcommand subcommand = commands.get(subName);
+
+            if (subcommand != null) {
+                toReturn = subcommand.onTabComplete(sender, args);
+            }
+        }
+
+        return toReturn == null ? Collections.emptyList() : toReturn;
     }
 }
