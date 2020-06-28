@@ -1,4 +1,4 @@
-package com.grinderwolf.swm.nms.v1_15_R1;
+package com.grinderwolf.swm.nms.v1_16_R1;
 
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
@@ -6,17 +6,17 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
-import net.minecraft.server.v1_15_R1.*;
+import net.minecraft.server.v1_16_R1.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
 @Getter
-public class v1_15_R1SlimeNMS implements SlimeNMS {
+public class v1_16_R1SlimeNMS implements SlimeNMS {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM");
 
@@ -28,7 +28,7 @@ public class v1_15_R1SlimeNMS implements SlimeNMS {
     private CustomWorldServer defaultNetherWorld;
     private CustomWorldServer defaultEndWorld;
 
-    public v1_15_R1SlimeNMS() {
+    public v1_16_R1SlimeNMS() {
         try {
             CraftCLSMBridge.initialize(this);
         } catch (NoClassDefFoundError ex) {

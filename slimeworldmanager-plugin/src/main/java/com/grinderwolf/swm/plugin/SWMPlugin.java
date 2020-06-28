@@ -16,7 +16,7 @@ import com.grinderwolf.swm.nms.v1_12_R1.v1_12_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_13_R1.v1_13_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_13_R2.v1_13_R2SlimeNMS;
 import com.grinderwolf.swm.nms.v1_14_R1.v1_14_R1SlimeNMS;
-import com.grinderwolf.swm.nms.v1_15_R1.v1_15_R1SlimeNMS;
+import com.grinderwolf.swm.nms.v1_16_R1.v1_16_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_8_R3.v1_8_R3SlimeNMS;
 import com.grinderwolf.swm.nms.v1_9_R1.v1_9_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_9_R2.v1_9_R2SlimeNMS;
@@ -32,7 +32,6 @@ import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.*;
-import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -176,7 +175,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             case "v1_14_R1":
                 return new v1_14_R1SlimeNMS();
             case "v1_15_R1":
-                return new v1_15_R1SlimeNMS();
+                return new v1_16_R1SlimeNMS();
             default:
                 throw new InvalidVersionException(nmsVersion);
         }

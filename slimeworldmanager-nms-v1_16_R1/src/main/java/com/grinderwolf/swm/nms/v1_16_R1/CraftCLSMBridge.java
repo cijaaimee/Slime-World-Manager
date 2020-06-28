@@ -1,10 +1,10 @@
-package com.grinderwolf.swm.nms.v1_15_R1;
+package com.grinderwolf.swm.nms.v1_16_R1;
 
 import com.grinderwolf.swm.clsm.CLSMBridge;
 import com.grinderwolf.swm.clsm.ClassModifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_15_R1.*;
+import net.minecraft.server.v1_16_R1.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,7 +13,7 @@ public class CraftCLSMBridge implements CLSMBridge {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
 
-    private final v1_15_R1SlimeNMS nmsInstance;
+    private final v1_16_R1SlimeNMS nmsInstance;
 
     @Override
     public Object getChunk(Object worldObject, int x, int z) {
@@ -81,7 +81,7 @@ public class CraftCLSMBridge implements CLSMBridge {
         return !worldServer.isReady();
     }
 
-    static void initialize(v1_15_R1SlimeNMS instance) {
+    static void initialize(v1_16_R1SlimeNMS instance) {
         ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
 }
