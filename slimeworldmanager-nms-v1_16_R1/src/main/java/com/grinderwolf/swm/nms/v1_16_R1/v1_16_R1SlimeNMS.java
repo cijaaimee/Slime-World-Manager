@@ -46,17 +46,17 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
                 LOGGER.warn("The environment for the default world must always be 'NORMAL'.");
             }
             
-            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomNBTStorage(normalWorld), DimensionManager.OVERWORLD, World.Environment.NORMAL);
+//            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomNBTStorage(normalWorld), DimensionManager.OVERWORLD, World.Environment.NORMAL);
         }
 
         if (netherWorld != null) {
             World.Environment env = World.Environment.valueOf(netherWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomNBTStorage(netherWorld), DimensionManager.a(env.getId()), env);
+//            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomNBTStorage(netherWorld), DimensionManager.a(env.getId()), env);
         }
 
         if (endWorld != null) {
             World.Environment env = World.Environment.valueOf(endWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomNBTStorage(endWorld), DimensionManager.a(env.getId()), env);
+//            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomNBTStorage(endWorld), DimensionManager.a(env.getId()), env);
         }
 
         loadingDefaultWorlds = false;
@@ -78,7 +78,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         do {
             for (WorldServer server : mcServer.getWorlds()) {
-                used = server.getWorldProvider().getDimensionManager().getDimensionID() + 1 == dimension;
+//                used = server.getWorldProvider().getDimensionManager().getDimensionID() + 1 == dimension;
 
                 if (used) { // getDimensionID() returns the dimension - 1
                     dimension++;
@@ -89,26 +89,27 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         World.Environment env = World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
 
-        DimensionManager actualDimension = DimensionManager.a(env.getId());
-        DimensionManager dimensionManager = DimensionManager.register(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
-                actualDimension.folder, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension
-                .getGenLayerZoomer(), actualDimension));
+//        DimensionManager actualDimension = DimensionManager.a(env.getId());
+//        DimensionManager dimensionManager = DimensionManager.register(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
+//                actualDimension.folder, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension
+//                .getGenLayerZoomer(), actualDimension));
 
-        CustomWorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager, env);
+        CustomWorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, null, env);
 
         LOGGER.info("Loading world " + worldName);
         long startTime = System.currentTimeMillis();
 
         server.setReady(true);
-        mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings(dataManager.getWorldData()));
+        mcServer.initWorld(server, null, null, null);
+//        mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings("", EnumGamemode.NOT_SET, true, EnumDifficulty.PEACEFUL, true, null, null), null);
 
         mcServer.server.addWorld(server.getWorld());
-        mcServer.worldServer.put(dimensionManager, server);
+//        mcServer.worldServer.put(dimensionManager, server);
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
 
         if (server.getWorld().getKeepSpawnInMemory()) {
-            LOGGER.debug("Preparing start region for dimension '{}'/{}", worldName, DimensionManager.a(0));
+//            LOGGER.debug("Preparing start region for dimension '{}'/{}", worldName, DimensionManager.a(0));
             BlockPosition spawn = server.getSpawn();
             ChunkProviderServer provider = server.getChunkProvider();
             provider.addTicket(TicketType.START, new ChunkCoordIntPair(spawn), 11, Unit.INSTANCE);

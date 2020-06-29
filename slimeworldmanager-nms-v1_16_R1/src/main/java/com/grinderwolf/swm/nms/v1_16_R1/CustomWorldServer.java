@@ -77,7 +77,7 @@ public class CustomWorldServer extends WorldServer {
             this.getChunkProvider().save(forceSave);
 
 
-            this.getDataManager().saveWorldData(worldData, null);
+//            this.getDataManager().saveWorldData(worldData, null);
 
             // Update the map compound list
             slimeWorld.getWorldMaps().clear();
@@ -134,8 +134,8 @@ public class CustomWorldServer extends WorldServer {
             BiomeStorage biomeStorage = new BiomeStorage(pos, getChunkProvider().getChunkGenerator().getWorldChunkManager(), null);
 
             // Tick lists
-            TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>());
-            TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>());
+            TickListChunk<Block> airChunkTickList = new TickListChunk(IRegistry.BLOCK::getKey, new ArrayList<>());
+            TickListChunk<FluidType> fluidChunkTickList = new TickListChunk(IRegistry.FLUID::getKey, new ArrayList<>());
 
             chunk = new Chunk(this, pos, biomeStorage, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, null, null);
             HeightMap.a(chunk, chunk.getChunkStatus().h());

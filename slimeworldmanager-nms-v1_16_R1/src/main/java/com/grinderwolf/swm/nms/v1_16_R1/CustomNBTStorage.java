@@ -8,6 +8,7 @@ import lombok.Getter;
 import net.minecraft.server.v1_16_R1.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 @Getter
@@ -21,7 +22,8 @@ public class CustomNBTStorage extends WorldNBTStorage {
     private WorldData worldData;
 
     public CustomNBTStorage(SlimeWorld world) {
-        super(new File("temp_" + world.getName()), null);
+        super(null, null);
+//        super(, null);
 
         this.world = world;
     }
@@ -37,7 +39,7 @@ public class CustomNBTStorage extends WorldNBTStorage {
     public void checkSession() { }
 
     public void saveWorldData(WorldData worldData, NBTTagCompound nbtTagCompound) {
-        CompoundTag gameRules = (CompoundTag) Converter.convertTag("gamerules", worldData.v().a()).getAsCompoundTag().get();
+        CompoundTag gameRules = (CompoundTag) Converter.convertTag("gamerules", worldData.p().a()).getAsCompoundTag().get();
         CompoundTag extraData = this.world.getExtraData();
 
         extraData.getValue().remove("gamerules");
