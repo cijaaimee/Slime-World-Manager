@@ -21,9 +21,9 @@ public class CustomNBTStorage extends WorldNBTStorage {
     private final SlimeWorld world;
     private WorldData worldData;
 
-    public CustomNBTStorage(SlimeWorld world) {
-        super(null, null);
-//        super(, null);
+    public CustomNBTStorage(SlimeWorld world, Convertable.ConversionSession conversionSession) throws IOException {
+        super(conversionSession, null);
+//        super(null, null);
 
         this.world = world;
     }

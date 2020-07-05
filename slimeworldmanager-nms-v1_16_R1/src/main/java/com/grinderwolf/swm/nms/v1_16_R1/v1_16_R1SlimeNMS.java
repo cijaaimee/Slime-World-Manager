@@ -15,6 +15,9 @@ import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
+import java.io.File;
+import java.io.IOException;
+
 @Getter
 public class v1_16_R1SlimeNMS implements SlimeNMS {
 
@@ -70,7 +73,18 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
-        CustomNBTStorage dataManager = new CustomNBTStorage(world);
+        CustomNBTStorage dataManager = null;
+        Convertable.ConversionSession conversionSession = null;
+        try {
+            conversionSession = Convertable.a(new File(world.getName()).toPath()).c("", WorldDimension.OVERWORLD);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            dataManager = new CustomNBTStorage(world, conversionSession);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
         MinecraftServer mcServer = MinecraftServer.getServer();
 
         int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worldServer.size();
@@ -94,13 +108,18 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 //                actualDimension.folder, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension
 //                .getGenLayerZoomer(), actualDimension));
 
-        CustomWorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, null, env);
+        CustomWorldServer server = null;
+        try {
+            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, DimensionManager.a(), env, conversionSession);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
 
         LOGGER.info("Loading world " + worldName);
         long startTime = System.currentTimeMillis();
 
         server.setReady(true);
-        mcServer.initWorld(server, null, null, null);
+        mcServer.initWorld(server, server.worldDataServer, null, GeneratorSettings.a());
 //        mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings("", EnumGamemode.NOT_SET, true, EnumDifficulty.PEACEFUL, true, null, null), null);
 
         mcServer.server.addWorld(server.getWorld());
