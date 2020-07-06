@@ -110,7 +110,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         CustomWorldServer server = null;
         try {
-            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, DimensionManager.a(), env, conversionSession);
+            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, DimensionManager.a(), env, GeneratorSettings.a().getChunkGenerator(), server.worldDataServer);
         } catch(IOException e) {
             e.printStackTrace();
         }

@@ -16,8 +16,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.Function;
 import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
-import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.craftbukkit.v1_16_R1.generator.CustomChunkGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,26 +43,20 @@ public class CustomWorldServer extends WorldServer {
     @Setter
     private boolean ready = false;
 
-    CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, DimensionManager dimensionManager, World.Environment env, Convertable.ConversionSession conversionSession) throws IOException {
-        super(
-                ((CraftServer)Bukkit.getServer()).getServer(),
-                ((CraftServer)Bukkit.getServer()).getServer().executorService,
-                conversionSession,
-                null,
+    CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, DimensionManager dimensionManager, World.Environment env, net.minecraft.server.v1_16_R1.ChunkGenerator chunkGenerator, WorldDataServer worldDataServer) throws IOException {
+        super(((CraftServer)Bukkit.getServer()).getServer(), ((CraftServer)Bukkit.getServer()).getServer().executorService, ((CraftServer)Bukkit.getServer()).getServer().convertable,
+                worldDataServer,
                 null,
                 null,
                 dimensionManager,
                 ((CraftServer)Bukkit.getServer()).getServer().worldLoadListenerFactory.create(11),
-                new ChunkGeneratorAbstract(
-                        new WorldChunkManagerOverworld(0, true, true),
-                        0,
-                        new GeneratorSettingBase.a("", null).b()),
+                chunkGenerator,
                 false,
                 0,
                 null,
                 false,
                 env,
-                null
+                ((CraftServer)Bukkit.getServer()).getServer().D().generator
         );
 
         // MinecraftServer.getServer().getMethodProfiler()
