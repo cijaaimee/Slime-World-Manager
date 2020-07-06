@@ -6,6 +6,7 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
+import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_16_R1.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +18,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 @Getter
 public class v1_16_R1SlimeNMS implements SlimeNMS {
@@ -73,19 +75,14 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
-        CustomNBTStorage dataManager = null;
-        Convertable.ConversionSession conversionSession = null;
-        try {
-            conversionSession = Convertable.a(new File(world.getName()).toPath()).c("", WorldDimension.OVERWORLD);
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            dataManager = new CustomNBTStorage(world, conversionSession);
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
         MinecraftServer mcServer = MinecraftServer.getServer();
+
+        CustomNBTStorage dataManager = null;
+        try {
+            dataManager = new CustomNBTStorage(world, mcServer.D().convertable, mcServer.dataConverterManager);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
 
         int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worldServer.size();
         boolean used = false;
@@ -103,32 +100,41 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         World.Environment env = World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
 
-//        DimensionManager actualDimension = DimensionManager.a(env.getId());
-//        DimensionManager dimensionManager = DimensionManager.register(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
-//                actualDimension.folder, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension
+        DimensionManager dimensionManager = DimensionManager.a();
+//        DimensionManager dimensionManager = DimensionManager.a(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
+//                actualDimension, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension
 //                .getGenLayerZoomer(), actualDimension));
 
         CustomWorldServer server = null;
         try {
-            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, DimensionManager.a(), env, GeneratorSettings.a().getChunkGenerator(), server.worldDataServer);
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-pre: " + server);
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-world: " + world);
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-DM: " + dimensionManager);
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-env: " + env);
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-CG: " + GeneratorSettings.a().getChunkGenerator());
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-WS: " + mcServer.D().worldDataServer);
+            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager, env, GeneratorSettings.a().getChunkGenerator(), mcServer.D().worldDataServer, ResourceKey.a(MinecraftKey.a("OVERWORLD")), ResourceKey.a(MinecraftKey.a("OVERWORLD")), Arrays.asList(new MobSpawnerCat()), true, true);
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "WORLD-NAME: " + server.getSlimeWorld().getName());
         } catch(IOException e) {
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-error: " + server);
             e.printStackTrace();
         }
+        Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-post: " + server);
 
         LOGGER.info("Loading world " + worldName);
         long startTime = System.currentTimeMillis();
 
         server.setReady(true);
-        mcServer.initWorld(server, server.worldDataServer, null, GeneratorSettings.a());
+        mcServer.initWorld(server, mcServer.D().worldDataServer, null, GeneratorSettings.a().k());
 //        mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings("", EnumGamemode.NOT_SET, true, EnumDifficulty.PEACEFUL, true, null, null), null);
 
         mcServer.server.addWorld(server.getWorld());
-//        mcServer.worldServer.put(dimensionManager, server);
+        mcServer.worldServer.put(server.getDimensionKey(), server);
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
 
         if (server.getWorld().getKeepSpawnInMemory()) {
-//            LOGGER.debug("Preparing start region for dimension '{}'/{}", worldName, DimensionManager.a(0));
+            LOGGER.debug("Preparing start region for dimension '{}'/{}", worldName, dimensionManager.a(0));
             BlockPosition spawn = server.getSpawn();
             ChunkProviderServer provider = server.getChunkProvider();
             provider.addTicket(TicketType.START, new ChunkCoordIntPair(spawn), 11, Unit.INSTANCE);

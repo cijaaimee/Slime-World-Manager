@@ -3,6 +3,7 @@ package com.grinderwolf.swm.nms.v1_16_R1;
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import com.mojang.datafixers.DataFixer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.minecraft.server.v1_16_R1.*;
@@ -21,8 +22,8 @@ public class CustomNBTStorage extends WorldNBTStorage {
     private final SlimeWorld world;
     private WorldData worldData;
 
-    public CustomNBTStorage(SlimeWorld world, Convertable.ConversionSession conversionSession) throws IOException {
-        super(conversionSession, null);
+    public CustomNBTStorage(SlimeWorld world, Convertable.ConversionSession conversionSession, DataFixer dataFixer) throws IOException {
+        super(conversionSession, dataFixer);
 //        super(null, null);
 
         this.world = world;
