@@ -67,6 +67,15 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         loadingDefaultWorlds = false;
     }
 
+    public static Convertable.ConversionSession getConversionSession(File file, ResourceKey<WorldDimension> dimensionKey) {
+        try {
+            return Convertable.a(file.toPath()).c("", dimensionKey);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public void generateWorld(SlimeWorld world) {
         String worldName = world.getName();
@@ -77,9 +86,11 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         MinecraftServer mcServer = MinecraftServer.getServer();
 
+        Convertable.ConversionSession conversionSession = getConversionSession(new File("temp_" + world.getName()), WorldDimension.OVERWORLD);
+
         CustomNBTStorage dataManager = null;
         try {
-            dataManager = new CustomNBTStorage(world, mcServer.D().convertable, mcServer.dataConverterManager);
+            dataManager = new CustomNBTStorage(world, conversionSession, mcServer.dataConverterManager);
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -100,7 +111,9 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         World.Environment env = World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
 
-        DimensionManager dimensionManager = DimensionManager.a();
+        DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
+
+//        DimensionManager dimensionManager = DimensionManager.a(mcServer.D().getDimensionKey(), conversionSession.folder.toFile());
 //        DimensionManager dimensionManager = DimensionManager.a(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
 //                actualDimension, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension
 //                .getGenLayerZoomer(), actualDimension));
@@ -108,13 +121,15 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         CustomWorldServer server = null;
         try {
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-pre: " + server);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-world: " + world);
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-world: " + world.getName());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-DM: " + dimensionManager);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-env: " + env);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-CG: " + GeneratorSettings.a().getChunkGenerator());
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-env: " + env.getId());
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-CG: " + mcServer.D().worldDataServer.getGeneratorSettings());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-WS: " + mcServer.D().worldDataServer);
-            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimensionManager, env, GeneratorSettings.a().getChunkGenerator(), mcServer.D().worldDataServer, ResourceKey.a(MinecraftKey.a("OVERWORLD")), ResourceKey.a(MinecraftKey.a("OVERWORLD")), Arrays.asList(new MobSpawnerCat()), true, true);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "WORLD-NAME: " + server.getSlimeWorld().getName());
+            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, mcServer.D().worldDataServer.getGeneratorSettings().getChunkGenerator(), mcServer.D().worldDataServer, ResourceKey.a(MinecraftKey.a(worldName)), ResourceKey.a(MinecraftKey.a(worldName)), Arrays.asList(new MobSpawnerCat()), false, false);
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SERVER-WORLD-NAME: " + server.getWorld().getName());
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIMEWORLD-NAME: " + worldName);
         } catch(IOException e) {
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-error: " + server);
             e.printStackTrace();
@@ -125,7 +140,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         long startTime = System.currentTimeMillis();
 
         server.setReady(true);
-        mcServer.initWorld(server, mcServer.D().worldDataServer, null, GeneratorSettings.a().k());
+        mcServer.initWorld(server, mcServer.D().worldDataServer, null, mcServer.D().worldDataServer.getGeneratorSettings());
 //        mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings("", EnumGamemode.NOT_SET, true, EnumDifficulty.PEACEFUL, true, null, null), null);
 
         mcServer.server.addWorld(server.getWorld());

@@ -43,8 +43,8 @@ public class CustomWorldServer extends WorldServer {
     @Setter
     private boolean ready = false;
 
-    CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, DimensionManager dimensionManager, World.Environment env, net.minecraft.server.v1_16_R1.ChunkGenerator chunkGenerator, WorldDataServer worldDataServer, ResourceKey resourceKey, ResourceKey resourceKey1, List<MobSpawner> list, boolean flag, boolean flag1) throws IOException {
-        super(((CraftServer)Bukkit.getServer()).getServer(), ((CraftServer)Bukkit.getServer()).getServer().executorService, ((CraftServer)Bukkit.getServer()).getServer().convertable,
+    CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, Convertable.ConversionSession conversionSession, DimensionManager dimensionManager, World.Environment env, net.minecraft.server.v1_16_R1.ChunkGenerator chunkGenerator, WorldDataServer worldDataServer, ResourceKey resourceKey, ResourceKey resourceKey1, List<MobSpawner> list, boolean flag, boolean flag1) throws IOException {
+        super(((CraftServer)Bukkit.getServer()).getServer(), ((CraftServer)Bukkit.getServer()).getServer().executorService, conversionSession,
                 worldDataServer,
                 resourceKey,
                 resourceKey1,
