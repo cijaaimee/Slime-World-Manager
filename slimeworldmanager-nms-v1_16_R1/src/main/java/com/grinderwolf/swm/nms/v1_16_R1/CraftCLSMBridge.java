@@ -18,15 +18,13 @@ public class CraftCLSMBridge implements CLSMBridge {
 
     @Override
     public Object getChunk(Object worldObject, int x, int z) {
-        Bukkit.broadcastMessage("broi");
+        Bukkit.broadcastMessage("getting chunk");
 
         if (!(worldObject instanceof CustomWorldServer)) {
             Bukkit.broadcastMessage("world is of type " + worldObject.getClass().getName());
 
             return null; // Returning null will just run the original getChunk method
         }
-
-        Bukkit.broadcastMessage("bruv");
 
         CustomWorldServer world = (CustomWorldServer) worldObject;
 
@@ -89,7 +87,7 @@ public class CraftCLSMBridge implements CLSMBridge {
     }
 
     static void initialize(v1_16_R1SlimeNMS instance) {
-        Bukkit.broadcastMessage("##### SETTING CLSM BRIDGE INSTANCE");
+        Bukkit.broadcastMessage("registering CLSM bridge");
 
         ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
