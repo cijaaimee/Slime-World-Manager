@@ -11,3 +11,16 @@ net/minecraft/server/v1_15_R1/PersistentBase:
   - a(java.io.File)@v1_15_R1/PersistentBase_saveData.txt
 org/bukkit/craftbukkit/v1_15_R1/CraftServer:
   - addWorld(org.bukkit.World)@v1_15_R1/CraftServer_addWorld.txt
+net/minecraft/server/v1_16_R1/PlayerChunkMap:
+  - saveChunk(net.minecraft.server.v1_16_R1.IChunkAccess)@v1_16_R1/PlayerChunkMap_saveChunk.txt
+  - f(net.minecraft.server.v1_16_R1.ChunkCoordIntPair)@v1_16_R1/PlayerChunkMap_loadChunk.txt
+net/minecraft/server/v1_16_R1/MobSpawnerTrader:
+  - a(net.minecraft.server.v1_16_R1.WorldServer,boolean, boolean)@v1_16_R1/MobSpawnerTrader_tickRaids.txt
+net/minecraft/server/v1_16_R1/PersistentBase:
+  - a(java.io.File)@v1_16_R1/PersistentBase_saveData.txt
+org/bukkit/craftbukkit/v1_16_R1/CraftServer:
+  - addWorld(org.bukkit.World)@v1_16_R1/CraftServer_addWorld.txt
+
+# TODO Fix the one below:
+net/minecraft/server/v1_16_R1/MinecraftServer:
+  - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_16_R1.WorldType, com.google.gson.JsonElement)@v1_16_R1/MinecraftServer_loadWorlds.txt
