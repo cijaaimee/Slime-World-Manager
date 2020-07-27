@@ -10,8 +10,6 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
-import com.grinderwolf.swm.nms.v1_14_R1.v1_14_R1SlimeNMS;
-import com.grinderwolf.swm.nms.v1_15_R1.v1_15_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_16_R1.v1_16_R1SlimeNMS;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.*;
@@ -58,12 +56,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         LoaderUtils.registerLoaders();
 
-        try {
-            nms = getNMSBridge();
-        } catch (InvalidVersionException ex) {
-            Logging.error(ex.getMessage());
-            return;
-        }
+        nms = getNMSBridge();
 
         List<String> erroredWorlds = loadWorlds();
 
@@ -144,20 +137,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         worlds.clear();
     }
 
-    private SlimeNMS getNMSBridge() throws InvalidVersionException {
-        String version = Bukkit.getServer().getClass().getPackage().getName();
-        String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
-
-        switch (nmsVersion) {
-            case "v1_14_R1":
-                return new v1_14_R1SlimeNMS();
-            case "v1_15_R1":
-                return new v1_15_R1SlimeNMS();
-            case "v1_16_R1":
-                return new v1_16_R1SlimeNMS();
-            default:
-                throw new InvalidVersionException(nmsVersion);
-        }
+    private SlimeNMS getNMSBridge() {
+        return new v1_16_R1SlimeNMS();
     }
 
     private List<String> loadWorlds() {

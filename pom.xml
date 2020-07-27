@@ -11,9 +11,7 @@
         <module>slimeworldmanager-nms-common</module>
         <module>slimeworldmanager-plugin</module>
         <module>slimeworldmanager-importer</module>
-        <module>slimeworldmanager-nms-v1_14_R1</module>
         <module>slimeworldmanager-classmodifier</module>
-        <module>slimeworldmanager-nms-v1_15_R1</module>
         <module>slimeworldmanager-nms-v1_16_R1</module>
     </modules>
 
