@@ -6,8 +6,10 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_16_R1.*;
+import net.minecraft.server.v1_16_R1.IRegistryCustom.Dimension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
@@ -67,15 +69,12 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         loadingDefaultWorlds = false;
     }
 
-    public static Convertable.ConversionSession getConversionSession(File file, ResourceKey<WorldDimension> dimensionKey) {
-        try {
-            return Convertable.a(file.toPath()).c("", dimensionKey);
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    @SneakyThrows
+    public static Convertable.ConversionSession getConversionSession(String worldName, MinecraftServer mcServer, ResourceKey<WorldDimension> dimensionKey) {
+        return Convertable.a(mcServer.server.getWorldContainer().toPath()).c(worldName, dimensionKey);
     }
 
+    @SneakyThrows
     @Override
     public void generateWorld(SlimeWorld world) {
         String worldName = world.getName();
@@ -84,34 +83,38 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
+        ResourceKey<WorldDimension> worldDimensionKey = ResourceKey.a(IRegistry.af, new MinecraftKey(worldName));
+        ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, worldDimensionKey.a());
+
         MinecraftServer mcServer = MinecraftServer.getServer();
 
-        Convertable.ConversionSession conversionSession = getConversionSession(new File("temp_" + world.getName()), WorldDimension.OVERWORLD);
 
-        CustomNBTStorage dataManager = null;
-        try {
-            dataManager = new CustomNBTStorage(world, conversionSession, mcServer.dataConverterManager);
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        Convertable.ConversionSession conversionSession = getConversionSession(worldName, mcServer, WorldDimension.OVERWORLD);
 
-        int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worldServer.size();
-        boolean used = false;
+        CustomNBTStorage dataManager = new CustomNBTStorage(world, conversionSession, mcServer.dataConverterManager);
 
-        do {
-            for (WorldServer server : mcServer.getWorlds()) {
-//                used = server.getWorldProvider().getDimensionManager().getDimensionID() + 1 == dimension;
-
-                if (used) { // getDimensionID() returns the dimension - 1
-                    dimension++;
-                    break;
-                }
-            }
-        } while (used);
+//        int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worldServer.size();
+//        boolean used = false;
+//
+//        do {
+//            for (WorldServer server : mcServer.getWorlds()) {
+////                used = server.getWorldProvider().getDimensionManager().getDimensionID() + 1 == dimension;
+//
+//                if (used) { // getDimensionID() returns the dimension - 1
+//                    dimension++;
+//                    break;
+//                }
+//            }
+//        } while (used);
 
         World.Environment env = World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
 
         DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
+        WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
+
+//        Dimension iregistrycustom_dimension = IRegistryCustom.b();
+//        RegistryReadOps<NBTBase> registryreadops = RegistryReadOps.a(DynamicOpsNBT.a, mcServer.dataPackResources.h(), iregistrycustom_dimension);
+//        WorldDataServer worldData = (WorldDataServer)conversionSession.a(registryreadops, mcServer.datapackconfiguration);
 
 //        DimensionManager dimensionManager = DimensionManager.a(mcServer.D().getDimensionKey(), conversionSession.folder.toFile());
 //        DimensionManager dimensionManager = DimensionManager.a(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
@@ -119,14 +122,19 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 //                .getGenLayerZoomer(), actualDimension));
 
         CustomWorldServer server = null;
+
         try {
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-pre: " + server);
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-world: " + world.getName());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-DM: " + dimensionManager);
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-env: " + env.getId());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-CG: " + mcServer.D().worldDataServer.getGeneratorSettings());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-WS: " + mcServer.D().worldDataServer);
-            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, mcServer.D().worldDataServer.getGeneratorSettings().getChunkGenerator(), mcServer.D().worldDataServer, ResourceKey.a(MinecraftKey.a(worldName)), ResourceKey.a(MinecraftKey.a(worldName)), Arrays.asList(new MobSpawnerCat()), false, false);
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-CG: " + worldData.getGeneratorSettings());
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-WS: " + worldData);
+            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-Dir: " + conversionSession.folder.toString());
+
+            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
+
+
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SERVER-WORLD-NAME: " + server.getWorld().getName());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIMEWORLD-NAME: " + worldName);
@@ -140,7 +148,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         long startTime = System.currentTimeMillis();
 
         server.setReady(true);
-        mcServer.initWorld(server, mcServer.D().worldDataServer, null, mcServer.D().worldDataServer.getGeneratorSettings());
+        mcServer.initWorld(server, worldData, null, worldData.getGeneratorSettings());
 //        mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings("", EnumGamemode.NOT_SET, true, EnumDifficulty.PEACEFUL, true, null, null), null);
 
         mcServer.server.addWorld(server.getWorld());

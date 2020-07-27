@@ -43,14 +43,14 @@ public class CustomWorldServer extends WorldServer {
     @Setter
     private boolean ready = false;
 
-    CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, Convertable.ConversionSession conversionSession, DimensionManager dimensionManager, World.Environment env, net.minecraft.server.v1_16_R1.ChunkGenerator chunkGenerator, WorldDataServer worldDataServer, ResourceKey resourceKey, ResourceKey resourceKey1, List<MobSpawner> list, boolean flag, boolean flag1) throws IOException {
+    CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, Convertable.ConversionSession conversionSession, DimensionManager dimensionManager, World.Environment env, WorldDataServer worldDataServer, ResourceKey<net.minecraft.server.v1_16_R1.World> resourceKey, ResourceKey<DimensionManager> resourceKey1, List<MobSpawner> list, boolean flag, boolean flag1) throws IOException {
         super(((CraftServer)Bukkit.getServer()).getServer(), ((CraftServer)Bukkit.getServer()).getServer().executorService, conversionSession,
                 worldDataServer,
                 resourceKey,
                 resourceKey1,
                 dimensionManager,
                 ((CraftServer)Bukkit.getServer()).getServer().worldLoadListenerFactory.create(11),
-                chunkGenerator,
+                worldDataServer.getGeneratorSettings().getChunkGenerator(),
                 flag,
                 11,
                 list,
@@ -144,6 +144,8 @@ public class CustomWorldServer extends WorldServer {
     ProtoChunkExtension getChunk(int x, int z) {
         SlimeChunk slimeChunk = slimeWorld.getChunk(x, z);
         Chunk chunk;
+
+        Bukkit.broadcastMessage("bruh");
 
         if (slimeChunk == null) {
             ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);

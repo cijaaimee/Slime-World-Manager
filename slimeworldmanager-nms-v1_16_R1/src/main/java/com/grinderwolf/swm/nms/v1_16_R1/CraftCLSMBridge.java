@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_16_R1.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CraftCLSMBridge implements CLSMBridge {
@@ -17,9 +18,15 @@ public class CraftCLSMBridge implements CLSMBridge {
 
     @Override
     public Object getChunk(Object worldObject, int x, int z) {
+        Bukkit.broadcastMessage("broi");
+
         if (!(worldObject instanceof CustomWorldServer)) {
+            Bukkit.broadcastMessage("world is of type " + worldObject.getClass().getName());
+
             return null; // Returning null will just run the original getChunk method
         }
+
+        Bukkit.broadcastMessage("bruv");
 
         CustomWorldServer world = (CustomWorldServer) worldObject;
 
@@ -82,6 +89,8 @@ public class CraftCLSMBridge implements CLSMBridge {
     }
 
     static void initialize(v1_16_R1SlimeNMS instance) {
+        Bukkit.broadcastMessage("##### SETTING CLSM BRIDGE INSTANCE");
+
         ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
 }
