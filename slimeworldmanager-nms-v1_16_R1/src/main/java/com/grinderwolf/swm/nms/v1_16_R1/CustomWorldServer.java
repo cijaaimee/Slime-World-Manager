@@ -143,8 +143,6 @@ public class CustomWorldServer extends WorldServer {
         SlimeChunk slimeChunk = slimeWorld.getChunk(x, z);
         Chunk chunk;
 
-        Bukkit.broadcastMessage("bruh");
-
         if (slimeChunk == null) {
             ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
 

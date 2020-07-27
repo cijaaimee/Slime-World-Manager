@@ -18,10 +18,8 @@ public class CraftCLSMBridge implements CLSMBridge {
 
     @Override
     public Object getChunk(Object worldObject, int x, int z) {
-        Bukkit.broadcastMessage("getting chunk");
-
         if (!(worldObject instanceof CustomWorldServer)) {
-            Bukkit.broadcastMessage("world is of type " + worldObject.getClass().getName());
+            System.out.println("world is of type " + worldObject.getClass().getName());
 
             return null; // Returning null will just run the original getChunk method
         }
