@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_16_R1.*;
-import net.minecraft.server.v1_16_R1.IRegistryCustom.Dimension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
@@ -18,7 +17,6 @@ import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -88,38 +86,15 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         MinecraftServer mcServer = MinecraftServer.getServer();
 
-
         Convertable.ConversionSession conversionSession = getConversionSession(worldName, mcServer, WorldDimension.OVERWORLD);
 
-        CustomNBTStorage dataManager = new CustomNBTStorage(world, conversionSession, mcServer.dataConverterManager);
+        CustomNBTStorage dataManager = new CustomNBTStorage(world, conversionSession);
 
-//        int dimension = CraftWorld.CUSTOM_DIMENSION_OFFSET + mcServer.worldServer.size();
-//        boolean used = false;
-//
-//        do {
-//            for (WorldServer server : mcServer.getWorlds()) {
-////                used = server.getWorldProvider().getDimensionManager().getDimensionID() + 1 == dimension;
-//
-//                if (used) { // getDimensionID() returns the dimension - 1
-//                    dimension++;
-//                    break;
-//                }
-//            }
-//        } while (used);
 
         World.Environment env = World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
 
         DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
         WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
-
-//        Dimension iregistrycustom_dimension = IRegistryCustom.b();
-//        RegistryReadOps<NBTBase> registryreadops = RegistryReadOps.a(DynamicOpsNBT.a, mcServer.dataPackResources.h(), iregistrycustom_dimension);
-//        WorldDataServer worldData = (WorldDataServer)conversionSession.a(registryreadops, mcServer.datapackconfiguration);
-
-//        DimensionManager dimensionManager = DimensionManager.a(mcServer.D().getDimensionKey(), conversionSession.folder.toFile());
-//        DimensionManager dimensionManager = DimensionManager.a(worldName, new DimensionManager(dimension, actualDimension.getSuffix(),
-//                actualDimension, actualDimension.providerFactory::apply, actualDimension.hasSkyLight(), actualDimension
-//                .getGenLayerZoomer(), actualDimension));
 
         CustomWorldServer server = null;
 
@@ -134,13 +109,13 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
             server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
 
-
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SERVER-WORLD-NAME: " + server.getWorld().getName());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIMEWORLD-NAME: " + worldName);
         } catch(IOException e) {
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-error: " + server);
             e.printStackTrace();
+            return;
         }
         Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-post: " + server);
 
@@ -149,7 +124,6 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         server.setReady(true);
         mcServer.initWorld(server, worldData, null, worldData.getGeneratorSettings());
-//        mcServer.initWorld(server, dataManager.getWorldData(), new WorldSettings("", EnumGamemode.NOT_SET, true, EnumDifficulty.PEACEFUL, true, null, null), null);
 
         mcServer.server.addWorld(server.getWorld());
         mcServer.worldServer.put(server.getDimensionKey(), server);
