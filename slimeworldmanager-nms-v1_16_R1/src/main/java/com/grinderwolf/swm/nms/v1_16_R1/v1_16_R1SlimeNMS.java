@@ -12,6 +12,7 @@ import net.minecraft.server.v1_16_R1.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
@@ -163,6 +164,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
+        server.getWorld().setSpawnLocation(new Location(Bukkit.getWorld(worldName), getSlimeWorld(Bukkit.getWorld(worldName)).getPropertyMap().getInt(SlimeProperties.SPAWN_X), getSlimeWorld(Bukkit.getWorld(worldName)).getPropertyMap().getInt(SlimeProperties.SPAWN_Y), getSlimeWorld(Bukkit.getWorld(worldName)).getPropertyMap().getInt(SlimeProperties.SPAWN_Z)));
 
         LOGGER.info("Async World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
     }

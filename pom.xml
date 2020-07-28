@@ -61,7 +61,7 @@
         <developerConnection>scm:git:git@github.com:Grinderwolf/Slime-World-Manager.git</developerConnection>
         <url>git@github.com:Grinderwolf/Slime-World-Manager.git</url>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
     
     <build>
         <plugins>

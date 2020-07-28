@@ -60,7 +60,7 @@ public class GotoCmd implements Subcommand {
                 spawnLocation.add(0, 1, 0);
             }
 
-            target.teleport(new Location(world, 0, 64, 0));
+            target.teleport(spawnLocation);
 
             return true;
         }
