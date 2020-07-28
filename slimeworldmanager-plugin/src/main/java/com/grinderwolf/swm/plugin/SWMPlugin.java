@@ -255,12 +255,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         if (asyncWorldGen) {
-            worldGeneratorService.submit(() -> {
-
-                Object nmsWorld = nms.createNMSWorld(world);
-                Bukkit.getScheduler().runTask(this, () -> nms.addWorldToServerList(nmsWorld));
-
-            });
+            nms.addWorldToServerList(nms.createNMSWorld(world));
         } else {
             nms.generateWorld(world);
         }

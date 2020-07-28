@@ -44,6 +44,57 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
     @SneakyThrows
     @Override
     public void generateWorld(SlimeWorld world) {
+        CustomWorldServer server = createNMSWorld(world);
+
+        MinecraftServer mcServer = MinecraftServer.getServer();
+
+        LOGGER.info("Loading world " + server.getWorld().getName());
+        long startTime = System.currentTimeMillis();
+
+        server.setReady(true);
+        mcServer.initWorld(server, server.getWorldDataServer(), null, server.getWorldDataServer().getGeneratorSettings());
+
+        mcServer.server.addWorld(server.getWorld());
+        mcServer.worldServer.put(server.getDimensionKey(), server);
+
+        Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
+
+        if (server.getWorld().getKeepSpawnInMemory()) {
+            LOGGER.debug("Preparing start region for dimension '{}'", server.getWorld().getName());
+            BlockPosition spawn = server.getSpawn();
+            ChunkProviderServer provider = server.getChunkProvider();
+            provider.addTicket(TicketType.START, new ChunkCoordIntPair(spawn), 11, Unit.INSTANCE);
+        }
+
+        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
+
+        LOGGER.info("World " + server.getWorld().getName() + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+    }
+
+    @Override
+    public SlimeWorld getSlimeWorld(World world) {
+        CraftWorld craftWorld = (CraftWorld) world;
+
+        if (!(craftWorld.getHandle() instanceof CustomWorldServer)) {
+            return null;
+        }
+
+        CustomWorldServer worldServer = (CustomWorldServer) craftWorld.getHandle();
+        return worldServer.getSlimeWorld();
+    }
+
+    @Override
+    public CompoundTag convertChunk(CompoundTag tag) {
+        NBTTagCompound nmsTag = (NBTTagCompound) Converter.convertTag(tag);
+        int version = nmsTag.getInt("DataVersion");
+
+        NBTTagCompound newNmsTag = GameProfileSerializer.a(DataConverterRegistry.a(), DataFixTypes.CHUNK, nmsTag, version);
+
+        return (CompoundTag) Converter.convertTag("", newNmsTag);
+    }
+
+    @Override
+    public CustomWorldServer createNMSWorld(SlimeWorld world) {
         String worldName = world.getName();
 
         if (Bukkit.getWorld(worldName) != null) {
@@ -75,61 +126,44 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-CG: " + worldData.getGeneratorSettings());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-WS: " + worldData);
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-Dir: " + conversionSession.folder.toString());
-
             server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
-
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SERVER-WORLD-NAME: " + server.getWorld().getName());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIMEWORLD-NAME: " + worldName);
         } catch(IOException e) {
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-error: " + server);
             e.printStackTrace();
-            return;
+            return null;
         }
         Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-post: " + server);
+        return server;
+    }
 
-        LOGGER.info("Loading world " + worldName);
+    @Override
+    public void addWorldToServerList(Object worldObject) {
+        if (!(worldObject instanceof WorldServer)) {
+            throw new IllegalArgumentException("World object must be an instance of WorldServer!");
+        }
+
+        CustomWorldServer server = (CustomWorldServer) worldObject;
+        String worldName = server.getWorld().getName();
+
+        if (Bukkit.getWorld(worldName) != null) {
+            throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
+        }
+
+        LOGGER.info("Async Loading world " + worldName);
         long startTime = System.currentTimeMillis();
 
         server.setReady(true);
-        mcServer.initWorld(server, worldData, null, worldData.getGeneratorSettings());
+        MinecraftServer mcServer = MinecraftServer.getServer();
 
         mcServer.server.addWorld(server.getWorld());
-        mcServer.worldServer.put(server.getDimensionKey(), server);
+        MinecraftServer.getServer().worldServer.put(server.getDimensionKey(), server);
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
-
-        if (server.getWorld().getKeepSpawnInMemory()) {
-            LOGGER.debug("Preparing start region for dimension '{}'/{}", worldName, dimensionManager.a(0));
-            BlockPosition spawn = server.getSpawn();
-            ChunkProviderServer provider = server.getChunkProvider();
-            provider.addTicket(TicketType.START, new ChunkCoordIntPair(spawn), 11, Unit.INSTANCE);
-        }
-
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
 
-        LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
-    }
-
-    @Override
-    public SlimeWorld getSlimeWorld(World world) {
-        CraftWorld craftWorld = (CraftWorld) world;
-
-        if (!(craftWorld.getHandle() instanceof CustomWorldServer)) {
-            return null;
-        }
-
-        CustomWorldServer worldServer = (CustomWorldServer) craftWorld.getHandle();
-        return worldServer.getSlimeWorld();
-    }
-
-    @Override
-    public CompoundTag convertChunk(CompoundTag tag) {
-        NBTTagCompound nmsTag = (NBTTagCompound) Converter.convertTag(tag);
-        int version = nmsTag.getInt("DataVersion");
-
-        NBTTagCompound newNmsTag = GameProfileSerializer.a(DataConverterRegistry.a(), DataFixTypes.CHUNK, nmsTag, version);
-
-        return (CompoundTag) Converter.convertTag("", newNmsTag);
+        LOGGER.info("Async World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 }
