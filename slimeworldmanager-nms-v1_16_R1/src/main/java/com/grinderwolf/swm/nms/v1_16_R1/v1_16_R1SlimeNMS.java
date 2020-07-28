@@ -27,12 +27,6 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
     private final byte worldVersion = 0x05;
 
-    private boolean loadingDefaultWorlds = true; // If true, the addWorld method will not be skipped
-
-    private CustomWorldServer defaultWorld;
-    private CustomWorldServer defaultNetherWorld;
-    private CustomWorldServer defaultEndWorld;
-
     public v1_16_R1SlimeNMS() {
         try {
             CraftCLSMBridge.initialize(this);
@@ -40,31 +34,6 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             LOGGER.error("Failed to find ClassModifier classes. Are you sure you installed it correctly?");
             System.exit(1); // No ClassModifier, no party
         }
-    }
-
-    @Override
-    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
-        if (normalWorld != null) {
-            World.Environment env = World.Environment.valueOf(normalWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-
-            if (env != World.Environment.NORMAL) {
-                LOGGER.warn("The environment for the default world must always be 'NORMAL'.");
-            }
-            
-//            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomNBTStorage(normalWorld), DimensionManager.OVERWORLD, World.Environment.NORMAL);
-        }
-
-        if (netherWorld != null) {
-            World.Environment env = World.Environment.valueOf(netherWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-//            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomNBTStorage(netherWorld), DimensionManager.a(env.getId()), env);
-        }
-
-        if (endWorld != null) {
-            World.Environment env = World.Environment.valueOf(endWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-//            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomNBTStorage(endWorld), DimensionManager.a(env.getId()), env);
-        }
-
-        loadingDefaultWorlds = false;
     }
 
     @SneakyThrows

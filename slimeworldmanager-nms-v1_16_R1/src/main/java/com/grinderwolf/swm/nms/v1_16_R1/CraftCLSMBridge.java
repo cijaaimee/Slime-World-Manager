@@ -57,27 +57,13 @@ public class CraftCLSMBridge implements CLSMBridge {
     }
 
     @Override
-    public Object[] getDefaultWorlds() {
-        WorldServer defaultWorld = nmsInstance.getDefaultWorld();
-        WorldServer netherWorld = nmsInstance.getDefaultNetherWorld();
-        WorldServer endWorld = nmsInstance.getDefaultEndWorld();
-
-        if (defaultWorld != null || netherWorld != null || endWorld != null) {
-            return new WorldServer[] { defaultWorld, netherWorld, endWorld };
-        }
-
-        // Returning null will just run the original load world method
-        return null;
-    }
-
-    @Override
     public boolean isCustomWorld(Object world) {
         return world instanceof CustomWorldServer;
     }
 
     @Override
     public boolean skipWorldAdd(Object world) {
-        if (!isCustomWorld(world) || nmsInstance.isLoadingDefaultWorlds()) {
+        if (!isCustomWorld(world)) {
             return false;
         }
 
