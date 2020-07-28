@@ -7,7 +7,7 @@ Currently, SWM can run on any Spigot version from 1.8.8 up to 1.15.2.
 
 * Can I override the default world?
 
-Yes, you can! However, that requires doing some extra steps. Take a look at the [Installing Slime World Manager](usage/install.md) page.
+Not anymore.
 
 * My server stops when booting up with a 'Failed to find ClassModifier classes' error.
 

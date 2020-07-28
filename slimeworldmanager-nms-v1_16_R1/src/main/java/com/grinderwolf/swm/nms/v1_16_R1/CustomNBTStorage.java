@@ -22,9 +22,8 @@ public class CustomNBTStorage extends WorldNBTStorage {
     private final SlimeWorld world;
     private WorldData worldData;
 
-    public CustomNBTStorage(SlimeWorld world, Convertable.ConversionSession conversionSession, DataFixer dataFixer) throws IOException {
-        super(conversionSession, dataFixer);
-//        super(null, null);
+    public CustomNBTStorage(SlimeWorld world, Convertable.ConversionSession conversionSession) {
+        super(conversionSession, MinecraftServer.getServer().getDataFixer());
 
         this.world = world;
     }

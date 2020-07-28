@@ -24,6 +24,7 @@ public class ClassModifier {
 
     public static CompletableFuture getFutureChunk(Object world, int x, int z) {
         if (customLoader == null) {
+            System.out.println("Custom loader null, skipping");
             return null;
         }
 
@@ -45,9 +46,5 @@ public class ClassModifier {
 
     public static void setLoader(CLSMBridge loader) {
         customLoader = loader;
-    }
-
-    public static Object[] getDefaultWorlds() {
-        return customLoader != null ? customLoader.getDefaultWorlds() : null;
     }
 }
