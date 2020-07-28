@@ -3,6 +3,7 @@ package com.grinderwolf.swm.nms.v1_16_R1;
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
@@ -163,7 +164,14 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
-        server.getWorld().setSpawnLocation(new Location(Bukkit.getWorld(worldName), getSlimeWorld(Bukkit.getWorld(worldName)).getPropertyMap().getInt(SlimeProperties.SPAWN_X), getSlimeWorld(Bukkit.getWorld(worldName)).getPropertyMap().getInt(SlimeProperties.SPAWN_Y), getSlimeWorld(Bukkit.getWorld(worldName)).getPropertyMap().getInt(SlimeProperties.SPAWN_Z)));
+
+        SlimePropertyMap worldProperties = server.getSlimeWorld().getPropertyMap();
+
+        server.getWorld().setSpawnLocation(
+            worldProperties.getInt(SlimeProperties.SPAWN_X),
+            worldProperties.getInt(SlimeProperties.SPAWN_Y),
+            worldProperties.getInt(SlimeProperties.SPAWN_Z)
+        );
 
         LOGGER.info("Async World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
