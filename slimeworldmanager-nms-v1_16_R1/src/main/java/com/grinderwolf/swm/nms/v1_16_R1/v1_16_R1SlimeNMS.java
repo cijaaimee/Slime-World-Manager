@@ -102,8 +102,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
-        ResourceKey<WorldDimension> worldDimensionKey = ResourceKey.a(IRegistry.af, new MinecraftKey(worldName));
-        ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, worldDimensionKey.a());
+        ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(worldName));
 
         MinecraftServer mcServer = MinecraftServer.getServer();
 
