@@ -17,7 +17,20 @@ public class CustomWorldData extends WorldDataServer {
     private final WorldType type;
 
     CustomWorldData(CraftSlimeWorld world) {
-        super(new WorldSettings("", EnumGamemode.NOT_SET, true, EnumDifficulty.NORMAL, true, null, null), new GeneratorSettings(0, true, true, null), Lifecycle.stable());
+        super(new WorldSettings(
+            world.getName(),
+            EnumGamemode.NOT_SET,
+            true,
+            EnumDifficulty.NORMAL,
+            true,
+            new GameRules(),
+            MinecraftServer.getServer().datapackconfiguration),
+            ((DedicatedServer)MinecraftServer.getServer()).getDedicatedServerProperties().generatorSettings,
+            Lifecycle.stable()
+        );
+
+        checkName(world.getName());
+
         this.world = world;
         this.type = WorldType.getByName(world.getPropertyMap().getString(SlimeProperties.WORLD_TYPE).toUpperCase());
         this.setGameType(EnumGamemode.NOT_SET);
@@ -35,4 +48,5 @@ public class CustomWorldData extends WorldDataServer {
     public boolean d() {
         return true;
     }
+
 }

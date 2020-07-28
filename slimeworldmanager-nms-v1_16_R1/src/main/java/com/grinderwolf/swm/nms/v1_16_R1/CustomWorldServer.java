@@ -16,9 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.Function;
 import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R1.generator.CustomChunkGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,17 +38,20 @@ public class CustomWorldServer extends WorldServer {
     private final WorldNBTStorage nbtStorage;
 
     @Getter
+    private WorldDataServer worldDataServer;
+
+    @Getter
     @Setter
     private boolean ready = false;
 
-    CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, Convertable.ConversionSession conversionSession, DimensionManager dimensionManager, World.Environment env, net.minecraft.server.v1_16_R1.ChunkGenerator chunkGenerator, WorldDataServer worldDataServer, ResourceKey resourceKey, ResourceKey resourceKey1, List<MobSpawner> list, boolean flag, boolean flag1) throws IOException {
+    CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, Convertable.ConversionSession conversionSession, DimensionManager dimensionManager, World.Environment env, WorldDataServer worldDataServer, ResourceKey<net.minecraft.server.v1_16_R1.World> resourceKey, ResourceKey<DimensionManager> resourceKey1, List<MobSpawner> list, boolean flag, boolean flag1) throws IOException {
         super(((CraftServer)Bukkit.getServer()).getServer(), ((CraftServer)Bukkit.getServer()).getServer().executorService, conversionSession,
                 worldDataServer,
                 resourceKey,
                 resourceKey1,
                 dimensionManager,
                 ((CraftServer)Bukkit.getServer()).getServer().worldLoadListenerFactory.create(11),
-                chunkGenerator,
+                worldDataServer.getGeneratorSettings().getChunkGenerator(),
                 flag,
                 11,
                 list,
@@ -58,6 +59,7 @@ public class CustomWorldServer extends WorldServer {
                 env,
                 ((CraftServer)Bukkit.getServer()).getServer().D().generator
         );
+        this.worldDataServer = worldDataServer;
 
 
         // MinecraftServer.getServer().getMethodProfiler()

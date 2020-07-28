@@ -6,7 +6,6 @@ import org.bukkit.World;
 
 public interface SlimeNMS {
 
-    void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld);
     void generateWorld(SlimeWorld world);
 
     default Object createNMSWorld(SlimeWorld world) {

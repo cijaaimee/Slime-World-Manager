@@ -1,5 +1,5 @@
 {
     if (com.grinderwolf.swm.clsm.ClassModifier.isCustomWorld($0.b)) {
-        return;
+        return 0;
     }
 }

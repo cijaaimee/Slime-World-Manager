@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_16_R1.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CraftCLSMBridge implements CLSMBridge {
@@ -18,6 +19,8 @@ public class CraftCLSMBridge implements CLSMBridge {
     @Override
     public Object getChunk(Object worldObject, int x, int z) {
         if (!(worldObject instanceof CustomWorldServer)) {
+            System.out.println("world is of type " + worldObject.getClass().getName());
+
             return null; // Returning null will just run the original getChunk method
         }
 
@@ -53,27 +56,13 @@ public class CraftCLSMBridge implements CLSMBridge {
     }
 
     @Override
-    public Object[] getDefaultWorlds() {
-        WorldServer defaultWorld = nmsInstance.getDefaultWorld();
-        WorldServer netherWorld = nmsInstance.getDefaultNetherWorld();
-        WorldServer endWorld = nmsInstance.getDefaultEndWorld();
-
-        if (defaultWorld != null || netherWorld != null || endWorld != null) {
-            return new WorldServer[] { defaultWorld, netherWorld, endWorld };
-        }
-
-        // Returning null will just run the original load world method
-        return null;
-    }
-
-    @Override
     public boolean isCustomWorld(Object world) {
         return world instanceof CustomWorldServer;
     }
 
     @Override
     public boolean skipWorldAdd(Object world) {
-        if (!isCustomWorld(world) || nmsInstance.isLoadingDefaultWorlds()) {
+        if (!isCustomWorld(world)) {
             return false;
         }
 
@@ -82,6 +71,8 @@ public class CraftCLSMBridge implements CLSMBridge {
     }
 
     static void initialize(v1_16_R1SlimeNMS instance) {
+        Bukkit.broadcastMessage("registering CLSM bridge");
+
         ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
 }
