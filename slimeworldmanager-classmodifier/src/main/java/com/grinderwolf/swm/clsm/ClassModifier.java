@@ -23,14 +23,12 @@ public class ClassModifier {
     private static CLSMBridge customLoader;
 
     public static CompletableFuture getFutureChunk(Object world, int x, int z) {
-        System.out.println("getFutureChunk");
         if (customLoader == null) {
             System.out.println("Custom loader null, skipping");
             return null;
         }
 
         Object chunk = customLoader.getChunk(world, x, z);
-        System.out.println("Chunk: " + chunk);
         return chunk != null ? CompletableFuture.supplyAsync(() -> Either.left(chunk)) : null;
     }
 

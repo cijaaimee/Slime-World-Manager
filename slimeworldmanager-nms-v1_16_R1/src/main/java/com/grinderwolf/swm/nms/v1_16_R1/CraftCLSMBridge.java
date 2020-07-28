@@ -23,7 +23,6 @@ public class CraftCLSMBridge implements CLSMBridge {
 
             return null; // Returning null will just run the original getChunk method
         }
-        System.out.println("Get chunk");
 
         CustomWorldServer world = (CustomWorldServer) worldObject;
 
