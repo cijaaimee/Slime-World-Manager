@@ -20,7 +20,7 @@ public class CustomWorldData extends WorldDataServer {
         super(new WorldSettings(
             world.getName(),
             EnumGamemode.NOT_SET,
-            true,
+            false,
             EnumDifficulty.NORMAL,
             true,
             new GameRules(),
