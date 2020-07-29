@@ -45,25 +45,43 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
     }
 
     @Override
-    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
+    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) throws IOException {
         if (normalWorld != null) {
             World.Environment env = World.Environment.valueOf(normalWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
 
             if (env != World.Environment.NORMAL) {
                 LOGGER.warn("The environment for the default world must always be 'NORMAL'.");
             }
-            
-//            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomNBTStorage(normalWorld), DimensionManager.OVERWORLD, World.Environment.NORMAL);
+
+            MinecraftServer mcServer = MinecraftServer.getServer();
+            Convertable.ConversionSession conversionSession = getConversionSession(normalWorld.getName(), mcServer, WorldDimension.OVERWORLD);
+            CustomNBTStorage dataManager = new CustomNBTStorage(normalWorld, conversionSession);
+            DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
+            WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
+            ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(normalWorld.getName()));
+            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
         }
 
         if (netherWorld != null) {
             World.Environment env = World.Environment.valueOf(netherWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-//            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomNBTStorage(netherWorld), DimensionManager.a(env.getId()), env);
+            MinecraftServer mcServer = MinecraftServer.getServer();
+            Convertable.ConversionSession conversionSession = getConversionSession(normalWorld.getName(), mcServer, WorldDimension.THE_NETHER);
+            CustomNBTStorage dataManager = new CustomNBTStorage(normalWorld, conversionSession);
+            DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
+            WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
+            ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(normalWorld.getName()));
+            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
         }
 
         if (endWorld != null) {
             World.Environment env = World.Environment.valueOf(endWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-//            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomNBTStorage(endWorld), DimensionManager.a(env.getId()), env);
+            MinecraftServer mcServer = MinecraftServer.getServer();
+            Convertable.ConversionSession conversionSession = getConversionSession(normalWorld.getName(), mcServer, WorldDimension.THE_END);
+            CustomNBTStorage dataManager = new CustomNBTStorage(normalWorld, conversionSession);
+            DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
+            WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
+            ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(normalWorld.getName()));
+            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
         }
 
         loadingDefaultWorlds = false;
