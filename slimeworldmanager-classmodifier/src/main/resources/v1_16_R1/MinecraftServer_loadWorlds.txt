@@ -63,7 +63,7 @@
 
                 worlddata = new net.minecraft.server.v1_16_R1.WorldDataServer(worldsettings, generatorsettings, net.minecraft.server.v1_16_R1.Lifecycle.stable());
             }
-            worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in $0 case the end)
+            worlddata.checkName(name);
 
             net.minecraft.server.v1_16_R1.IWorldDataServer iworlddataserver = worlddata;
             net.minecraft.server.v1_16_R1.GeneratorSettings generatorsettings = worlddata.getGeneratorSettings();
@@ -91,7 +91,7 @@
             net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = net.minecraft.server.v1_16_R1.ResourceKey.a(net.minecraft.server.v1_16_R1.IRegistry.ae, dimensionKey.a());
 
             if (worldId == 0) {
-                if(world == null) {
+                if (world == null) {
                     $0.saveData = worlddata;
                     $0.saveData.setGameType(((net.minecraft.server.v1_16_R1.DedicatedServer) $0).getDedicatedServerProperties().gamemode); // From DedicatedServer.init
 
@@ -104,7 +104,7 @@
                 $0.initializeScoreboards(worldpersistentdata);
                 $0.server.scoreboardManager = new org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager($0, world.getScoreboard());
                 $0.persistentCommandStorage = new net.minecraft.server.v1_16_R1.PersistentCommandStorage(worldpersistentdata);
-            } else if(world == null) {
+            } else if (world == null) {
                 net.minecraft.server.v1_16_R1.WorldLoadListener worldloadlistener = $0.worldLoadListenerFactory.create(11);
                 world = new net.minecraft.server.v1_16_R1.WorldServer($0, $0.executorService, worldSession, iworlddataserver, worldKey, typeKey, dimensionmanager, worldloadlistener, chunkgenerator, flag, j, ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
             }
@@ -129,6 +129,5 @@
         $0.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
         $0.server.getPluginManager().callEvent(new org.bukkit.event.server.ServerLoadEvent(org.bukkit.event.server.ServerLoadEvent.LoadType.STARTUP));
         $0.serverConnection.acceptConnections();
-        // CraftBukkit end
     }
 }
