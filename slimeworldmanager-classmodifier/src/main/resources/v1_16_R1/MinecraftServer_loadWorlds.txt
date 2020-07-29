@@ -7,6 +7,7 @@
         for (int worldId = 0; worldId < 3; ++worldId) {
             net.minecraft.server.v1_16_R1.WorldServer world = defaultWorlds[worldId];
             net.minecraft.server.v1_16_R1.WorldDataServer worlddata;
+            ResourceKey typeKey = DimensionManager.OVERWORLD;
             byte dimension = 0;
             net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.WorldDimension> dimensionKey = net.minecraft.server.v1_16_R1.WorldDimension.OVERWORLD;
 
@@ -14,6 +15,7 @@
                 if (getAllowNether()) {
                     dimension = -1;
                     dimensionKey = net.minecraft.server.v1_16_R1.WorldDimension.THE_NETHER;
+                    typeKey = DimensionManager.THE_NETHER;
                 } else {
                     continue;
                 }
@@ -23,6 +25,7 @@
                 if (server.getAllowEnd()) {
                     dimension = 1;
                     dimensionKey = net.minecraft.server.v1_16_R1.WorldDimension.THE_END;
+                    typeKey = DimensionManager.THE_END;
                 } else {
                     continue;
                 }
@@ -84,10 +87,6 @@
                 chunkgenerator = worlddimension.c();
             }
 
-            net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.DimensionManager> typeKey = (net.minecraft.server.v1_16_R1.ResourceKey) $0.f.a().c(dimensionmanager);
-            if (typeKey == null) {
-                throw new IllegalStateException("Unregistered dimension type: " + dimensionmanager);
-            }
             net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = net.minecraft.server.v1_16_R1.ResourceKey.a(net.minecraft.server.v1_16_R1.IRegistry.ae, dimensionKey.a());
 
             if (worldId == 0) {
