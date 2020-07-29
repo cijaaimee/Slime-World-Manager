@@ -2,16 +2,18 @@
     net.minecraft.server.v1_16_R1.WorldServer[] defaultWorlds = (net.minecraft.server.v1_16_R1.WorldServer[]) com.grinderwolf.swm.clsm.ClassModifier.getDefaultWorlds();
 
     if (defaultWorlds != null) {
+        System.out.println("Overriding default worlds");
+
         for (int worldId = 0; worldId < 3; ++worldId) {
-            WorldServer world = defaultWorlds[index];
-            WorldDataServer worlddata;
+            net.minecraft.server.v1_16_R1.WorldServer world = defaultWorlds[index];
+            net.minecraft.server.v1_16_R1.WorldDataServer worlddata;
             byte dimension = 0;
-            ResourceKey<WorldDimension> dimensionKey = WorldDimension.OVERWORLD;
+            net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.WorldDimension> dimensionKey = net.minecraft.server.v1_16_R1.WorldDimension.OVERWORLD;
 
             if (worldId == 1) {
                 if (getAllowNether()) {
                     dimension = -1;
-                    dimensionKey = WorldDimension.THE_NETHER;
+                    dimensionKey = net.minecraft.server.v1_16_R1.WorldDimension.THE_NETHER;
                 } else {
                     continue;
                 }
@@ -20,20 +22,20 @@
             if (worldId == 2) {
                 if (server.getAllowEnd()) {
                     dimension = 1;
-                    dimensionKey = WorldDimension.THE_END;
+                    dimensionKey = net.minecraft.server.v1_16_R1.WorldDimension.THE_END;
                 } else {
                     continue;
                 }
             }
 
-            String worldType = org.bukkit.World.Environment.getEnvironment(dimension).toString().toLowerCase();
-            String name = (dimension == 0) ? $1 : $1 + "_" + worldType;
-            Convertable.ConversionSession worldSession;
+            java.lang.String worldType = org.bukkit.World.Environment.getEnvironment(dimension).toString().toLowerCase();
+            java.lang.String name = (dimension == 0) ? $1 : $1 + "_" + worldType;
+            net.minecraft.server.v1_16_R1.Convertable.ConversionSession worldSession;
             if (dimension == 0) {
                 worldSession = $0.convertable;
             } else {
                 try {
-                    worldSession = Convertable.a(server.getWorldContainer().toPath()).c(name, dimensionKey);
+                    worldSession = net.minecraft.server.v1_16_R1.Convertable.a(server.getWorldContainer().toPath()).c(name, dimensionKey);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -41,76 +43,76 @@
 
             org.bukkit.generator.ChunkGenerator gen = $0.server.getGenerator(name);
 
-            IRegistryCustom.Dimension iregistrycustom_dimension = IRegistryCustom.b();
+            net.minecraft.server.v1_16_R1.IRegistryCustom.Dimension iregistrycustom_dimension = IRegistryCustom.b();
 
-            RegistryReadOps<NBTBase> registryreadops = RegistryReadOps.a((DynamicOps) DynamicOpsNBT.a, $0.dataPackResources.h(), (IRegistryCustom) iregistrycustom_dimension);
-            worlddata = (WorldDataServer) worldSession.a((DynamicOps) registryreadops, datapackconfiguration);
+            net.minecraft.server.v1_16_R1.RegistryReadOps<net.minecraft.server.v1_16_R1.NBTBase> registryreadops = net.minecraft.server.v1_16_R1.RegistryReadOps.a((net.minecraft.server.v1_16_R1.DynamicOps) net.minecraft.server.v1_16_R1.DynamicOpsNBT.a, $0.dataPackResources.h(), (IRegistryCustom) iregistrycustom_dimension);
+            worlddata = (net.minecraft.server.v1_16_R1.WorldDataServer) worldSession.a((net.minecraft.server.v1_16_R1.DynamicOps) registryreadops, datapackconfiguration);
             if (worlddata == null) {
-                WorldSettings worldsettings;
-                GeneratorSettings generatorsettings;
+                net.minecraft.server.v1_16_R1.WorldSettings worldsettings;
+                net.minecraft.server.v1_16_R1.GeneratorSettings generatorsettings;
 
                 if ($0.isDemoMode()) {
-                    worldsettings = MinecraftServer.c;
-                    generatorsettings = GeneratorSettings.b;
+                    worldsettings = net.minecraft.server.v1_16_R1.MinecraftServer.c;
+                    generatorsettings = net.minecraft.server.v1_16_R1.GeneratorSettings.b;
                 } else {
-                    DedicatedServerProperties dedicatedserverproperties = ((DedicatedServer) $0).getDedicatedServerProperties();
+                    net.minecraft.server.v1_16_R1.DedicatedServerProperties dedicatedserverproperties = ((net.minecraft.server.v1_16_R1.DedicatedServer) $0).getDedicatedServerProperties();
 
-                    worldsettings = new WorldSettings(dedicatedserverproperties.levelName, dedicatedserverproperties.gamemode, dedicatedserverproperties.hardcore, dedicatedserverproperties.difficulty, false, new GameRules(), datapackconfiguration);
+                    worldsettings = new net.minecraft.server.v1_16_R1.WorldSettings(dedicatedserverproperties.levelName, dedicatedserverproperties.gamemode, dedicatedserverproperties.hardcore, dedicatedserverproperties.difficulty, false, new net.minecraft.server.v1_16_R1.GameRules(), datapackconfiguration);
                     generatorsettings = options.has("bonusChest") ? dedicatedserverproperties.generatorSettings.k() : dedicatedserverproperties.generatorSettings;
                 }
 
-                worlddata = new WorldDataServer(worldsettings, generatorsettings, Lifecycle.stable());
+                worlddata = new net.minecraft.server.v1_16_R1.WorldDataServer(worldsettings, generatorsettings, net.minecraft.server.v1_16_R1.Lifecycle.stable());
             }
             worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in $0 case the end)
             if (options.has("forceUpgrade")) {
-                net.minecraft.server.Main.convertWorld(worldSession, DataConverterRegistry.a(), options.has("eraseCache"), () -> {
+                net.minecraft.server.Main.convertWorld(worldSession, net.minecraft.server.v1_16_R1.DataConverterRegistry.a(), options.has("eraseCache"), () -> {
                     return true;
                 }, worlddata.getGeneratorSettings().e().c().stream().map((entry) -> {
-                    return ResourceKey.a(IRegistry.ad, ((ResourceKey) entry.getKey()).a());
+                    return net.minecraft.server.v1_16_R1.ResourceKey.a(net.minecraft.server.v1_16_R1.IRegistry.ad, ((net.minecraft.server.v1_16_R1.ResourceKey) entry.getKey()).a());
                 }).collect(ImmutableSet.toImmutableSet()));
             }
 
-            IWorldDataServer iworlddataserver = worlddata;
-            GeneratorSettings generatorsettings = worlddata.getGeneratorSettings();
+            net.minecraft.server.v1_16_R1.IWorldDataServer iworlddataserver = worlddata;
+            net.minecraft.server.v1_16_R1.GeneratorSettings generatorsettings = worlddata.getGeneratorSettings();
             boolean flag = generatorsettings.isDebugWorld();
             long i = generatorsettings.getSeed();
-            long j = BiomeManager.a(i);
-            List<MobSpawner> list = ImmutableList.of(new MobSpawnerPhantom(), new MobSpawnerPatrol(), new MobSpawnerCat(), new VillageSiege(), new MobSpawnerTrader(iworlddataserver));
-            RegistryMaterials<WorldDimension> registrymaterials = generatorsettings.e();
-            WorldDimension worlddimension = (WorldDimension) registrymaterials.a(dimensionKey);
-            DimensionManager dimensionmanager;
-            ChunkGenerator chunkgenerator;
+            long j = net.minecraft.server.v1_16_R1.BiomeManager.a(i);
+            List<net.minecraft.server.v1_16_R1.MobSpawner> list = ImmutableList.of(new net.minecraft.server.v1_16_R1.MobSpawnerPhantom(), new net.minecraft.server.v1_16_R1.MobSpawnerPatrol(), new net.minecraft.server.v1_16_R1.MobSpawnerCat(), new net.minecraft.server.v1_16_R1.VillageSiege(), new net.minecraft.server.v1_16_R1.MobSpawnerTrader(iworlddataserver));
+            net.minecraft.server.v1_16_R1.RegistryMaterials<net.minecraft.server.v1_16_R1.WorldDimension> registrymaterials = generatorsettings.e();
+            net.minecraft.server.v1_16_R1.WorldDimension worlddimension = (net.minecraft.server.v1_16_R1.WorldDimension) registrymaterials.a(dimensionKey);
+            net.minecraft.server.v1_16_R1.DimensionManager dimensionmanager;
+            net.minecraft.server.v1_16_R1.ChunkGenerator chunkgenerator;
 
             if (worlddimension == null) {
-                dimensionmanager = DimensionManager.a();
-                chunkgenerator = GeneratorSettings.a((new Random()).nextLong());
+                dimensionmanager = net.minecraft.server.v1_16_R1.DimensionManager.a();
+                chunkgenerator = net.minecraft.server.v1_16_R1.GeneratorSettings.a((new Random()).nextLong());
             } else {
                 dimensionmanager = worlddimension.b();
                 chunkgenerator = worlddimension.c();
             }
 
-            ResourceKey<DimensionManager> typeKey = (ResourceKey) $0.f.a().c(dimensionmanager).orElseThrow(() -> {
+            net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.DimensionManager> typeKey = (net.minecraft.server.v1_16_R1.ResourceKey) $0.f.a().c(dimensionmanager).orElseThrow(() -> {
                 return new IllegalStateException("Unregistered dimension type: " + dimensionmanager);
             });
-            ResourceKey<World> worldKey = ResourceKey.a(IRegistry.ae, dimensionKey.a());
+            net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = net.minecraft.server.v1_16_R1.ResourceKey.a(net.minecraft.server.v1_16_R1.IRegistry.ae, dimensionKey.a());
 
             if (worldId == 0) {
                 if(world == null) {
                     $0.saveData = worlddata;
-                    $0.saveData.setGameType(((DedicatedServer) $0).getDedicatedServerProperties().gamemode); // From DedicatedServer.init
+                    $0.saveData.setGameType(((net.minecraft.server.v1_16_R1.DedicatedServer) $0).getDedicatedServerProperties().gamemode); // From DedicatedServer.init
 
-                    WorldLoadListener worldloadlistener = $0.worldLoadListenerFactory.create(11);
+                    net.minecraft.server.v1_16_R1.WorldLoadListener worldloadlistener = $0.worldLoadListenerFactory.create(11);
 
-                    world = new WorldServer($0, $0.executorService, worldSession, iworlddataserver, worldKey, typeKey, dimensionmanager, worldloadlistener, chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                    world = new net.minecraft.server.v1_16_R1.WorldServer($0, $0.executorService, worldSession, iworlddataserver, worldKey, typeKey, dimensionmanager, worldloadlistener, chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
                 }
 
-                WorldPersistentData worldpersistentdata = world.getWorldPersistentData();
+                net.minecraft.server.v1_16_R1.WorldPersistentData worldpersistentdata = world.getWorldPersistentData();
                 $0.initializeScoreboards(worldpersistentdata);
                 $0.server.scoreboardManager = new org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager($0, world.getScoreboard());
-                $0.persistentCommandStorage = new PersistentCommandStorage(worldpersistentdata);
+                $0.persistentCommandStorage = new net.minecraft.server.v1_16_R1.PersistentCommandStorage(worldpersistentdata);
             } else if(world == null) {
-                WorldLoadListener worldloadlistener = $0.worldLoadListenerFactory.create(11);
-                world = new WorldServer($0, $0.executorService, worldSession, iworlddataserver, worldKey, typeKey, dimensionmanager, worldloadlistener, chunkgenerator, flag, j, ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                net.minecraft.server.v1_16_R1.WorldLoadListener worldloadlistener = $0.worldLoadListenerFactory.create(11);
+                world = new net.minecraft.server.v1_16_R1.WorldServer($0, $0.executorService, worldSession, iworlddataserver, worldKey, typeKey, dimensionmanager, worldloadlistener, chunkgenerator, flag, j, ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
             }
 
             worlddata.a($0.getServerModName(), $0.getModded().isPresent());
@@ -125,13 +127,13 @@
             }
         }
         $0.updateWorldSettings();
-        for (WorldServer worldserver : $0.getWorlds()) {
+        for (net.minecraft.server.v1_16_R1.WorldServer worldserver : $0.getWorlds()) {
             $0.loadSpawn(worldserver.getChunkProvider().playerChunkMap.worldLoadListener, worldserver);
             $0.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldLoadEvent(worldserver.getWorld()));
         }
 
         $0.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
-        $0.server.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
+        $0.server.getPluginManager().callEvent(new org.bukkit.event.server.ServerLoadEvent(org.bukkit.event.server.ServerLoadEvent.LoadType.STARTUP));
         $0.serverConnection.acceptConnections();
         // CraftBukkit end
     }
