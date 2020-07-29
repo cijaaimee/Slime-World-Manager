@@ -7,7 +7,7 @@
         for (int worldId = 0; worldId < 3; ++worldId) {
             net.minecraft.server.v1_16_R1.WorldServer world = defaultWorlds[worldId];
             net.minecraft.server.v1_16_R1.WorldDataServer worlddata;
-            ResourceKey typeKey = DimensionManager.OVERWORLD;
+            net.minecraft.server.v1_16_R1.ResourceKey typeKey = net.minecraft.server.v1_16_R1.DimensionManager.OVERWORLD;
             byte dimension = 0;
             net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.WorldDimension> dimensionKey = net.minecraft.server.v1_16_R1.WorldDimension.OVERWORLD;
 
@@ -15,7 +15,7 @@
                 if (getAllowNether()) {
                     dimension = -1;
                     dimensionKey = net.minecraft.server.v1_16_R1.WorldDimension.THE_NETHER;
-                    typeKey = DimensionManager.THE_NETHER;
+                    typeKey = net.minecraft.server.v1_16_R1.DimensionManager.THE_NETHER;
                 } else {
                     continue;
                 }
@@ -25,7 +25,7 @@
                 if (server.getAllowEnd()) {
                     dimension = 1;
                     dimensionKey = net.minecraft.server.v1_16_R1.WorldDimension.THE_END;
-                    typeKey = DimensionManager.THE_END;
+                    typeKey = net.minecraft.server.v1_16_R1.DimensionManager.THE_END;
                 } else {
                     continue;
                 }
