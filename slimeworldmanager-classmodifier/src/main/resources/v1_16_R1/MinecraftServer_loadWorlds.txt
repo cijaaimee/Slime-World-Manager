@@ -64,13 +64,6 @@
                 worlddata = new net.minecraft.server.v1_16_R1.WorldDataServer(worldsettings, generatorsettings, net.minecraft.server.v1_16_R1.Lifecycle.stable());
             }
             worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in $0 case the end)
-            if (options.has("forceUpgrade")) {
-                net.minecraft.server.Main.convertWorld(worldSession, net.minecraft.server.v1_16_R1.DataConverterRegistry.a(), options.has("eraseCache"), () -> {
-                    return true;
-                }, worlddata.getGeneratorSettings().e().c().stream().map((entry) -> {
-                    return net.minecraft.server.v1_16_R1.ResourceKey.a(net.minecraft.server.v1_16_R1.IRegistry.ad, ((net.minecraft.server.v1_16_R1.ResourceKey) entry.getKey()).a());
-                }).collect(ImmutableSet.toImmutableSet()));
-            }
 
             net.minecraft.server.v1_16_R1.IWorldDataServer iworlddataserver = worlddata;
             net.minecraft.server.v1_16_R1.GeneratorSettings generatorsettings = worlddata.getGeneratorSettings();
@@ -91,9 +84,10 @@
                 chunkgenerator = worlddimension.c();
             }
 
-            net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.DimensionManager> typeKey = (net.minecraft.server.v1_16_R1.ResourceKey) $0.f.a().c(dimensionmanager).orElseThrow(() -> {
-                return new IllegalStateException("Unregistered dimension type: " + dimensionmanager);
-            });
+            net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.DimensionManager> typeKey = (net.minecraft.server.v1_16_R1.ResourceKey) $0.f.a().c(dimensionmanager);
+            if (typeKey == null) {
+                throw new IllegalStateException("Unregistered dimension type: " + dimensionmanager);
+            }
             net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = net.minecraft.server.v1_16_R1.ResourceKey.a(net.minecraft.server.v1_16_R1.IRegistry.ae, dimensionKey.a());
 
             if (worldId == 0) {
