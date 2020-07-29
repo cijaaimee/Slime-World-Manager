@@ -29,6 +29,12 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
     private final byte worldVersion = 0x05;
 
+    private boolean loadingDefaultWorlds = true; // If true, the addWorld method will not be skipped
+
+    private CustomWorldServer defaultWorld;
+    private CustomWorldServer defaultNetherWorld;
+    private CustomWorldServer defaultEndWorld;
+
     public v1_16_R1SlimeNMS() {
         try {
             CraftCLSMBridge.initialize(this);
@@ -36,6 +42,52 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             LOGGER.error("Failed to find ClassModifier classes. Are you sure you installed it correctly?");
             System.exit(1); // No ClassModifier, no party
         }
+    }
+
+    @Override
+    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) throws IOException {
+        if (normalWorld != null) {
+            World.Environment env = World.Environment.valueOf(normalWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
+
+            if (env != World.Environment.NORMAL) {
+                LOGGER.warn("The environment for the default world must always be 'NORMAL'.");
+            }
+
+            defaultWorld = getCustomWorldServer(endWorld, WorldDimension.OVERWORLD);
+        }
+
+        if (netherWorld != null) {
+            defaultNetherWorld = getCustomWorldServer(endWorld, WorldDimension.THE_NETHER);
+        }
+
+        if (endWorld != null) {
+            defaultEndWorld = getCustomWorldServer(endWorld, WorldDimension.THE_END);
+        }
+
+        loadingDefaultWorlds = false;
+    }
+
+    private CustomWorldServer getCustomWorldServer(SlimeWorld world, ResourceKey<WorldDimension> worldDimension) throws IOException {
+        World.Environment env = World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
+        MinecraftServer mcServer = MinecraftServer.getServer();
+        Convertable.ConversionSession conversionSession = getConversionSession(world.getName(), mcServer, worldDimension);
+        CustomNBTStorage dataManager = new CustomNBTStorage(world, conversionSession);
+        DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
+        WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
+        ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(world.getName()));
+        CustomWorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
+        LOGGER.debug("Server-world: " + world.getName());
+        LOGGER.debug("Server-DM: " + dimensionManager);
+        LOGGER.debug("Server-env: " + env.getId());
+        LOGGER.debug("Server-CG: " + worldData.getGeneratorSettings());
+        LOGGER.debug("Server-WS: " + worldData);
+        LOGGER.debug("Server-Dir: " + conversionSession.folder.toString());
+        LOGGER.debug("SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
+        LOGGER.debug("SERVER-WORLD-NAME: " + server.getWorld().getName());
+        LOGGER.debug("WORLD-DATA-SERVER: " + worldData);
+        LOGGER.debug("SPAWN: " + server.getWorld().getSpawnLocation());
+        LOGGER.debug("SPAWN-2: " + server.getSpawn());
+        return server;
     }
 
     @SneakyThrows
@@ -103,43 +155,14 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
-        ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(worldName));
-
-        MinecraftServer mcServer = MinecraftServer.getServer();
-
-        Convertable.ConversionSession conversionSession = getConversionSession(worldName, mcServer, WorldDimension.OVERWORLD);
-
-        CustomNBTStorage dataManager = new CustomNBTStorage(world, conversionSession);
-
-
-        World.Environment env = World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-
-        DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
-        WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
-
-        CustomWorldServer server = null;
+        CustomWorldServer server;
 
         try {
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-pre: " + server);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-world: " + world.getName());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-DM: " + dimensionManager);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-env: " + env.getId());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-CG: " + worldData.getGeneratorSettings());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-WS: " + worldData);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-Dir: " + conversionSession.folder.toString());
-            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SERVER-WORLD-NAME: " + server.getWorld().getName());
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "WORLD-DATA-SERVER: " + worldData);
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "SPAWN: " + server.getWorld().getSpawnLocation());
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "SPAWN-2: " + server.getSpawn());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIMEWORLD-NAME: " + worldName);
+            server = getCustomWorldServer(world, WorldDimension.OVERWORLD);
         } catch(IOException e) {
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-error: " + server);
             e.printStackTrace();
             return null;
         }
-        Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-post: " + server);
         return server;
     }
 
