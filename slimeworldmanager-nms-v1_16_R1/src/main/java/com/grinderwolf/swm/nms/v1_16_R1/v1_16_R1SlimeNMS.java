@@ -75,7 +75,19 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
         WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
         ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(world.getName()));
-        return new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
+        CustomWorldServer server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
+        LOGGER.debug("Server-world: " + world.getName());
+        LOGGER.debug("Server-DM: " + dimensionManager);
+        LOGGER.debug("Server-env: " + env.getId());
+        LOGGER.debug("Server-CG: " + worldData.getGeneratorSettings());
+        LOGGER.debug("Server-WS: " + worldData);
+        LOGGER.debug("Server-Dir: " + conversionSession.folder.toString());
+        LOGGER.debug("SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
+        LOGGER.debug("SERVER-WORLD-NAME: " + server.getWorld().getName());
+        LOGGER.debug("WORLD-DATA-SERVER: " + worldData);
+        LOGGER.debug("SPAWN: " + server.getWorld().getSpawnLocation());
+        LOGGER.debug("SPAWN-2: " + server.getSpawn());
+        return server;
     }
 
     @SneakyThrows
@@ -143,43 +155,14 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
-        ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(worldName));
-
-        MinecraftServer mcServer = MinecraftServer.getServer();
-
-        Convertable.ConversionSession conversionSession = getConversionSession(worldName, mcServer, WorldDimension.OVERWORLD);
-
-        CustomNBTStorage dataManager = new CustomNBTStorage(world, conversionSession);
-
-
-        World.Environment env = World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-
-        DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
-        WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
-
-        CustomWorldServer server = null;
+        CustomWorldServer server;
 
         try {
-            LOGGER.debug("Server-pre: " + server);
-            LOGGER.debug("Server-world: " + world.getName());
-            LOGGER.debug("Server-DM: " + dimensionManager);
-            LOGGER.debug("Server-env: " + env.getId());
-            LOGGER.debug("Server-CG: " + worldData.getGeneratorSettings());
-            LOGGER.debug("Server-WS: " + worldData);
-            LOGGER.debug("Server-Dir: " + conversionSession.folder.toString());
             server = getCustomWorldServer(world, WorldDimension.OVERWORLD);
-            LOGGER.debug("SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
-            LOGGER.debug("SERVER-WORLD-NAME: " + server.getWorld().getName());
-            LOGGER.debug("WORLD-DATA-SERVER: " + worldData);
-            LOGGER.debug("SPAWN: " + server.getWorld().getSpawnLocation());
-            LOGGER.debug("SPAWN-2: " + server.getSpawn());
-            LOGGER.debug("SLIMEWORLD-NAME: " + worldName);
         } catch(IOException e) {
-            LOGGER.debug("Server-error: " + server);
             e.printStackTrace();
             return null;
         }
-        LOGGER.debug("Server-post: " + server);
         return server;
     }
 
