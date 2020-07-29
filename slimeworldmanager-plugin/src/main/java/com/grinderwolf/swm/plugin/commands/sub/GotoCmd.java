@@ -72,7 +72,7 @@ public class GotoCmd implements Subcommand {
             while (spawnLocation.getBlock().getType() != Material.AIR || spawnLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
                 spawnLocation.add(0, 1, 0);
             }
-            Bukkit.broadcastMessage(ChatColor.AQUA + "SPAWNLOCATION: " + spawnLocation);
+            sender.sendMessage(ChatColor.AQUA + "SPAWNLOCATION: " + spawnLocation);
 
             target.teleport(spawnLocation);
 

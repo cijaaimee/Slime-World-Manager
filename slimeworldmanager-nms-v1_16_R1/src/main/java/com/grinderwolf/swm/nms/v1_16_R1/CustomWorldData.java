@@ -46,7 +46,6 @@ public class CustomWorldData extends WorldDataServer {
         this.setGameType(EnumGamemode.NOT_SET);
         BlockPosition spawn = new BlockPosition(world.getPropertyMap().getInt(SlimeProperties.SPAWN_X), world.getPropertyMap().getInt(SlimeProperties.SPAWN_Y), world.getPropertyMap().getInt(SlimeProperties.SPAWN_Z));
         this.setSpawn(spawn);
-        Bukkit.broadcastMessage(ChatColor.GREEN + "SPAWN: " + spawn);
 
         // Game rules
         CompoundTag extraData = world.getExtraData();

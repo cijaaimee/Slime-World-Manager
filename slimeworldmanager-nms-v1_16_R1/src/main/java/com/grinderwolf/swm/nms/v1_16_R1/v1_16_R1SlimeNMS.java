@@ -151,26 +151,26 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         CustomWorldServer server = null;
 
         try {
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-pre: " + server);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-world: " + world.getName());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-DM: " + dimensionManager);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-env: " + env.getId());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-CG: " + worldData.getGeneratorSettings());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-WS: " + worldData);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-Dir: " + conversionSession.folder.toString());
+            LOGGER.debug("Server-pre: " + server);
+            LOGGER.debug("Server-world: " + world.getName());
+            LOGGER.debug("Server-DM: " + dimensionManager);
+            LOGGER.debug("Server-env: " + env.getId());
+            LOGGER.debug("Server-CG: " + worldData.getGeneratorSettings());
+            LOGGER.debug("Server-WS: " + worldData);
+            LOGGER.debug("Server-Dir: " + conversionSession.folder.toString());
             server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SERVER-WORLD-NAME: " + server.getWorld().getName());
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "WORLD-DATA-SERVER: " + worldData);
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "SPAWN: " + server.getWorld().getSpawnLocation());
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "SPAWN-2: " + server.getSpawn());
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIMEWORLD-NAME: " + worldName);
+            LOGGER.debug("SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
+            LOGGER.debug("SERVER-WORLD-NAME: " + server.getWorld().getName());
+            LOGGER.debug("WORLD-DATA-SERVER: " + worldData);
+            LOGGER.debug("SPAWN: " + server.getWorld().getSpawnLocation());
+            LOGGER.debug("SPAWN-2: " + server.getSpawn());
+            LOGGER.debug("SLIMEWORLD-NAME: " + worldName);
         } catch(IOException e) {
-            Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-error: " + server);
+            LOGGER.debug("Server-error: " + server);
             e.printStackTrace();
             return null;
         }
-        Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-post: " + server);
+        LOGGER.debug("Server-post: " + server);
         return server;
     }
 

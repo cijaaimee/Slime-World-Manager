@@ -85,7 +85,7 @@ public class CraftCLSMBridge implements CLSMBridge {
     }
 
     static void initialize(v1_16_R1SlimeNMS instance) {
-        Bukkit.broadcastMessage("registering CLSM bridge");
+        LOGGER.info("registering CLSM bridge");
 
         ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
