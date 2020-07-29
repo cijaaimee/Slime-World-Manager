@@ -5,7 +5,7 @@
         System.out.println("Overriding default worlds");
 
         for (int worldId = 0; worldId < 3; ++worldId) {
-            net.minecraft.server.v1_16_R1.WorldServer world = defaultWorlds[index];
+            net.minecraft.server.v1_16_R1.WorldServer world = defaultWorlds[worldId];
             net.minecraft.server.v1_16_R1.WorldDataServer worlddata;
             byte dimension = 0;
             net.minecraft.server.v1_16_R1.ResourceKey<net.minecraft.server.v1_16_R1.WorldDimension> dimensionKey = net.minecraft.server.v1_16_R1.WorldDimension.OVERWORLD;
