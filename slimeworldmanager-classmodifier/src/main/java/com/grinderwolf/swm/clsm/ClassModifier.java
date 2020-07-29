@@ -47,4 +47,8 @@ public class ClassModifier {
     public static void setLoader(CLSMBridge loader) {
         customLoader = loader;
     }
+
+    public static Object[] getDefaultWorlds() {
+        return customLoader != null ? customLoader.getDefaultWorlds() : null;
+    }
 }

@@ -57,7 +57,36 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         LoaderUtils.registerLoaders();
 
         nms = getNMSBridge();
-        loadWorlds();
+
+        List<String> erroredWorlds = loadWorlds();
+
+        // Default world override
+        try {
+            Properties props = new Properties();
+
+            props.load(new FileInputStream("server.properties"));
+            String defaultWorldName = props.getProperty("level-name");
+
+            if (erroredWorlds.contains(defaultWorldName)) {
+                Logging.error("Shutting down server, as the default world could not be loaded.");
+                System.exit(1);
+            } else if (getServer().getAllowNether() && erroredWorlds.contains(defaultWorldName + "_nether")) {
+                Logging.error("Shutting down server, as the default nether world could not be loaded.");
+                System.exit(1);
+            } else if (getServer().getAllowEnd() && erroredWorlds.contains(defaultWorldName + "_the_end")) {
+                Logging.error("Shutting down server, as the default end world could not be loaded.");
+                System.exit(1);
+            }
+
+            SlimeWorld defaultWorld = worlds.stream().filter(world -> world.getName().equals(defaultWorldName)).findFirst().orElse(null);
+            SlimeWorld netherWorld = (getServer().getAllowNether() ? worlds.stream().filter(world -> world.getName().equals(defaultWorldName + "_nether")).findFirst().orElse(null) : null);
+            SlimeWorld endWorld = (getServer().getAllowEnd() ? worlds.stream().filter(world -> world.getName().equals(defaultWorldName + "_the_end")).findFirst().orElse(null) : null);
+
+            nms.setDefaultWorlds(defaultWorld, netherWorld, endWorld);
+        } catch (IOException ex) {
+            Logging.error("Failed to retrieve default world name:");
+            ex.printStackTrace();
+        }
     }
 
     @Override
