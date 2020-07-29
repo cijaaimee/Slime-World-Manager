@@ -27,10 +27,10 @@
             }
 
             String worldType = org.bukkit.World.Environment.getEnvironment(dimension).toString().toLowerCase();
-            String name = (dimension == 0) ? s : s + "_" + worldType;
+            String name = (dimension == 0) ? $1 : $1 + "_" + worldType;
             Convertable.ConversionSession worldSession;
             if (dimension == 0) {
-                worldSession = this.convertable;
+                worldSession = $0.convertable;
             } else {
                 try {
                     worldSession = Convertable.a(server.getWorldContainer().toPath()).c(name, dimensionKey);
@@ -39,21 +39,21 @@
                 }
             }
 
-            org.bukkit.generator.ChunkGenerator gen = this.server.getGenerator(name);
+            org.bukkit.generator.ChunkGenerator gen = $0.server.getGenerator(name);
 
             IRegistryCustom.Dimension iregistrycustom_dimension = IRegistryCustom.b();
 
-            RegistryReadOps<NBTBase> registryreadops = RegistryReadOps.a((DynamicOps) DynamicOpsNBT.a, this.dataPackResources.h(), (IRegistryCustom) iregistrycustom_dimension);
+            RegistryReadOps<NBTBase> registryreadops = RegistryReadOps.a((DynamicOps) DynamicOpsNBT.a, $0.dataPackResources.h(), (IRegistryCustom) iregistrycustom_dimension);
             worlddata = (WorldDataServer) worldSession.a((DynamicOps) registryreadops, datapackconfiguration);
             if (worlddata == null) {
                 WorldSettings worldsettings;
                 GeneratorSettings generatorsettings;
 
-                if (this.isDemoMode()) {
+                if ($0.isDemoMode()) {
                     worldsettings = MinecraftServer.c;
                     generatorsettings = GeneratorSettings.b;
                 } else {
-                    DedicatedServerProperties dedicatedserverproperties = ((DedicatedServer) this).getDedicatedServerProperties();
+                    DedicatedServerProperties dedicatedserverproperties = ((DedicatedServer) $0).getDedicatedServerProperties();
 
                     worldsettings = new WorldSettings(dedicatedserverproperties.levelName, dedicatedserverproperties.gamemode, dedicatedserverproperties.hardcore, dedicatedserverproperties.difficulty, false, new GameRules(), datapackconfiguration);
                     generatorsettings = options.has("bonusChest") ? dedicatedserverproperties.generatorSettings.k() : dedicatedserverproperties.generatorSettings;
@@ -61,7 +61,7 @@
 
                 worlddata = new WorldDataServer(worldsettings, generatorsettings, Lifecycle.stable());
             }
-            worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
+            worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in $0 case the end)
             if (options.has("forceUpgrade")) {
                 net.minecraft.server.Main.convertWorld(worldSession, DataConverterRegistry.a(), options.has("eraseCache"), () -> {
                     return true;
@@ -89,50 +89,50 @@
                 chunkgenerator = worlddimension.c();
             }
 
-            ResourceKey<DimensionManager> typeKey = (ResourceKey) this.f.a().c(dimensionmanager).orElseThrow(() -> {
+            ResourceKey<DimensionManager> typeKey = (ResourceKey) $0.f.a().c(dimensionmanager).orElseThrow(() -> {
                 return new IllegalStateException("Unregistered dimension type: " + dimensionmanager);
             });
             ResourceKey<World> worldKey = ResourceKey.a(IRegistry.ae, dimensionKey.a());
 
             if (worldId == 0) {
                 if(world == null) {
-                    this.saveData = worlddata;
-                    this.saveData.setGameType(((DedicatedServer) this).getDedicatedServerProperties().gamemode); // From DedicatedServer.init
+                    $0.saveData = worlddata;
+                    $0.saveData.setGameType(((DedicatedServer) $0).getDedicatedServerProperties().gamemode); // From DedicatedServer.init
 
-                    WorldLoadListener worldloadlistener = this.worldLoadListenerFactory.create(11);
+                    WorldLoadListener worldloadlistener = $0.worldLoadListenerFactory.create(11);
 
-                    world = new WorldServer(this, this.executorService, worldSession, iworlddataserver, worldKey, typeKey, dimensionmanager, worldloadlistener, chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                    world = new WorldServer($0, $0.executorService, worldSession, iworlddataserver, worldKey, typeKey, dimensionmanager, worldloadlistener, chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
                 }
 
                 WorldPersistentData worldpersistentdata = world.getWorldPersistentData();
-                this.initializeScoreboards(worldpersistentdata);
-                this.server.scoreboardManager = new org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager(this, world.getScoreboard());
-                this.persistentCommandStorage = new PersistentCommandStorage(worldpersistentdata);
+                $0.initializeScoreboards(worldpersistentdata);
+                $0.server.scoreboardManager = new org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager($0, world.getScoreboard());
+                $0.persistentCommandStorage = new PersistentCommandStorage(worldpersistentdata);
             } else if(world == null) {
-                WorldLoadListener worldloadlistener = this.worldLoadListenerFactory.create(11);
-                world = new WorldServer(this, this.executorService, worldSession, iworlddataserver, worldKey, typeKey, dimensionmanager, worldloadlistener, chunkgenerator, flag, j, ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                WorldLoadListener worldloadlistener = $0.worldLoadListenerFactory.create(11);
+                world = new WorldServer($0, $0.executorService, worldSession, iworlddataserver, worldKey, typeKey, dimensionmanager, worldloadlistener, chunkgenerator, flag, j, ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
             }
 
-            worlddata.a(this.getServerModName(), this.getModded().isPresent());
-            this.initWorld(world, worlddata, saveData, worlddata.getGeneratorSettings());
-            this.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldInitEvent(world.getWorld()));
+            worlddata.a($0.getServerModName(), $0.getModded().isPresent());
+            $0.initWorld(world, worlddata, saveData, worlddata.getGeneratorSettings());
+            $0.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldInitEvent(world.getWorld()));
 
-            this.worldServer.put(world.getDimensionKey(), world);
-            this.getPlayerList().setPlayerFileData(world);
+            $0.worldServer.put(world.getDimensionKey(), world);
+            $0.getPlayerList().setPlayerFileData(world);
 
             if (worlddata.getCustomBossEvents() != null) {
-                this.getBossBattleCustomData().load(worlddata.getCustomBossEvents());
+                $0.getBossBattleCustomData().load(worlddata.getCustomBossEvents());
             }
         }
-        this.updateWorldSettings();
-        for (WorldServer worldserver : this.getWorlds()) {
-            this.loadSpawn(worldserver.getChunkProvider().playerChunkMap.worldLoadListener, worldserver);
-            this.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldLoadEvent(worldserver.getWorld()));
+        $0.updateWorldSettings();
+        for (WorldServer worldserver : $0.getWorlds()) {
+            $0.loadSpawn(worldserver.getChunkProvider().playerChunkMap.worldLoadListener, worldserver);
+            $0.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldLoadEvent(worldserver.getWorld()));
         }
 
-        this.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
-        this.server.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
-        this.serverConnection.acceptConnections();
+        $0.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
+        $0.server.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
+        $0.serverConnection.acceptConnections();
         // CraftBukkit end
     }
 }
