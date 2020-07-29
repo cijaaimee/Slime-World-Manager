@@ -130,6 +130,9 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SERVER-WORLD-NAME: " + server.getWorld().getName());
+            Bukkit.broadcastMessage(ChatColor.YELLOW + "WORLD-DATA-SERVER: " + worldData);
+            Bukkit.broadcastMessage(ChatColor.YELLOW + "SPAWN: " + server.getWorld().getSpawnLocation());
+            Bukkit.broadcastMessage(ChatColor.YELLOW + "SPAWN-2: " + server.getSpawn());
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "SLIMEWORLD-NAME: " + worldName);
         } catch(IOException e) {
             Bukkit.broadcastMessage(ChatColor.of("#590c0c") + "Server-error: " + server);

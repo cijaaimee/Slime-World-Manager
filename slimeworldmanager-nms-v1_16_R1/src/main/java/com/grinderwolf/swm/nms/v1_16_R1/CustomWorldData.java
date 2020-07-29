@@ -11,6 +11,8 @@ import net.minecraft.server.v1_16_R1.GameRules.GameRuleInt;
 import net.minecraft.server.v1_16_R1.GameRules.GameRuleKey;
 import net.minecraft.server.v1_16_R1.GameRules.GameRuleValue;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.WorldType;
 import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
@@ -29,7 +31,7 @@ public class CustomWorldData extends WorldDataServer {
             world.getName(),
             EnumGamemode.NOT_SET,
             false,
-            EnumDifficulty.NORMAL,
+            EnumDifficulty.valueOf(world.getPropertyMap().getString(SlimeProperties.DIFFICULTY).toUpperCase()),
             true,
             new GameRules(),
             MinecraftServer.getServer().datapackconfiguration),
@@ -42,6 +44,9 @@ public class CustomWorldData extends WorldDataServer {
         this.world = world;
         this.type = WorldType.getByName(world.getPropertyMap().getString(SlimeProperties.WORLD_TYPE).toUpperCase());
         this.setGameType(EnumGamemode.NOT_SET);
+        BlockPosition spawn = new BlockPosition(world.getPropertyMap().getInt(SlimeProperties.SPAWN_X), world.getPropertyMap().getInt(SlimeProperties.SPAWN_Y), world.getPropertyMap().getInt(SlimeProperties.SPAWN_Z));
+        this.setSpawn(spawn);
+        Bukkit.broadcastMessage(ChatColor.GREEN + "SPAWN: " + spawn);
 
         // Game rules
         CompoundTag extraData = world.getExtraData();

@@ -1,5 +1,8 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
+import com.grinderwolf.swm.api.SlimePlugin;
+import com.grinderwolf.swm.api.world.properties.SlimeProperties;
+import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
 import org.bukkit.*;
@@ -53,12 +56,23 @@ public class GotoCmd implements Subcommand {
             sender.sendMessage(Logging.COMMAND_PREFIX + "Teleporting " + (target.getName().equals(sender.getName())
                     ? "yourself" : ChatColor.YELLOW + target.getName() + ChatColor.GRAY) + " to " + ChatColor.AQUA + world.getName() + ChatColor.GRAY + "...");
 
-            Location spawnLocation = world.getSpawnLocation();
+            Location spawnLocation;
+            if(ConfigManager.getWorldConfig().getWorlds().containsKey(world.getName())) {
+                String spawn = ConfigManager.getWorldConfig().getWorlds().get(world.getName()).getSpawn();
+                String[] coords = spawn.split(", ");
+                double x = Double.parseDouble(coords[0]);
+                double y = Double.parseDouble(coords[1]);
+                double z = Double.parseDouble(coords[2]);
+                spawnLocation = new Location(world, x, y, z);
+            }else{
+                spawnLocation = world.getSpawnLocation();
+            }
 
             // Safe Spawn Location
             while (spawnLocation.getBlock().getType() != Material.AIR || spawnLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
                 spawnLocation.add(0, 1, 0);
             }
+            Bukkit.broadcastMessage(ChatColor.AQUA + "SPAWNLOCATION: " + spawnLocation);
 
             target.teleport(spawnLocation);
 
