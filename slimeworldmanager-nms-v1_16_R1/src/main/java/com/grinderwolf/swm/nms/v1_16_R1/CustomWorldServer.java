@@ -38,9 +38,6 @@ public class CustomWorldServer extends WorldServer {
     private final WorldNBTStorage nbtStorage;
 
     @Getter
-    private WorldDataServer worldDataServer;
-
-    @Getter
     @Setter
     private boolean ready = false;
 
@@ -59,8 +56,6 @@ public class CustomWorldServer extends WorldServer {
                 env,
                 ((CraftServer)Bukkit.getServer()).getServer().D().generator
         );
-        this.worldDataServer = worldDataServer;
-
 
         // MinecraftServer.getServer().getMethodProfiler()
 

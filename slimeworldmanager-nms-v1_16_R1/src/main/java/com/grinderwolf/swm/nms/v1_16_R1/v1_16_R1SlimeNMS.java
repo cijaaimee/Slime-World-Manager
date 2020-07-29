@@ -54,7 +54,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         long startTime = System.currentTimeMillis();
 
         server.setReady(true);
-        mcServer.initWorld(server, server.getWorldDataServer(), null, server.getWorldDataServer().getGeneratorSettings());
+        mcServer.initWorld(server, server.worldDataServer, null, server.worldDataServer.getGeneratorSettings());
 
         mcServer.server.addWorld(server.getWorld());
         mcServer.worldServer.put(server.getDimensionKey(), server);
