@@ -169,7 +169,7 @@ public class SWMImporter {
 
         for (File file : regionDir.listFiles((dir, name) -> name.endsWith(".mca"))) {
             try {
-                chunks.addAll(loadChunks(file, worldVersion));
+                chunks.addAll(loadChunks(file, worldVersion, debug));
             } catch (IOException ex) {
                 throw new IOException("Failed to read region file", ex);
             }
@@ -246,8 +246,9 @@ public class SWMImporter {
         return tag;
     }
 
-    private static List<SlimeChunk> loadChunks(File file, byte worldVersion) throws IOException {
-        System.out.println("Loading chunks from region file '" + file.getName() + "':");
+    private static List<SlimeChunk> loadChunks(File file, byte worldVersion, boolean debug) throws IOException {
+        if(debug) System.out.println("Loading chunks from region file '" + file.getName() + "':");
+
         byte[] regionByteArray = Files.readAllBytes(file.toPath());
         DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(regionByteArray));
 
@@ -290,7 +291,8 @@ public class SWMImporter {
             }
 
         }).filter(Objects::nonNull).collect(Collectors.toList());
-        System.out.println(loadedChunks.size() + " chunks loaded.");
+
+        if(debug) System.out.println(loadedChunks.size() + " chunks loaded.");
 
         return loadedChunks;
     }
