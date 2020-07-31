@@ -45,7 +45,7 @@ public class SWMImporter {
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.err.println("Usage: java -jar slimeworldmanager-importer-1.0.0.jar <path-to-world-folder> [--accept] [--silent] [--print-error]");
+            System.err.println("Usage: java -jar slimeworldmanager-importer.jar <path-to-world-folder> [--accept] [--silent] [--print-error]");
             return;
         }
 
