@@ -28,13 +28,14 @@ public class CustomWorldData extends WorldDataServer {
 
     CustomWorldData(CraftSlimeWorld world) {
         super(new WorldSettings(
-            world.getName(),
-            EnumGamemode.NOT_SET,
-            false,
-            EnumDifficulty.valueOf(world.getPropertyMap().getString(SlimeProperties.DIFFICULTY).toUpperCase()),
-            true,
-            new GameRules(),
-            MinecraftServer.getServer().datapackconfiguration),
+                world.getName(),
+                EnumGamemode.NOT_SET,
+                false,
+                EnumDifficulty.valueOf(world.getPropertyMap().getString(SlimeProperties.DIFFICULTY).toUpperCase()),
+                true,
+                new GameRules(),
+                MinecraftServer.getServer().datapackconfiguration
+            ),
             ((DedicatedServer)MinecraftServer.getServer()).getDedicatedServerProperties().generatorSettings,
             Lifecycle.stable()
         );
