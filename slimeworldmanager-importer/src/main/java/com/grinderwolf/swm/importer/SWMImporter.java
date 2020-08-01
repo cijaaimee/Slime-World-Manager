@@ -25,21 +25,19 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
+/**
+ * The SWMImporter class provides the ability to convert
+ * a vanilla world folder into a slime file.
+ *
+ * The importer may be run directly as executable or
+ * used as dependency in your own plugins.
+ */
 public class SWMImporter {
 
     private static final Pattern MAP_FILE_PATTERN = Pattern.compile("^(?:map_([0-9]*).dat)$");
@@ -47,138 +45,168 @@ public class SWMImporter {
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.err.println("Usage: java -jar slimeworldmanager-importer-1.0.0.jar <path-to-world-folder>");
-
+            System.err.println("Usage: java -jar slimeworldmanager-importer.jar <path-to-world-folder> [--accept] [--silent] [--print-error]");
             return;
         }
 
         File worldDir = new File(args[0]);
+        File outputFile = getDestinationFile(worldDir);
 
-        if (!worldDir.exists()) {
-            System.err.println("World does not exist!");
-            System.err.println("Provided path: " + args[0]);
+        List<String> argList = Arrays.asList(args);
+        boolean hasAccepted = argList.contains("--accept");
+        boolean isSilent = argList.contains("--silent");
+        boolean printErrors = argList.contains("--print-error");
 
-            return;
+        if(!hasAccepted) {
+            System.out.println("**** WARNING ****");
+            System.out.println("The Slime Format is meant to be used on tiny maps, not big survival worlds. It is recommended " +
+                "to trim your world by using the Prune MCEdit tool to ensure you don't save more chunks than you want to.");
+            System.out.println();
+            System.out.println("NOTE: This utility will automatically ignore every chunk that doesn't contain any blocks.");
+            System.out.print("Do you want to continue? [Y/N]: ");
+
+            Scanner scanner = new Scanner(System.in);
+            String response = scanner.next();
+
+            if(!response.equalsIgnoreCase("Y")) {
+                System.out.println("Your wish is my command.");
+                return;
+            }
         }
 
-        if (!worldDir.isDirectory()) {
-            System.err.println("Provided world path points out to a file, not to a directory!");
+        try {
+            importWorld(worldDir, outputFile, !isSilent);
+        } catch (IndexOutOfBoundsException ex) {
+            System.err.println("Oops, it looks like the world provided is too big to be imported. " +
+                "Please trim it by using the MCEdit tool and try again.");
+        } catch (IOException ex) {
+            System.err.println("Failed to save the world file.");
+            ex.printStackTrace();
+        } catch (InvalidWorldException ex) {
+            if(printErrors) {
+                ex.printStackTrace();
+            } else {
+                System.err.println(ex.getMessage());
+            }
+        }
+    }
 
-            return;
+    /**
+     * Returns a destination file at which the slime file will
+     * be placed when run as an executable.
+     *
+     * This method may be used by your plugin to output slime
+     * files identical to the executable.
+     *
+     * @param worldFolder The world directory to import
+     * @return The output file destination
+     */
+    public static File getDestinationFile(File worldFolder) {
+        return new File(worldFolder.getParentFile(), worldFolder.getName() + ".slime");
+    }
+
+    /**
+     * Import the given vanilla world directory into
+     * a slime world file. The debug boolean may be
+     * set to true in order to provide debug prints.
+     *
+     * @param worldFolder The world directory to import
+     * @param outputFile The output file
+     * @param debug Whether debug messages should be printed to sysout
+     * @throws IOException when the world could not be saved
+     * @throws InvalidWorldException when the world is not valid
+     * @throws IndexOutOfBoundsException if the world was too big
+     */
+    public static void importWorld(File worldFolder, File outputFile, boolean debug) throws IOException, InvalidWorldException {
+        if (!worldFolder.exists()) {
+            throw new InvalidWorldException(worldFolder, "Are you sure the directory exists?");
         }
 
-        File regionDir = new File(worldDir, "region");
+        if (!worldFolder.isDirectory()) {
+            throw new InvalidWorldException(worldFolder, "It appears to be a regular file");
+        }
+
+        File regionDir = new File(worldFolder, "region");
 
         if (!regionDir.exists() || !regionDir.isDirectory() || regionDir.list().length == 0) {
-            System.err.println("Provided world seems to be corrupted.");
-
-            return;
+            throw new InvalidWorldException(worldFolder, "The world appears to be corrupted");
         }
 
-        System.out.println("**** WARNING ****");
-        System.out.println("The Slime Format is meant to be used on tiny maps, not big survival worlds. It is recommended " +
-                "to trim your world by using the Prune MCEdit tool to ensure you don't save more chunks than you want to.");
-        System.out.println();
-        System.out.println("NOTE: This utility will automatically ignore every chunk that doesn't contain any blocks.");
-        System.out.print("Do you want to continue? [Y/N]: ");
+        if(debug) System.out.println("Loading world...");
 
-        Scanner scanner = new Scanner(System.in);
-        String response = scanner.next();
+        File levelFile = new File(worldFolder, "level.dat");
 
-        if (response.equalsIgnoreCase("Y")) {
-            System.out.println("Loading world...");
-            File levelFile = new File(worldDir, "level.dat");
+        if (!levelFile.exists() || !levelFile.isFile()) {
+            throw new InvalidWorldException(worldFolder, "The world appears to be corrupted");
+        }
 
-            if (!levelFile.exists() || !levelFile.isFile()) {
-                System.err.println("Provided world seems to be corrupted.");
+        LevelData data;
 
-                return;
-            }
+        try {
+            data = readLevelData(levelFile);
+        } catch (IOException ex) {
+            throw new IOException("Failed to load world level file", ex);
+        }
 
-            LevelData data;
+        // World version
+        byte worldVersion;
 
+        if (data.getVersion() == -1) { // DataVersion tag was added in 1.9
+            worldVersion = 0x01;
+        } else if (data.getVersion() < 818) {
+            worldVersion = 0x02; // 1.9 world
+        } else if (data.getVersion() < 1501) {
+            worldVersion = 0x03; // 1.11 world
+        } else if (data.getVersion() < 1517) {
+            worldVersion = 0x04; // 1.13 world
+        } else {
+            worldVersion = 0x05; // 1.14 world
+        }
+
+        if(debug) System.out.println("World version: " + worldVersion);
+
+        List<SlimeChunk> chunks = new ArrayList<>();
+
+        for (File file : regionDir.listFiles((dir, name) -> name.endsWith(".mca"))) {
             try {
-                data = readLevelData(levelFile);
+                chunks.addAll(loadChunks(file, worldVersion, debug));
             } catch (IOException ex) {
-                System.err.println("Failed to load world level file:");
-                ex.printStackTrace();
-                return;
-            } catch (InvalidWorldException ex) {
-                System.err.println("Failed to find world version.");
-                return;
+                throw new IOException("Failed to read region file", ex);
             }
+        }
 
-            // World version
-            byte worldVersion;
+        if(debug) System.out.println("World " + worldFolder.getName() + " contains " + chunks.size() + " chunks.");
 
-            if (data.getVersion() == -1) { // DataVersion tag was added in 1.9
-                worldVersion = 0x01;
-            } else if (data.getVersion() < 818) {
-                worldVersion = 0x02; // 1.9 world
-            } else if (data.getVersion() < 1501) {
-                worldVersion = 0x03; // 1.11 world
-            } else if (data.getVersion() < 1517) {
-                worldVersion = 0x04; // 1.13 world
-            } else {
-                worldVersion = 0x05; // 1.14 world
-            }
+        // World maps
+        File dataDir = new File(worldFolder, "data");
+        List<CompoundTag> maps = new ArrayList<>();
 
-            System.out.println("World version: " + worldVersion);
-            List<SlimeChunk> chunks = new ArrayList<>();
-
-            for (File file : regionDir.listFiles((dir, name) -> name.endsWith(".mca"))) {
-                try {
-                    chunks.addAll(loadChunks(file, worldVersion));
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-            System.out.println("World " + worldDir.getName() + " contains " + chunks.size() + " chunks.");
-
-            // World maps
-            File dataDir = new File(worldDir, "data");
-            List<CompoundTag> maps = new ArrayList<>();
-
-            if (dataDir.exists()) {
-                if (!dataDir.isDirectory()) {
-                    System.err.println("Failed to find world maps.");
-                    return;
-                }
-
-                try {
-                    for (File mapFile : dataDir.listFiles((dir, name) -> MAP_FILE_PATTERN.matcher(name).matches())) {
-                        maps.add(loadMap(mapFile));
-                    }
-                } catch (IOException ex) {
-                    System.err.println("Failed to read world maps.");
-                    return;
-                }
+        if (dataDir.exists()) {
+            if (!dataDir.isDirectory()) {
+                throw new InvalidWorldException(worldFolder, "The data directory appears to be invalid");
             }
 
             try {
-                long start = System.currentTimeMillis();
-                byte[] slimeFormattedWorld = generateSlimeWorld(chunks, worldVersion, data, maps);
-
-                System.out.println(Chalk.on("World " + worldDir.getName() + " successfully serialized to the Slime Format in "
-                        + (System.currentTimeMillis() - start) + "ms!").green());
-
-                File slimeFile = new File(worldDir.getName() + ".slime");
-
-                slimeFile.createNewFile();
-
-                try (FileOutputStream stream = new FileOutputStream(slimeFile)) {
-                    stream.write(slimeFormattedWorld);
-                    stream.flush();
+                for (File mapFile : dataDir.listFiles((dir, name) -> MAP_FILE_PATTERN.matcher(name).matches())) {
+                    maps.add(loadMap(mapFile));
                 }
-            } catch (IndexOutOfBoundsException ex) {
-                // Thanks for providing a world so big that it just overflowed the coordinate system!
-                System.err.println("Hey! Didn't you just read the warning? The Slime Format isn't meant for big worlds. The world you provided " +
-                        "just breaks everything. Please, trim it by using the MCEdit tool and try again.");
             } catch (IOException ex) {
-                System.err.println("Failed to save the world file.");
-                ex.printStackTrace();
+                throw new IOException("Failed to read world maps", ex);
             }
+        }
+
+        long start = System.currentTimeMillis();
+        byte[] slimeFormattedWorld = generateSlimeWorld(chunks, worldVersion, data, maps);
+        long duration = System.currentTimeMillis() - start;
+
+        if(debug) System.out.println(Chalk.on("World " + worldFolder.getName() + " successfully serialized to " +
+            "the Slime Format in " + duration + "ms!").green());
+
+        outputFile.createNewFile();
+
+        try (FileOutputStream stream = new FileOutputStream(outputFile)) {
+            stream.write(slimeFormattedWorld);
+            stream.flush();
         }
     }
 
@@ -218,8 +246,9 @@ public class SWMImporter {
         return tag;
     }
 
-    private static List<SlimeChunk> loadChunks(File file, byte worldVersion) throws IOException {
-        System.out.println("Loading chunks from region file '" + file.getName() + "':");
+    private static List<SlimeChunk> loadChunks(File file, byte worldVersion, boolean debug) throws IOException {
+        if(debug) System.out.println("Loading chunks from region file '" + file.getName() + "':");
+
         byte[] regionByteArray = Files.readAllBytes(file.toPath());
         DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(regionByteArray));
 
@@ -262,7 +291,8 @@ public class SWMImporter {
             }
 
         }).filter(Objects::nonNull).collect(Collectors.toList());
-        System.out.println(loadedChunks.size() + " chunks loaded.");
+
+        if(debug) System.out.println(loadedChunks.size() + " chunks loaded.");
 
         return loadedChunks;
     }
