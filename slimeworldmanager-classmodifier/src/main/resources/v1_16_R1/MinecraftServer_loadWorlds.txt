@@ -120,9 +120,11 @@
             }
         }
         $0.updateWorldSettings();
-        for (net.minecraft.server.v1_16_R1.WorldServer worldserver : $0.getWorlds()) {
-            $0.loadSpawn(worldserver.getChunkProvider().playerChunkMap.worldLoadListener, worldserver);
-            $0.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldLoadEvent(worldserver.getWorld()));
+        java.util.Iterator worldList = $0.getWorlds().iterator();
+        while (worldList.hasNext()) {
+            net.minecraft.server.v1_16_R1.WorldServer world = (net.minecraft.server.v1_16_R1.WorldServer) worldList.next();
+            $0.loadSpawn(world.getChunkProvider().playerChunkMap.worldLoadListener, world);
+            $0.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldLoadEvent(world.getWorld()));
         }
 
         $0.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
