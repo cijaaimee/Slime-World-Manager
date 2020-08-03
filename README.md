@@ -15,8 +15,8 @@ SWM releases can be found [here](https://www.spigotmc.org/resources/slimeworldma
 ```
 <repositories>
   <repository>
-    <id>glaremasters</id>
-    <url>https://repo.glaremasters.me/repository/concuncan/</url>
+    <id>rapture.pw</id>
+    <url>TO-BE-ADDED</url>
   </repository>
 </repositories>
 ```

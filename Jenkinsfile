@@ -38,11 +38,24 @@ pipeline {
                     }
               }
         }
-        stage('CleanWorkspace') {
-            steps {
-                cleanWs()
-            }
+
+        stage('Maven Publish') {
+              when {
+                anyOf {
+                  branch 'master';
+                  branch 'develop';
+                }
+              }
+              steps {
+                echo 'Publishing artifacts to Nexus...';
+                sh 'mvn deploy';
+              }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
-
