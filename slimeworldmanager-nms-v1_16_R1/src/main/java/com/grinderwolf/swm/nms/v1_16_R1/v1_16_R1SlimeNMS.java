@@ -65,23 +65,23 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         if (netherWorld != null) {
             World.Environment env = World.Environment.valueOf(netherWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
             MinecraftServer mcServer = MinecraftServer.getServer();
-            Convertable.ConversionSession conversionSession = getConversionSession(normalWorld.getName(), mcServer, WorldDimension.THE_NETHER);
-            CustomNBTStorage dataManager = new CustomNBTStorage(normalWorld, conversionSession);
+            Convertable.ConversionSession conversionSession = getConversionSession(netherWorld.getName(), mcServer, WorldDimension.THE_NETHER);
+            CustomNBTStorage dataManager = new CustomNBTStorage(netherWorld, conversionSession);
             DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
             WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
-            ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(normalWorld.getName()));
-            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
+            ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(netherWorld.getName()));
+            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
         }
 
         if (endWorld != null) {
             World.Environment env = World.Environment.valueOf(endWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
             MinecraftServer mcServer = MinecraftServer.getServer();
-            Convertable.ConversionSession conversionSession = getConversionSession(normalWorld.getName(), mcServer, WorldDimension.THE_END);
-            CustomNBTStorage dataManager = new CustomNBTStorage(normalWorld, conversionSession);
+            Convertable.ConversionSession conversionSession = getConversionSession(endWorld.getName(), mcServer, WorldDimension.THE_END);
+            CustomNBTStorage dataManager = new CustomNBTStorage(endWorld, conversionSession);
             DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
             WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
-            ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(normalWorld.getName()));
-            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
+            ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(endWorld.getName()));
+            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
 
         }
 

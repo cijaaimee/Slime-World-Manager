@@ -45,7 +45,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     @Override
     public void onLoad() {
         instance = this;
-
+        Logging.info("onLoad");
         try {
             ConfigManager.initialize();
         } catch (NullPointerException | IOException | ObjectMappingException ex) {
@@ -129,6 +129,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         for (SlimeWorld world : worlds) {
+            Logging.info("onEnable generating world: " + world.getName());
             if (Bukkit.getWorld(world.getName()) == null) {
                 generateWorld(world);
             }
@@ -142,10 +143,12 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     }
 
     private List<String> loadWorlds() {
+        Logging.info("loadWorlds");
         List<String> erroredWorlds = new ArrayList<>();
         WorldsConfig config = ConfigManager.getWorldConfig();
 
         for (Map.Entry<String, WorldData> entry : config.getWorlds().entrySet()) {
+            Logging.info("Entry: " + entry.getKey());
             String worldName = entry.getKey();
             WorldData worldData = entry.getValue();
 
