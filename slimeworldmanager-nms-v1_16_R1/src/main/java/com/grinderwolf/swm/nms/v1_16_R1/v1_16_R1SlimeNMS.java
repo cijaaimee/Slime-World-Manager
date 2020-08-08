@@ -177,7 +177,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             LOGGER.debug("Server-CG: " + worldData.getGeneratorSettings());
             LOGGER.debug("Server-WS: " + worldData);
             LOGGER.debug("Server-Dir: " + conversionSession.folder.toString());
-            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, false);
+            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()), false, true);
             LOGGER.debug("SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
             LOGGER.debug("SERVER-WORLD-NAME: " + server.getWorld().getName());
             LOGGER.debug("WORLD-DATA-SERVER: " + worldData);
