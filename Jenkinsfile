@@ -57,7 +57,8 @@ pipeline {
         always {
             cleanWs();
             withCredentials([string(credentialsId: 'cloudnet-discord-ci-webhook', variable: 'url')]) {
-              discordSend description: 'New build for Advanced Slime World Manager!', footer: 'New build!', link: env.B>            }
+                    discordSend description: 'New build for Advanced Slime World manager!', footer: 'New build!', link: env.BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: url
+            }
         }
     }
 }
