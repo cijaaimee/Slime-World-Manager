@@ -1,7 +1,9 @@
 package com.grinderwolf.swm.nms.v1_16_R1;
 
-import com.flowpowered.nbt.*;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.flowpowered.nbt.CompoundMap;
+import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.LongArrayTag;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
@@ -9,9 +11,38 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import net.minecraft.server.v1_16_R1.BiomeStorage;
+import net.minecraft.server.v1_16_R1.Block;
+import net.minecraft.server.v1_16_R1.BlockPosition;
+import net.minecraft.server.v1_16_R1.Chunk;
+import net.minecraft.server.v1_16_R1.ChunkConverter;
+import net.minecraft.server.v1_16_R1.ChunkCoordIntPair;
+import net.minecraft.server.v1_16_R1.ChunkSection;
+import net.minecraft.server.v1_16_R1.Convertable;
+import net.minecraft.server.v1_16_R1.DimensionManager;
+import net.minecraft.server.v1_16_R1.EntityTypes;
+import net.minecraft.server.v1_16_R1.EnumDifficulty;
+import net.minecraft.server.v1_16_R1.EnumSkyBlock;
+import net.minecraft.server.v1_16_R1.FluidType;
+import net.minecraft.server.v1_16_R1.HeightMap;
+import net.minecraft.server.v1_16_R1.IProgressUpdate;
+import net.minecraft.server.v1_16_R1.IRegistry;
+import net.minecraft.server.v1_16_R1.LightEngine;
+import net.minecraft.server.v1_16_R1.MinecraftServer;
+import net.minecraft.server.v1_16_R1.MobSpawner;
+import net.minecraft.server.v1_16_R1.NBTTagCompound;
+import net.minecraft.server.v1_16_R1.NBTTagList;
+import net.minecraft.server.v1_16_R1.ProtoChunkExtension;
+import net.minecraft.server.v1_16_R1.ResourceKey;
+import net.minecraft.server.v1_16_R1.SectionPosition;
+import net.minecraft.server.v1_16_R1.TickListChunk;
+import net.minecraft.server.v1_16_R1.TileEntity;
+import net.minecraft.server.v1_16_R1.WorldDataServer;
+import net.minecraft.server.v1_16_R1.WorldMap;
+import net.minecraft.server.v1_16_R1.WorldNBTStorage;
+import net.minecraft.server.v1_16_R1.WorldServer;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.server.v1_16_R1.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
@@ -20,7 +51,10 @@ import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -35,13 +69,13 @@ public class CustomWorldServer extends WorldServer {
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
     private final List<WorldMap> maps = new ArrayList<>();
-    private final WorldNBTStorage nbtStorage;
+    private final CustomNBTStorage nbtStorage;
 
     @Getter
     @Setter
     private boolean ready = false;
 
-    CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, Convertable.ConversionSession conversionSession, DimensionManager dimensionManager, World.Environment env, WorldDataServer worldDataServer, ResourceKey<net.minecraft.server.v1_16_R1.World> resourceKey, ResourceKey<DimensionManager> resourceKey1, List<MobSpawner> list, boolean flag, boolean flag1) throws IOException {
+    CustomWorldServer(CraftSlimeWorld world, CustomNBTStorage nbtStorage, Convertable.ConversionSession conversionSession, DimensionManager dimensionManager, World.Environment env, WorldDataServer worldDataServer, ResourceKey<net.minecraft.server.v1_16_R1.World> resourceKey, ResourceKey<DimensionManager> resourceKey1, List<MobSpawner> list, boolean flag, boolean flag1) throws IOException {
         super(
             ((CraftServer)Bukkit.getServer()).getServer(),
             ((CraftServer)Bukkit.getServer()).getServer().executorService,
@@ -94,8 +128,7 @@ public class CustomWorldServer extends WorldServer {
             org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
             this.getChunkProvider().save(forceSave);
 
-
-//            this.getDataManager().saveWorldData(worldData, null);
+            nbtStorage.saveWorldData(worldData);
 
             // Update the map compound list
             slimeWorld.getWorldMaps().clear();

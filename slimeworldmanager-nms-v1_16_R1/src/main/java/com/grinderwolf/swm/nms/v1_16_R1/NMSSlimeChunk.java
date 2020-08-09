@@ -1,15 +1,29 @@
 package com.grinderwolf.swm.nms.v1_16_R1;
 
-import com.flowpowered.nbt.*;
+import com.flowpowered.nbt.CompoundMap;
+import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.LongArrayTag;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
+import net.minecraft.server.v1_16_R1.Chunk;
+import net.minecraft.server.v1_16_R1.ChunkSection;
+import net.minecraft.server.v1_16_R1.DataPaletteBlock;
+import net.minecraft.server.v1_16_R1.Entity;
+import net.minecraft.server.v1_16_R1.EnumSkyBlock;
+import net.minecraft.server.v1_16_R1.HeightMap;
+import net.minecraft.server.v1_16_R1.LightEngine;
+import net.minecraft.server.v1_16_R1.NBTTagCompound;
+import net.minecraft.server.v1_16_R1.NBTTagList;
+import net.minecraft.server.v1_16_R1.SectionPosition;
+import net.minecraft.server.v1_16_R1.TileEntity;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.minecraft.server.v1_16_R1.*;
-
-import java.util.*;
 
 @Data
 @AllArgsConstructor

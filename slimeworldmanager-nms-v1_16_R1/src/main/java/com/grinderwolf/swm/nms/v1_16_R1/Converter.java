@@ -1,9 +1,34 @@
 package com.grinderwolf.swm.nms.v1_16_R1;
 
+import com.flowpowered.nbt.ByteArrayTag;
+import com.flowpowered.nbt.ByteTag;
+import com.flowpowered.nbt.CompoundMap;
+import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.DoubleTag;
+import com.flowpowered.nbt.FloatTag;
+import com.flowpowered.nbt.IntArrayTag;
+import com.flowpowered.nbt.IntTag;
+import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.LongArrayTag;
+import com.flowpowered.nbt.LongTag;
+import com.flowpowered.nbt.ShortTag;
+import com.flowpowered.nbt.StringTag;
 import com.flowpowered.nbt.Tag;
-import com.flowpowered.nbt.*;
+import com.flowpowered.nbt.TagType;
 import com.grinderwolf.swm.api.utils.NibbleArray;
-import net.minecraft.server.v1_16_R1.*;
+import net.minecraft.server.v1_16_R1.NBTBase;
+import net.minecraft.server.v1_16_R1.NBTTagByte;
+import net.minecraft.server.v1_16_R1.NBTTagByteArray;
+import net.minecraft.server.v1_16_R1.NBTTagCompound;
+import net.minecraft.server.v1_16_R1.NBTTagDouble;
+import net.minecraft.server.v1_16_R1.NBTTagFloat;
+import net.minecraft.server.v1_16_R1.NBTTagInt;
+import net.minecraft.server.v1_16_R1.NBTTagIntArray;
+import net.minecraft.server.v1_16_R1.NBTTagList;
+import net.minecraft.server.v1_16_R1.NBTTagLong;
+import net.minecraft.server.v1_16_R1.NBTTagLongArray;
+import net.minecraft.server.v1_16_R1.NBTTagShort;
+import net.minecraft.server.v1_16_R1.NBTTagString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
