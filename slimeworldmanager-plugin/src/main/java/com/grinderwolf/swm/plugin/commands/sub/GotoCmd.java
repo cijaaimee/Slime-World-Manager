@@ -1,7 +1,5 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
-import com.grinderwolf.swm.api.SlimePlugin;
-import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;

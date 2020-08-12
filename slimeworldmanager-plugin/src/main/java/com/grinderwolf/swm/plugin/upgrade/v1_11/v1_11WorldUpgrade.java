@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class v1_11WorldUpgrade implements Upgrade {
 
-    private static Map<String, String> oldToNewMap = new HashMap<>();
-    private static Map<String, String> newToOldMap = new HashMap<>();
+    private static final Map<String, String> oldToNewMap = new HashMap<>();
+    private static final Map<String, String> newToOldMap = new HashMap<>();
 
     static {
         rename("Furnace", "minecraft:furnace");

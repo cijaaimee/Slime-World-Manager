@@ -144,27 +144,27 @@ public interface SlimeWorld {
     @Deprecated
     class SlimeProperties {
 
-        private double spawnX;
+        private final double spawnX;
         @Builder.Default
-        private double spawnY = 255;
-        private double spawnZ;
+        private final double spawnY = 255;
+        private final double spawnZ;
 
-        private int difficulty;
+        private final int difficulty;
 
         @Accessors(fluent = true)
         @Builder.Default
-        private boolean allowMonsters = true;
+        private final boolean allowMonsters = true;
         @Accessors(fluent = true)
         @Builder.Default
-        private boolean allowAnimals = true;
+        private final boolean allowAnimals = true;
 
         @Wither
-        private boolean readOnly;
+        private final boolean readOnly;
 
         @Builder.Default
-        private boolean pvp = true;
+        private final boolean pvp = true;
 
         @Builder.Default
-        private String environment = "NORMAL";
+        private final String environment = "NORMAL";
     }
 }

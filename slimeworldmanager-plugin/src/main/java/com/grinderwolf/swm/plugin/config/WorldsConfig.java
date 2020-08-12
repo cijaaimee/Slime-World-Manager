@@ -16,7 +16,7 @@ import java.util.Map;
 public class WorldsConfig {
 
     @Setting("worlds")
-    private Map<String, WorldData> worlds = new HashMap<>();
+    private final Map<String, WorldData> worlds = new HashMap<>();
 
     public void save() {
         try {

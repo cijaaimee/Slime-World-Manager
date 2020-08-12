@@ -37,6 +37,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 
 @Getter
 public class v1_16_R1SlimeNMS implements SlimeNMS {
@@ -61,7 +62,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
     }
 
     @Override
-    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) throws IOException {
+    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
         if (normalWorld != null) {
             World.Environment env = World.Environment.valueOf(normalWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
 
@@ -75,7 +76,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
             WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
             ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(normalWorld.getName()));
-            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()));
+            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Collections.singletonList(new MobSpawnerCat()));
         }
 
         if (netherWorld != null) {
@@ -86,7 +87,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
             WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
             ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(netherWorld.getName()));
-            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()));
+            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Collections.singletonList(new MobSpawnerCat()));
         }
 
         if (endWorld != null) {
@@ -97,7 +98,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
             WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
             ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(endWorld.getName()));
-            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()));
+            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Collections.singletonList(new MobSpawnerCat()));
 
         }
 
@@ -185,26 +186,20 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         CustomWorldServer server = null;
 
-        try {
-            LOGGER.debug("Server-pre: " + server);
-            LOGGER.debug("Server-world: " + world.getName());
-            LOGGER.debug("Server-DM: " + dimensionManager);
-            LOGGER.debug("Server-env: " + env.getId());
-            LOGGER.debug("Server-CG: " + worldData.getGeneratorSettings());
-            LOGGER.debug("Server-WS: " + worldData);
-            LOGGER.debug("Server-Dir: " + conversionSession.folder.toString());
-            server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Arrays.asList(new MobSpawnerCat()));
-            LOGGER.debug("SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
-            LOGGER.debug("SERVER-WORLD-NAME: " + server.getWorld().getName());
-            LOGGER.debug("WORLD-DATA-SERVER: " + worldData);
-            LOGGER.debug("SPAWN: " + server.getWorld().getSpawnLocation());
-            LOGGER.debug("SPAWN-2: " + server.getSpawn());
-            LOGGER.debug("SLIMEWORLD-NAME: " + worldName);
-        } catch(IOException e) {
-            LOGGER.debug("Server-error: " + server);
-            e.printStackTrace();
-            return null;
-        }
+        LOGGER.debug("Server-pre: " + server);
+        LOGGER.debug("Server-world: " + world.getName());
+        LOGGER.debug("Server-DM: " + dimensionManager);
+        LOGGER.debug("Server-env: " + env.getId());
+        LOGGER.debug("Server-CG: " + worldData.getGeneratorSettings());
+        LOGGER.debug("Server-WS: " + worldData);
+        LOGGER.debug("Server-Dir: " + conversionSession.folder.toString());
+        server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Collections.singletonList(new MobSpawnerCat()));
+        LOGGER.debug("SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
+        LOGGER.debug("SERVER-WORLD-NAME: " + server.getWorld().getName());
+        LOGGER.debug("WORLD-DATA-SERVER: " + worldData);
+        LOGGER.debug("SPAWN: " + server.getWorld().getSpawnLocation());
+        LOGGER.debug("SPAWN-2: " + server.getSpawn());
+        LOGGER.debug("SLIMEWORLD-NAME: " + worldName);
         LOGGER.debug("Server-post: " + server);
         return server;
     }

@@ -312,22 +312,22 @@ public class v1_13WorldUpgrade implements Upgrade {
 
                                                 switch (value.getType().toLowerCase()) {
                                                     case "byte":
-                                                        nbtTag = new ByteTag(key, Byte.valueOf(nbtValue));
+                                                        nbtTag = new ByteTag(key, Byte.parseByte(nbtValue));
                                                         break;
                                                     case "short":
-                                                        nbtTag = new ShortTag(key, Short.valueOf(nbtValue));
+                                                        nbtTag = new ShortTag(key, Short.parseShort(nbtValue));
                                                         break;
                                                     case "int":
-                                                        nbtTag = new IntTag(key, Integer.valueOf(nbtValue));
+                                                        nbtTag = new IntTag(key, Integer.parseInt(nbtValue));
                                                         break;
                                                     case "long":
-                                                        nbtTag = new LongTag(key, Long.valueOf(nbtValue));
+                                                        nbtTag = new LongTag(key, Long.parseLong(nbtValue));
                                                         break;
                                                     case "float":
-                                                        nbtTag = new FloatTag(key, Float.valueOf(nbtValue));
+                                                        nbtTag = new FloatTag(key, Float.parseFloat(nbtValue));
                                                         break;
                                                     case "double":
-                                                        nbtTag = new DoubleTag(key, Double.valueOf(nbtValue));
+                                                        nbtTag = new DoubleTag(key, Double.parseDouble(nbtValue));
                                                         break;
                                                     default:
                                                         nbtTag = new StringTag(key, nbtValue);

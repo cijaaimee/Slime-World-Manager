@@ -25,10 +25,10 @@ public class MainConfig {
     public static class UpdaterOptions {
 
         @Setting(value = "enabled")
-        private boolean enabled = true;
+        private final boolean enabled = true;
 
         @Setting(value = "onjoinmessage")
-        private boolean messageEnabled = true;
+        private final boolean messageEnabled = true;
     }
 
     public void save() {

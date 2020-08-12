@@ -40,7 +40,7 @@ public class DowngradeData {
 
     @Getter
     public enum Operation {
-        REPLACE, OR;
+        REPLACE, OR
     }
 
     @Getter

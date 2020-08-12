@@ -30,7 +30,7 @@ public class NMSTransformer implements ClassFileTransformer {
     private static final Pattern PATTERN = Pattern.compile("^(\\w+)\\s*\\((.*?)\\)\\s*@(.+?\\.txt)$");
     private static final boolean DEBUG = Boolean.getBoolean("clsmDebug");
 
-    private static Map<String, Change[]> changes = new HashMap<>();
+    private static final Map<String, Change[]> changes = new HashMap<>();
 
     public static void premain(String agentArgs, Instrumentation instrumentation) {
         instrumentation.addTransformer(new NMSTransformer());

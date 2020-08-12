@@ -20,8 +20,8 @@ public class v1_14WorldUpgrade implements Upgrade {
 
     private static final int[] VILLAGER_XP = { 0, 10, 50, 100, 150 };
 
-    private static Map<String, String> oldToNewMap = new HashMap<>();
-    private static Map<String, String> newToOldMap = new HashMap<>();
+    private static final Map<String, String> oldToNewMap = new HashMap<>();
+    private static final Map<String, String> newToOldMap = new HashMap<>();
 
     static {
         rename("minecraft:tube_coral_fan", "minecraft:tube_coral_wall_fan");
@@ -142,7 +142,7 @@ public class v1_14WorldUpgrade implements Upgrade {
     }
 
     private int clamp(int i, int i1, int i2) {
-        return i < i1 ? i1 : (i > i2 ? i2 : i);
+        return i < i1 ? i1 : (Math.min(i, i2));
     }
 
     private String getVillagerProfession(int profession, int career) {

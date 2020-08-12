@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface Subcommand {
 
-    public boolean onCommand(CommandSender sender, String[] args);
+    boolean onCommand(CommandSender sender, String[] args);
 
-    public List<String> onTabComplete(CommandSender sender, String[] args);
+    List<String> onTabComplete(CommandSender sender, String[] args);
 
-    public String getUsage();
+    String getUsage();
 
-    public String getDescription();
+    String getDescription();
 
     default boolean inGameOnly() {
         return false;

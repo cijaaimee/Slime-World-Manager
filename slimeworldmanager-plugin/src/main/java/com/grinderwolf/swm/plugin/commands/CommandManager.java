@@ -13,7 +13,7 @@ public class CommandManager implements TabExecutor {
 
     @Getter
     private static CommandManager instance;
-    private Map<String, Subcommand> commands = new HashMap<>();
+    private final Map<String, Subcommand> commands = new HashMap<>();
 
     /* A list containing all the worlds that are being performed operations on, so two commands cannot be run at the same time */
     @Getter

@@ -159,7 +159,7 @@ public class WorldImporter {
             }
         }
 
-        List<SlimeChunk> loadedChunks = chunks.stream().map((entry) -> {
+        return chunks.stream().map((entry) -> {
 
             try {
                 DataInputStream headerStream = new DataInputStream(new ByteArrayInputStream(regionByteArray, entry.getOffset(), entry.getPaddedSize()));
@@ -185,8 +185,6 @@ public class WorldImporter {
             }
 
         }).filter(Objects::nonNull).collect(Collectors.toList());
-
-        return loadedChunks;
     }
 
     private static SlimeChunk readChunk(CompoundTag compound, byte worldVersion) {

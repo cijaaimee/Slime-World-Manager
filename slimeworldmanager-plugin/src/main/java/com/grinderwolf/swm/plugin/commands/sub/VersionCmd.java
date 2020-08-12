@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 @Getter
