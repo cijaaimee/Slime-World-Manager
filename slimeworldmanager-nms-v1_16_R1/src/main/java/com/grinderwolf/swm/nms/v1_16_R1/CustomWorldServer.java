@@ -39,7 +39,6 @@ import net.minecraft.server.v1_16_R1.TickListChunk;
 import net.minecraft.server.v1_16_R1.TileEntity;
 import net.minecraft.server.v1_16_R1.WorldDataServer;
 import net.minecraft.server.v1_16_R1.WorldMap;
-import net.minecraft.server.v1_16_R1.WorldNBTStorage;
 import net.minecraft.server.v1_16_R1.WorldServer;
 import lombok.Getter;
 import lombok.Setter;
@@ -75,7 +74,7 @@ public class CustomWorldServer extends WorldServer {
     @Setter
     private boolean ready = false;
 
-    CustomWorldServer(CraftSlimeWorld world, CustomNBTStorage nbtStorage, Convertable.ConversionSession conversionSession, DimensionManager dimensionManager, World.Environment env, WorldDataServer worldDataServer, ResourceKey<net.minecraft.server.v1_16_R1.World> resourceKey, ResourceKey<DimensionManager> resourceKey1, List<MobSpawner> list, boolean flag, boolean flag1) throws IOException {
+    CustomWorldServer(CraftSlimeWorld world, CustomNBTStorage nbtStorage, Convertable.ConversionSession conversionSession, DimensionManager dimensionManager, World.Environment env, WorldDataServer worldDataServer, ResourceKey<net.minecraft.server.v1_16_R1.World> resourceKey, ResourceKey<DimensionManager> resourceKey1, List<MobSpawner> list) throws IOException {
         super(
             ((CraftServer)Bukkit.getServer()).getServer(),
             ((CraftServer)Bukkit.getServer()).getServer().executorService,
@@ -86,10 +85,10 @@ public class CustomWorldServer extends WorldServer {
             dimensionManager,
             ((CraftServer)Bukkit.getServer()).getServer().worldLoadListenerFactory.create(11),
             worldDataServer.getGeneratorSettings().getChunkGenerator(),
-            flag,
+            false,
             11,
             list,
-            flag1,
+            true,
             env,
             ((CraftServer)Bukkit.getServer()).getServer().D().generator
         );
