@@ -87,7 +87,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
             WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
             ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(netherWorld.getName()));
-            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Collections.singletonList(new MobSpawnerCat()));
+            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.THE_NETHER, Collections.singletonList(new MobSpawnerCat()));
         }
 
         if (endWorld != null) {
@@ -98,7 +98,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
             WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
             ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(endWorld.getName()));
-            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.OVERWORLD, Collections.singletonList(new MobSpawnerCat()));
+            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, DimensionManager.THE_END, Collections.singletonList(new MobSpawnerCat()));
 
         }
 
