@@ -118,7 +118,12 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         long startTime = System.currentTimeMillis();
 
         server.setReady(true);
+        server.worldDataServer.c(true);
+
+        LOGGER.debug("Start initWorld");
+        long now = System.currentTimeMillis();
         mcServer.initWorld(server, server.worldDataServer, null, server.worldDataServer.getGeneratorSettings());
+        LOGGER.debug("End initWorld (" + (System.currentTimeMillis() - now) + "ms)");
 
         mcServer.server.addWorld(server.getWorld());
         mcServer.worldServer.put(server.getDimensionKey(), server);
@@ -197,25 +202,25 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
         CustomWorldServer server = null;
 
-        LOGGER.info("Server-pre: " + server);
-        LOGGER.info("Server-world: " + world.getName());
-        LOGGER.info("Server-DM: " + dimensionManager);
-        LOGGER.info("Server-env: " + env.getId());
-        LOGGER.info("Server-CG: " + worldData.getGeneratorSettings());
-        LOGGER.info("Server-WS: " + worldData);
-        LOGGER.info("Server-Dir: " + conversionSession.folder.toString());
-        LOGGER.info("Server-DM: " + dimensionManager);
-        LOGGER.info("Server-DM-Key: " + dimensionManagerKey);
-        LOGGER.info("Server-WD-Key: " + worldDimensionKey);
+        LOGGER.debug("Server-pre: " + server);
+        LOGGER.debug("Server-world: " + world.getName());
+        LOGGER.debug("Server-DM: " + dimensionManager);
+        LOGGER.debug("Server-env: " + env.getId());
+        LOGGER.debug("Server-CG: " + worldData.getGeneratorSettings());
+        LOGGER.debug("Server-WS: " + worldData);
+        LOGGER.debug("Server-Dir: " + conversionSession.folder.toString());
+        LOGGER.debug("Server-DM: " + dimensionManager);
+        LOGGER.debug("Server-DM-Key: " + dimensionManagerKey);
+        LOGGER.debug("Server-WD-Key: " + worldDimensionKey);
 
         server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, dimensionManagerKey, Collections.emptyList());
 
-        LOGGER.info("SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
-        LOGGER.info("SERVER-WORLD-NAME: " + server.getWorld().getName());
-        LOGGER.info("WORLD-DATA-SERVER: " + worldData);
-        LOGGER.info("SPAWN: " + server.getWorld().getSpawnLocation());
-        LOGGER.info("SPAWN-2: " + server.getSpawn());
-        LOGGER.info("SLIMEWORLD-NAME: " + worldName);
+        LOGGER.debug("SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
+        LOGGER.debug("SERVER-WORLD-NAME: " + server.getWorld().getName());
+        LOGGER.debug("WORLD-DATA-SERVER: " + worldData);
+        LOGGER.debug("SPAWN: " + server.getWorld().getSpawnLocation());
+        LOGGER.debug("SPAWN-2: " + server.getSpawn());
+        LOGGER.debug("SLIMEWORLD-NAME: " + worldName);
 
         return server;
     }
