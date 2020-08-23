@@ -13,6 +13,7 @@
         <module>slimeworldmanager-importer</module>
         <module>slimeworldmanager-classmodifier</module>
         <module>slimeworldmanager-nms-v1_16_R1</module>
+        <module>slimeworldmanager-nms-v1_16_R2</module>
     </modules>
 
     <repositories>
