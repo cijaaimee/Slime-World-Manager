@@ -36,13 +36,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class LoaderUtils {
 
@@ -81,6 +75,11 @@ public class LoaderUtils {
             }
         }
     }
+
+    public static List<String> getAvailableLoadersNames() {
+        return new LinkedList<>(loaderMap.keySet());
+    }
+
 
     public static SlimeLoader getLoader(String dataSource) {
         return loaderMap.get(dataSource);
@@ -357,16 +356,21 @@ public class LoaderUtils {
 
                     // Biome array
                     int[] biomes;
-                    int biomesArrayLength = version >= 8 ? dataStream.readInt() : 256;
+
+                    if (version == 8 && worldVersion < 0x04) {
+                        // Patch the v8 bug: biome array size is wrong for old worlds
+                        dataStream.readInt();
+                    }
 
                     if (worldVersion >= 0x04) {
+                        int biomesArrayLength = version >= 8 ? dataStream.readInt() : 256;
                         biomes = new int[biomesArrayLength];
 
                         for (int i = 0; i < biomes.length; i++) {
                             biomes[i] = dataStream.readInt();
                         }
                     } else {
-                        byte[] byteBiomes = new byte[biomesArrayLength];
+                        byte[] byteBiomes = new byte[256];
                         dataStream.read(byteBiomes);
                         biomes = toIntArray(byteBiomes);
                     }

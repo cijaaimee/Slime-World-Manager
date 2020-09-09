@@ -7,10 +7,7 @@ Now, you need a loader. A SlimeLoader is a class that reads and stores worlds fr
 SlimeLoader sqlLoader = plugin.getLoader("mysql");
 ```
 
-Before actually loading the world, you need a SlimeProperties object, which contains all the settings for the world. To create one, use the SlimeProperties.builder() method. Here's an example of a SlimeProperties object:
-```java
-SlimeWorld.SlimeProperties props = SlimeWorld.SlimeProperties.builder().difficulty(0).allowAnimals(false).allowMonsters(false).spawnX(96).spawnY(50).spawnZ(47).pvp(false).readOnly(true).build();
-```
+Before actually loading the world, you need a SlimePropertyMap Object. Check the [property api documentation](properties.md) for further details.
 
 That's it, you've got everything you need! Now, let's load the world from the data source and generate it:
 ```java

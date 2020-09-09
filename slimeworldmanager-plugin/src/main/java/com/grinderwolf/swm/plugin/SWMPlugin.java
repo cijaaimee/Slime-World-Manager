@@ -32,6 +32,8 @@ import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -111,7 +113,16 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         new Metrics(this);
 
-        getCommand("swm").setExecutor(new CommandManager());
+        final CommandManager commandManager = new CommandManager();
+        final PluginCommand swmCommand = getCommand("swm");
+        swmCommand.setExecutor(commandManager);
+
+        try {
+            swmCommand.setTabCompleter(commandManager);
+        } catch (Throwable throwable) {
+            // For some versions that does not have TabComplete?
+        }
+
         getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
 
         if (ConfigManager.getMainConfig().getUpdaterOptions().isEnabled()) {
