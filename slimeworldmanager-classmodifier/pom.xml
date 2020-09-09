@@ -9,6 +9,14 @@
 
     <artifactId>slimeworldmanager-classmodifier</artifactId>
 
+    <repositories>
+        <repository>
+            <id>minecraft-libraries</id>
+            <name>Minecraft Libraries</name>
+            <url>https://libraries.minecraft.net</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.javassist</groupId>
@@ -16,8 +24,14 @@
             <version>3.25.0-GA</version>
         </dependency>
         <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>datafixerupper</artifactId>
+            <version>1.0.20</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
+            <artifactId>spigot-api</artifactId>
             <version>1.14.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
