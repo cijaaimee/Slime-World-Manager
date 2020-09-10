@@ -22,7 +22,7 @@ public class CustomWorldData extends WorldData {
         // Game rules
         CompoundTag extraData = world.getExtraData();
         Optional<CompoundTag> gameRules = extraData.getAsCompoundTag("gamerules");
-        gameRules.ifPresent(compoundTag -> this.w().a((NBTTagCompound) Converter.convertTag(compoundTag)));
+        gameRules.ifPresent(compoundTag -> this.v().a((NBTTagCompound) Converter.convertTag(compoundTag)));
     }
 
     @Override

@@ -39,7 +39,7 @@ public class CustomNBTStorage extends WorldNBTStorage {
 
     @Override
     public void saveWorldData(WorldData worldData, NBTTagCompound nbtTagCompound) {
-        CompoundTag gameRules = (CompoundTag) Converter.convertTag("gamerules", worldData.w().a()).getAsCompoundTag().get();
+        CompoundTag gameRules = (CompoundTag) Converter.convertTag("gamerules", worldData.v().a()).getAsCompoundTag().get();
         CompoundTag extraData = this.world.getExtraData();
 
         extraData.getValue().remove("gamerules");
