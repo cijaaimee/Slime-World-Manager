@@ -47,8 +47,10 @@ public class WorldImporter {
             worldVersion = 0x03; // 1.11 world
         } else if (data.getVersion() < 1517) {
             worldVersion = 0x04; // 1.13 world
+        } else if (data.getVersion() < 2556) {
+            worldVersion = 0x04; // 1.14 world
         } else {
-            worldVersion = 0x05; // 1.14 world
+            worldVersion = 0x06; // 1.16 world
         }
 
         // Chunks

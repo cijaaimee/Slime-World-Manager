@@ -80,7 +80,6 @@ public class LoaderUtils {
         return new LinkedList<>(loaderMap.keySet());
     }
 
-
     public static SlimeLoader getLoader(String dataSource) {
         return loaderMap.get(dataSource);
     }
@@ -378,8 +377,8 @@ public class LoaderUtils {
                     // Chunk Sections
                     SlimeChunkSection[] sections = readChunkSections(dataStream, worldVersion, version);
 
-                    chunkMap.put(((long) minZ + z) * Integer.MAX_VALUE + ((long) minX + x), new CraftSlimeChunk(worldName,minX + x, minZ + z,
-                            sections, heightMaps, biomes, new ArrayList<>(), new ArrayList<>()));
+                    chunkMap.put(((long) minZ + z) * Integer.MAX_VALUE + ((long) minX + x), new CraftSlimeChunk(worldName,
+                            minX + x, minZ + z, sections, heightMaps, biomes, new ArrayList<>(), new ArrayList<>()));
                 }
             }
         }
@@ -396,7 +395,8 @@ public class LoaderUtils {
         return ret;
     }
 
-    private static SlimeChunkSection[] readChunkSections(DataInputStream dataStream, byte worldVersion, int version) throws IOException {
+    private static SlimeChunkSection[] readChunkSections(DataInputStream dataStream,
+                                                         byte worldVersion, int version) throws IOException {
         SlimeChunkSection[] chunkSectionArray = new SlimeChunkSection[16];
         byte[] sectionBitmask = new byte[2];
         dataStream.read(sectionBitmask);
@@ -478,7 +478,8 @@ public class LoaderUtils {
                     dataStream.skip(hypixelBlocksLength);
                 }
 
-                chunkSectionArray[i] = new CraftSlimeChunkSection(blockArray, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
+                chunkSectionArray[i] = new CraftSlimeChunkSection(blockArray, dataArray, paletteTag,
+                        blockStatesArray, blockLightArray, skyLightArray);
             }
         }
 

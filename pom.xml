@@ -5,13 +5,14 @@
     <groupId>com.grinderwolf</groupId>
     <artifactId>slimeworldmanager</artifactId>
     <packaging>pom</packaging>
-    <version>2.2.0-SNAPSHOT</version>
+    <version>2.3-SNAPSHOT</version>
     <modules>
         <module>slimeworldmanager-api</module>
         <module>slimeworldmanager-nms-common</module>
         <module>slimeworldmanager-nms-v1_8_R3</module>
         <module>slimeworldmanager-plugin</module>
         <module>slimeworldmanager-importer</module>
+        <module>slimeworldmanager-classmodifier</module>
         <module>slimeworldmanager-nms-v1_9_R1</module>
         <module>slimeworldmanager-nms-v1_9_R2</module>
         <module>slimeworldmanager-nms-v1_10_R1</module>
@@ -20,8 +21,8 @@
         <module>slimeworldmanager-nms-v1_13_R1</module>
         <module>slimeworldmanager-nms-v1_13_R2</module>
         <module>slimeworldmanager-nms-v1_14_R1</module>
-        <module>slimeworldmanager-classmodifier</module>
         <module>slimeworldmanager-nms-v1_15_R1</module>
+        <module>slimeworldmanager-nms-v1_16_R2</module>
     </modules>
 
     <repositories>

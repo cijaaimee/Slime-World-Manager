@@ -1,5 +1,6 @@
 language: java
 install:
+    - wget -O paper-1.16.2.jar papermc.io/api/v1/paper/1.16.2/latest/download && java -Dpaperclip.patchonly=true -jar paper-1.16.2.jar && mvn install:install-file -Dfile=cache/patched_1.16.2.jar -DgroupId=com.destroystokyo.paper -DartifactId=paper -Dversion=1.16.2-R0.1-SNAPSHOT -Dpackaging=jar
     - wget https://cdn.getbukkit.org/spigot/spigot-1.15.1.jar && mvn install:install-file -Dfile=spigot-1.15.1.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.15.1-R0.1-SNAPSHOT -Dpackaging=jar
     - wget https://cdn.getbukkit.org/spigot/spigot-1.14.4.jar && mvn install:install-file -Dfile=spigot-1.14.4.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.14.4-R0.1-SNAPSHOT -Dpackaging=jar
     - wget -O paper-1.13.2.jar https://papermc.io/api/v1/paper/1.13.2/655/download && java -Dpaperclip.patchonly=true -jar paper-1.13.2.jar && mvn install:install-file -Dfile=cache/patched_1.13.2.jar -DgroupId=com.destroystokyo.paper -DartifactId=paper -Dversion=1.13.2-R0.1-SNAPSHOT -Dpackaging=jar

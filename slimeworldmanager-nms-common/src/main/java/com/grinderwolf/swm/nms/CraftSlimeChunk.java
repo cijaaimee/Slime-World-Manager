@@ -28,4 +28,5 @@ public class CraftSlimeChunk implements SlimeChunk {
 
     // Optional data for 1.13 world upgrading
     private CompoundTag upgradeData;
+
 }

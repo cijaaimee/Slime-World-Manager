@@ -1,3 +1,15 @@
+# 1.16
+net/minecraft/server/v1_16_R2/PlayerChunkMap:
+  - saveChunk(net.minecraft.server.v1_16_R2.IChunkAccess)@v1_16_R2/PlayerChunkMap_saveChunk.txt
+  - f(net.minecraft.server.v1_16_R2.ChunkCoordIntPair)@v1_16_R2/PlayerChunkMap_loadChunk.txt
+net/minecraft/server/v1_16_R2/MobSpawnerTrader:
+  - a(net.minecraft.server.v1_16_R2.WorldServer,boolean, boolean)@v1_16_R2/MobSpawnerTrader_tickRaids.txt
+net/minecraft/server/v1_16_R2/PersistentBase:
+  - a(java.io.File)@v1_16_R2/PersistentBase_saveData.txt
+org/bukkit/craftbukkit/v1_16_R2/CraftServer:
+  - addWorld(org.bukkit.World)@v1_16_R2/CraftServer_addWorld.txt
+
+# 1.15
 net/minecraft/server/v1_15_R1/PlayerChunkMap:
   - saveChunk(net.minecraft.server.v1_15_R1.IChunkAccess)@v1_15_R1/PlayerChunkMap_saveChunk.txt
   - f(net.minecraft.server.v1_15_R1.ChunkCoordIntPair)@v1_15_R1/PlayerChunkMap_loadChunk.txt
@@ -11,6 +23,8 @@ net/minecraft/server/v1_15_R1/PersistentBase:
   - a(java.io.File)@v1_15_R1/PersistentBase_saveData.txt
 org/bukkit/craftbukkit/v1_15_R1/CraftServer:
   - addWorld(org.bukkit.World)@v1_15_R1/CraftServer_addWorld.txt
+
+# 1.14
 net/minecraft/server/v1_14_R1/PlayerChunkMap:
   - saveChunk(net.minecraft.server.v1_14_R1.IChunkAccess)@v1_14_R1/PlayerChunkMap_saveChunk.txt
   - f(net.minecraft.server.v1_14_R1.ChunkCoordIntPair)@v1_14_R1/PlayerChunkMap_loadChunk.txt
@@ -24,34 +38,44 @@ net/minecraft/server/v1_14_R1/PersistentBase:
   - a(java.io.File)@v1_14_R1/PersistentBase_saveData.txt
 org/bukkit/craftbukkit/v1_14_R1/CraftServer:
   - addWorld(org.bukkit.World)@v1_14_R1/CraftServer_addWorld.txt
+
+# 1.13
 net/minecraft/server/v1_13_R2/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_13_R2.WorldType, com.google.gson.JsonElement)@v1_13_R2/MinecraftServer_loadWorlds.txt
 org/bukkit/craftbukkit/v1_13_R2/CraftServer:
   - addWorld(org.bukkit.World)@v1_13_R2/CraftServer_addWorld.txt
-__optional__net/minecraft/server/v1_13_R2/ChunkProviderServer: # Patch for PaperSpigot
+__optional__net/minecraft/server/v1_13_R2/ChunkProviderServer: # Patch for Paper
   - a(boolean)@v1_13_R2/ChunkProviderServer_saveChunks.txt
 net/minecraft/server/v1_13_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_13_R1.WorldType, com.google.gson.JsonElement)@v1_13_R1/MinecraftServer_loadWorlds.txt
 org/bukkit/craftbukkit/v1_13_R1/CraftServer:
   - addWorld(org.bukkit.World)@v1_13_R1/CraftServer_addWorld.txt
+
+# 1.12
 net/minecraft/server/v1_12_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_12_R1.WorldType, java.lang.String)@v1_12_R1/MinecraftServer_loadWorlds.txt
 org/bukkit/craftbukkit/v1_12_R1/CraftServer:
   - addWorld(org.bukkit.World)@v1_12_R1/CraftServer_addWorld.txt
-__optional__net/minecraft/server/v1_12_R1/ChunkProviderServer: # Patch for PaperSpigot
+__optional__net/minecraft/server/v1_12_R1/ChunkProviderServer: # Patch for Paper
   - a(boolean)@v1_12_R1/ChunkProviderServer_saveChunks.txt
+
+# 1.11
 net/minecraft/server/v1_11_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_11_R1.WorldType, java.lang.String)@v1_11_R1/MinecraftServer_loadWorlds.txt
 org/bukkit/craftbukkit/v1_11_R1/CraftServer:
   - addWorld(org.bukkit.World)@v1_11_R1/CraftServer_addWorld.txt
-__optional__net/minecraft/server/v1_11_R1/ChunkProviderServer: # Patch for PaperSpigot
+__optional__net/minecraft/server/v1_11_R1/ChunkProviderServer: # Patch for Paper
   - a(boolean)@v1_11_R1/ChunkProviderServer_saveChunks.txt
+
+# 1.10
 net/minecraft/server/v1_10_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_10_R1.WorldType, java.lang.String)@v1_10_R1/MinecraftServer_loadWorlds.txt
 org/bukkit/craftbukkit/v1_10_R1/CraftServer:
   - addWorld(org.bukkit.World)@v1_10_R1/CraftServer_addWorld.txt
-__optional__net/minecraft/server/v1_10_R1/ChunkProviderServer: # Patch for PaperSpigot
+__optional__net/minecraft/server/v1_10_R1/ChunkProviderServer: # Patch for Paper
   - a(boolean)@v1_10_R1/ChunkProviderServer_saveChunks.txt
+
+# 1.9
 net/minecraft/server/v1_9_R2/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_9_R2.WorldType, java.lang.String)@v1_9_R2/MinecraftServer_loadWorlds.txt
 net/minecraft/server/v1_9_R2/ChunkProviderServer:
@@ -62,6 +86,8 @@ net/minecraft/server/v1_9_R1/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_9_R1.WorldType, java.lang.String)@v1_9_R1/MinecraftServer_loadWorlds.txt
 org/bukkit/craftbukkit/v1_9_R1/CraftServer:
   - addWorld(org.bukkit.World)@v1_9_R1/CraftServer_addWorld.txt
+
+# 1.8
 net/minecraft/server/v1_8_R3/MinecraftServer:
   - a(java.lang.String, java.lang.String, long, net.minecraft.server.v1_8_R3.WorldType, java.lang.String)@v1_8_R3/MinecraftServer_loadWorlds.txt
 org/bukkit/craftbukkit/v1_8_R3/CraftServer:
