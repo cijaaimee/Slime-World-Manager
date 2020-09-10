@@ -42,6 +42,8 @@ public class DatasourcesConfig {
 
         @Setting("database") private String database = "slimeworldmanager";
         @Setting("collection") private String collection = "worlds";
+
+        @Setting("uri") private String uri = "";
     }
 
     @Getter

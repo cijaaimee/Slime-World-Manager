@@ -173,6 +173,10 @@
                             <pattern>org.bson</pattern>
                             <shadedPattern>com.grinderwolf.swm.internal.org.bson</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>com.github.luben.zstd</pattern>
+                            <shadedPattern>com.grinderwolf.swm.internal.zstd</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
             </plugin>
