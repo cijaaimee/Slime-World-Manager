@@ -94,7 +94,7 @@
         <dependency>
             <groupId>com.github.luben</groupId>
             <artifactId>zstd-jni</artifactId>
-            <version>1.4.1-1</version>
+            <version>1.4.5-6</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -172,10 +172,6 @@
                         <relocation>
                             <pattern>org.bson</pattern>
                             <shadedPattern>com.grinderwolf.swm.internal.org.bson</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.github.luben.zstd</pattern>
-                            <shadedPattern>com.grinderwolf.swm.internal.zstd</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
