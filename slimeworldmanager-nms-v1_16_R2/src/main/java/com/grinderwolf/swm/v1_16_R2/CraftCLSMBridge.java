@@ -4,10 +4,7 @@ import com.grinderwolf.swm.clsm.CLSMBridge;
 import com.grinderwolf.swm.clsm.ClassModifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_16_R2.Chunk;
-import net.minecraft.server.v1_16_R2.IChunkAccess;
-import net.minecraft.server.v1_16_R2.ProtoChunkExtension;
-import net.minecraft.server.v1_16_R2.WorldServer;
+import net.minecraft.server.v1_16_R2.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -82,7 +79,17 @@ public class CraftCLSMBridge implements CLSMBridge {
         return !worldServer.isReady();
     }
 
+    @Override
+    public Object getDefaultGamemode() {
+        if (nmsInstance.isLoadingDefaultWorlds()) {
+            return ((DedicatedServer) MinecraftServer.getServer()).getDedicatedServerProperties().gamemode;
+        }
+
+        return null;
+    }
+
     static void initialize(v1_16_R2SlimeNMS instance) {
         ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
+
 }

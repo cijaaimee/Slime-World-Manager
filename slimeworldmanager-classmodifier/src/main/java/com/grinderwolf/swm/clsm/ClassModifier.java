@@ -50,4 +50,9 @@ public class ClassModifier {
     public static Object[] getDefaultWorlds() {
         return customLoader != null ? customLoader.getDefaultWorlds() : null;
     }
+
+    public static Object getDefaultGamemode() {
+        return customLoader != null ? customLoader.getDefaultGamemode() : null;
+    }
+
 }

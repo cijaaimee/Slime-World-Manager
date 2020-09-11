@@ -45,12 +45,12 @@ public class CustomWorldServer extends WorldServer {
 
     public CustomWorldServer(CraftSlimeWorld world, IWorldDataServer worldData,
                              ResourceKey<World> worldKey, ResourceKey<WorldDimension> dimensionKey,
-                             DimensionManager dimensionManager, ChunkGenerator chunkGenerator) throws IOException {
+                             DimensionManager dimensionManager, ChunkGenerator chunkGenerator,
+                             org.bukkit.World.Environment environment) throws IOException {
         super(MinecraftServer.getServer(), MinecraftServer.getServer().executorService,
                 v1_16_R2SlimeNMS.CONVERTABLE.c(world.getName(), dimensionKey),
                 worldData, worldKey, dimensionManager, MinecraftServer.getServer().worldLoadListenerFactory.create(11),
-                chunkGenerator, false, 0, new ArrayList<>(), true,
-                org.bukkit.World.Environment.NORMAL, null);
+                chunkGenerator, false, 0, new ArrayList<>(), true, environment, null);
 
         this.slimeWorld = world;
 

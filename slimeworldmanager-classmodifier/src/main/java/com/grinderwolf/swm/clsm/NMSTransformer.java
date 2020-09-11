@@ -149,38 +149,42 @@ public class NMSTransformer implements ClassFileTransformer {
                     CtClass ctClass = pool.get(fixedClassName);
 
                     for (Change change : changes.get(className)) {
-                        CtMethod[] methods = ctClass.getDeclaredMethods(change.getMethodName());
-                        boolean found = false;
+                        try {
+                            CtMethod[] methods = ctClass.getDeclaredMethods(change.getMethodName());
+                            boolean found = false;
 
-                        main:
-                        for (CtMethod method : methods) {
-                            CtClass[] params = method.getParameterTypes();
+                            main:
+                            for (CtMethod method : methods) {
+                                CtClass[] params = method.getParameterTypes();
 
-                            if (params.length != change.getParams().length) {
-                                continue;
-                            }
-
-                            for (int i = 0; i < params.length; i++) {
-                                if (!change.getParams()[i].trim().equals(params[i].getName())) {
-                                    continue main;
+                                if (params.length != change.getParams().length) {
+                                    continue;
                                 }
-                            }
 
-                            found = true;
-
-                            try {
-                                method.insertBefore(change.getContent());
-                            } catch (CannotCompileException ex) {
-                                if (!change.isOptional()) { // If it's an optional change we can ignore it
-                                    throw ex;
+                                for (int i = 0; i < params.length; i++) {
+                                    if (!change.getParams()[i].trim().equals(params[i].getName())) {
+                                        continue main;
+                                    }
                                 }
+
+                                found = true;
+
+                                try {
+                                    method.insertBefore(change.getContent());
+                                } catch (CannotCompileException ex) {
+                                    if (!change.isOptional()) { // If it's an optional change we can ignore it
+                                        throw ex;
+                                    }
+                                }
+
+                                break;
                             }
 
-                            break;
-                        }
-
-                        if (!found && !change.isOptional()) {
-                            throw new NotFoundException("Unknown method " + change.getMethodName());
+                            if (!found && !change.isOptional()) {
+                                throw new NotFoundException("Unknown method " + change.getMethodName());
+                            }
+                        } catch (CannotCompileException ex) {
+                            throw new CannotCompileException("Method " + change.getMethodName(), ex);
                         }
                     }
 

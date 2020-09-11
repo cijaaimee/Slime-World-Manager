@@ -2,6 +2,7 @@ package com.grinderwolf.swm.v1_16_R2;
 
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import com.mojang.serialization.Dynamic;
@@ -76,28 +77,42 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
 
     @Override
     public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
-        // TODO
-        /*if (normalWorld != null) {
-            World.Environment env = World.Environment.valueOf(normalWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-
-            if (env != World.Environment.NORMAL) {
-                LOGGER.warn("The environment for the default world must always be 'NORMAL'.");
-            }
-            
-            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomNBTStorage(normalWorld), DimensionManager.OVERWORLD, World.Environment.NORMAL);
+        if (normalWorld != null) {
+            defaultWorld = createDefaultWorld(normalWorld, WorldDimension.OVERWORLD, net.minecraft.server.v1_16_R2.World.OVERWORLD);
         }
 
         if (netherWorld != null) {
-            World.Environment env = World.Environment.valueOf(netherWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomNBTStorage(netherWorld), DimensionManager.a(env.getId()), env);
+            defaultNetherWorld = createDefaultWorld(netherWorld, WorldDimension.THE_NETHER, net.minecraft.server.v1_16_R2.World.THE_NETHER);
         }
 
         if (endWorld != null) {
-            World.Environment env = World.Environment.valueOf(endWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomNBTStorage(endWorld), DimensionManager.a(env.getId()), env);
-        }*/
+            defaultEndWorld = createDefaultWorld(endWorld, WorldDimension.THE_END, net.minecraft.server.v1_16_R2.World.THE_END);
+        }
 
         loadingDefaultWorlds = false;
+    }
+
+    private CustomWorldServer createDefaultWorld(SlimeWorld world, ResourceKey<WorldDimension> dimensionKey,
+                                                 ResourceKey<net.minecraft.server.v1_16_R2.World> worldKey) {
+        WorldDataServer worldDataServer = createWorldData(world.getName(), world.getExtraData());
+
+        RegistryMaterials<WorldDimension> registryMaterials = worldDataServer.getGeneratorSettings().d();
+        WorldDimension worldDimension = registryMaterials.a(dimensionKey);
+        DimensionManager dimensionManager = worldDimension.b();
+        ChunkGenerator chunkGenerator = worldDimension.c();
+
+        World.Environment environment = getEnvironment(world);
+
+        if (dimensionKey == WorldDimension.OVERWORLD && environment != World.Environment.NORMAL) {
+            LOGGER.warn("The environment for the default world should always be 'NORMAL'.");
+        }
+
+        try {
+            return new CustomWorldServer((CraftSlimeWorld) world, worldDataServer,
+                    worldKey, dimensionKey, dimensionManager, chunkGenerator, environment);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex); // TODO do something better with this?
+        }
     }
 
     @Override
@@ -108,15 +123,59 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
+        WorldDataServer worldDataServer = createWorldData(world.getName(), world.getExtraData());
+        RegistryMaterials<WorldDimension> materials = worldDataServer.getGeneratorSettings().d();
+        WorldDimension worldDimension = materials.a(WorldDimension.OVERWORLD);
+        DimensionManager dimensionManager = worldDimension.b();
+        ChunkGenerator chunkGenerator = worldDimension.c();
+
+        ResourceKey<net.minecraft.server.v1_16_R2.World> worldKey = ResourceKey.a(IRegistry.L,
+                new MinecraftKey(worldName.toLowerCase(java.util.Locale.ENGLISH)));
+
+        World.Environment environment = getEnvironment(world);
+
+        CustomWorldServer server;
+
+        try {
+            server = new CustomWorldServer((CraftSlimeWorld) world, worldDataServer,
+                    worldKey, WorldDimension.OVERWORLD, dimensionManager, chunkGenerator, environment);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex); // TODO do something better with this?
+        }
+
+        LOGGER.info("Loading world " + worldName);
+        long startTime = System.currentTimeMillis();
+
+        server.setReady(true);
+
+        MinecraftServer mcServer = MinecraftServer.getServer();
+        mcServer.initWorld(server, worldDataServer, mcServer.getSaveData(), worldDataServer.getGeneratorSettings());
+
+        mcServer.server.addWorld(server.getWorld());
+        mcServer.worldServer.put(worldKey, server);
+
+        Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
+        mcServer.loadSpawn(server.getChunkProvider().playerChunkMap.worldLoadListener, server);
+        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
+
+        LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+    }
+
+    private World.Environment getEnvironment(SlimeWorld world) {
+        return World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
+    }
+
+    private WorldDataServer createWorldData(String worldName, CompoundTag extraData) {
         WorldDataServer worldDataServer;
-        NBTTagCompound extraTag = (NBTTagCompound) Converter.convertTag(world.getExtraData());
+        NBTTagCompound extraTag = (NBTTagCompound) Converter.convertTag(extraData);
         MinecraftServer mcServer = MinecraftServer.getServer();
 
         if (extraTag.hasKeyOfType("LevelData", CraftMagicNumbers.NBT.TAG_COMPOUND)) {
             NBTTagCompound levelData = extraTag.getCompound("LevelData");
             int dataVersion = levelData.hasKeyOfType("DataVersion", 99) ? levelData.getInt("DataVersion") : -1;
             Dynamic<NBTBase> dynamic = mcServer.getDataFixer().update(DataFixTypes.LEVEL.a(),
-                    new Dynamic<>(DynamicOpsNBT.a, levelData), dataVersion, SharedConstants.getGameVersion().getWorldVersion());
+                    new Dynamic<>(DynamicOpsNBT.a, levelData), dataVersion, SharedConstants.getGameVersion()
+                            .getWorldVersion());
             GeneratorSettings generatorSettings = GeneratorSettings.a(mcServer.aX());
             Lifecycle lifecycle = Lifecycle.stable();
             LevelVersion levelVersion = LevelVersion.a(dynamic);
@@ -137,38 +196,7 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
         worldDataServer.a(mcServer.getServerModName(), mcServer.getModded().isPresent());
         worldDataServer.c(true);
 
-        RegistryMaterials<WorldDimension> materials = worldDataServer.getGeneratorSettings().d();
-        WorldDimension worldDimension = materials.a(WorldDimension.OVERWORLD);
-        DimensionManager dimensionManager = worldDimension.b();
-        ChunkGenerator chunkGenerator = worldDimension.c();
-
-        ResourceKey<net.minecraft.server.v1_16_R2.World> worldKey = ResourceKey.a(IRegistry.L,
-                new MinecraftKey(worldName.toLowerCase(java.util.Locale.ENGLISH)));
-
-        CustomWorldServer server;
-
-        try {
-            server = new CustomWorldServer((CraftSlimeWorld) world, worldDataServer,
-                    worldKey, WorldDimension.OVERWORLD, dimensionManager, chunkGenerator);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex); // TODO do something better with this?
-        }
-
-        LOGGER.info("Loading world " + worldName);
-        long startTime = System.currentTimeMillis();
-
-        server.setReady(true);
-        worldDataServer.a(mcServer.getServerModName(), mcServer.getModded().isPresent());
-        mcServer.initWorld(server, worldDataServer, mcServer.getSaveData(), worldDataServer.getGeneratorSettings());
-
-        mcServer.server.addWorld(server.getWorld());
-        mcServer.worldServer.put(worldKey, server);
-
-        Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
-        mcServer.loadSpawn(server.getChunkProvider().playerChunkMap.worldLoadListener, server);
-        Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
-
-        LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+        return worldDataServer;
     }
 
     @Override
