@@ -47,7 +47,6 @@ public class CraftCLSMBridge implements CLSMBridge {
             chunk = (Chunk) chunkAccess;
         }
 
-
         ((CustomWorldServer) world).saveChunk(chunk);
         chunk.setNeedsSaving(false);
 

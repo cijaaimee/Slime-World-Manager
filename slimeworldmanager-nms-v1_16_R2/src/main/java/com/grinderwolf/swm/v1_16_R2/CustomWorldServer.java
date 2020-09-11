@@ -33,6 +33,7 @@ public class CustomWorldServer extends WorldServer {
     private static final Logger LOGGER = LogManager.getLogger("SWM World");
     private static final ExecutorService WORLD_SAVER_SERVICE = Executors.newFixedThreadPool(4, new ThreadFactoryBuilder()
             .setNameFormat("SWM Pool Thread #%1$d").build());
+    private static final TicketType<Unit> SWM_TICKET = TicketType.a("swm-chunk", (a, b) -> 0);
 
     @Getter
     private final CraftSlimeWorld slimeWorld;
@@ -50,10 +51,6 @@ public class CustomWorldServer extends WorldServer {
                 worldData, worldKey, dimensionManager, MinecraftServer.getServer().worldLoadListenerFactory.create(11),
                 chunkGenerator, false, 0, new ArrayList<>(), true,
                 org.bukkit.World.Environment.NORMAL, null);
-
-    //CustomWorldServer(CraftSlimeWorld world, WorldNBTStorage nbtStorage, DimensionManager dimensionManager, World.Environment env) {
-    //    super(MinecraftServer.getServer(), MinecraftServer.getServer().executorService, nbtStorage, nbtStorage.getWorldData(),
-    //            dimensionManager, MinecraftServer.getServer().getMethodProfiler(), MinecraftServer.getServer().worldLoadListenerFactory.create(11), env, null);
 
         this.slimeWorld = world;
 
@@ -208,6 +205,11 @@ public class CustomWorldServer extends WorldServer {
                 sections[sectionId] = section;
             }
         }
+
+        // Keep the chunk loaded at level 33 to avoid light glitches
+        // Such a high level will let the server not tick the chunk,
+        // but at the same time it won't be completely unloaded from memory
+        getChunkProvider().addTicketAtLevel(SWM_TICKET, pos, 33, Unit.INSTANCE);
 
         Consumer<Chunk> loadEntities = (nmsChunk) -> {
 
