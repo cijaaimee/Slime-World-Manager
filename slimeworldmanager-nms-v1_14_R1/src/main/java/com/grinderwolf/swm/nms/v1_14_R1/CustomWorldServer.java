@@ -121,28 +121,31 @@ public class CustomWorldServer extends WorldServer {
         SlimeChunk slimeChunk = slimeWorld.getChunk(x, z);
         Chunk chunk;
 
-        if (slimeChunk == null) {
-            BiomeBase[] biomeBaseArray = new BiomeBase[256];
-            BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
-
-            for (int i = 0; i < biomeBaseArray.length; i++) {
-                biomeBaseArray[i] = getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(mutableBlockPosition
-                        .d((i & 15) + (x << 4), 0, (i >> 4 & 15) + (z << 4)));
-            }
-
-            // Tick lists
-            TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>());
-            TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>());
-
-            ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
-            chunk = new Chunk(this, pos, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, null, null);
-            HeightMap.a(chunk, chunk.getChunkStatus().h());
-
-            getChunkProvider().getLightEngine().b(pos, true);
-        } else if (slimeChunk instanceof NMSSlimeChunk) {
+        if (slimeChunk instanceof NMSSlimeChunk) {
             chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
         } else {
-            chunk = createChunk(slimeChunk);
+            if (slimeChunk == null) {
+                BiomeBase[] biomeBaseArray = new BiomeBase[256];
+                BlockPosition.MutableBlockPosition mutableBlockPosition = new BlockPosition.MutableBlockPosition();
+
+                for (int i = 0; i < biomeBaseArray.length; i++) {
+                    biomeBaseArray[i] = getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(mutableBlockPosition
+                            .d((i & 15) + (x << 4), 0, (i >> 4 & 15) + (z << 4)));
+                }
+
+                // Tick lists
+                TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>());
+                TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>());
+
+                ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
+                chunk = new Chunk(this, pos, biomeBaseArray, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, null, null);
+                HeightMap.a(chunk, chunk.getChunkStatus().h());
+
+                getChunkProvider().getLightEngine().b(pos, true);
+            } else {
+                chunk = createChunk(slimeChunk);
+            }
+
             slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
 

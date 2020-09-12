@@ -121,24 +121,27 @@ public class CustomWorldServer extends WorldServer {
         SlimeChunk slimeChunk = slimeWorld.getChunk(x, z);
         Chunk chunk;
 
-        if (slimeChunk == null) {
-            ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
-
-            // Biomes
-            BiomeStorage biomeStorage = new BiomeStorage(pos, getChunkProvider().getChunkGenerator().getWorldChunkManager(), null);
-
-            // Tick lists
-            TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>());
-            TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>());
-
-            chunk = new Chunk(this, pos, biomeStorage, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, null, null);
-            HeightMap.a(chunk, chunk.getChunkStatus().h());
-
-            getChunkProvider().getLightEngine().b(pos, true);
-        } else if (slimeChunk instanceof NMSSlimeChunk) {
+        if (slimeChunk instanceof NMSSlimeChunk) {
             chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
         } else {
-            chunk = createChunk(slimeChunk);
+            if (slimeChunk == null) {
+                ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
+
+                // Biomes
+                BiomeStorage biomeStorage = new BiomeStorage(pos, getChunkProvider().getChunkGenerator().getWorldChunkManager(), null);
+
+                // Tick lists
+                TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>());
+                TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>());
+
+                chunk = new Chunk(this, pos, biomeStorage, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, null, null);
+                HeightMap.a(chunk, chunk.getChunkStatus().h());
+
+                getChunkProvider().getLightEngine().b(pos, true);
+            } else {
+                chunk = createChunk(slimeChunk);
+            }
+
             slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
 

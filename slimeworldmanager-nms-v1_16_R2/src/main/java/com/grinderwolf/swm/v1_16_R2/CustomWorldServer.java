@@ -118,30 +118,33 @@ public class CustomWorldServer extends WorldServer {
         SlimeChunk slimeChunk = slimeWorld.getChunk(x, z);
         Chunk chunk;
 
-        if (slimeChunk == null) {
-            ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
-
-            ChunkGenerator chunkGenerator = getChunkProvider().getChunkGenerator();
-            WorldChunkManager chunkManager = chunkGenerator.getWorldChunkManager();
-
-            // Biomes
-            BiomeStorage biomeStorage = new BiomeStorage(r().b(IRegistry.ay), pos, chunkManager, new int[BiomeStorage.a]);
-
-            // Tick lists
-            ProtoChunkTickList<Block> blockTickList = new ProtoChunkTickList<>((block) ->
-                    block == null || block.getBlockData().isAir(), pos);
-            ProtoChunkTickList<FluidType> fluidTickList = new ProtoChunkTickList<>((type) ->
-                    type == null || type == FluidTypes.EMPTY, pos);
-
-            chunk = new Chunk(this, pos, biomeStorage, ChunkConverter.a, blockTickList, fluidTickList,
-                    0L, null, null);
-
-            // Height Maps
-            HeightMap.a(chunk, ChunkStatus.FULL.h());
-        } else if (slimeChunk instanceof NMSSlimeChunk) {
+        if (slimeChunk instanceof NMSSlimeChunk) {
             chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
         } else {
-            chunk = createChunk(slimeChunk);
+            if (slimeChunk == null) {
+                ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
+
+                ChunkGenerator chunkGenerator = getChunkProvider().getChunkGenerator();
+                WorldChunkManager chunkManager = chunkGenerator.getWorldChunkManager();
+
+                // Biomes
+                BiomeStorage biomeStorage = new BiomeStorage(r().b(IRegistry.ay), pos, chunkManager, new int[BiomeStorage.a]);
+
+                // Tick lists
+                ProtoChunkTickList<Block> blockTickList = new ProtoChunkTickList<>((block) ->
+                        block == null || block.getBlockData().isAir(), pos);
+                ProtoChunkTickList<FluidType> fluidTickList = new ProtoChunkTickList<>((type) ->
+                        type == null || type == FluidTypes.EMPTY, pos);
+
+                chunk = new Chunk(this, pos, biomeStorage, ChunkConverter.a, blockTickList, fluidTickList,
+                        0L, null, null);
+
+                // Height Maps
+                HeightMap.a(chunk, ChunkStatus.FULL.h());
+            } else {
+                chunk = createChunk(slimeChunk);
+            }
+
             slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
 
