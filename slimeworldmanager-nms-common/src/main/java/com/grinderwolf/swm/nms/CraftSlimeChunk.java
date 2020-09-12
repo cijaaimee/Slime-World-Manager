@@ -28,4 +28,23 @@ public class CraftSlimeChunk implements SlimeChunk {
 
     // Optional data for 1.13 world upgrading
     private CompoundTag upgradeData;
+
+    CraftSlimeChunk(String worldName, SlimeChunk base) {
+        this.worldName = worldName;
+        this.x = base.getX();
+        this.z = base.getZ();
+
+        this.sections = base.getSections();
+        this.heightMaps = base.getHeightMaps();
+        this.biomes = base.getBiomes();
+        this.tileEntities = base.getTileEntities();
+        this.entities = base.getEntities();
+
+        if (base instanceof CraftSlimeChunk) {
+            this.upgradeData = ((CraftSlimeChunk) base).getUpgradeData();
+        } else {
+            this.upgradeData = null;
+        }
+    }
+
 }
