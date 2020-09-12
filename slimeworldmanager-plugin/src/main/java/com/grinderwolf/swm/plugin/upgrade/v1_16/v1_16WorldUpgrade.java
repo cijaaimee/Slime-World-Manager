@@ -5,9 +5,13 @@ import com.flowpowered.nbt.LongArrayTag;
 import com.flowpowered.nbt.Tag;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
+import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.plugin.upgrade.Upgrade;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class v1_16WorldUpgrade implements Upgrade {
 
@@ -16,7 +20,7 @@ public class v1_16WorldUpgrade implements Upgrade {
 
     @Override
     public void upgrade(CraftSlimeWorld world) {
-        for (SlimeChunk chunk : world.getChunks().values()) {
+        for (SlimeChunk chunk : new ArrayList<>(world.getChunks().values())) {
             // Add padding to height maps and block states
             CompoundTag heightMaps = chunk.getHeightMaps();
 
@@ -41,6 +45,16 @@ public class v1_16WorldUpgrade implements Upgrade {
                     }
                 }
             }
+
+            // Update biome array size
+            int[] newBiomes = new int[1024];
+            Arrays.fill(newBiomes, -1);
+            int[] biomes = chunk.getBiomes();
+            System.arraycopy(biomes, 0, newBiomes, 0, biomes.length);
+
+            world.updateChunk(new CraftSlimeChunk(chunk.getWorldName(), chunk.getX(), chunk.getZ(),
+                    chunk.getSections(), chunk.getHeightMaps(), newBiomes,
+                    chunk.getTileEntities(), chunk.getEntities(), ((CraftSlimeChunk) chunk).getUpgradeData()));
         }
     }
 
@@ -55,6 +69,9 @@ public class v1_16WorldUpgrade implements Upgrade {
                 if (section != null) {
                 }
             }
+
+            // Remove extra data from biomes
+            // TODO
         }
     }
 
