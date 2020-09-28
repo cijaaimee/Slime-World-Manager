@@ -4,14 +4,13 @@ import com.grinderwolf.swm.clsm.CLSMBridge;
 import com.grinderwolf.swm.clsm.ClassModifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_15_R1.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.server.v1_15_R1.Chunk;
+import net.minecraft.server.v1_15_R1.IChunkAccess;
+import net.minecraft.server.v1_15_R1.ProtoChunkExtension;
+import net.minecraft.server.v1_15_R1.WorldServer;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CraftCLSMBridge implements CLSMBridge {
-
-    private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
 
     private final v1_15_R1SlimeNMS nmsInstance;
 
