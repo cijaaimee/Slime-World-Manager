@@ -78,7 +78,7 @@ public class CustomWorldServer extends WorldServer {
 
             // Update level data
             NBTTagCompound compound = new NBTTagCompound();
-            worldDataServer.a(MinecraftServer.getServer().f, compound);
+            worldDataServer.a(MinecraftServer.getServer().customRegistry, compound);
             slimeWorld.getExtraData().getValue().put(Converter.convertTag("LevelData", compound));
 
             if (MinecraftServer.getServer().isStopped()) { // Make sure the world gets saved before stopping the server by running it from the main thread
@@ -162,7 +162,7 @@ public class CustomWorldServer extends WorldServer {
         // Biomes
         int[] biomeIntArray = chunk.getBiomes();
 
-        BiomeStorage biomeStorage = new BiomeStorage(MinecraftServer.getServer().aX().b(IRegistry.ay), pos,
+        BiomeStorage biomeStorage = new BiomeStorage(MinecraftServer.getServer().getCustomRegistry().b(IRegistry.ay), pos,
                 getChunkProvider().getChunkGenerator().getWorldChunkManager(), biomeIntArray);
 
         // Tick lists

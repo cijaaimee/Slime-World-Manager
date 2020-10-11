@@ -176,7 +176,7 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
             Dynamic<NBTBase> dynamic = mcServer.getDataFixer().update(DataFixTypes.LEVEL.a(),
                     new Dynamic<>(DynamicOpsNBT.a, levelData), dataVersion, SharedConstants.getGameVersion()
                             .getWorldVersion());
-            GeneratorSettings generatorSettings = GeneratorSettings.a(mcServer.aX());
+            GeneratorSettings generatorSettings = GeneratorSettings.a(mcServer.getCustomRegistry());
             Lifecycle lifecycle = Lifecycle.stable();
             LevelVersion levelVersion = LevelVersion.a(dynamic);
             WorldSettings worldSettings = WorldSettings.a(dynamic, mcServer.datapackconfiguration);

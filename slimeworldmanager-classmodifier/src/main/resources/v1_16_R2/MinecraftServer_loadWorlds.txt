@@ -82,7 +82,7 @@
                 }
 
                 org.bukkit.generator.ChunkGenerator gen = $0.server.getGenerator(name);
-                net.minecraft.server.v1_16_R2.IRegistryCustom.Dimension iregistrycustom_dimension = $0.f;
+                net.minecraft.server.v1_16_R2.IRegistryCustom.Dimension iregistrycustom_dimension = $0.customRegistry;
                 net.minecraft.server.v1_16_R2.RegistryReadOps registryreadops = net.minecraft.server.v1_16_R2.RegistryReadOps.a(net.minecraft.server.v1_16_R2.DynamicOpsNBT.a, $0.dataPackResources.h(), iregistrycustom_dimension);
                 worlddata = (net.minecraft.server.v1_16_R2.WorldDataServer) worldSession.a(registryreadops, $0.datapackconfiguration);
                 net.minecraft.server.v1_16_R2.GeneratorSettings generatorsettings;
@@ -128,8 +128,8 @@
                 net.minecraft.server.v1_16_R2.DimensionManager dimensionmanager;
                 java.lang.Object chunkgenerator;
                 if (worlddimension == null) {
-                    dimensionmanager = (net.minecraft.server.v1_16_R2.DimensionManager)$0.f.a().d(net.minecraft.server.v1_16_R2.DimensionManager.OVERWORLD);
-                    chunkgenerator = net.minecraft.server.v1_16_R2.GeneratorSettings.a($0.f.b(net.minecraft.server.v1_16_R2.IRegistry.ay), $0.f.b(net.minecraft.server.v1_16_R2.IRegistry.ar), (new java.util.Random()).nextLong());
+                    dimensionmanager = (net.minecraft.server.v1_16_R2.DimensionManager)$0.customRegistry.a().d(net.minecraft.server.v1_16_R2.DimensionManager.OVERWORLD);
+                    chunkgenerator = net.minecraft.server.v1_16_R2.GeneratorSettings.a($0.customRegistry.b(net.minecraft.server.v1_16_R2.IRegistry.ay), $0.customRegistry.b(net.minecraft.server.v1_16_R2.IRegistry.ar), (new java.util.Random()).nextLong());
                 } else {
                     dimensionmanager = worlddimension.b();
                     chunkgenerator = worlddimension.c();
