@@ -35,8 +35,7 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.16.2-R0.1-SNAPSHOT</version>
-            <systemPath>${project.basedir}/lib/spigot-1.16.2.jar</systemPath>
-            <scope>system</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.grinderwolf</groupId>

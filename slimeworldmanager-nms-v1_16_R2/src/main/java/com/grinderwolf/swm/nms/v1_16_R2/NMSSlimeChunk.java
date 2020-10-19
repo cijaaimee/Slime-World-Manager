@@ -8,6 +8,7 @@ import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
+import com.grinderwolf.swm.nms.v1_16_R2.Converter;
 import net.minecraft.server.v1_16_R2.Chunk;
 import net.minecraft.server.v1_16_R2.ChunkSection;
 import net.minecraft.server.v1_16_R2.DataPaletteBlock;
@@ -59,17 +60,17 @@ public class NMSSlimeChunk implements SlimeChunk {
 
                 if (!section.c()) { // If the section is empty, just ignore it to save space
                     // Block Light Nibble Array
-                    NibbleArray blockLightArray = Converter.convertArray(lightEngine.a(EnumSkyBlock.BLOCK).a(SectionPosition.a(chunk.getPos(), sectionId)));
+                    NibbleArray blockLightArray = com.grinderwolf.swm.nms.v1_16_R2.Converter.convertArray(lightEngine.a(EnumSkyBlock.BLOCK).a(SectionPosition.a(chunk.getPos(), sectionId)));
 
                     // Sky light Nibble Array
-                    NibbleArray skyLightArray = Converter.convertArray(lightEngine.a(EnumSkyBlock.SKY).a(SectionPosition.a(chunk.getPos(), sectionId)));
+                    NibbleArray skyLightArray = com.grinderwolf.swm.nms.v1_16_R2.Converter.convertArray(lightEngine.a(EnumSkyBlock.SKY).a(SectionPosition.a(chunk.getPos(), sectionId)));
 
                     // Block Data
                     DataPaletteBlock dataPaletteBlock = section.getBlocks();
                     NBTTagCompound blocksCompound = new NBTTagCompound();
                     dataPaletteBlock.a(blocksCompound, "Palette", "BlockStates");
                     NBTTagList paletteList = blocksCompound.getList("Palette", 10);
-                    ListTag<CompoundTag> palette = (ListTag<CompoundTag>) Converter.convertTag("", paletteList);
+                    ListTag<CompoundTag> palette = (ListTag<CompoundTag>) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag("", paletteList);
                     long[] blockStates = blocksCompound.getLongArray("BlockStates");
 
                     sections[sectionId] = new CraftSlimeChunkSection(null, null, palette, blockStates, blockLightArray, skyLightArray);
@@ -107,7 +108,7 @@ public class NMSSlimeChunk implements SlimeChunk {
         for (TileEntity entity : chunk.getTileEntities().values()) {
             NBTTagCompound entityNbt = new NBTTagCompound();
             entity.save(entityNbt);
-            tileEntities.add((CompoundTag) Converter.convertTag("", entityNbt));
+            tileEntities.add((CompoundTag) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag("", entityNbt));
         }
 
         return tileEntities;

@@ -11,10 +11,9 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
-import net.minecraft.server.v1_16_R2.BiomeBase;
-import net.minecraft.server.v1_16_R2.BiomeFog;
-import net.minecraft.server.v1_16_R2.BiomeSettingsGeneration;
-import net.minecraft.server.v1_16_R2.BiomeSettingsMobs;
+import com.grinderwolf.swm.nms.v1_16_R2.Converter;
+import com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage;
+import com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk;
 import net.minecraft.server.v1_16_R2.BiomeStorage;
 import net.minecraft.server.v1_16_R2.Block;
 import net.minecraft.server.v1_16_R2.BlockPosition;
@@ -72,7 +71,7 @@ public class CustomWorldServer extends WorldServer {
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
     private final List<WorldMap> maps = new ArrayList<>();
-    private final CustomNBTStorage nbtStorage;
+    private final com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage nbtStorage;
 
     @Getter
     @Setter
@@ -119,7 +118,7 @@ public class CustomWorldServer extends WorldServer {
         for (CompoundTag mapTag : world.getWorldMaps()) {
             int id = mapTag.getIntValue("id").get();
             WorldMap map = new WorldMap("map_" + id);
-            map.a((NBTTagCompound) Converter.convertTag(mapTag));
+            map.a((NBTTagCompound) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag(mapTag));
             a(map);
         }
     }
@@ -140,7 +139,7 @@ public class CustomWorldServer extends WorldServer {
                 int id = Integer.parseInt(map.getId().substring(4));
                 compound.setInt("id", id);
 
-                slimeWorld.getWorldMaps().add((CompoundTag) Converter.convertTag("", compound));
+                slimeWorld.getWorldMaps().add((CompoundTag) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag("", compound));
             }
 
             if (MinecraftServer.getServer().isStopped()) { // Make sure the slimeWorld gets saved before stopping the server by running it from the main thread
@@ -196,11 +195,11 @@ public class CustomWorldServer extends WorldServer {
             HeightMap.a(chunk, chunk.getChunkStatus().h());
 
             getChunkProvider().getLightEngine().b(pos, true);
-        } else if (slimeChunk instanceof NMSSlimeChunk) {
-            chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
+        } else if (slimeChunk instanceof com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk) {
+            chunk = ((com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk) slimeChunk).getChunk();
         } else {
             chunk = createChunk(slimeChunk);
-            slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
+            slimeWorld.updateChunk(new com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk(chunk));
         }
 
         return new ProtoChunkExtension(chunk);
@@ -245,15 +244,15 @@ public class CustomWorldServer extends WorldServer {
                 LOGGER.debug("Sky light array:");
                 LOGGER.debug(slimeSection.getSkyLight() != null ? slimeSection.getSkyLight().getBacking() : "Not present");
 
-                section.getBlocks().a((NBTTagList) Converter.convertTag(slimeSection.getPalette()), slimeSection.getBlockStates());
+                section.getBlocks().a((NBTTagList) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag(slimeSection.getPalette()), slimeSection.getBlockStates());
 
                 if (slimeSection.getBlockLight() != null) {
                     lightEngine.a();
-                    lightEngine.a(EnumSkyBlock.BLOCK, SectionPosition.a(pos, sectionId), Converter.convertArray(slimeSection.getBlockLight()), true);
+                    lightEngine.a(EnumSkyBlock.BLOCK, SectionPosition.a(pos, sectionId), com.grinderwolf.swm.nms.v1_16_R2.Converter.convertArray(slimeSection.getBlockLight()), true);
                 }
 
                 if (slimeSection.getSkyLight() != null) {
-                    lightEngine.a(EnumSkyBlock.SKY, SectionPosition.a(pos, sectionId), Converter.convertArray(slimeSection.getSkyLight()), true);
+                    lightEngine.a(EnumSkyBlock.SKY, SectionPosition.a(pos, sectionId), com.grinderwolf.swm.nms.v1_16_R2.Converter.convertArray(slimeSection.getSkyLight()), true);
                 }
 
                 section.recalcBlockCounts();
@@ -274,7 +273,7 @@ public class CustomWorldServer extends WorldServer {
 
                     // Sometimes null tile entities are saved
                     if (type.isPresent()) {
-                        TileEntity entity = TileEntity.create(null, (NBTTagCompound) Converter.convertTag(tag));
+                        TileEntity entity = TileEntity.create(null, (NBTTagCompound) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag(tag));
 
                         if (entity != null) {
                             nmsChunk.a(entity);
@@ -293,7 +292,7 @@ public class CustomWorldServer extends WorldServer {
 
             if (entities != null) {
                 for (CompoundTag tag : entities) {
-                    EntityTypes.a((NBTTagCompound) Converter.convertTag(tag), nmsChunk.world, (entity) -> {
+                    EntityTypes.a((NBTTagCompound) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag(tag), nmsChunk.world, (entity) -> {
 
                         nmsChunk.a(entity);
                         return entity;
@@ -338,8 +337,8 @@ public class CustomWorldServer extends WorldServer {
     void saveChunk(Chunk chunk) {
         SlimeChunk slimeChunk = slimeWorld.getChunk(chunk.getPos().x, chunk.getPos().z);
 
-        if (slimeChunk instanceof NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some reason)
-            ((NMSSlimeChunk) slimeChunk).setChunk(chunk);
+        if (slimeChunk instanceof com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some reason)
+            ((com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk) slimeChunk).setChunk(chunk);
         } else {
             slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }

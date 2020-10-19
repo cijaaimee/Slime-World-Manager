@@ -6,6 +6,10 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
+import com.grinderwolf.swm.nms.v1_16_R2.Converter;
+import com.grinderwolf.swm.nms.v1_16_R2.CraftCLSMBridge;
+import com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage;
+import com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer;
 import net.minecraft.server.v1_16_R2.BlockPosition;
 import net.minecraft.server.v1_16_R2.ChunkCoordIntPair;
 import net.minecraft.server.v1_16_R2.ChunkProviderServer;
@@ -17,7 +21,6 @@ import net.minecraft.server.v1_16_R2.GameProfileSerializer;
 import net.minecraft.server.v1_16_R2.IRegistry;
 import net.minecraft.server.v1_16_R2.MinecraftKey;
 import net.minecraft.server.v1_16_R2.MinecraftServer;
-import net.minecraft.server.v1_16_R2.MobSpawnerCat;
 import net.minecraft.server.v1_16_R2.NBTTagCompound;
 import net.minecraft.server.v1_16_R2.ResourceKey;
 import net.minecraft.server.v1_16_R2.TicketType;
@@ -31,8 +34,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_16_R2.CraftChunk;
-import org.bukkit.craftbukkit.v1_16_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
@@ -48,9 +49,9 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
 
     private boolean loadingDefaultWorlds = true; // If true, the addWorld method will not be skipped
 
-    private CustomWorldServer defaultWorld;
-    private CustomWorldServer defaultNetherWorld;
-    private CustomWorldServer defaultEndWorld;
+    private com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer defaultWorld;
+    private com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer defaultNetherWorld;
+    private com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer defaultEndWorld;
 
     public v1_16_R2SlimeNMS() {
         try {
@@ -78,7 +79,7 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
         loadingDefaultWorlds = false;
     }
 
-    private CustomWorldServer initDefaultWorld(
+    private com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer initDefaultWorld(
         SlimeWorld world,
         ResourceKey<WorldDimension> worldDimensionKey,
         ResourceKey<DimensionManager> dimensionManagerKey,
@@ -92,12 +93,12 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
 
         MinecraftServer mcServer = MinecraftServer.getServer();
         Convertable.ConversionSession conversionSession = getConversionSession(world.getName(), mcServer, worldDimensionKey);
-        CustomNBTStorage dataManager = new CustomNBTStorage(world, conversionSession);
+        com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage dataManager = new com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage(world, conversionSession);
         DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
         WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
         ResourceKey<net.minecraft.server.v1_16_R2.World> worldKey = ResourceKey.a(IRegistry.L, new MinecraftKey(world.getName()));
 
-        return new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, Collections.emptyList());
+        return new com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, Collections.emptyList());
     }
 
     @SneakyThrows
@@ -108,7 +109,7 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
     @SneakyThrows
     @Override
     public void generateWorld(SlimeWorld world) {
-        CustomWorldServer server = createNMSWorld(world);
+        com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer server = createNMSWorld(world);
         MinecraftServer mcServer = MinecraftServer.getServer();
 
         LOGGER.info("Loading world " + server.getWorld().getName());
@@ -143,17 +144,17 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
     public SlimeWorld getSlimeWorld(World world) {
         CraftWorld craftWorld = (CraftWorld) world;
 
-        if (!(craftWorld.getHandle() instanceof CustomWorldServer)) {
+        if (!(craftWorld.getHandle() instanceof com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer)) {
             return null;
         }
 
-        CustomWorldServer worldServer = (CustomWorldServer) craftWorld.getHandle();
+        com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer worldServer = (com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer) craftWorld.getHandle();
         return worldServer.getSlimeWorld();
     }
 
     @Override
     public CompoundTag convertChunk(CompoundTag tag) {
-        NBTTagCompound nmsTag = (NBTTagCompound) Converter.convertTag(tag);
+        NBTTagCompound nmsTag = (NBTTagCompound) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag(tag);
         int version = nmsTag.getInt("DataVersion");
 
         NBTTagCompound newNmsTag = GameProfileSerializer.a(DataConverterRegistry.a(), DataFixTypes.CHUNK, nmsTag, version);
@@ -162,7 +163,7 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
     }
 
     @Override
-    public CustomWorldServer createNMSWorld(SlimeWorld world) {
+    public com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer createNMSWorld(SlimeWorld world) {
         String worldName = world.getName();
 
         if (Bukkit.getWorld(worldName) != null) {
@@ -192,12 +193,12 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
 
         MinecraftServer mcServer = MinecraftServer.getServer();
         Convertable.ConversionSession conversionSession = getConversionSession(worldName, mcServer, worldDimensionKey);
-        CustomNBTStorage dataManager = new CustomNBTStorage(world, conversionSession);
+        com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage dataManager = new CustomNBTStorage(world, conversionSession);
 
         DimensionManager dimensionManager = mcServer.f.a().a(dimensionManagerKey);
         WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
 
-        CustomWorldServer server = null;
+        com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer server = null;
 
         LOGGER.debug("Server-pre: " + server);
         LOGGER.debug("Server-world: " + world.getName());
@@ -210,7 +211,7 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
         LOGGER.debug("Server-DM-Key: " + dimensionManagerKey);
         LOGGER.debug("Server-WD-Key: " + worldDimensionKey);
 
-        server = new CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, Collections.emptyList());
+        server = new com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer((CraftSlimeWorld) world, dataManager, conversionSession, dimensionManager, env, worldData, worldKey, Collections.emptyList());
 
         LOGGER.debug("SLIME-WORLD-NAME: " + server.getSlimeWorld().getName());
         LOGGER.debug("SERVER-WORLD-NAME: " + server.getWorld().getName());
@@ -228,7 +229,7 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World object must be an instance of WorldServer!");
         }
 
-        CustomWorldServer server = (CustomWorldServer) worldObject;
+        com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer server = (CustomWorldServer) worldObject;
         String worldName = server.getWorld().getName();
 
         if (Bukkit.getWorld(worldName) != null) {

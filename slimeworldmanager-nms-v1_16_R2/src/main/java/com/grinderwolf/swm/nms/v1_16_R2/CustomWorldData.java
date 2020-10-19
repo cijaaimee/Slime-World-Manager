@@ -3,6 +3,7 @@ package com.grinderwolf.swm.nms.v1_16_R2;
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import com.grinderwolf.swm.nms.v1_16_R2.Converter;
 import com.mojang.serialization.Lifecycle;
 import lombok.Getter;
 

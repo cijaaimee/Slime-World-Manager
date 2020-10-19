@@ -3,6 +3,8 @@ package com.grinderwolf.swm.nms.v1_16_R2;
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import com.grinderwolf.swm.nms.v1_16_R2.Converter;
+import com.grinderwolf.swm.nms.v1_16_R2.CustomWorldData;
 import net.minecraft.server.v1_16_R2.Convertable;
 import net.minecraft.server.v1_16_R2.EntityHuman;
 import net.minecraft.server.v1_16_R2.GameRules;
