@@ -94,7 +94,7 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
         MinecraftServer mcServer = MinecraftServer.getServer();
         Convertable.ConversionSession conversionSession = getConversionSession(world.getName(), mcServer, worldDimensionKey);
         com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage dataManager = new com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage(world, conversionSession);
-        DimensionManager dimensionManager = mcServer.f.a().fromId(env.getId());
+        DimensionManager dimensionManager = mcServer.customRegistry.a().fromId(env.getId());
         WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
         ResourceKey<net.minecraft.server.v1_16_R2.World> worldKey = ResourceKey.a(IRegistry.L, new MinecraftKey(world.getName()));
 
@@ -195,7 +195,7 @@ public class v1_16_R2SlimeNMS implements SlimeNMS {
         Convertable.ConversionSession conversionSession = getConversionSession(worldName, mcServer, worldDimensionKey);
         com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage dataManager = new CustomNBTStorage(world, conversionSession);
 
-        DimensionManager dimensionManager = mcServer.f.a().a(dimensionManagerKey);
+        DimensionManager dimensionManager = mcServer.customRegistry.a().a(dimensionManagerKey);
         WorldDataServer worldData = (WorldDataServer)dataManager.getWorldData();
 
         com.grinderwolf.swm.nms.v1_16_R2.CustomWorldServer server = null;
