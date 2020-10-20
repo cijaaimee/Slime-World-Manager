@@ -92,7 +92,7 @@ public class CustomWorldServer extends WorldServer {
             list,
             true,
             env,
-            ((CraftServer)Bukkit.getServer()).getGenerator(world.getName())
+            ((CraftServer)Bukkit.getServer()).getServer().E().generator
         );
 
         // MinecraftServer.getServer().getMethodProfiler()
@@ -183,8 +183,7 @@ public class CustomWorldServer extends WorldServer {
             ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
 
             // Biomes
-            BiomeStorage biomeStorage = new BiomeStorage(null, new ChunkCoordIntPair(x, z), getChunkProvider().getChunkGenerator().getWorldChunkManager(), null);
-
+            BiomeStorage biomeStorage = new BiomeStorage(getMinecraftServer().getCustomRegistry().b(IRegistry.ay), new ChunkCoordIntPair(x, z), getChunkProvider().getChunkGenerator().getWorldChunkManager(), null);
             // Tick lists
             TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>(), 0);
             TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>(), 0);
@@ -215,8 +214,7 @@ public class CustomWorldServer extends WorldServer {
 
         // Biomes
         int[] biomeIntArray = chunk.getBiomes();
-        BiomeStorage biomeStorage = new BiomeStorage(null, new ChunkCoordIntPair(x, z), getChunkProvider().getChunkGenerator().getWorldChunkManager(), biomeIntArray);
-
+        BiomeStorage biomeStorage = new BiomeStorage(getMinecraftServer().getCustomRegistry().b(IRegistry.ay), new ChunkCoordIntPair(x, z), getChunkProvider().getChunkGenerator().getWorldChunkManager(), biomeIntArray);
         // Tick lists
         TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>(), 0);
         TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>(), 0);

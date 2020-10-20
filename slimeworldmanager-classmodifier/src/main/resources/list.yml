@@ -9,3 +9,14 @@ org/bukkit/craftbukkit/v1_16_R1/CraftServer:
   - addWorld(org.bukkit.World)@v1_16_R1/CraftServer_addWorld.txt
 net/minecraft/server/v1_16_R1/MinecraftServer:
   - loadWorld(java.lang.String)@v1_16_R1/MinecraftServer_loadWorlds.txt
+net/minecraft/server/v1_16_R2/PlayerChunkMap:
+  - saveChunk(net.minecraft.server.v1_16_R2.IChunkAccess)@v1_16_R2/PlayerChunkMap_saveChunk.txt
+  - f(net.minecraft.server.v1_16_R2.ChunkCoordIntPair)@v1_16_R2/PlayerChunkMap_loadChunk.txt
+net/minecraft/server/v1_16_R2/MobSpawnerTrader:
+  - a(net.minecraft.server.v1_16_R2.WorldServer,boolean, boolean)@v1_16_R2/MobSpawnerTrader_tickRaids.txt
+net/minecraft/server/v1_16_R2/PersistentBase:
+  - a(java.io.File)@v1_16_R2/PersistentBase_saveData.txt
+org/bukkit/craftbukkit/v1_16_R2/CraftServer:
+  - addWorld(org.bukkit.World)@v1_16_R2/CraftServer_addWorld.txt
+net/minecraft/server/v1_16_R2/MinecraftServer:
+  - loadWorld(java.lang.String)@v1_16_R2/MinecraftServer_loadWorlds.txt
