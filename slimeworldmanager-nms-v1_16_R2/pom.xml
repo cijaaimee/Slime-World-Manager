@@ -35,8 +35,7 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.16.3-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/spigot-1.16.3.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.spigotmc</groupId>-->
