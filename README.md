@@ -63,6 +63,7 @@ Javadocs can be found [here](https://grinderwolf.github.io/Slime-World-Manager/a
     * [Migrating a world](.docs/api/migrate-world.md)
     * [Importing a world](.docs/api/import-world.md)
     * [Using other data sources](.docs/api/use-data-source.md)
+    * [Custom build preparation](.docs/api/custom-build-preparation.md)
  * [FAQ](.docs/faq.md)
 
 ## Credits
