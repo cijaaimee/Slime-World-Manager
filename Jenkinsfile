@@ -11,6 +11,8 @@ pipeline {
             steps {
                 sh '''
                     wget https://cdn.getbukkit.org/spigot/spigot-1.16.1.jar && mvn install:install-file -Dfile=spigot-1.16.1.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.16.1-R0.1-SNAPSHOT -Dpackaging=jar
+                    wget https://cdn.getbukkit.org/spigot/spigot-1.16.2.jar && mvn install:install-file -Dfile=spigot-1.16.2.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.16.2-R0.1-SNAPSHOT -Dpackaging=jar
+                    wget https://cdn.getbukkit.org/spigot/spigot-1.16.3.jar && mvn install:install-file -Dfile=spigot-1.16.3.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.16.3-R0.1-SNAPSHOT -Dpackaging=jar
                     echo "PATH = ${PATH}"
                     echo "M2_HOME = ${M2_HOME}"
                 '''
