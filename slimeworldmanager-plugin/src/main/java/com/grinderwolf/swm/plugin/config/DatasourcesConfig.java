@@ -25,6 +25,8 @@ public class DatasourcesConfig {
         @Setting("password") private String password = "";
 
         @Setting("database") private String database = "slimeworldmanager";
+
+        @Setting("usessl") private boolean usessl = false;
     }
 
     @Getter
