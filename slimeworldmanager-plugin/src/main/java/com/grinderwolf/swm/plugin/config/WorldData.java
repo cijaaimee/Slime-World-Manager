@@ -34,7 +34,7 @@ public class WorldData {
     @Setting("worldType")
     private String worldType = "DEFAULT";
     @Setting("defaultBiome")
-    private String defaultBiome = "";
+    private String defaultBiome = "minecraft:plains";
 
     @Setting("loadOnStartup")
     private boolean loadOnStartup = true;
