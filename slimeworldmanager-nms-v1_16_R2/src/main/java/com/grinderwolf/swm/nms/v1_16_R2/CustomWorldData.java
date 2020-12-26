@@ -7,17 +7,9 @@ import com.grinderwolf.swm.nms.v1_16_R2.Converter;
 import com.mojang.serialization.Lifecycle;
 import lombok.Getter;
 
-import net.minecraft.server.v1_16_R2.BlockPosition;
-import net.minecraft.server.v1_16_R2.DedicatedServer;
-import net.minecraft.server.v1_16_R2.EnumDifficulty;
-import net.minecraft.server.v1_16_R2.EnumGamemode;
-import net.minecraft.server.v1_16_R2.GameRules;
+import net.minecraft.server.v1_16_R2.*;
 import net.minecraft.server.v1_16_R2.GameRules.GameRuleKey;
 import net.minecraft.server.v1_16_R2.GameRules.GameRuleValue;
-import net.minecraft.server.v1_16_R2.MinecraftServer;
-import net.minecraft.server.v1_16_R2.NBTTagCompound;
-import net.minecraft.server.v1_16_R2.WorldDataServer;
-import net.minecraft.server.v1_16_R2.WorldSettings;
 import org.bukkit.WorldType;
 import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
 
@@ -30,7 +22,7 @@ public class CustomWorldData extends WorldDataServer {
     private final CraftSlimeWorld world;
     private final WorldType type;
 
-    CustomWorldData(CraftSlimeWorld world) {
+    CustomWorldData(CraftSlimeWorld world, GeneratorSettings generatorSettings) {
         super(new WorldSettings(
                 world.getName(),
                 EnumGamemode.NOT_SET,
@@ -40,7 +32,7 @@ public class CustomWorldData extends WorldDataServer {
                 new GameRules(),
                 MinecraftServer.getServer().datapackconfiguration
             ),
-            ((DedicatedServer)MinecraftServer.getServer()).getDedicatedServerProperties().generatorSettings,
+            generatorSettings,
             Lifecycle.stable()
         );
 

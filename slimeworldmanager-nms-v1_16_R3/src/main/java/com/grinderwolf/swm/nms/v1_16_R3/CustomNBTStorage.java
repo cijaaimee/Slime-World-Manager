@@ -2,15 +2,13 @@ package com.grinderwolf.swm.nms.v1_16_R3;
 
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
+import com.grinderwolf.swm.api.world.properties.SlimeProperties;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
-import net.minecraft.server.v1_16_R3.Convertable;
-import net.minecraft.server.v1_16_R3.EntityHuman;
-import net.minecraft.server.v1_16_R3.GameRules;
-import net.minecraft.server.v1_16_R3.MinecraftServer;
-import net.minecraft.server.v1_16_R3.NBTTagCompound;
-import net.minecraft.server.v1_16_R3.WorldData;
-import net.minecraft.server.v1_16_R3.WorldNBTStorage;
+import net.minecraft.server.v1_16_R3.*;
 import lombok.Getter;
+
+import java.util.Properties;
 
 @Getter
 public class CustomNBTStorage extends WorldNBTStorage {
@@ -28,7 +26,18 @@ public class CustomNBTStorage extends WorldNBTStorage {
 
     public WorldData getWorldData() {
         if (worldData == null) {
-            worldData = new CustomWorldData((CraftSlimeWorld) world);
+            MinecraftServer server = MinecraftServer.getServer();
+            SlimePropertyMap propertyMap = world.getPropertyMap();
+            Properties properties = new Properties();
+            String defaultBiome = propertyMap.getString(SlimeProperties.DEFAULT_BIOME);
+            String generatorString = "{\"structures\":{\"structures\":{}},\"biome\":\"" + defaultBiome + "\",\"layers\":[]}";
+
+            properties.put("generator-settings", generatorString);
+            properties.put("level-type", "FLAT");
+
+            GeneratorSettings generatorSettings = GeneratorSettings.a(server.getCustomRegistry(), properties);
+
+            worldData = new CustomWorldData((CraftSlimeWorld) world, generatorSettings);
         }
 
         return worldData;
