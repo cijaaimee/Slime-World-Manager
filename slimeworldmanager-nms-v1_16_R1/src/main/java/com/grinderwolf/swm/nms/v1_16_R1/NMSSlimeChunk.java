@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.minecraft.server.v1_16_R1.WorldDataServer;
 
 @Data
 @AllArgsConstructor
@@ -33,7 +34,7 @@ public class NMSSlimeChunk implements SlimeChunk {
 
     @Override
     public String getWorldName() {
-        return chunk.getWorld().getWorld().getName();
+        return ((WorldDataServer) chunk.getWorld().worldData).getName();
     }
 
     @Override
@@ -89,10 +90,10 @@ public class NMSSlimeChunk implements SlimeChunk {
             HeightMap.Type type = entry.getKey();
             HeightMap map = entry.getValue();
 
-            heightMaps.put(type.b(), new LongArrayTag(type.b(), map.a()));
+            heightMaps.put(type.getName(), new LongArrayTag(type.getName(), map.a()));
         }
 
-       return new CompoundTag("", heightMaps);
+        return new CompoundTag("", heightMaps);
     }
 
     @Override

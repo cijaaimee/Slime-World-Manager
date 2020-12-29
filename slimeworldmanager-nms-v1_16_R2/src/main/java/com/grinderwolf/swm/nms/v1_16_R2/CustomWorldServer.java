@@ -1,9 +1,9 @@
 package com.grinderwolf.swm.nms.v1_16_R2;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.LongArrayTag;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
@@ -11,47 +11,14 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
-import com.grinderwolf.swm.nms.v1_16_R2.Converter;
-import com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage;
-import com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk;
-import net.minecraft.server.v1_16_R2.BiomeStorage;
-import net.minecraft.server.v1_16_R2.Block;
-import net.minecraft.server.v1_16_R2.BlockPosition;
-import net.minecraft.server.v1_16_R2.Chunk;
-import net.minecraft.server.v1_16_R2.ChunkConverter;
-import net.minecraft.server.v1_16_R2.ChunkCoordIntPair;
-import net.minecraft.server.v1_16_R2.ChunkSection;
-import net.minecraft.server.v1_16_R2.Convertable;
-import net.minecraft.server.v1_16_R2.DimensionManager;
-import net.minecraft.server.v1_16_R2.EntityTypes;
-import net.minecraft.server.v1_16_R2.EnumDifficulty;
-import net.minecraft.server.v1_16_R2.EnumSkyBlock;
-import net.minecraft.server.v1_16_R2.FluidType;
-import net.minecraft.server.v1_16_R2.HeightMap;
-import net.minecraft.server.v1_16_R2.IProgressUpdate;
-import net.minecraft.server.v1_16_R2.IRegistry;
-import net.minecraft.server.v1_16_R2.LightEngine;
-import net.minecraft.server.v1_16_R2.MinecraftServer;
-import net.minecraft.server.v1_16_R2.MobSpawner;
-import net.minecraft.server.v1_16_R2.NBTTagCompound;
-import net.minecraft.server.v1_16_R2.NBTTagList;
-import net.minecraft.server.v1_16_R2.ProtoChunkExtension;
-import net.minecraft.server.v1_16_R2.ResourceKey;
-import net.minecraft.server.v1_16_R2.SectionPosition;
-import net.minecraft.server.v1_16_R2.TickListChunk;
-import net.minecraft.server.v1_16_R2.TileEntity;
-import net.minecraft.server.v1_16_R2.WorldDataServer;
-import net.minecraft.server.v1_16_R2.WorldMap;
-import net.minecraft.server.v1_16_R2.WorldServer;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.server.v1_16_R2.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_16_R2.CraftServer;
+import org.bukkit.event.world.WorldSaveEvent;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -66,83 +33,55 @@ public class CustomWorldServer extends WorldServer {
     private static final Logger LOGGER = LogManager.getLogger("SWM World");
     private static final ExecutorService WORLD_SAVER_SERVICE = Executors.newFixedThreadPool(4, new ThreadFactoryBuilder()
             .setNameFormat("SWM Pool Thread #%1$d").build());
+    private static final TicketType<Unit> SWM_TICKET = TicketType.a("swm-chunk", (a, b) -> 0);
 
     @Getter
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
-    private final List<WorldMap> maps = new ArrayList<>();
-    private final com.grinderwolf.swm.nms.v1_16_R2.CustomNBTStorage nbtStorage;
 
     @Getter
     @Setter
     private boolean ready = false;
 
-    CustomWorldServer(CraftSlimeWorld world, CustomNBTStorage nbtStorage, Convertable.ConversionSession conversionSession, DimensionManager dimensionManager, World.Environment env, WorldDataServer worldDataServer, ResourceKey<net.minecraft.server.v1_16_R2.World> resourceKey, List<MobSpawner> list) {
-        super(
-            ((CraftServer)Bukkit.getServer()).getServer(),
-            ((CraftServer)Bukkit.getServer()).getServer().executorService,
-            conversionSession,
-            worldDataServer,
-            resourceKey,
-            dimensionManager,
-            ((CraftServer)Bukkit.getServer()).getServer().worldLoadListenerFactory.create(11),
-            worldDataServer.getGeneratorSettings().getChunkGenerator(),
-            false,
-            11,
-            list,
-            true,
-            env,
-            ((CraftServer)Bukkit.getServer()).getServer().E().generator
-        );
-
-        // MinecraftServer.getServer().getMethodProfiler()
+    public CustomWorldServer(CraftSlimeWorld world, IWorldDataServer worldData,
+                             ResourceKey<World> worldKey, ResourceKey<WorldDimension> dimensionKey,
+                             DimensionManager dimensionManager, ChunkGenerator chunkGenerator,
+                             org.bukkit.World.Environment environment) throws IOException {
+        super(MinecraftServer.getServer(), MinecraftServer.getServer().executorService,
+                v1_16_R2SlimeNMS.CONVERTABLE.c(world.getName(), dimensionKey),
+                worldData, worldKey, dimensionManager, MinecraftServer.getServer().worldLoadListenerFactory.create(11),
+                chunkGenerator, false, 0, new ArrayList<>(), true, environment, null);
 
         this.slimeWorld = world;
-
-        this.nbtStorage = nbtStorage;
 
         SlimePropertyMap propertyMap = world.getPropertyMap();
 
         worldDataServer.setDifficulty(EnumDifficulty.valueOf(propertyMap.getString(SlimeProperties.DIFFICULTY).toUpperCase()));
-        worldDataServer.setSpawn(new BlockPosition(propertyMap.getInt(SlimeProperties.SPAWN_X), propertyMap.getInt(SlimeProperties.SPAWN_Y), propertyMap.getInt(SlimeProperties.SPAWN_Z)), 1);
+        worldDataServer.setSpawn(new BlockPosition(propertyMap.getInt(SlimeProperties.SPAWN_X), propertyMap.getInt(SlimeProperties.SPAWN_Y), propertyMap.getInt(SlimeProperties.SPAWN_Z)), 0);
         super.setSpawnFlags(propertyMap.getBoolean(SlimeProperties.ALLOW_MONSTERS), propertyMap.getBoolean(SlimeProperties.ALLOW_ANIMALS));
 
         this.pvpMode = propertyMap.getBoolean(SlimeProperties.PVP);
-
-        new File(nbtStorage.getPlayerDir(), "session.lock").delete();
-        new File(nbtStorage.getPlayerDir(), "data").delete();
-
-        nbtStorage.getPlayerDir().delete();
-        nbtStorage.getPlayerDir().getParentFile().delete();
-
-        for (CompoundTag mapTag : world.getWorldMaps()) {
-            int id = mapTag.getIntValue("id").get();
-            WorldMap map = new WorldMap("map_" + id);
-            map.a((NBTTagCompound) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag(mapTag));
-            a(map);
-        }
     }
 
     @Override
     public void save(IProgressUpdate progressUpdate, boolean forceSave, boolean flag1) {
-        if (!slimeWorld.isReadOnly()) {
-            org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
-            this.getChunkProvider().save(forceSave);
-
-            nbtStorage.saveWorldData(worldData);
-
-            // Update the map compound list
-            slimeWorld.getWorldMaps().clear();
-
-            for (WorldMap map : maps) {
-                NBTTagCompound compound = map.b(new NBTTagCompound());
-                int id = Integer.parseInt(map.getId().substring(4));
-                compound.setInt("id", id);
-
-                slimeWorld.getWorldMaps().add((CompoundTag) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag("", compound));
+        if (!slimeWorld.isReadOnly() && !flag1) {
+            if (forceSave) { // TODO Is this really 'forceSave'? Doesn't look like it tbh
+                Bukkit.getPluginManager().callEvent(new WorldSaveEvent(getWorld()));
             }
 
-            if (MinecraftServer.getServer().isStopped()) { // Make sure the slimeWorld gets saved before stopping the server by running it from the main thread
+            this.timings.tracker.startTiming();
+            this.getChunkProvider().save(forceSave);
+            this.timings.tracker.stopTiming();
+            this.worldDataServer.a(this.getWorldBorder().t());
+            this.worldDataServer.setCustomBossEvents(MinecraftServer.getServer().getBossBattleCustomData().save());
+
+            // Update level data
+            NBTTagCompound compound = new NBTTagCompound();
+            worldDataServer.a(MinecraftServer.getServer().getCustomRegistry(), compound);
+            slimeWorld.getExtraData().getValue().put(Converter.convertTag("LevelData", compound));
+
+            if (MinecraftServer.getServer().isStopped()) { // Make sure the world gets saved before stopping the server by running it from the main thread
                 save();
 
                 // Have to manually unlock the world as well
@@ -179,26 +118,34 @@ public class CustomWorldServer extends WorldServer {
         SlimeChunk slimeChunk = slimeWorld.getChunk(x, z);
         Chunk chunk;
 
-        if (slimeChunk == null) {
-            ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
-
-            // Biomes
-            BiomeStorage biomeStorage = new BiomeStorage(getMinecraftServer().getCustomRegistry().b(IRegistry.ay), new ChunkCoordIntPair(x, z), getChunkProvider().getChunkGenerator().getWorldChunkManager(), null);
-            // Tick lists
-            TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>(), 0);
-            TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>(), 0);
-//            TickListChunk<Block> airChunkTickList = new TickListChunk(IRegistry.BLOCK.getKey(null), new ArrayList<Object>(), (long)0);
-//            TickListChunk<FluidType> fluidChunkTickList = new TickListChunk(IRegistry.FLUID::getKey, new ArrayList<>());
-
-            chunk = new Chunk(this, pos, biomeStorage, ChunkConverter.a, airChunkTickList, fluidChunkTickList, 0L, null, null);
-            HeightMap.a(chunk, chunk.getChunkStatus().h());
-
-            getChunkProvider().getLightEngine().b(pos, true);
-        } else if (slimeChunk instanceof com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk) {
-            chunk = ((com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk) slimeChunk).getChunk();
+        if (slimeChunk instanceof NMSSlimeChunk) {
+            chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
         } else {
-            chunk = createChunk(slimeChunk);
-            slimeWorld.updateChunk(new com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk(chunk));
+            if (slimeChunk == null) {
+                ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
+
+                ChunkGenerator chunkGenerator = getChunkProvider().getChunkGenerator();
+                WorldChunkManager chunkManager = chunkGenerator.getWorldChunkManager();
+
+                // Biomes
+                BiomeStorage biomeStorage = new BiomeStorage(r().b(IRegistry.ay), pos, chunkManager, new int[BiomeStorage.a]);
+
+                // Tick lists
+                ProtoChunkTickList<Block> blockTickList = new ProtoChunkTickList<>((block) ->
+                        block == null || block.getBlockData().isAir(), pos);
+                ProtoChunkTickList<FluidType> fluidTickList = new ProtoChunkTickList<>((type) ->
+                        type == null || type == FluidTypes.EMPTY, pos);
+
+                chunk = new Chunk(this, pos, biomeStorage, ChunkConverter.a, blockTickList, fluidTickList,
+                        0L, null, null);
+
+                // Height Maps
+                HeightMap.a(chunk, ChunkStatus.FULL.h());
+            } else {
+                chunk = createChunk(slimeChunk);
+            }
+
+            slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
 
         return new ProtoChunkExtension(chunk);
@@ -214,10 +161,15 @@ public class CustomWorldServer extends WorldServer {
 
         // Biomes
         int[] biomeIntArray = chunk.getBiomes();
-        BiomeStorage biomeStorage = new BiomeStorage(getMinecraftServer().getCustomRegistry().b(IRegistry.ay), new ChunkCoordIntPair(x, z), getChunkProvider().getChunkGenerator().getWorldChunkManager(), biomeIntArray);
+
+        BiomeStorage biomeStorage = new BiomeStorage(MinecraftServer.getServer().getCustomRegistry().b(IRegistry.ay), pos,
+                getChunkProvider().getChunkGenerator().getWorldChunkManager(), biomeIntArray);
+
         // Tick lists
-        TickListChunk<Block> airChunkTickList = new TickListChunk<>(IRegistry.BLOCK::getKey, new ArrayList<>(), 0);
-        TickListChunk<FluidType> fluidChunkTickList = new TickListChunk<>(IRegistry.FLUID::getKey, new ArrayList<>(), 0);
+        ProtoChunkTickList<Block> blockTickList = new ProtoChunkTickList<>(
+                (block) -> block == null || block.getBlockData().isAir(), pos);
+        ProtoChunkTickList<FluidType> fluidTickList = new ProtoChunkTickList<>(
+                (type) -> type == null || type == FluidTypes.EMPTY, pos);
 
         // Chunk sections
         LOGGER.debug("Loading chunk sections for chunk (" + pos.x + ", " + pos.z + ") on world " + slimeWorld.getName());
@@ -242,21 +194,25 @@ public class CustomWorldServer extends WorldServer {
                 LOGGER.debug("Sky light array:");
                 LOGGER.debug(slimeSection.getSkyLight() != null ? slimeSection.getSkyLight().getBacking() : "Not present");
 
-                section.getBlocks().a((NBTTagList) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag(slimeSection.getPalette()), slimeSection.getBlockStates());
+                section.getBlocks().a((NBTTagList) Converter.convertTag(slimeSection.getPalette()), slimeSection.getBlockStates());
 
                 if (slimeSection.getBlockLight() != null) {
-                    lightEngine.a();
-                    lightEngine.a(EnumSkyBlock.BLOCK, SectionPosition.a(pos, sectionId), com.grinderwolf.swm.nms.v1_16_R2.Converter.convertArray(slimeSection.getBlockLight()), true);
+                    lightEngine.a(EnumSkyBlock.BLOCK, SectionPosition.a(pos, sectionId), Converter.convertArray(slimeSection.getBlockLight()), true);
                 }
 
                 if (slimeSection.getSkyLight() != null) {
-                    lightEngine.a(EnumSkyBlock.SKY, SectionPosition.a(pos, sectionId), com.grinderwolf.swm.nms.v1_16_R2.Converter.convertArray(slimeSection.getSkyLight()), true);
+                    lightEngine.a(EnumSkyBlock.SKY, SectionPosition.a(pos, sectionId), Converter.convertArray(slimeSection.getSkyLight()), true);
                 }
 
                 section.recalcBlockCounts();
                 sections[sectionId] = section;
             }
         }
+
+        // Keep the chunk loaded at level 33 to avoid light glitches
+        // Such a high level will let the server not tick the chunk,
+        // but at the same time it won't be completely unloaded from memory
+        getChunkProvider().addTicket(SWM_TICKET, pos, 33, Unit.INSTANCE);
 
         Consumer<Chunk> loadEntities = (nmsChunk) -> {
 
@@ -271,7 +227,8 @@ public class CustomWorldServer extends WorldServer {
 
                     // Sometimes null tile entities are saved
                     if (type.isPresent()) {
-                        TileEntity entity = TileEntity.create(null, (NBTTagCompound) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag(tag));
+                        IBlockData blockData = nmsChunk.getType(new BlockPosition(tag.getIntValue("x").get(), tag.getIntValue("y").get(), tag.getIntValue("z").get()));
+                        TileEntity entity = TileEntity.create(blockData, (NBTTagCompound) Converter.convertTag(tag));
 
                         if (entity != null) {
                             nmsChunk.a(entity);
@@ -290,7 +247,7 @@ public class CustomWorldServer extends WorldServer {
 
             if (entities != null) {
                 for (CompoundTag tag : entities) {
-                    EntityTypes.a((NBTTagCompound) com.grinderwolf.swm.nms.v1_16_R2.Converter.convertTag(tag), nmsChunk.world, (entity) -> {
+                    EntityTypes.a((NBTTagCompound) Converter.convertTag(tag), nmsChunk.world, (entity) -> {
 
                         nmsChunk.a(entity);
                         return entity;
@@ -308,7 +265,7 @@ public class CustomWorldServer extends WorldServer {
 
         CompoundTag upgradeDataTag = ((CraftSlimeChunk) chunk).getUpgradeData();
         Chunk nmsChunk = new Chunk(this, pos, biomeStorage, upgradeDataTag == null ? ChunkConverter.a : new ChunkConverter((NBTTagCompound)
-                Converter.convertTag(upgradeDataTag)), airChunkTickList, fluidChunkTickList, 0L, sections, loadEntities);
+                Converter.convertTag(upgradeDataTag)), blockTickList, fluidTickList, 0L, sections, loadEntities);
 
         // Height Maps
         EnumSet<HeightMap.Type> heightMapTypes = nmsChunk.getChunkStatus().h();
@@ -316,7 +273,7 @@ public class CustomWorldServer extends WorldServer {
         EnumSet<HeightMap.Type> unsetHeightMaps = EnumSet.noneOf(HeightMap.Type.class);
 
         for (HeightMap.Type type : heightMapTypes) {
-            String name = type.b();
+            String name = type.getName();
 
             if (heightMaps.containsKey(name)) {
                 LongArrayTag heightMap = (LongArrayTag) heightMaps.get(name);
@@ -335,41 +292,10 @@ public class CustomWorldServer extends WorldServer {
     void saveChunk(Chunk chunk) {
         SlimeChunk slimeChunk = slimeWorld.getChunk(chunk.getPos().x, chunk.getPos().z);
 
-        if (slimeChunk instanceof com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some reason)
-            ((com.grinderwolf.swm.nms.v1_16_R2.NMSSlimeChunk) slimeChunk).setChunk(chunk);
+        if (slimeChunk instanceof NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some reason)
+            ((NMSSlimeChunk) slimeChunk).setChunk(chunk);
         } else {
             slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
-    }
-
-    @Override
-    public WorldMap a(String name) {
-        int id = Integer.parseInt(name.substring(4));
-
-        if (id >= maps.size()) {
-            return null;//super.a(name);
-        }
-
-        return maps.get(id);
-    }
-
-    @Override
-    public void a(WorldMap map) {
-        int id = Integer.parseInt(map.getId().substring(4));
-
-        if (maps.size() > id) {
-            maps.set(id, map);
-        } else {
-            while (maps.size() < id) {
-                maps.add(null);
-            }
-
-            maps.add(id, map);
-        }
-    }
-
-    @Override
-    public int getWorldMapCount() {
-        return maps.size();
     }
 }

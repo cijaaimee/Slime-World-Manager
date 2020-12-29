@@ -7,6 +7,7 @@ mysql:
   username: slimeworldmanager
   password: ''
   database: slimeworldmanager
+  usessl: false
 mongodb:
   enabled: false
   host: 127.0.0.1
@@ -16,5 +17,6 @@ mongodb:
   password: ''
   database: slimeworldmanager
   collection: worlds
+  uri: ''
 file:
   path: slime_worlds

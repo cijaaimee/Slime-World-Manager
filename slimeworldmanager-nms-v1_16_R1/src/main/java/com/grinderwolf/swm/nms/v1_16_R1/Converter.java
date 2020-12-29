@@ -113,7 +113,7 @@ public class Converter {
             case 7:
                 return new ByteArrayTag(name, ((NBTTagByteArray) base).getBytes());
             case 8:
-                return new StringTag(name, base.asString());
+                return new StringTag(name, ((NBTTagString) base).asString());
             case 9:
                 List<Tag> list = new ArrayList<>();
                 NBTTagList originalList = ((NBTTagList) base);

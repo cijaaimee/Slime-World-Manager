@@ -72,7 +72,7 @@ public class Converter {
                     return NBTTagString.a(((StringTag) tag).getValue());
                 case TAG_LIST:
                     NBTTagList list = new NBTTagList();
-                    ((ListTag<?>) tag).getValue().stream().map(com.grinderwolf.swm.nms.v1_16_R3.Converter::convertTag).forEach(list::add);
+                    ((ListTag<?>) tag).getValue().stream().map(Converter::convertTag).forEach(list::add);
 
                     return list;
                 case TAG_COMPOUND:
@@ -113,7 +113,7 @@ public class Converter {
             case 7:
                 return new ByteArrayTag(name, ((NBTTagByteArray) base).getBytes());
             case 8:
-                return new StringTag(name, base.asString());
+                return new StringTag(name, ((NBTTagString) base).asString());
             case 9:
                 List<Tag> list = new ArrayList<>();
                 NBTTagList originalList = ((NBTTagList) base);

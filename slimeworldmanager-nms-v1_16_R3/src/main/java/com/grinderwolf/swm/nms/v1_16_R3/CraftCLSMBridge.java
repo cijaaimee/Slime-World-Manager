@@ -3,7 +3,9 @@ package com.grinderwolf.swm.nms.v1_16_R3;
 import com.grinderwolf.swm.clsm.CLSMBridge;
 import com.grinderwolf.swm.clsm.ClassModifier;
 import net.minecraft.server.v1_16_R3.Chunk;
+import net.minecraft.server.v1_16_R3.DedicatedServer;
 import net.minecraft.server.v1_16_R3.IChunkAccess;
+import net.minecraft.server.v1_16_R3.MinecraftServer;
 import net.minecraft.server.v1_16_R3.ProtoChunkExtension;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import lombok.AccessLevel;
@@ -16,24 +18,21 @@ public class CraftCLSMBridge implements CLSMBridge {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
 
-    private final com.grinderwolf.swm.nms.v1_16_R3.v1_16_R3SlimeNMS nmsInstance;
+    private final v1_16_R3SlimeNMS nmsInstance;
 
     @Override
     public Object getChunk(Object worldObject, int x, int z) {
-        if (!(worldObject instanceof com.grinderwolf.swm.nms.v1_16_R3.CustomWorldServer)) {
-//            System.out.println("world is of type " + worldObject.getClass().getName());
-
+        if (!(worldObject instanceof CustomWorldServer)) {
             return null; // Returning null will just run the original getChunk method
         }
 
-        com.grinderwolf.swm.nms.v1_16_R3.CustomWorldServer world = (com.grinderwolf.swm.nms.v1_16_R3.CustomWorldServer) worldObject;
-
+        CustomWorldServer world = (CustomWorldServer) worldObject;
         return world.getChunk(x, z);
     }
 
     @Override
     public boolean saveChunk(Object world, Object chunkAccess) {
-        if (!(world instanceof com.grinderwolf.swm.nms.v1_16_R3.CustomWorldServer)) {
+        if (!(world instanceof CustomWorldServer)) {
             return false; // Returning false will just run the original saveChunk method
         }
 
@@ -50,8 +49,7 @@ public class CraftCLSMBridge implements CLSMBridge {
             chunk = (Chunk) chunkAccess;
         }
 
-
-        ((com.grinderwolf.swm.nms.v1_16_R3.CustomWorldServer) world).saveChunk(chunk);
+        ((CustomWorldServer) world).saveChunk(chunk);
         chunk.setNeedsSaving(false);
 
         return true;
@@ -62,20 +60,18 @@ public class CraftCLSMBridge implements CLSMBridge {
         WorldServer defaultWorld = nmsInstance.getDefaultWorld();
         WorldServer netherWorld = nmsInstance.getDefaultNetherWorld();
         WorldServer endWorld = nmsInstance.getDefaultEndWorld();
-        LOGGER.info("getDefaultWorlds");
+
         if (defaultWorld != null || netherWorld != null || endWorld != null) {
-            LOGGER.info("not null, returning: " + defaultWorld + ", " + netherWorld + ", " + endWorld);
             return new WorldServer[] { defaultWorld, netherWorld, endWorld };
         }
 
-        LOGGER.info("Returning null as there are no default worlds");
         // Returning null will just run the original load world method
         return null;
     }
 
     @Override
     public boolean isCustomWorld(Object world) {
-        return world instanceof com.grinderwolf.swm.nms.v1_16_R3.CustomWorldServer;
+        return world instanceof CustomWorldServer;
     }
 
     @Override
@@ -84,13 +80,20 @@ public class CraftCLSMBridge implements CLSMBridge {
             return false;
         }
 
-        com.grinderwolf.swm.nms.v1_16_R3.CustomWorldServer worldServer = (CustomWorldServer) world;
+        CustomWorldServer worldServer = (CustomWorldServer) world;
         return !worldServer.isReady();
     }
 
-    static void initialize(v1_16_R3SlimeNMS instance) {
-        LOGGER.info("registering CLSM bridge");
+    @Override
+    public Object getDefaultGamemode() {
+        if (nmsInstance.isLoadingDefaultWorlds()) {
+            return ((DedicatedServer) MinecraftServer.getServer()).getDedicatedServerProperties().gamemode;
+        }
 
-        ClassModifier.setLoader(new com.grinderwolf.swm.nms.v1_16_R3.CraftCLSMBridge(instance));
+        return null;
+    }
+
+    static void initialize(v1_16_R3SlimeNMS instance) {
+        ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
 }

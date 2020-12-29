@@ -3,7 +3,9 @@ package com.grinderwolf.swm.nms.v1_16_R1;
 import com.grinderwolf.swm.clsm.CLSMBridge;
 import com.grinderwolf.swm.clsm.ClassModifier;
 import net.minecraft.server.v1_16_R1.Chunk;
+import net.minecraft.server.v1_16_R1.DedicatedServer;
 import net.minecraft.server.v1_16_R1.IChunkAccess;
+import net.minecraft.server.v1_16_R1.MinecraftServer;
 import net.minecraft.server.v1_16_R1.ProtoChunkExtension;
 import net.minecraft.server.v1_16_R1.WorldServer;
 import lombok.AccessLevel;
@@ -21,13 +23,10 @@ public class CraftCLSMBridge implements CLSMBridge {
     @Override
     public Object getChunk(Object worldObject, int x, int z) {
         if (!(worldObject instanceof CustomWorldServer)) {
-//            System.out.println("world is of type " + worldObject.getClass().getName());
-
             return null; // Returning null will just run the original getChunk method
         }
 
         CustomWorldServer world = (CustomWorldServer) worldObject;
-
         return world.getChunk(x, z);
     }
 
@@ -50,7 +49,6 @@ public class CraftCLSMBridge implements CLSMBridge {
             chunk = (Chunk) chunkAccess;
         }
 
-
         ((CustomWorldServer) world).saveChunk(chunk);
         chunk.setNeedsSaving(false);
 
@@ -62,13 +60,11 @@ public class CraftCLSMBridge implements CLSMBridge {
         WorldServer defaultWorld = nmsInstance.getDefaultWorld();
         WorldServer netherWorld = nmsInstance.getDefaultNetherWorld();
         WorldServer endWorld = nmsInstance.getDefaultEndWorld();
-        LOGGER.info("getDefaultWorlds");
+
         if (defaultWorld != null || netherWorld != null || endWorld != null) {
-            LOGGER.info("not null, returning: " + defaultWorld + ", " + netherWorld + ", " + endWorld);
             return new WorldServer[] { defaultWorld, netherWorld, endWorld };
         }
 
-        LOGGER.info("Returning null as there are no default worlds");
         // Returning null will just run the original load world method
         return null;
     }
@@ -88,9 +84,16 @@ public class CraftCLSMBridge implements CLSMBridge {
         return !worldServer.isReady();
     }
 
-    static void initialize(v1_16_R1SlimeNMS instance) {
-        LOGGER.info("registering CLSM bridge");
+    @Override
+    public Object getDefaultGamemode() {
+        if (nmsInstance.isLoadingDefaultWorlds()) {
+            return ((DedicatedServer) MinecraftServer.getServer()).getDedicatedServerProperties().gamemode;
+        }
 
+        return null;
+    }
+
+    static void initialize(v1_16_R1SlimeNMS instance) {
         ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
 }
