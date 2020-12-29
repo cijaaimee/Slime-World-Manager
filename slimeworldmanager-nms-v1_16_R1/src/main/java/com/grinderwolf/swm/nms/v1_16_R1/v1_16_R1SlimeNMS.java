@@ -60,7 +60,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.UUID;
 
 @Getter
 public class v1_16_R1SlimeNMS implements SlimeNMS {
@@ -199,19 +203,11 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
     }
 
     private WorldDataServer createWorldData(SlimeWorld world) {
+        String worldName = world.getName();
+        CompoundTag extraData = world.getExtraData();
         WorldDataServer worldDataServer;
-        NBTTagCompound extraTag = (NBTTagCompound) Converter.convertTag(world.getExtraData());
+        NBTTagCompound extraTag = (NBTTagCompound) Converter.convertTag(extraData);
         MinecraftServer mcServer = MinecraftServer.getServer();
-
-        SlimePropertyMap propertyMap = world.getPropertyMap();
-        Properties properties = new Properties();
-        String defaultBiome = propertyMap.getString(SlimeProperties.DEFAULT_BIOME);
-        String generatorString = "{\"structures\":{\"structures\":{}},\"biome\":\"" + defaultBiome + "\",\"layers\":[]}";
-
-        properties.put("generator-settings", generatorString);
-        properties.put("level-type", "FLAT");
-
-        GeneratorSettings generatorSettings = GeneratorSettings.a(properties);
 
         if (extraTag.hasKeyOfType("LevelData", CraftMagicNumbers.NBT.TAG_COMPOUND)) {
             NBTTagCompound levelData = extraTag.getCompound("LevelData");
@@ -219,6 +215,17 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
             Dynamic<NBTBase> dynamic = mcServer.getDataFixer().update(DataFixTypes.LEVEL.a(),
                     new Dynamic<>(DynamicOpsNBT.a, levelData), dataVersion, SharedConstants.getGameVersion()
                             .getWorldVersion());
+
+            SlimePropertyMap propertyMap = world.getPropertyMap();
+            Properties properties = new Properties();
+            String defaultBiome = propertyMap.getString(SlimeProperties.DEFAULT_BIOME);
+            String generatorString = "{\"structures\":{\"structures\":{}},\"biome\":\"" + defaultBiome + "\",\"layers\":[]}";
+
+            properties.put("generator-settings", generatorString);
+            properties.put("level-type", "FLAT");
+
+            GeneratorSettings generatorSettings = GeneratorSettings.a(properties);
+
             Lifecycle lifecycle = Lifecycle.stable();
             LevelVersion levelVersion = LevelVersion.a(dynamic);
             WorldSettings worldSettings = WorldSettings.a(dynamic, mcServer.datapackconfiguration);
@@ -228,12 +235,13 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         } else {
             EnumDifficulty difficulty = ((DedicatedServer) mcServer).getDedicatedServerProperties().difficulty;
             EnumGamemode defaultGamemode = ((DedicatedServer) mcServer).getDedicatedServerProperties().gamemode;
-            WorldSettings worldSettings = new WorldSettings(world.getName(), defaultGamemode, false,
+            WorldSettings worldSettings = new WorldSettings(worldName, defaultGamemode, false,
                     difficulty, false, new GameRules(), mcServer.datapackconfiguration);
-            worldDataServer = new WorldDataServer(worldSettings, generatorSettings, Lifecycle.stable());
+            worldDataServer = new WorldDataServer(worldSettings, ((DedicatedServer) mcServer)
+                    .getDedicatedServerProperties().generatorSettings, Lifecycle.stable());
         }
 
-        worldDataServer.checkName(world.getName());
+        worldDataServer.checkName(worldName);
         worldDataServer.a(mcServer.getServerModName(), mcServer.getModded().isPresent());
         worldDataServer.c(true);
 
