@@ -3,6 +3,7 @@ package com.grinderwolf.swm.nms.v1_16_R3;
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import com.mojang.serialization.Dynamic;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Properties;
 import java.util.UUID;
 
 @Getter
@@ -94,7 +96,7 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
 
     private CustomWorldServer createDefaultWorld(SlimeWorld world, ResourceKey<WorldDimension> dimensionKey,
                                                  ResourceKey<net.minecraft.server.v1_16_R3.World> worldKey) {
-        WorldDataServer worldDataServer = createWorldData(world.getName(), world.getExtraData());
+        WorldDataServer worldDataServer = createWorldData(world);
 
         RegistryMaterials<WorldDimension> registryMaterials = worldDataServer.getGeneratorSettings().d();
         WorldDimension worldDimension = registryMaterials.a(dimensionKey);
@@ -123,7 +125,7 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
             throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
-        WorldDataServer worldDataServer = createWorldData(world.getName(), world.getExtraData());
+        WorldDataServer worldDataServer = createWorldData(world);
         RegistryMaterials<WorldDimension> materials = worldDataServer.getGeneratorSettings().d();
         WorldDimension worldDimension = materials.a(WorldDimension.OVERWORLD);
         DimensionManager dimensionManager = worldDimension.b();
@@ -165,10 +167,20 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
         return World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
     }
 
-    private WorldDataServer createWorldData(String worldName, CompoundTag extraData) {
+    private WorldDataServer createWorldData(SlimeWorld world) {
         WorldDataServer worldDataServer;
-        NBTTagCompound extraTag = (NBTTagCompound) Converter.convertTag(extraData);
+        NBTTagCompound extraTag = (NBTTagCompound) Converter.convertTag(world.getExtraData());
         MinecraftServer mcServer = MinecraftServer.getServer();
+
+        SlimePropertyMap propertyMap = world.getPropertyMap();
+        Properties properties = new Properties();
+        String defaultBiome = propertyMap.getString(SlimeProperties.DEFAULT_BIOME);
+        String generatorString = "{\"structures\":{\"structures\":{}},\"biome\":\"" + defaultBiome + "\",\"layers\":[]}";
+
+        properties.put("generator-settings", generatorString);
+        properties.put("level-type", "FLAT");
+
+        GeneratorSettings generatorSettings = GeneratorSettings.a(mcServer.getCustomRegistry(), properties);
 
         if (extraTag.hasKeyOfType("LevelData", CraftMagicNumbers.NBT.TAG_COMPOUND)) {
             NBTTagCompound levelData = extraTag.getCompound("LevelData");
@@ -176,7 +188,6 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
             Dynamic<NBTBase> dynamic = mcServer.getDataFixer().update(DataFixTypes.LEVEL.a(),
                     new Dynamic<>(DynamicOpsNBT.a, levelData), dataVersion, SharedConstants.getGameVersion()
                             .getWorldVersion());
-            GeneratorSettings generatorSettings = GeneratorSettings.a(mcServer.getCustomRegistry());
             Lifecycle lifecycle = Lifecycle.stable();
             LevelVersion levelVersion = LevelVersion.a(dynamic);
             WorldSettings worldSettings = WorldSettings.a(dynamic, mcServer.datapackconfiguration);
@@ -186,13 +197,13 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
         } else {
             EnumDifficulty difficulty = ((DedicatedServer) mcServer).getDedicatedServerProperties().difficulty;
             EnumGamemode defaultGamemode = ((DedicatedServer) mcServer).getDedicatedServerProperties().gamemode;
-            WorldSettings worldSettings = new WorldSettings(worldName, defaultGamemode, false,
+            WorldSettings worldSettings = new WorldSettings(world.getName(), defaultGamemode, false,
                     difficulty, false, new GameRules(), mcServer.datapackconfiguration);
             worldDataServer = new WorldDataServer(worldSettings, ((DedicatedServer) mcServer)
                     .getDedicatedServerProperties().generatorSettings, Lifecycle.stable());
         }
 
-        worldDataServer.checkName(worldName);
+        worldDataServer.checkName(world.getName());
         worldDataServer.a(mcServer.getServerModName(), mcServer.getModded().isPresent());
         worldDataServer.c(true);
 
