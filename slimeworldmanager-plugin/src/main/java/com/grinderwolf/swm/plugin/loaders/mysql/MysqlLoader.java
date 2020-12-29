@@ -56,7 +56,7 @@ public class MysqlLoader extends UpdatableLoader {
     public MysqlLoader(DatasourcesConfig.MysqlConfig config) throws SQLException {
         HikariConfig hikariConfig = new HikariConfig();
 
-        hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabase() + "?autoReconnect=true&allowMultiQueries=true");
+        hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabase() + "?autoReconnect=true&allowMultiQueries=true&useSSL=" + config.isUsessl());
         hikariConfig.setUsername(config.getUsername());
         hikariConfig.setPassword(config.getPassword());
 
