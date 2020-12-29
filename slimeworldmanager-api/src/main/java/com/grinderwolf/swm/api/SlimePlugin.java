@@ -103,9 +103,6 @@ public interface SlimePlugin {
      */
     SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap) throws WorldAlreadyExistsException, IOException;
 
-
-    SlimeWorld createGeneratedWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap) throws WorldAlreadyExistsException, IOException;
-
     /**
      * Generates a Minecraft World from a {@link SlimeWorld} and
      * adds it to the server's world list.

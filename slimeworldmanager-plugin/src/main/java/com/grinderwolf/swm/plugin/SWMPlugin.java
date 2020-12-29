@@ -14,7 +14,9 @@ import com.grinderwolf.swm.nms.v1_16_R1.v1_16_R1SlimeNMS;
 import com.grinderwolf.swm.nms.v1_16_R2.v1_16_R2SlimeNMS;
 import com.grinderwolf.swm.nms.v1_16_R3.v1_16_R3SlimeNMS;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
-import com.grinderwolf.swm.plugin.config.*;
+import com.grinderwolf.swm.plugin.config.ConfigManager;
+import com.grinderwolf.swm.plugin.config.WorldData;
+import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.update.Updater;
@@ -24,11 +26,15 @@ import com.grinderwolf.swm.plugin.world.importer.WorldImporter;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
+import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,7 +53,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     @Override
     public void onLoad() {
         instance = this;
-        Logging.info("onLoad");
+
         try {
             ConfigManager.initialize();
         } catch (NullPointerException | IOException | ObjectMappingException ex) {
@@ -60,8 +66,9 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         try {
             nms = getNMSBridge();
-        } catch(InvalidVersionException e) {
-            e.printStackTrace();
+        } catch (InvalidVersionException ex) {
+            Logging.error(ex.getMessage());
+            return;
         }
 
         List<String> erroredWorlds = loadWorlds();
@@ -135,7 +142,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         for (SlimeWorld world : worlds) {
-            Logging.info("onEnable generating world: " + world.getName());
             if (Bukkit.getWorld(world.getName()) == null) {
                 generateWorld(world);
             }
@@ -147,7 +153,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     private SlimeNMS getNMSBridge() throws InvalidVersionException {
         String version = Bukkit.getServer().getClass().getPackage().getName();
         String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
-        switch(nmsVersion) {
+
+        switch (nmsVersion) {
             case "v1_16_R1":
                 return new v1_16_R1SlimeNMS();
             case "v1_16_R2":
@@ -160,12 +167,10 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     }
 
     private List<String> loadWorlds() {
-        Logging.info("loadWorlds");
         List<String> erroredWorlds = new ArrayList<>();
         WorldsConfig config = ConfigManager.getWorldConfig();
 
         for (Map.Entry<String, WorldData> entry : config.getWorlds().entrySet()) {
-            Logging.info("Entry: " + entry.getKey());
             String worldName = entry.getKey();
             WorldData worldData = entry.getValue();
 
@@ -291,7 +296,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         propertyMap.setBoolean(SlimeProperties.ALLOW_ANIMALS, properties.allowAnimals());
         propertyMap.setBoolean(SlimeProperties.PVP, properties.isPvp());
         propertyMap.setString(SlimeProperties.ENVIRONMENT, properties.getEnvironment());
-        propertyMap.setString(SlimeProperties.DEFAULT_BIOME, "minecraft:plains");
 
         return propertyMap;
     }
@@ -305,7 +309,12 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         if (asyncWorldGen) {
-            nms.addWorldToServerList(nms.createNMSWorld(world));
+            worldGeneratorService.submit(() -> {
+
+                Object nmsWorld = nms.createNMSWorld(world);
+                Bukkit.getScheduler().runTask(this, () -> nms.addWorldToServerList(nmsWorld));
+
+            });
         } else {
             nms.generateWorld(world);
         }
