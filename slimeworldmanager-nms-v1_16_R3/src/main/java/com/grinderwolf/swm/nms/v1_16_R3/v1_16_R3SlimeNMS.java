@@ -10,6 +10,8 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
 import lombok.Getter;
 import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.server.v1_16_R3.GameRules.GameRuleKey;
+import net.minecraft.server.v1_16_R3.GameRules.GameRuleValue;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -207,6 +211,24 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
 
             WorldSettings worldSettings = new WorldSettings(worldName, serverProps.gamemode, false,
                 serverProps.difficulty, false, new GameRules(), mcServer.datapackconfiguration);
+
+            // Game rules
+            Optional<CompoundTag> gameRules = extraData.getAsCompoundTag("gamerules");
+
+            gameRules.ifPresent(compoundTag -> {
+                NBTTagCompound compound = (NBTTagCompound) Converter.convertTag(compoundTag);
+                Map<String, GameRuleKey<?>> gameRuleKeys = CraftWorld.getGameRulesNMS();
+                GameRules rules = worldSettings.getGameRules();
+
+                compound.getKeys().forEach(gameRule -> {
+                    if(gameRuleKeys.containsKey(gameRule)) {
+                        GameRuleValue<?> gameRuleValue = rules.get(gameRuleKeys.get(gameRule));
+                        String theValue = compound.getString(gameRule);
+                        gameRuleValue.setValue(theValue);
+                        gameRuleValue.onChange(mcServer);
+                    }
+                });
+            });
 
             worldDataServer = new WorldDataServer(worldSettings, serverProps.generatorSettings, Lifecycle.stable());
         }
