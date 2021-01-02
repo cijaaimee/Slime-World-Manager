@@ -20,6 +20,8 @@ public class SlimeProperties {
     public static final SlimeProperty ALLOW_MONSTERS = new SlimeProperty("allowMonsters", PropertyType.BOOLEAN, true);
     public static final SlimeProperty ALLOW_ANIMALS = new SlimeProperty("allowAnimals", PropertyType.BOOLEAN, true);
 
+    public static final SlimeProperty DRAGON_BATTLE = new SlimeProperty("dragonBattle", PropertyType.BOOLEAN, false);
+
     public static final SlimeProperty PVP = new SlimeProperty("pvp", PropertyType.BOOLEAN, true);
 
     public static final SlimeProperty ENVIRONMENT = new SlimeProperty("environment", PropertyType.STRING, "normal", (value) -> {
@@ -40,5 +42,7 @@ public class SlimeProperties {
 
     public static final SlimeProperty DEFAULT_BIOME = new SlimeProperty("defaultBiome", PropertyType.STRING, "minecraft:plains");
 
-    public static final SlimeProperty[] VALUES = { SPAWN_X, SPAWN_Y, SPAWN_Z, DIFFICULTY, ALLOW_MONSTERS, ALLOW_ANIMALS, PVP, ENVIRONMENT, WORLD_TYPE, DEFAULT_BIOME };
+    public static final SlimeProperty[] VALUES = { SPAWN_X, SPAWN_Y, SPAWN_Z,
+        DIFFICULTY, ALLOW_MONSTERS, ALLOW_ANIMALS, DRAGON_BATTLE, PVP, ENVIRONMENT,
+        WORLD_TYPE, DEFAULT_BIOME };
 }

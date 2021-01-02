@@ -26,6 +26,9 @@ public class WorldData {
     @Setting("allowAnimals")
     private boolean allowAnimals = true;
 
+    @Setting("dragonBattle")
+    private boolean dragonBattle = false;
+
     @Setting("pvp")
     private boolean pvp = true;
 
@@ -87,6 +90,7 @@ public class WorldData {
         propertyMap.setString(SlimeProperties.DIFFICULTY, difficulty);
         propertyMap.setBoolean(SlimeProperties.ALLOW_MONSTERS, allowMonsters);
         propertyMap.setBoolean(SlimeProperties.ALLOW_ANIMALS, allowAnimals);
+        propertyMap.setBoolean(SlimeProperties.DRAGON_BATTLE, dragonBattle);
         propertyMap.setBoolean(SlimeProperties.PVP, pvp);
         propertyMap.setString(SlimeProperties.ENVIRONMENT, environment);
         propertyMap.setString(SlimeProperties.WORLD_TYPE, worldType);

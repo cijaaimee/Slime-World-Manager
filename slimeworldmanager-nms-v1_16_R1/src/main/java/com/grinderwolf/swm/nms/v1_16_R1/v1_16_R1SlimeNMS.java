@@ -30,6 +30,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -164,6 +165,21 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
                 worldKey, dimension, dmKey, dimensionManager, chunkGenerator, environment);
         } catch (IOException ex) {
             throw new RuntimeException(ex); // TODO do something better with this?
+        }
+
+        EnderDragonBattle dragonBattle = server.getDragonBattle();
+        boolean runBattle = world.getPropertyMap().getBoolean(SlimeProperties.DRAGON_BATTLE);
+
+        if(dragonBattle != null && !runBattle) {
+            dragonBattle.bossBattle.setVisible(false);
+
+            try {
+                Field battleField = WorldServer.class.getDeclaredField("dragonBattle");
+                battleField.setAccessible(true);
+                battleField.set(server, null);
+            } catch(NoSuchFieldException | IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
         }
 
         LOGGER.info("Loading world " + worldName);
