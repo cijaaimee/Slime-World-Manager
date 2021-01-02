@@ -20,10 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.world.WorldSaveEvent;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -38,6 +35,7 @@ public class CustomWorldServer extends WorldServer {
     @Getter
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
+    private final BiomeBase defaultBiome;
 
     @Getter
     @Setter
@@ -61,6 +59,10 @@ public class CustomWorldServer extends WorldServer {
         super.setSpawnFlags(propertyMap.getBoolean(SlimeProperties.ALLOW_MONSTERS), propertyMap.getBoolean(SlimeProperties.ALLOW_ANIMALS));
 
         this.pvpMode = propertyMap.getBoolean(SlimeProperties.PVP);
+
+        String biomeStr = slimeWorld.getPropertyMap().getString(SlimeProperties.DEFAULT_BIOME);
+        ResourceKey<BiomeBase> biomeKey = ResourceKey.a(IRegistry.ay, new MinecraftKey(biomeStr));
+        defaultBiome = MinecraftServer.getServer().getCustomRegistry().b(IRegistry.ay).a(biomeKey);
     }
 
     @Override
@@ -124,11 +126,10 @@ public class CustomWorldServer extends WorldServer {
             if (slimeChunk == null) {
                 ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
 
-                ChunkGenerator chunkGenerator = getChunkProvider().getChunkGenerator();
-                WorldChunkManager chunkManager = chunkGenerator.getWorldChunkManager();
-
                 // Biomes
-                BiomeStorage biomeStorage = new BiomeStorage(r().b(IRegistry.ay), pos, chunkManager, new int[BiomeStorage.a]);
+                BiomeBase[] biomes = new BiomeBase[BiomeStorage.a];
+                Arrays.fill(biomes, defaultBiome);
+                BiomeStorage biomeStorage = new BiomeStorage(r().b(IRegistry.ay), biomes);
 
                 // Tick lists
                 ProtoChunkTickList<Block> blockTickList = new ProtoChunkTickList<>((block) ->

@@ -8,46 +8,16 @@ import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
-import net.minecraft.server.v1_16_R1.BlockPosition;
-import net.minecraft.server.v1_16_R1.ChunkCoordIntPair;
-import net.minecraft.server.v1_16_R1.ChunkGenerator;
-import net.minecraft.server.v1_16_R1.ChunkProviderServer;
-import net.minecraft.server.v1_16_R1.Convertable;
-import net.minecraft.server.v1_16_R1.DataConverterRegistry;
-import net.minecraft.server.v1_16_R1.DataFixTypes;
-import net.minecraft.server.v1_16_R1.DedicatedServer;
-import net.minecraft.server.v1_16_R1.DimensionManager;
-import net.minecraft.server.v1_16_R1.DynamicOpsNBT;
-import net.minecraft.server.v1_16_R1.EnumDifficulty;
-import net.minecraft.server.v1_16_R1.EnumGamemode;
-import net.minecraft.server.v1_16_R1.GameProfileSerializer;
-import net.minecraft.server.v1_16_R1.GameRules;
-import net.minecraft.server.v1_16_R1.GeneratorSettings;
-import net.minecraft.server.v1_16_R1.IRegistry;
-import net.minecraft.server.v1_16_R1.IRegistryCustom;
-import net.minecraft.server.v1_16_R1.LevelVersion;
-import net.minecraft.server.v1_16_R1.MinecraftKey;
-import net.minecraft.server.v1_16_R1.MinecraftServer;
-import net.minecraft.server.v1_16_R1.MobSpawnerCat;
-import net.minecraft.server.v1_16_R1.NBTBase;
-import net.minecraft.server.v1_16_R1.NBTTagCompound;
-import net.minecraft.server.v1_16_R1.RegistryMaterials;
-import net.minecraft.server.v1_16_R1.ResourceKey;
-import net.minecraft.server.v1_16_R1.SharedConstants;
-import net.minecraft.server.v1_16_R1.TicketType;
-import net.minecraft.server.v1_16_R1.Unit;
-import net.minecraft.server.v1_16_R1.WorldDataServer;
-import net.minecraft.server.v1_16_R1.WorldDimension;
-import net.minecraft.server.v1_16_R1.WorldServer;
+import net.minecraft.server.v1_16_R1.*;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import net.minecraft.server.v1_16_R1.WorldSettings;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
 import org.bukkit.craftbukkit.v1_16_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
@@ -162,20 +132,38 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         }
 
         WorldDataServer worldDataServer = createWorldData(world);
+        World.Environment environment = getEnvironment(world);
+        ResourceKey<WorldDimension> dimension;
+
+        switch(environment) {
+            case NORMAL:
+                dimension = WorldDimension.OVERWORLD;
+                break;
+            case NETHER:
+                dimension = WorldDimension.THE_NETHER;
+                break;
+            case THE_END:
+                dimension = WorldDimension.THE_END;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown dimension supplied");
+        }
+
         RegistryMaterials<WorldDimension> materials = worldDataServer.getGeneratorSettings().e();
         WorldDimension worldDimension = materials.a(WorldDimension.OVERWORLD);
         DimensionManager dimensionManager = worldDimension.b();
         ChunkGenerator chunkGenerator = worldDimension.c();
 
-        ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae, new MinecraftKey(worldName.toLowerCase(Locale.ENGLISH)));
-        ResourceKey<net.minecraft.server.v1_16_R1.DimensionManager> dmKey = ResourceKey.a(IRegistry.ad, new MinecraftKey(worldName.toLowerCase(Locale.ENGLISH)));
-
-        World.Environment environment = getEnvironment(world);
+        ResourceKey<net.minecraft.server.v1_16_R1.World> worldKey = ResourceKey.a(IRegistry.ae,
+            new MinecraftKey(worldName.toLowerCase(Locale.ENGLISH)));
+        ResourceKey<net.minecraft.server.v1_16_R1.DimensionManager> dmKey = ResourceKey.a(IRegistry.ad,
+            new MinecraftKey(worldName.toLowerCase(Locale.ENGLISH)));
 
         CustomWorldServer server;
 
         try {
-            server = new CustomWorldServer((CraftSlimeWorld) world, worldDataServer, worldKey, WorldDimension.OVERWORLD, dmKey, dimensionManager, chunkGenerator, environment);
+            server = new CustomWorldServer((CraftSlimeWorld) world, worldDataServer,
+                worldKey, dimension, dmKey, dimensionManager, chunkGenerator, environment);
         } catch (IOException ex) {
             throw new RuntimeException(ex); // TODO do something better with this?
         }
@@ -208,6 +196,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         WorldDataServer worldDataServer;
         NBTTagCompound extraTag = (NBTTagCompound) Converter.convertTag(extraData);
         MinecraftServer mcServer = MinecraftServer.getServer();
+        DedicatedServerProperties serverProps = ((DedicatedServer) mcServer).getDedicatedServerProperties();
 
         if (extraTag.hasKeyOfType("LevelData", CraftMagicNumbers.NBT.TAG_COMPOUND)) {
             NBTTagCompound levelData = extraTag.getCompound("LevelData");
@@ -216,29 +205,18 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
                     new Dynamic<>(DynamicOpsNBT.a, levelData), dataVersion, SharedConstants.getGameVersion()
                             .getWorldVersion());
 
-            SlimePropertyMap propertyMap = world.getPropertyMap();
-            Properties properties = new Properties();
-            String defaultBiome = propertyMap.getString(SlimeProperties.DEFAULT_BIOME);
-            String generatorString = "{\"structures\":{\"structures\":{}},\"biome\":\"" + defaultBiome + "\",\"layers\":[]}";
-
-            properties.put("generator-settings", generatorString);
-            properties.put("level-type", "FLAT");
-
-            GeneratorSettings generatorSettings = GeneratorSettings.a(properties);
-
             Lifecycle lifecycle = Lifecycle.stable();
             LevelVersion levelVersion = LevelVersion.a(dynamic);
             WorldSettings worldSettings = WorldSettings.a(dynamic, mcServer.datapackconfiguration);
 
             worldDataServer = WorldDataServer.a(dynamic, mcServer.getDataFixer(), dataVersion, null,
-                    worldSettings, levelVersion, generatorSettings, lifecycle);
+                    worldSettings, levelVersion, serverProps.generatorSettings, lifecycle);
         } else {
             EnumDifficulty difficulty = ((DedicatedServer) mcServer).getDedicatedServerProperties().difficulty;
             EnumGamemode defaultGamemode = ((DedicatedServer) mcServer).getDedicatedServerProperties().gamemode;
             WorldSettings worldSettings = new WorldSettings(worldName, defaultGamemode, false,
                     difficulty, false, new GameRules(), mcServer.datapackconfiguration);
-            worldDataServer = new WorldDataServer(worldSettings, ((DedicatedServer) mcServer)
-                    .getDedicatedServerProperties().generatorSettings, Lifecycle.stable());
+            worldDataServer = new WorldDataServer(worldSettings, serverProps.generatorSettings, Lifecycle.stable());
         }
 
         worldDataServer.checkName(worldName);

@@ -11,47 +11,7 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
-import net.minecraft.server.v1_16_R1.BiomeStorage;
-import net.minecraft.server.v1_16_R1.Block;
-import net.minecraft.server.v1_16_R1.BlockPosition;
-import net.minecraft.server.v1_16_R1.Chunk;
-import net.minecraft.server.v1_16_R1.ChunkConverter;
-import net.minecraft.server.v1_16_R1.ChunkCoordIntPair;
-import net.minecraft.server.v1_16_R1.ChunkGenerator;
-import net.minecraft.server.v1_16_R1.ChunkSection;
-import net.minecraft.server.v1_16_R1.ChunkStatus;
-import net.minecraft.server.v1_16_R1.Convertable;
-import net.minecraft.server.v1_16_R1.DimensionManager;
-import net.minecraft.server.v1_16_R1.EntityTypes;
-import net.minecraft.server.v1_16_R1.EnumDifficulty;
-import net.minecraft.server.v1_16_R1.EnumSkyBlock;
-import net.minecraft.server.v1_16_R1.FluidType;
-import net.minecraft.server.v1_16_R1.FluidTypes;
-import net.minecraft.server.v1_16_R1.HeightMap;
-import net.minecraft.server.v1_16_R1.IBlockData;
-import net.minecraft.server.v1_16_R1.IProgressUpdate;
-import net.minecraft.server.v1_16_R1.IRegistry;
-import net.minecraft.server.v1_16_R1.IWorldDataServer;
-import net.minecraft.server.v1_16_R1.LightEngine;
-import net.minecraft.server.v1_16_R1.MinecraftServer;
-import net.minecraft.server.v1_16_R1.MobSpawner;
-import net.minecraft.server.v1_16_R1.NBTTagCompound;
-import net.minecraft.server.v1_16_R1.NBTTagList;
-import net.minecraft.server.v1_16_R1.ProtoChunkExtension;
-import net.minecraft.server.v1_16_R1.ProtoChunkTickList;
-import net.minecraft.server.v1_16_R1.ResourceKey;
-import net.minecraft.server.v1_16_R1.SectionPosition;
-import net.minecraft.server.v1_16_R1.TickListChunk;
-import net.minecraft.server.v1_16_R1.TicketType;
-import net.minecraft.server.v1_16_R1.TileEntity;
-import net.minecraft.server.v1_16_R1.Unit;
-import net.minecraft.server.v1_16_R1.World;
-import net.minecraft.server.v1_16_R1.WorldChunkManager;
-import net.minecraft.server.v1_16_R1.WorldDataServer;
-import net.minecraft.server.v1_16_R1.WorldDimension;
-import net.minecraft.server.v1_16_R1.WorldMap;
-import net.minecraft.server.v1_16_R1.WorldNBTStorage;
-import net.minecraft.server.v1_16_R1.WorldServer;
+import net.minecraft.server.v1_16_R1.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
@@ -62,10 +22,7 @@ import org.bukkit.event.world.WorldSaveEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -79,6 +36,7 @@ public class CustomWorldServer extends WorldServer {
     @Getter
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
+    private final BiomeBase defaultBiome;
 
     @Getter
     @Setter
@@ -112,6 +70,9 @@ public class CustomWorldServer extends WorldServer {
         super.setSpawnFlags(propertyMap.getBoolean(SlimeProperties.ALLOW_MONSTERS), propertyMap.getBoolean(SlimeProperties.ALLOW_ANIMALS));
 
         this.pvpMode = propertyMap.getBoolean(SlimeProperties.PVP);
+
+        String biomeStr = slimeWorld.getPropertyMap().getString(SlimeProperties.DEFAULT_BIOME);
+        defaultBiome = IRegistry.BIOME.get(new MinecraftKey(biomeStr));
     }
 
     @Override
@@ -175,11 +136,10 @@ public class CustomWorldServer extends WorldServer {
             if (slimeChunk == null) {
                 ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
 
-                ChunkGenerator chunkGenerator = getChunkProvider().getChunkGenerator();
-                WorldChunkManager chunkManager = chunkGenerator.getWorldChunkManager();
-
                 // Biomes
-                BiomeStorage biomeStorage = new BiomeStorage(pos, chunkManager, new int[BiomeStorage.a]);
+                BiomeBase[] biomes = new BiomeBase[BiomeStorage.a];
+                Arrays.fill(biomes, defaultBiome);
+                BiomeStorage biomeStorage = new BiomeStorage(biomes);
 
                 // Tick lists
                 ProtoChunkTickList<Block> blockTickList = new ProtoChunkTickList<>((block) ->
