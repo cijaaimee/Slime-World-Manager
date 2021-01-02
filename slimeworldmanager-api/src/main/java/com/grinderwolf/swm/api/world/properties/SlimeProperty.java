@@ -38,4 +38,13 @@ public class SlimeProperty {
         this.defaultValue = defaultValue;
         this.validator = validator;
     }
+
+    @Override
+    public String toString() {
+        return "SlimeProperty{" +
+            "nbtName='" + nbtName + '\'' +
+            ", type=" + type +
+            ", defaultValue=" + defaultValue +
+            '}';
+    }
 }

@@ -190,4 +190,9 @@ public class SlimePropertyMap {
 
         return new SlimePropertyMap(values);
     }
+
+    @Override
+    public String toString() {
+        return "SlimePropertyMap" + values;
+    }
 }
