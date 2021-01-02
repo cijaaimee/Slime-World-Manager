@@ -4,6 +4,7 @@ import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.upgrade.v1_14.v1_14WorldUpgrade;
+import com.grinderwolf.swm.plugin.upgrade.v1_16.v1_16WorldUpgrade;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ public class WorldUpgrader {
 
     static {
         upgrades.put((byte) 0x05, new v1_14WorldUpgrade());
+        upgrades.put((byte) 0x07, new v1_16WorldUpgrade());
         // Todo we need a 1_14_WorldUpgrade class as well for 0x06
     }
 

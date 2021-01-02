@@ -159,8 +159,10 @@ public class SWMImporter {
             worldVersion = 0x03; // 1.11 world
         } else if (data.getVersion() < 1517) {
             worldVersion = 0x04; // 1.13 world
-        } else {
+        } else if (data.getVersion() < 2566) {
             worldVersion = 0x05; // 1.14 world
+        } else {
+            worldVersion = 0x07;
         }
 
         if(debug) System.out.println("World version: " + worldVersion);
