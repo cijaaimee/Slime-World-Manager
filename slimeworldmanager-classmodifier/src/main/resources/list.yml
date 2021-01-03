@@ -31,3 +31,4 @@ org/bukkit/craftbukkit/v1_16_R3/CraftServer:
   - addWorld(org.bukkit.World)@v1_16_R3/CraftServer_addWorld.txt
 net/minecraft/server/v1_16_R3/MinecraftServer:
   - loadWorld(java.lang.String)@v1_16_R3/MinecraftServer_loadWorlds.txt
+  - getGamemode()@v1_16_R3/MinecraftServer_getGamemode.txt
