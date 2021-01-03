@@ -42,8 +42,6 @@ import java.util.concurrent.Executors;
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Getter
-    private static SWMPlugin instance;
-    @Getter
     private SlimeNMS nms;
 
     private final List<SlimeWorld> worlds = new ArrayList<>();
@@ -53,20 +51,16 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     private static boolean isPaperMC = false;
 
     private static boolean checkIsPaper() {
-        try{
-            if(Class.forName("com.destroystokyo.paper.VersionHistoryManager$VersionData") != null) {
-                return true;
-            }else{
-                return false;
-            }
-        }catch(ClassNotFoundException ex) {
+        try {
+            return Class.forName("com.destroystokyo.paper.PaperConfig") != null;
+        } catch(ClassNotFoundException ex) {
             return false;
         }
     }
 
     @Override
     public void onLoad() {
-        instance = this;
+        isPaperMC = checkIsPaper();
 
         try {
             ConfigManager.initialize();
@@ -118,7 +112,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Override
     public void onEnable() {
-        isPaperMC = checkIsPaper();
         if (nms == null) {
             this.setEnabled(false);
             return;
@@ -169,13 +162,15 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         String version = Bukkit.getServer().getClass().getPackage().getName();
         String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
 
+        System.out.println("getNMSBridge - isPaperMC: " + isPaperMC);
+
         switch (nmsVersion) {
             case "v1_16_R1":
-                return new v1_16_R1SlimeNMS(isPaperMC());
+                return new v1_16_R1SlimeNMS(isPaperMC);
             case "v1_16_R2":
-                return new v1_16_R2SlimeNMS(isPaperMC());
+                return new v1_16_R2SlimeNMS(isPaperMC);
             case "v1_16_R3":
-                return new v1_16_R3SlimeNMS(isPaperMC());
+                return new v1_16_R3SlimeNMS(isPaperMC);
             default:
                 throw new InvalidVersionException(nmsVersion);
         }
