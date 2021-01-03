@@ -142,7 +142,7 @@ public class CustomWorldServer extends WorldServer {
                         0L, null, null);
 
                 // Height Maps
-                HeightMap.a(chunk, ChunkStatus.FULL.h());
+//                HeightMap.a(chunk, ChunkStatus.FULL.h());
             } else {
                 chunk = createChunk(slimeChunk);
             }

@@ -197,40 +197,40 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
 
-        if(isPaperMC) {
-            LOGGER.info("Loading with paper optimizations");
-
-            if(worldserver.getWorld().getKeepSpawnInMemory()) {
-                LOGGER.info("Preparing start region for dimension {}", worldserver.getDimensionKey().a());
-                BlockPosition blockposition = worldserver.getSpawn();
-                worldloadlistener.a(new ChunkCoordIntPair(blockposition));
-                ChunkProviderServer chunkproviderserver = worldserver.getChunkProvider();
-                chunkproviderserver.getLightEngine().a(500);
-                server.getWorld().getChunkAtAsync(blockposition.getX(), blockposition.getZ());
-                ForcedChunk forcedchunk = worldserver.getWorldPersistentData().b(ForcedChunk::new, "chunks");
-
-                if(forcedchunk != null) {
-                    LongIterator longiterator = forcedchunk.a().iterator();
-
-                    while(longiterator.hasNext()) {
-                        long i = longiterator.nextLong();
-                        ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i);
-                        worldserver.getChunkProvider().a(chunkcoordintpair, true);
-                    }
-                }
-
-                worldloadlistener.b();
-                chunkproviderserver.getLightEngine().a(5);
-//                worldserver.setSpawnFlags(
-//                    world.getPropertyMap().getBoolean(SlimeProperties.ALLOW_MONSTERS),
-//                    world.getPropertyMap().getBoolean(SlimeProperties.ALLOW_ANIMALS)
-//                );
-            }
-        } else {
-            LOGGER.info("Loading with legacy fallback");
+//        if(isPaperMC) {
+//            LOGGER.info("Loading with paper optimizations");
+//
+//            if(worldserver.getWorld().getKeepSpawnInMemory()) {
+//                LOGGER.info("Preparing start region for dimension {}", worldserver.getDimensionKey().a());
+//                BlockPosition blockposition = worldserver.getSpawn();
+//                worldloadlistener.a(new ChunkCoordIntPair(blockposition));
+//                ChunkProviderServer chunkproviderserver = worldserver.getChunkProvider();
+//                chunkproviderserver.getLightEngine().a(500);
+//                server.getWorld().getChunkAtAsync(blockposition.getX(), blockposition.getZ());
+//                ForcedChunk forcedchunk = worldserver.getWorldPersistentData().b(ForcedChunk::new, "chunks");
+//
+//                if(forcedchunk != null) {
+//                    LongIterator longiterator = forcedchunk.a().iterator();
+//
+//                    while(longiterator.hasNext()) {
+//                        long i = longiterator.nextLong();
+//                        ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i);
+//                        worldserver.getChunkProvider().a(chunkcoordintpair, true);
+//                    }
+//                }
+//
+//                worldloadlistener.b();
+//                chunkproviderserver.getLightEngine().a(5);
+////                worldserver.setSpawnFlags(
+////                    world.getPropertyMap().getBoolean(SlimeProperties.ALLOW_MONSTERS),
+////                    world.getPropertyMap().getBoolean(SlimeProperties.ALLOW_ANIMALS)
+////                );
+//            }
+//        } else {
+//            LOGGER.info("Loading with legacy fallback");
 
             mcServer.loadSpawn(server.getChunkProvider().playerChunkMap.worldLoadListener, server);
-        }
+//        }
 
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
 
