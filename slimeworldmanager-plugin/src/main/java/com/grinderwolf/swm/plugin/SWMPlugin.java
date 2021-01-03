@@ -50,6 +50,20 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     private final ExecutorService worldGeneratorService = Executors.newFixedThreadPool(1);
     private boolean asyncWorldGen;
 
+    private static boolean isPaperMC = false;
+
+    private static boolean checkIsPaper() {
+        try{
+            if(Class.forName("com.destroystokyo.paper.VersionHistoryManager$VersionData") != null) {
+                return true;
+            }else{
+                return false;
+            }
+        }catch(ClassNotFoundException ex) {
+            return false;
+        }
+    }
+
     @Override
     public void onLoad() {
         instance = this;
@@ -104,6 +118,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Override
     public void onEnable() {
+        isPaperMC = checkIsPaper();
         if (nms == null) {
             this.setEnabled(false);
             return;
@@ -156,11 +171,11 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         switch (nmsVersion) {
             case "v1_16_R1":
-                return new v1_16_R1SlimeNMS();
+                return new v1_16_R1SlimeNMS(isPaperMC());
             case "v1_16_R2":
-                return new v1_16_R2SlimeNMS();
+                return new v1_16_R2SlimeNMS(isPaperMC());
             case "v1_16_R3":
-                return new v1_16_R3SlimeNMS();
+                return new v1_16_R3SlimeNMS(isPaperMC());
             default:
                 throw new InvalidVersionException(nmsVersion);
         }
@@ -398,5 +413,13 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         loader.saveWorld(worldName, serializedWorld, false);
+    }
+
+    public static boolean isPaperMC() {
+        return isPaperMC;
+    }
+
+    public static SWMPlugin getInstance() {
+        return SWMPlugin.getPlugin(SWMPlugin.class);
     }
 }

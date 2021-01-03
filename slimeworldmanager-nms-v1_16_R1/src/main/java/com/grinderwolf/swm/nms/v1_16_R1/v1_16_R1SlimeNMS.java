@@ -3,26 +3,21 @@ package com.grinderwolf.swm.nms.v1_16_R1;
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
-import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.server.v1_16_R1.*;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import net.minecraft.server.v1_16_R1.GameRules.GameRuleKey;
 import net.minecraft.server.v1_16_R1.GameRules.GameRuleValue;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
+import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.longs.LongIterator;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
-import org.bukkit.craftbukkit.v1_16_R1.CraftChunk;
-import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R1.util.CraftMagicNumbers;
 import org.bukkit.event.world.WorldInitEvent;
@@ -41,6 +36,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
     private static final Logger LOGGER = LogManager.getLogger("SWM");
     private static final File UNIVERSE_DIR;
     public static Convertable CONVERTABLE;
+    private static boolean isPaperMC = false;
 
     static {
         Path path;
@@ -75,7 +71,8 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
     private CustomWorldServer defaultNetherWorld;
     private CustomWorldServer defaultEndWorld;
 
-    public v1_16_R1SlimeNMS() {
+    public v1_16_R1SlimeNMS(boolean isPaper) {
+        isPaperMC = isPaper;
         try {
             CraftCLSMBridge.initialize(this);
         } catch (NoClassDefFoundError ex) {
@@ -193,8 +190,39 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         mcServer.server.addWorld(server.getWorld());
         mcServer.worldServer.put(worldKey, server);
 
+        WorldLoadListener worldloadlistener = server.getChunkProvider().playerChunkMap.worldLoadListener;
+        WorldServer worldserver = server;
+
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
-        mcServer.loadSpawn(server.getChunkProvider().playerChunkMap.worldLoadListener, server);
+
+        if(isPaperMC) {
+            if(worldserver.getWorld().getKeepSpawnInMemory()) {
+                LOGGER.info("Preparing start region for dimension {}", worldserver.getDimensionKey().a());
+                BlockPosition blockposition = worldserver.getSpawn();
+                worldloadlistener.a(new ChunkCoordIntPair(blockposition));
+                ChunkProviderServer chunkproviderserver = worldserver.getChunkProvider();
+                chunkproviderserver.getLightEngine().a(500);
+                server.getWorld().getChunkAtAsync(blockposition.getX(), blockposition.getZ());
+                WorldServer worldserver1 = worldserver;
+                ForcedChunk forcedchunk = (ForcedChunk) worldserver.getWorldPersistentData().b(ForcedChunk::new, "chunks");
+                if(forcedchunk != null) {
+                    LongIterator longiterator = forcedchunk.a().iterator();
+
+                    while(longiterator.hasNext()) {
+                        long i = longiterator.nextLong();
+                        ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i);
+                        worldserver1.getChunkProvider().a(chunkcoordintpair, true);
+                    }
+                }
+
+                worldloadlistener.b();
+                chunkproviderserver.getLightEngine().a(5);
+                worldserver.setSpawnFlags(world.getPropertyMap().getBoolean(SlimeProperties.ALLOW_MONSTERS), world.getPropertyMap().getBoolean(SlimeProperties.ALLOW_ANIMALS));
+            }
+        }else{
+            mcServer.loadSpawn(server.getChunkProvider().playerChunkMap.worldLoadListener, server);
+        }
+
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
 
         LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
