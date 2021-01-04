@@ -78,6 +78,7 @@ public class CreateWorldCmd implements Subcommand {
 
                     WorldData worldData = new WorldData();
                     worldData.setSpawn("0, 64, 0");
+                    worldData.setDataSource(dataSource);
 
                     SlimePropertyMap propertyMap = worldData.toPropertyMap();
                     SlimeWorld slimeWorld = SWMPlugin.getInstance().createEmptyWorld(loader, worldName, false, propertyMap);
