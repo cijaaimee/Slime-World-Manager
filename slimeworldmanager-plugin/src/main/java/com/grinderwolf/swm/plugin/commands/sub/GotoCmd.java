@@ -1,5 +1,6 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
+import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
@@ -72,7 +73,11 @@ public class GotoCmd implements Subcommand {
             }
             Bukkit.broadcastMessage(ChatColor.AQUA + "SPAWNLOCATION: " + spawnLocation);
 
-            target.teleport(spawnLocation);
+            if(SWMPlugin.isPaperMC()) {
+                target.teleportAsync(spawnLocation);
+            }else {
+                target.teleport(spawnLocation);
+            }
 
             return true;
         }
