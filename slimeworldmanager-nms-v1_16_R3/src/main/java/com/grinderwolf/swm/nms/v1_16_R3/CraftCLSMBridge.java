@@ -22,10 +22,6 @@ public class CraftCLSMBridge implements CLSMBridge {
 
     @Override
     public Object getChunk(Object worldObject, int x, int z) {
-        if (!(worldObject instanceof CustomWorldServer)) {
-            return null; // Returning null will just run the original getChunk method
-        }
-
         CustomWorldServer world = (CustomWorldServer) worldObject;
         return world.getChunk(x, z);
     }

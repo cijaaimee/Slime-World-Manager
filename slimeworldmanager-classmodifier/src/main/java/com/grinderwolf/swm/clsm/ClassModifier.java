@@ -1,6 +1,7 @@
 package com.grinderwolf.swm.clsm;
 
 import com.mojang.datafixers.util.Either;
+import org.bukkit.Bukkit;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
@@ -23,12 +24,13 @@ public class ClassModifier {
     private static CLSMBridge customLoader;
 
     public static CompletableFuture getFutureChunk(Object world, int x, int z) {
-        if (customLoader == null) {
+        if (customLoader == null || !isCustomWorld(world)) {
             return null;
         }
 
-        Object chunk = customLoader.getChunk(world, x, z);
-        return chunk != null ? CompletableFuture.supplyAsync(() -> Either.left(chunk)) : null;
+        return CompletableFuture.supplyAsync(() ->
+            Either.left(customLoader.getChunk(world, x, z))
+        );
     }
 
     public static boolean saveChunk(Object world, Object chunkAccess) {
