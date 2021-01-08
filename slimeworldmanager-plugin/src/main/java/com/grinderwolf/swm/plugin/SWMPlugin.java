@@ -47,8 +47,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     private SlimeNMS nms;
 
     private final List<SlimeWorld> worlds = new ArrayList<>();
-    private final ExecutorService worldGeneratorService = Executors.newFixedThreadPool(1);
-    private boolean asyncWorldGen;
 
     private static boolean isPaperMC = false;
 
@@ -135,20 +133,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         if (ConfigManager.getMainConfig().getUpdaterOptions().isEnabled()) {
             getServer().getPluginManager().registerEvents(new Updater(), this);
-        }
-
-        if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
-            try {
-                nms.addWorldToServerList(null);
-            } catch (IllegalArgumentException ignored) { // This exception is thrown as null is not a WorldServer object
-                Logging.warning("You've enabled async world generation. Although it's quite faster, this feature is EXPERIMENTAL. Use at your own risk.");
-                asyncWorldGen = true;
-            } catch (UnsupportedOperationException ex) {
-                Logging.error("Async world generation does not support this spigot version.");
-                ConfigManager.getMainConfig().setAsyncWorldGenerate(false);
-                ConfigManager.getMainConfig().save();
-            }
-
         }
 
         for (SlimeWorld world : worlds) {
@@ -318,16 +302,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             throw new IllegalArgumentException("This world cannot be loaded, as it has not been locked.");
         }
 
-        if (asyncWorldGen) {
-            worldGeneratorService.submit(() -> {
-
-                Object nmsWorld = nms.createNMSWorld(world);
-                Bukkit.getScheduler().runTask(this, () -> nms.addWorldToServerList(nmsWorld));
-
-            });
-        } else {
-            nms.generateWorld(world);
-        }
+        nms.generateWorld(world);
     }
 
     @Override
