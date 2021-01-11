@@ -68,10 +68,14 @@ public class GotoCmd implements Subcommand {
             }
 
             // Safe Spawn Location
+            spawnLocation.setY(0);
             while (spawnLocation.getBlock().getType() != Material.AIR || spawnLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
-                spawnLocation.add(0, 1, 0);
+                if(spawnLocation.getY() >= 256) {
+                    spawnLocation.getWorld().getBlockAt(0, 64 ,0).setType(Material.BEDROCK);
+                }else {
+                    spawnLocation.add(0, 1, 0);
+                }
             }
-            Bukkit.broadcastMessage(ChatColor.AQUA + "SPAWNLOCATION: " + spawnLocation);
 
             if(SWMPlugin.isPaperMC()) {
                 target.teleportAsync(spawnLocation);
