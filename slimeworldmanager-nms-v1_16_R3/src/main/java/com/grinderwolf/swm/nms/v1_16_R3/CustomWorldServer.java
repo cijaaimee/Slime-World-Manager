@@ -91,7 +91,7 @@ public class CustomWorldServer extends WorldServer {
                 try {
                     slimeWorld.getLoader().unlockWorld(slimeWorld.getName());
                 } catch (IOException ex) {
-                    LOGGER.error("Failed to unlock the world " + slimeWorld.getName() + ". Please unlock it manually by using the command /swm manualunlock. Stack trace:");
+//                    LOGGER.error("Failed to unlock the world " + slimeWorld.getName() + ". Please unlock it manually by using the command /swm manualunlock. Stack trace:");
 
                     ex.printStackTrace();
                 } catch (UnknownWorldException ignored) {
@@ -106,11 +106,11 @@ public class CustomWorldServer extends WorldServer {
     private void save() {
         synchronized (saveLock) { // Don't want to save the SlimeWorld from multiple threads simultaneously
             try {
-                LOGGER.info("Saving world " + slimeWorld.getName() + "...");
+//                LOGGER.info("Saving world " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
-                LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
+//                LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -157,7 +157,7 @@ public class CustomWorldServer extends WorldServer {
         int x = chunk.getX();
         int z = chunk.getZ();
 
-        LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + slimeWorld.getName());
+//        LOGGER.debug("Loading chunk (" + x + ", " + z + ") on world " + slimeWorld.getName());
 
         ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
 

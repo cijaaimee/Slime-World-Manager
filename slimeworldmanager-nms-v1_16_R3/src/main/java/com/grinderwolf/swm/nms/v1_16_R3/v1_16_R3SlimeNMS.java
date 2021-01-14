@@ -46,7 +46,7 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
         try {
             path = Files.createTempDirectory("swm-" + UUID.randomUUID().toString().substring(0, 5) + "-");
         } catch (IOException ex) {
-            LOGGER.log(Level.FATAL, "Failed to create temp directory", ex);
+//            LOGGER.log(Level.FATAL, "Failed to create temp directory", ex);
             path = null;
             System.exit(1);
         }
@@ -59,7 +59,7 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
             try {
                 FileUtils.deleteDirectory(UNIVERSE_DIR);
             } catch (IOException ex) {
-                LOGGER.log(Level.FATAL, "Failed to delete temp directory", ex);
+//                LOGGER.log(Level.FATAL, "Failed to delete temp directory", ex);
             }
 
         }));
@@ -78,7 +78,7 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
             isPaperMC = isPaper;
             CraftCLSMBridge.initialize(this);
         } catch (NoClassDefFoundError ex) {
-            LOGGER.error("Failed to find ClassModifier classes. Are you sure you installed it correctly?");
+//            LOGGER.error("Failed to find ClassModifier classes. Are you sure you installed it correctly?");
             System.exit(1); // No ClassModifier, no party
         }
     }
@@ -112,7 +112,7 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
         World.Environment environment = getEnvironment(world);
 
         if (dimensionKey == WorldDimension.OVERWORLD && environment != World.Environment.NORMAL) {
-            LOGGER.warn("The environment for the default world should always be 'NORMAL'.");
+//            LOGGER.warn("The environment for the default world should always be 'NORMAL'.");
         }
 
         try {
@@ -181,7 +181,7 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
             }
         }
 
-        LOGGER.info("Loading world " + worldName);
+//        LOGGER.info("Loading world " + worldName);
         long startTime = System.currentTimeMillis();
 
         server.setReady(true);
@@ -234,7 +234,7 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
 
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
 
-        LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+//        LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     private World.Environment getEnvironment(SlimeWorld world) {
