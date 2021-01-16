@@ -236,22 +236,20 @@ public class CustomWorldServer extends WorldServer {
                         IBlockData blockData = nmsChunk.getType(blockPosition);
                         TileEntity entity = TileEntity.create(blockData, (NBTTagCompound) Converter.convertTag(tag));
                         if (entity != null) {
-                            if(type.get().toLowerCase().contains("skull") || type.get().toLowerCase().contains("head")) {
-                                NBTTagCompound nbtTagCompound = (NBTTagCompound) Converter.convertTag(tag);
-                                if(tag.getAsCompoundTag("SkullOwner").isPresent()) {
-                                    if(tag.getAsCompoundTag("SkullOwner").get().getAsCompoundTag("Properties").isPresent()) {
-                                        TileEntitySkull entitySkull = (TileEntitySkull) entity;
-                                        String texture = nbtTagCompound.getCompound("SkullOwner").getCompound("Properties").get("textures").toString().split(":")[1].replace("\"", "");
-                                        texture = texture.replace("}", "");
-                                        texture = texture.replace("]", "");
+                            NBTTagCompound nbtTagCompound = (NBTTagCompound) Converter.convertTag(tag);
+                            if(tag.getAsCompoundTag("SkullOwner").isPresent()) {
+                                if(tag.getAsCompoundTag("SkullOwner").get().getAsCompoundTag("Properties").isPresent()) {
+                                    TileEntitySkull entitySkull = (TileEntitySkull) entity;
+                                    String texture = nbtTagCompound.getCompound("SkullOwner").getCompound("Properties").get("textures").toString().split(":")[1].replace("\"", "");
+                                    texture = texture.replace("}", "");
+                                    texture = texture.replace("]", "");
 
-                                        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), UUID.randomUUID().toString());
-                                        Property property = new Property("textures", texture);
-                                        gameProfile.getProperties().put("textures", property);
-                                        entitySkull.setGameProfile(gameProfile);
+                                    GameProfile gameProfile = new GameProfile(UUID.randomUUID(), UUID.randomUUID().toString());
+                                    Property property = new Property("textures", texture);
+                                    gameProfile.getProperties().put("textures", property);
+                                    entitySkull.setGameProfile(gameProfile);
 
-                                        entitySkull.update();
-                                    }
+                                    entitySkull.update();
                                 }
                             }
                             nmsChunk.a(entity);
