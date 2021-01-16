@@ -16,8 +16,6 @@ import org.apache.logging.log4j.Logger;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CraftCLSMBridge implements CLSMBridge {
 
-    private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
-
     private final v1_16_R3SlimeNMS nmsInstance;
 
     @Override

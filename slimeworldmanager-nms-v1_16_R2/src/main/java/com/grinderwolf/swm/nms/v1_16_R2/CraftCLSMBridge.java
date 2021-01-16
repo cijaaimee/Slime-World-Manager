@@ -16,16 +16,10 @@ import org.apache.logging.log4j.Logger;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CraftCLSMBridge implements CLSMBridge {
 
-    private static final Logger LOGGER = LogManager.getLogger("SWM Chunk Loader");
-
     private final v1_16_R2SlimeNMS nmsInstance;
 
     @Override
     public Object getChunk(Object worldObject, int x, int z) {
-        if (!(worldObject instanceof CustomWorldServer)) {
-            return null; // Returning null will just run the original getChunk method
-        }
-
         CustomWorldServer world = (CustomWorldServer) worldObject;
         return world.getChunk(x, z);
     }
