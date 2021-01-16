@@ -162,8 +162,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         String version = Bukkit.getServer().getClass().getPackage().getName();
         String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
 
-        System.out.println("getNMSBridge - isPaperMC: " + isPaperMC);
-
         switch (nmsVersion) {
             case "v1_16_R1":
                 return new v1_16_R1SlimeNMS(isPaperMC);
