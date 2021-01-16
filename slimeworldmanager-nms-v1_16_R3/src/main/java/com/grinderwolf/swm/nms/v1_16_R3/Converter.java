@@ -79,7 +79,6 @@ public class Converter {
                     NBTTagCompound compound = new NBTTagCompound();
 
                     ((CompoundTag) tag).getValue().forEach((key, value) -> compound.set(key, convertTag(value)));
-
                     return compound;
                 case TAG_INT_ARRAY:
                     return new NBTTagIntArray(((IntArrayTag) tag).getValue());

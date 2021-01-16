@@ -185,6 +185,9 @@ public class CraftSlimeWorld implements SlimeWorld {
             outStream.writeInt(tileEntitiesData.length);
             outStream.write(compressedTileEntitiesData);
 
+//            System.out.println("HEADS: ");
+//            System.out.println("TILES: " + tileEntitiesList.toString());
+
             // Entities
             List<CompoundTag> entitiesList = sortedChunks.stream().flatMap(chunk -> chunk.getEntities().stream()).collect(Collectors.toList());
 

@@ -11,6 +11,8 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_16_R3.*;
@@ -25,6 +27,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 public class CustomWorldServer extends WorldServer {
 
@@ -106,11 +109,11 @@ public class CustomWorldServer extends WorldServer {
     private void save() {
         synchronized (saveLock) { // Don't want to save the SlimeWorld from multiple threads simultaneously
             try {
-//                LOGGER.info("Saving world " + slimeWorld.getName() + "...");
+                Bukkit.getLogger().log(Level.INFO, "Saving world " + slimeWorld.getName() + "...");
                 long start = System.currentTimeMillis();
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
-//                LOGGER.info("World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
+                Bukkit.getLogger().log(Level.INFO, "World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -229,10 +232,28 @@ public class CustomWorldServer extends WorldServer {
 
                     // Sometimes null tile entities are saved
                     if (type.isPresent()) {
-                        IBlockData blockData = nmsChunk.getType(new BlockPosition(tag.getIntValue("x").get(), tag.getIntValue("y").get(), tag.getIntValue("z").get()));
+                        BlockPosition blockPosition = new BlockPosition(tag.getIntValue("x").get(), tag.getIntValue("y").get(), tag.getIntValue("z").get());
+                        IBlockData blockData = nmsChunk.getType(blockPosition);
                         TileEntity entity = TileEntity.create(blockData, (NBTTagCompound) Converter.convertTag(tag));
-
                         if (entity != null) {
+                            if(type.get().toLowerCase().contains("skull") || type.get().toLowerCase().contains("head")) {
+                                NBTTagCompound nbtTagCompound = (NBTTagCompound) Converter.convertTag(tag);
+                                if(tag.getAsCompoundTag("SkullOwner").isPresent()) {
+                                    if(tag.getAsCompoundTag("SkullOwner").get().getAsCompoundTag("Properties").isPresent()) {
+                                        TileEntitySkull entitySkull = (TileEntitySkull) entity;
+                                        String texture = nbtTagCompound.getCompound("SkullOwner").getCompound("Properties").get("textures").toString().split(":")[1].replace("\"", "");
+                                        texture = texture.replace("}", "");
+                                        texture = texture.replace("]", "");
+
+                                        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), UUID.randomUUID().toString());
+                                        Property property = new Property("textures", texture);
+                                        gameProfile.getProperties().put("textures", property);
+                                        entitySkull.setGameProfile(gameProfile);
+
+                                        entitySkull.update();
+                                    }
+                                }
+                            }
                             nmsChunk.a(entity);
                             loadedEntities++;
                         }
