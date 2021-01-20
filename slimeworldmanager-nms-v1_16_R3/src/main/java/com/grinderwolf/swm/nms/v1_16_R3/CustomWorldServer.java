@@ -212,9 +212,6 @@ public class CustomWorldServer extends WorldServer {
             if (tileEntities != null) {
                 for (CompoundTag tag : tileEntities) {
                     Optional<String> type = tag.getStringValue("id");
-                    if(type.get().toLowerCase().contains("skull") || type.get().toLowerCase().contains("head")) {
-                        System.out.println("DATA: " + tag.toString());
-                    }
 
                     // Sometimes null tile entities are saved
                     if (type.isPresent()) {

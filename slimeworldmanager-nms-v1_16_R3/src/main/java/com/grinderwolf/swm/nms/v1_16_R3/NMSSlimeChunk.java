@@ -108,11 +108,6 @@ public class NMSSlimeChunk implements SlimeChunk {
 
         for (TileEntity entity : chunk.getTileEntities().values()) {
             NBTTagCompound entityNbt = new NBTTagCompound();
-//            if(entityNbt.getString("id").toLowerCase().contains("head") || entityNbt.getString("id").toLowerCase().contains("skull")) {
-//                if(entityNbt.getCompound("SkullOwner").getString("Name").isEmpty()) {
-//                    entityNbt.getCompound("SkullOwner").setString("Name", "Steve");
-//                }
-//            }
             entity.save(entityNbt);
             tileEntities.add((CompoundTag) Converter.convertTag("", entityNbt));
         }
