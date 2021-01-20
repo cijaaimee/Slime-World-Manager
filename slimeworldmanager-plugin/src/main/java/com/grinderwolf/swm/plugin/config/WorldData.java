@@ -8,6 +8,8 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
 
+import static com.grinderwolf.swm.api.world.properties.SlimeProperties.*;
+
 @Data
 @ConfigSerializable
 public class WorldData {
@@ -83,18 +85,18 @@ public class WorldData {
 
         SlimePropertyMap propertyMap = new SlimePropertyMap();
 
-        propertyMap.setInt(SlimeProperties.SPAWN_X, (int) spawnX);
-        propertyMap.setInt(SlimeProperties.SPAWN_Y, (int) spawnY);
-        propertyMap.setInt(SlimeProperties.SPAWN_Z, (int) spawnZ);
+        propertyMap.setValue(SPAWN_X, (int) spawnX);
+        propertyMap.setValue(SPAWN_Y, (int) spawnY);
+        propertyMap.setValue(SPAWN_Z, (int) spawnZ);
 
-        propertyMap.setString(SlimeProperties.DIFFICULTY, difficulty);
-        propertyMap.setBoolean(SlimeProperties.ALLOW_MONSTERS, allowMonsters);
-        propertyMap.setBoolean(SlimeProperties.ALLOW_ANIMALS, allowAnimals);
-        propertyMap.setBoolean(SlimeProperties.DRAGON_BATTLE, dragonBattle);
-        propertyMap.setBoolean(SlimeProperties.PVP, pvp);
-        propertyMap.setString(SlimeProperties.ENVIRONMENT, environment);
-        propertyMap.setString(SlimeProperties.WORLD_TYPE, worldType);
-        propertyMap.setString(SlimeProperties.DEFAULT_BIOME, defaultBiome);
+        propertyMap.setValue(DIFFICULTY, difficulty);
+        propertyMap.setValue(ALLOW_MONSTERS, allowMonsters);
+        propertyMap.setValue(ALLOW_ANIMALS, allowAnimals);
+        propertyMap.setValue(DRAGON_BATTLE, dragonBattle);
+        propertyMap.setValue(PVP, pvp);
+        propertyMap.setValue(ENVIRONMENT, environment);
+        propertyMap.setValue(WORLD_TYPE, worldType);
+        propertyMap.setValue(DEFAULT_BIOME, defaultBiome);
 
         return propertyMap;
     }

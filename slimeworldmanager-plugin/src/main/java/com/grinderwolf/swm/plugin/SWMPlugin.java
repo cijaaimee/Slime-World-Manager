@@ -39,6 +39,8 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.grinderwolf.swm.api.world.properties.SlimeProperties.*;
+
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Getter
@@ -296,14 +298,14 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     private SlimePropertyMap propertiesToMap(SlimeWorld.SlimeProperties properties) {
         SlimePropertyMap propertyMap = new SlimePropertyMap();
 
-        propertyMap.setInt(SlimeProperties.SPAWN_X, (int) properties.getSpawnX());
-        propertyMap.setInt(SlimeProperties.SPAWN_Y, (int) properties.getSpawnY());
-        propertyMap.setInt(SlimeProperties.SPAWN_Z, (int) properties.getSpawnZ());
-        propertyMap.setString(SlimeProperties.DIFFICULTY, Difficulty.getByValue(properties.getDifficulty()).name());
-        propertyMap.setBoolean(SlimeProperties.ALLOW_MONSTERS, properties.allowMonsters());
-        propertyMap.setBoolean(SlimeProperties.ALLOW_ANIMALS, properties.allowAnimals());
-        propertyMap.setBoolean(SlimeProperties.PVP, properties.isPvp());
-        propertyMap.setString(SlimeProperties.ENVIRONMENT, properties.getEnvironment());
+        propertyMap.setValue(SPAWN_X, (int) properties.getSpawnX());
+        propertyMap.setValue(SPAWN_Y, (int) properties.getSpawnY());
+        propertyMap.setValue(SPAWN_Z, (int) properties.getSpawnZ());
+        propertyMap.setValue(DIFFICULTY, Difficulty.getByValue(properties.getDifficulty()).name());
+        propertyMap.setValue(ALLOW_MONSTERS, properties.allowMonsters());
+        propertyMap.setValue(ALLOW_ANIMALS, properties.allowAnimals());
+        propertyMap.setValue(PVP, properties.isPvp());
+        propertyMap.setValue(ENVIRONMENT, properties.getEnvironment());
 
         return propertyMap;
     }

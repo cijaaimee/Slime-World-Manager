@@ -165,7 +165,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
         }
 
         EnderDragonBattle dragonBattle = server.getDragonBattle();
-        boolean runBattle = world.getPropertyMap().getBoolean(SlimeProperties.DRAGON_BATTLE);
+        boolean runBattle = world.getPropertyMap().getValue(SlimeProperties.DRAGON_BATTLE);
 
         if(dragonBattle != null && !runBattle) {
             dragonBattle.bossBattle.setVisible(false);
@@ -217,7 +217,10 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
 
                 worldloadlistener.b();
                 chunkproviderserver.getLightEngine().a(5);
-                worldserver.setSpawnFlags(world.getPropertyMap().getBoolean(SlimeProperties.ALLOW_MONSTERS), world.getPropertyMap().getBoolean(SlimeProperties.ALLOW_ANIMALS));
+                worldserver.setSpawnFlags(
+                    world.getPropertyMap().getValue(SlimeProperties.ALLOW_MONSTERS),
+                    world.getPropertyMap().getValue(SlimeProperties.ALLOW_ANIMALS)
+                );
             }
         }else{
             mcServer.loadSpawn(server.getChunkProvider().playerChunkMap.worldLoadListener, server);
@@ -229,7 +232,7 @@ public class v1_16_R1SlimeNMS implements SlimeNMS {
     }
 
     private World.Environment getEnvironment(SlimeWorld world) {
-        return World.Environment.valueOf(world.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
+        return World.Environment.valueOf(world.getPropertyMap().getValue(SlimeProperties.ENVIRONMENT).toUpperCase());
     }
 
     private WorldDataServer createWorldData(SlimeWorld world) {

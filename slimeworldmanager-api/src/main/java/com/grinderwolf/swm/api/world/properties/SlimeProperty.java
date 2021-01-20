@@ -1,49 +1,45 @@
 package com.grinderwolf.swm.api.world.properties;
 
+import com.flowpowered.nbt.CompoundMap;
+import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.Tag;
 import lombok.Getter;
 
 import java.util.function.Function;
 
 /**
- * A property object.
+ * A property describing behavior of a slime world.
  */
 @Getter
-public class SlimeProperty {
+public abstract class SlimeProperty<T> {
 
     private final String nbtName;
-    private final PropertyType type;
-    private final Object defaultValue;
-    private final Function<Object, Boolean> validator;
+    private final T defaultValue;
+    private final Function<T, Boolean> validator;
 
-    SlimeProperty(String nbtName, PropertyType type, Object defaultValue) {
-        this(nbtName, type, defaultValue, null);
+    protected SlimeProperty(String nbtName, T defaultValue) {
+        this(nbtName, defaultValue, null);
     }
 
-    SlimeProperty(String nbtName, PropertyType type, Object defaultValue, Function<Object, Boolean> validator) {
+    protected SlimeProperty(String nbtName, T defaultValue, Function<T, Boolean> validator) {
         this.nbtName = nbtName;
-        this.type = type;
 
-        if (defaultValue != null) {
-            if (!type.getValueClazz().isInstance(defaultValue)) {
-                throw new IllegalArgumentException(defaultValue + " does not match class " + type.getValueClazz().getName());
-            }
-
-            if (validator != null) {
-                if (!validator.apply(defaultValue)) {
-                    throw new IllegalArgumentException("Invalid default value for property " + nbtName + "! " + defaultValue);
-                }
-            }
+        if (defaultValue != null && validator != null && !validator.apply(defaultValue)) {
+            throw new IllegalArgumentException("Invalid default value for property " + nbtName + "! " + defaultValue);
         }
 
         this.defaultValue = defaultValue;
         this.validator = validator;
     }
 
+    protected abstract void writeValue(CompoundMap compound, T value);
+
+    protected abstract T readValue(Tag<?> compoundTag);
+
     @Override
     public String toString() {
         return "SlimeProperty{" +
             "nbtName='" + nbtName + '\'' +
-            ", type=" + type +
             ", defaultValue=" + defaultValue +
             '}';
     }

@@ -1,48 +1,76 @@
 package com.grinderwolf.swm.api.world.properties;
 
+import com.grinderwolf.swm.api.world.properties.type.SlimePropertyBoolean;
+import com.grinderwolf.swm.api.world.properties.type.SlimePropertyInt;
+import com.grinderwolf.swm.api.world.properties.type.SlimePropertyString;
+
 /**
- * Class with all existing properties.
+ * Class with all existing slime world properties.
  */
 public class SlimeProperties {
 
-    public static final SlimeProperty SPAWN_X = new SlimeProperty("spawnX", PropertyType.INT, 0);
-    public static final SlimeProperty SPAWN_Y = new SlimeProperty("spawnY", PropertyType.INT, 255);
-    public static final SlimeProperty SPAWN_Z = new SlimeProperty("spawnZ", PropertyType.INT, 0);
+    /**
+     * The X coordinate of the world spawn
+     */
+    public static final SlimeProperty<Integer> SPAWN_X = new SlimePropertyInt("spawnX", 0);
 
-    public static final SlimeProperty DIFFICULTY = new SlimeProperty("difficulty", PropertyType.STRING, "peaceful", (value) -> {
+    /**
+     * The Y coordinate of the world spawn
+     */
+    public static final SlimeProperty<Integer> SPAWN_Y = new SlimePropertyInt("spawnY", 255);
 
-        String difficulty = (String) value;
-        return difficulty.equalsIgnoreCase("peaceful") || difficulty.equalsIgnoreCase("easy")
-                || difficulty.equalsIgnoreCase("normal") || difficulty.equalsIgnoreCase("hard");
+    /**
+     * The Z coordinate of the world spawn
+     */
+    public static final SlimeProperty<Integer> SPAWN_Z = new SlimePropertyInt("spawnZ", 0);
 
-    });
+    /**
+     * The difficulty set for the world
+     */
+    public static final SlimeProperty<String> DIFFICULTY = new SlimePropertyString("difficulty", "peaceful", (value) ->
+        value.equalsIgnoreCase("peaceful") || value.equalsIgnoreCase("easy")
+            || value.equalsIgnoreCase("normal") || value.equalsIgnoreCase("hard")
+    );
 
-    public static final SlimeProperty ALLOW_MONSTERS = new SlimeProperty("allowMonsters", PropertyType.BOOLEAN, true);
-    public static final SlimeProperty ALLOW_ANIMALS = new SlimeProperty("allowAnimals", PropertyType.BOOLEAN, true);
+    /**
+     * Whether monsters are allowed to spawn at night or in the dark
+     */
+    public static final SlimeProperty<Boolean> ALLOW_MONSTERS = new SlimePropertyBoolean("allowMonsters", true);
 
-    public static final SlimeProperty DRAGON_BATTLE = new SlimeProperty("dragonBattle", PropertyType.BOOLEAN, false);
+    /**
+     * Whether peaceful animals are allowed to spawn
+     */
+    public static final SlimeProperty<Boolean> ALLOW_ANIMALS = new SlimePropertyBoolean("allowAnimals", true);
 
-    public static final SlimeProperty PVP = new SlimeProperty("pvp", PropertyType.BOOLEAN, true);
+    /**
+     * Whether the dragon battle should be enabled in end worlds
+     */
+    public static final SlimeProperty<Boolean> DRAGON_BATTLE = new SlimePropertyBoolean("dragonBattle", false);
 
-    public static final SlimeProperty ENVIRONMENT = new SlimeProperty("environment", PropertyType.STRING, "normal", (value) -> {
+    /**
+     * Whether PVP combat is allowed
+     */
+    public static final SlimeProperty<Boolean> PVP = new SlimePropertyBoolean("pvp", true);
 
-        String env = (String) value;
-        return env.equalsIgnoreCase("normal") || env.equalsIgnoreCase("nether") || env.equalsIgnoreCase("the_end");
+    /**
+     * The environment of the world
+     */
+    public static final SlimeProperty<String> ENVIRONMENT = new SlimePropertyString("environment", "normal", (value) ->
+        value.equalsIgnoreCase("normal") || value.equalsIgnoreCase("nether") || value.equalsIgnoreCase("the_end")
+    );
 
-    });
+    /**
+     * The type of world
+     */
+    public static final SlimeProperty<String> WORLD_TYPE = new SlimePropertyString("worldtype", "default", (value) ->
+        value.equalsIgnoreCase("default") || value.equalsIgnoreCase("flat") || value.equalsIgnoreCase("large_biomes")
+            || value.equalsIgnoreCase("amplified") || value.equalsIgnoreCase("customized")
+            || value.equalsIgnoreCase("debug_all_block_states") || value.equalsIgnoreCase("default_1_1")
+    );
 
-    public static final SlimeProperty WORLD_TYPE = new SlimeProperty("worldtype", PropertyType.STRING, "default", (value) -> {
+    /**
+     * The default biome generated in empty chunks
+     */
+    public static final SlimeProperty<String> DEFAULT_BIOME = new SlimePropertyString("defaultBiome", "minecraft:plains");
 
-        String worldType = (String) value;
-        return worldType.equalsIgnoreCase("default") || worldType.equalsIgnoreCase("flat") || worldType.equalsIgnoreCase("large_biomes")
-                || worldType.equalsIgnoreCase("amplified") || worldType.equalsIgnoreCase("customized")
-                || worldType.equalsIgnoreCase("debug_all_block_states") || worldType.equalsIgnoreCase("default_1_1");
-
-    });
-
-    public static final SlimeProperty DEFAULT_BIOME = new SlimeProperty("defaultBiome", PropertyType.STRING, "minecraft:plains");
-
-    public static final SlimeProperty[] VALUES = { SPAWN_X, SPAWN_Y, SPAWN_Z,
-        DIFFICULTY, ALLOW_MONSTERS, ALLOW_ANIMALS, DRAGON_BATTLE, PVP, ENVIRONMENT,
-        WORLD_TYPE, DEFAULT_BIOME };
 }

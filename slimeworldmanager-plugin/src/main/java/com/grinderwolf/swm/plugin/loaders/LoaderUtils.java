@@ -299,10 +299,12 @@ public class LoaderUtils {
 
             // World properties
             SlimePropertyMap worldPropertyMap = propertyMap;
-            Optional<CompoundTag> propertiesTag = extraCompound.getAsCompoundTag("properties");
+            Optional<CompoundMap> propertiesMap = extraCompound
+                .getAsCompoundTag("properties")
+                .map(CompoundTag::getValue);
 
-            if (propertiesTag.isPresent()) {
-                worldPropertyMap = SlimePropertyMap.fromCompound(propertiesTag.get());
+            if (propertiesMap.isPresent()) {
+                worldPropertyMap = new SlimePropertyMap(propertiesMap.get());
                 worldPropertyMap.merge(propertyMap); // Override world properties
             } else if (propertyMap == null) { // Make sure the property map is never null
                 worldPropertyMap = new SlimePropertyMap();

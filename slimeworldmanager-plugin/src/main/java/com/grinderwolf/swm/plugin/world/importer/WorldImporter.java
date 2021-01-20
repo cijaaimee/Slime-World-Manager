@@ -96,9 +96,9 @@ public class WorldImporter {
 
         SlimePropertyMap propertyMap = new SlimePropertyMap();
 
-        propertyMap.setInt(SlimeProperties.SPAWN_X, data.getSpawnX());
-        propertyMap.setInt(SlimeProperties.SPAWN_Y, data.getSpawnY());
-        propertyMap.setInt(SlimeProperties.SPAWN_Z, data.getSpawnZ());
+        propertyMap.setValue(SlimeProperties.SPAWN_X, data.getSpawnX());
+        propertyMap.setValue(SlimeProperties.SPAWN_Y, data.getSpawnY());
+        propertyMap.setValue(SlimeProperties.SPAWN_Z, data.getSpawnZ());
 
         return new CraftSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", extraData),
                 maps, worldVersion, propertyMap, false, true);

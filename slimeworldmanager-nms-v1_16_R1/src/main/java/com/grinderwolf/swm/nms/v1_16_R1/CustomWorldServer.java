@@ -65,13 +65,13 @@ public class CustomWorldServer extends WorldServer {
 
         SlimePropertyMap propertyMap = world.getPropertyMap();
 
-        worldDataServer.setDifficulty(EnumDifficulty.valueOf(propertyMap.getString(SlimeProperties.DIFFICULTY).toUpperCase()));
-        worldDataServer.setSpawn(new BlockPosition(propertyMap.getInt(SlimeProperties.SPAWN_X), propertyMap.getInt(SlimeProperties.SPAWN_Y), propertyMap.getInt(SlimeProperties.SPAWN_Z)));
-        super.setSpawnFlags(propertyMap.getBoolean(SlimeProperties.ALLOW_MONSTERS), propertyMap.getBoolean(SlimeProperties.ALLOW_ANIMALS));
+        worldDataServer.setDifficulty(EnumDifficulty.valueOf(propertyMap.getValue(SlimeProperties.DIFFICULTY).toUpperCase()));
+        worldDataServer.setSpawn(new BlockPosition(propertyMap.getValue(SlimeProperties.SPAWN_X), propertyMap.getValue(SlimeProperties.SPAWN_Y), propertyMap.getValue(SlimeProperties.SPAWN_Z)));
+        super.setSpawnFlags(propertyMap.getValue(SlimeProperties.ALLOW_MONSTERS), propertyMap.getValue(SlimeProperties.ALLOW_ANIMALS));
 
-        this.pvpMode = propertyMap.getBoolean(SlimeProperties.PVP);
+        this.pvpMode = propertyMap.getValue(SlimeProperties.PVP);
 
-        String biomeStr = slimeWorld.getPropertyMap().getString(SlimeProperties.DEFAULT_BIOME);
+        String biomeStr = slimeWorld.getPropertyMap().getValue(SlimeProperties.DEFAULT_BIOME);
         defaultBiome = IRegistry.BIOME.get(new MinecraftKey(biomeStr));
     }
 
