@@ -4,6 +4,7 @@ import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.LongArrayTag;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.JsonObject;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
@@ -21,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_16_R3.SpigotTimings;
 import org.bukkit.event.world.WorldSaveEvent;
+import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.*;
@@ -210,27 +212,85 @@ public class CustomWorldServer extends WorldServer {
             if (tileEntities != null) {
                 for (CompoundTag tag : tileEntities) {
                     Optional<String> type = tag.getStringValue("id");
+                    if(type.get().toLowerCase().contains("skull") || type.get().toLowerCase().contains("head")) {
+                        System.out.println("DATA: " + tag.toString());
+                    }
 
                     // Sometimes null tile entities are saved
                     if (type.isPresent()) {
                         BlockPosition blockPosition = new BlockPosition(tag.getIntValue("x").get(), tag.getIntValue("y").get(), tag.getIntValue("z").get());
                         IBlockData blockData = nmsChunk.getType(blockPosition);
                         TileEntity entity = TileEntity.create(blockData, (NBTTagCompound) Converter.convertTag(tag));
-                        if (entity != null) {
+                        if (blockData != null) {
                             NBTTagCompound nbtTagCompound = (NBTTagCompound) Converter.convertTag(tag);
                             if(tag.getAsCompoundTag("SkullOwner").isPresent()) {
-                                if(tag.getAsCompoundTag("SkullOwner").get().getAsCompoundTag("Properties").isPresent()) {
-                                    TileEntitySkull entitySkull = (TileEntitySkull) entity;
-                                    String texture = nbtTagCompound.getCompound("SkullOwner").getCompound("Properties").get("textures").toString().split(":")[1].replace("\"", "");
-                                    texture = texture.replace("}", "");
-                                    texture = texture.replace("]", "");
+                                if(tag.getAsCompoundTag("SkullOwner").get().getAsStringTag("Name").isPresent()) {
+                                    if(tag.getAsCompoundTag("SkullOwner").get().getAsCompoundTag("Properties").isPresent()) {
+                                        String skullName = tag.getAsCompoundTag("SkullOwner").get().getAsStringTag("Name").get().getValue();
+                                        TileEntitySkull entitySkull = (TileEntitySkull) entity;
 
-                                    GameProfile gameProfile = new GameProfile(UUID.randomUUID(), UUID.randomUUID().toString());
-                                    Property property = new Property("textures", texture);
-                                    gameProfile.getProperties().put("textures", property);
-                                    entitySkull.setGameProfile(gameProfile);
+                                        nbtTagCompound.getCompound("SkullOwner").setString("Name", NBTTagString.b(uuid.toString()));
+                                        NBTTagCompound properties = nbtTagCompound.getCompound("SkullOwner").getCompound("Properties");
+                                        NBTTagList tagList = properties.getList("textures", 10);
+                                        String finalTexture = "ITEM MISSING!";
+                                        String finalSignature = "ITEM MISSING!";
 
-                                    entitySkull.update();
+                                        for(NBTBase nbtBase : tagList) {
+                                            NBTTagCompound nbtComp = (NBTTagCompound) nbtBase;
+                                            finalTexture = nbtComp.getString("Value");
+                                            finalSignature = nbtComp.getString("Signature");
+                                            nbtComp.setString("Signature", finalSignature);
+                                        }
+
+                                        if(!finalSignature.equals("")) {
+                                            GameProfile gameProfile = new GameProfile(UUID.randomUUID(), skullName);
+                                            Property property = new Property("textures", finalTexture, finalSignature);
+                                            gameProfile.getProperties().put("textures", property);
+                                            entitySkull.setGameProfile(gameProfile);
+
+                                            entitySkull.update();
+                                        }else{
+                                            GameProfile gameProfile = new GameProfile(UUID.randomUUID(), skullName);
+                                            Property property = new Property("textures", finalTexture);
+                                            gameProfile.getProperties().put("textures", property);
+                                            entitySkull.setGameProfile(gameProfile);
+
+                                            entitySkull.update();
+                                        }
+
+                                        entitySkull.save(nbtTagCompound);
+
+                                        entitySkull.load(blockData, nbtTagCompound);
+                                    }
+                                }else{
+                                    if(tag.getAsCompoundTag("SkullOwner").get().getAsCompoundTag("Properties").isPresent()) {
+                                        UUID uuid = UUID.randomUUID();
+                                        NBTTagCompound properties = nbtTagCompound.getCompound("SkullOwner").getCompound("Properties");
+                                        NBTTagList tagList = properties.getList("textures", 10);
+
+                                        nbtTagCompound.getCompound("SkullOwner").setString("Name", NBTTagString.b("Paul19988"));
+
+                                        String finalTexture = "ITEM MISSING!";
+                                        String signature = "uhqzJ9HI6RH47VxjSToEiYTxNmp2vNdzM0y2E9YZE6wd49qADF4Hv9aau6lR7V7x2kyie9tRFHhNc8vIxBMBTtOIVPjAM5m0+y6mkm5hbV6rZSgG+OW/p27+Bun0Cq90o8N+sFBnzKsKL9o/3BMdYUmNaYzzK9RD5ymuPDQWnsJKf+ms+TH6lJL2ltt33BdYD3KiY8e7DXywjjH6htmcm/QHAWKIiWg9zX/X5iwjUux+kiT5EJTnQrNIei0v7XsEHJGPSjhAkCrwsHb+Bvjp6TcOUcpPRmRZXUwBRmngwXQEweymVLW/qdGLyBrsW6SZVxrb9/B4IBcNm73Kb50DTeGxuI+GPqxWBcKNBvzfyI6A2+GjScnp0zNYfk9od/Q7jezLZKTJWjDhYcPbdmc0FCHpbOBIqmNDRRykWYT/0M23tXmb2Dk6ADVO0weNdRqUpYo+3FhDjBdoM+BSlTcH7NbvhplEApaRrHzjlalGIi7FTC7cf5yw2Kv64YmEuvRoLHAFVOAnVY77dHGxshnLShBKu2uKsApqKvRqNiw2ULAnpvPiFjkjvI8UpbfPp5KdwldKY8rHcjvu8ux1vPiAM0x4yHAP+ho0hNfQu0F57pyBawpWQPGFjgCLlKwwSODpGL6cdyg3MCJVtofmlFY2oQjiUowS0Wc1kn4GejG1uKY=";
+
+                                        for(NBTBase nbtBase : tagList) {
+                                            NBTTagCompound nbtComp = (NBTTagCompound) nbtBase;
+                                            finalTexture = nbtComp.getString("Value");
+                                            nbtComp.setString("Signature", signature);
+                                        }
+
+                                        TileEntitySkull entitySkull = (TileEntitySkull) entity;
+
+                                        GameProfile gameProfile = new GameProfile(uuid, uuid.toString());
+                                        Property property = new Property("textures", finalTexture, signature);
+                                        gameProfile.getProperties().put("textures", property);
+                                        entitySkull.setGameProfile(gameProfile);
+
+                                        entitySkull.update();
+                                        entitySkull.save(nbtTagCompound);
+
+                                        entitySkull.load(blockData, nbtTagCompound);
+                                    }
                                 }
                             }
                             nmsChunk.a(entity);

@@ -125,7 +125,11 @@ public class CraftSlimeWorld implements SlimeWorld {
         sortedChunks.removeIf(chunk -> chunk == null || Arrays.stream(chunk.getSections()).allMatch(Objects::isNull)); // Remove empty chunks to save space
 
         // Store world properties
-        extraData.getValue().put("properties", propertyMap.toCompound());
+        if(extraData.getValue().containsKey("properties")) {
+            extraData.getValue().putIfAbsent("properties", propertyMap.toCompound());
+        }else{
+            extraData.getValue().replace("properties", propertyMap.toCompound());
+        }
 
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         DataOutputStream outStream = new DataOutputStream(outByteStream);
@@ -184,9 +188,6 @@ public class CraftSlimeWorld implements SlimeWorld {
             outStream.writeInt(compressedTileEntitiesData.length);
             outStream.writeInt(tileEntitiesData.length);
             outStream.write(compressedTileEntitiesData);
-
-//            System.out.println("HEADS: ");
-//            System.out.println("TILES: " + tileEntitiesList.toString());
 
             // Entities
             List<CompoundTag> entitiesList = sortedChunks.stream().flatMap(chunk -> chunk.getEntities().stream()).collect(Collectors.toList());
