@@ -15,8 +15,8 @@ SWM releases can be found [here](https://www.spigotmc.org/resources/slimeworldma
 ```
 <repositories>
   <repository>
-    <id>rapture.pw</id>
-    <url>TO-BE-ADDED</url>
+    <id>rapture-snapshots</id>
+    <url>https://repo.rapture.pw/repository/maven-snapshots/</url>
   </repository>
 </repositories>
 ```
