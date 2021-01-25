@@ -1,10 +1,10 @@
 package com.grinderwolf.swm.api.world.properties;
 
-import com.flowpowered.nbt.*;
-import lombok.*;
-
-import java.util.*;
-import java.util.function.Function;
+import com.flowpowered.nbt.CompoundMap;
+import com.flowpowered.nbt.CompoundTag;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * A Property Map object.
