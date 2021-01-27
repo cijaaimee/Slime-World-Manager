@@ -62,6 +62,7 @@ public class CloneWorldCmd implements Subcommand {
             }
 
             String dataSource = args.length > 2 ? args[2] : worldData.getDataSource();
+            SlimeLoader initLoader = SWMPlugin.getInstance().getLoader(worldData.getDataSource());
             SlimeLoader loader = SWMPlugin.getInstance().getLoader(dataSource);
 
             if (loader == null) {
@@ -80,7 +81,7 @@ public class CloneWorldCmd implements Subcommand {
                 try {
                     long start = System.currentTimeMillis();
 
-                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorld(loader, templateWorldName, true, worldData.toPropertyMap()).clone(worldName, loader);
+                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorld(initLoader, templateWorldName, true, worldData.toPropertyMap()).clone(worldName, loader);
                     Bukkit.getScheduler().runTask(SWMPlugin.getInstance(), () -> {
                         try {
                             SWMPlugin.getInstance().generateWorld(slimeWorld);
