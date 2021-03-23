@@ -92,7 +92,7 @@ public class DeleteWorldCmd implements Subcommand {
 
                         try {
                             if (loader.isWorldLocked(worldName)) {
-                                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + "is being used on another server.");
+                                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + " is being used on another server.");
 
                                 return;
                             }

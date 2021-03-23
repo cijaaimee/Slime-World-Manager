@@ -66,6 +66,7 @@ public class LoadWorldCmd implements Subcommand {
             Bukkit.getScheduler().runTaskAsynchronously(SWMPlugin.getInstance(), () -> {
 
                 try {
+                    // ATTEMPT TO LOAD WORLD
                     long start = System.currentTimeMillis();
                     SlimeLoader loader = SWMPlugin.getInstance().getLoader(worldData.getDataSource());
 

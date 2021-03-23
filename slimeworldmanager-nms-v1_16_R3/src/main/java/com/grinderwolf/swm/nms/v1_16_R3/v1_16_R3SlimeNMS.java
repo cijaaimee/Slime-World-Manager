@@ -1,6 +1,8 @@
 package com.grinderwolf.swm.nms.v1_16_R3;
 
 import com.flowpowered.nbt.CompoundTag;
+import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
+import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
@@ -193,6 +195,11 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
 
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
         mcServer.loadSpawn(server.getChunkProvider().playerChunkMap.worldLoadListener, server);
+//        try {
+//            world.getLoader().loadWorld(worldName, world.isReadOnly());
+//        } catch(UnknownWorldException | WorldInUseException | IOException e) {
+//            e.printStackTrace();
+//        }
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
     }
 
