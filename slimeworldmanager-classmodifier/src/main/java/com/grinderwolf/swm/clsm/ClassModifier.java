@@ -23,6 +23,14 @@ public class ClassModifier {
 
     private static CLSMBridge customLoader;
 
+//    private void d () {
+//        try {
+//            Class.forName("").isInstance(this);
+//        } catch(ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     public static CompletableFuture getFutureChunk(Object world, int x, int z) {
         if (customLoader == null || !isCustomWorld(world)) {
             return null;

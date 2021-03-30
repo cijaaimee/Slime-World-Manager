@@ -203,6 +203,7 @@
         $0.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
         $0.server.getPluginManager().callEvent(new org.bukkit.event.server.ServerLoadEvent(org.bukkit.event.server.ServerLoadEvent.LoadType.STARTUP));
         $0.serverConnection.acceptConnections();
+
         return;
     }
 }

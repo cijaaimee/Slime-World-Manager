@@ -27,6 +27,8 @@ public class DatasourcesConfig {
         @Setting("database") private String database = "slimeworldmanager";
 
         @Setting("usessl") private boolean usessl = false;
+
+        @Setting("sqlUrl") private String sqlUrl = "jdbc:mysql://{host}:{port}/{database}?autoReconnect=true&allowMultiQueries=true&useSSL={usessl}";
     }
 
     @Getter
