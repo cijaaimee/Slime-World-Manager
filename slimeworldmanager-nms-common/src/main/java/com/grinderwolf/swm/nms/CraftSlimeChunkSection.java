@@ -18,6 +18,7 @@ public class CraftSlimeChunkSection implements SlimeChunkSection {
     // Post 1.13 block data
     private final ListTag<CompoundTag> palette;
     private final long[] blockStates;
+    private final long[] entityStates;
 
     private final NibbleArray blockLight;
     private final NibbleArray skyLight;

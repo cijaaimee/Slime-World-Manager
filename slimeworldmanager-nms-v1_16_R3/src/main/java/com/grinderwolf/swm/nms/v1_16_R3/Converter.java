@@ -1,20 +1,6 @@
 package com.grinderwolf.swm.nms.v1_16_R3;
 
-import com.flowpowered.nbt.ByteArrayTag;
-import com.flowpowered.nbt.ByteTag;
-import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
-import com.flowpowered.nbt.DoubleTag;
-import com.flowpowered.nbt.FloatTag;
-import com.flowpowered.nbt.IntArrayTag;
-import com.flowpowered.nbt.IntTag;
-import com.flowpowered.nbt.ListTag;
-import com.flowpowered.nbt.LongArrayTag;
-import com.flowpowered.nbt.LongTag;
-import com.flowpowered.nbt.ShortTag;
-import com.flowpowered.nbt.StringTag;
-import com.flowpowered.nbt.Tag;
-import com.flowpowered.nbt.TagType;
+import com.flowpowered.nbt.*;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import net.minecraft.server.v1_16_R3.NBTBase;
 import net.minecraft.server.v1_16_R3.NBTTagByte;
@@ -33,6 +19,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Converter {
@@ -132,9 +120,9 @@ public class Converter {
 
                 return compound;
             case 11:
-                return new IntArrayTag("", ((NBTTagIntArray) base).getInts());
+                return new IntArrayTag(name, ((NBTTagIntArray) base).getInts());
             case 12:
-                return new LongArrayTag("", ((NBTTagLongArray) base).getLongs());
+                return new LongArrayTag(name, ((NBTTagLongArray) base).getLongs());
             default:
                 throw new IllegalArgumentException("Invalid tag type " + base.getTypeId());
         }

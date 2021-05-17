@@ -66,6 +66,8 @@ public class NMSSlimeChunk implements SlimeChunk {
                     // Sky light Nibble Array
                     NibbleArray skyLightArray = Converter.convertArray(lightEngine.a(EnumSkyBlock.SKY).a(SectionPosition.a(chunk.getPos(), sectionId)));
 
+                    // Tile/Entity Data
+
                     // Block Data
                     DataPaletteBlock dataPaletteBlock = section.getBlocks();
                     NBTTagCompound blocksCompound = new NBTTagCompound();
@@ -74,7 +76,7 @@ public class NMSSlimeChunk implements SlimeChunk {
                     ListTag<CompoundTag> palette = (ListTag<CompoundTag>) Converter.convertTag("", paletteList);
                     long[] blockStates = blocksCompound.getLongArray("BlockStates");
 
-                    sections[sectionId] = new CraftSlimeChunkSection(null, null, palette, blockStates, blockLightArray, skyLightArray);
+                    sections[sectionId] = new CraftSlimeChunkSection(null, null, palette, blockStates, null, blockLightArray, skyLightArray);
                 }
             }
         }
@@ -107,9 +109,8 @@ public class NMSSlimeChunk implements SlimeChunk {
         List<CompoundTag> tileEntities = new ArrayList<>();
 
         for (TileEntity entity : chunk.getTileEntities().values()) {
-            NBTTagCompound entityNbt = new NBTTagCompound();
-            entity.save(entityNbt);
-            tileEntities.add((CompoundTag) Converter.convertTag("", entityNbt));
+            NBTTagCompound entityNbt = entity.b();
+            tileEntities.add((CompoundTag) Converter.convertTag(entityNbt.getString("name"), entityNbt));
         }
 
         return tileEntities;
