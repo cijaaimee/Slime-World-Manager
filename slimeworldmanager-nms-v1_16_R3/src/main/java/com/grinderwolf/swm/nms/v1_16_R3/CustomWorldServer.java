@@ -111,7 +111,7 @@ public class CustomWorldServer extends WorldServer {
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
                 Bukkit.getLogger().log(Level.INFO, "World " + slimeWorld.getName() + " saved in " + (System.currentTimeMillis() - start) + "ms.");
-            } catch (IOException ex) {
+            } catch (IOException | IllegalStateException ex) {
                 ex.printStackTrace();
             }
         }
@@ -206,7 +206,7 @@ public class CustomWorldServer extends WorldServer {
         Consumer<Chunk> loadEntities = (nmsChunk) -> {
 
             // Load tile entities
-            System.out.println("Loading tile entities for chunk (" + pos.x + ", " + pos.z + ") on world " + slimeWorld.getName());
+//            System.out.println("Loading tile entities for chunk (" + pos.x + ", " + pos.z + ") on world " + slimeWorld.getName());
             List<CompoundTag> tileEntities = chunk.getTileEntities();
             int loadedEntities = 0;
 
