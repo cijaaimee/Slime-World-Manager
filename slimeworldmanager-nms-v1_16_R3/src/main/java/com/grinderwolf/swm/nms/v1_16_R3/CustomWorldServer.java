@@ -214,8 +214,6 @@ public class CustomWorldServer extends WorldServer {
                 for (CompoundTag tag : tileEntities) {
                     Optional<String> type = tag.getStringValue("id");
 
-                    Bukkit.broadcastMessage("TILE: " + type.get() + ".\n" + tag);
-
                     // Sometimes null tile entities are saved
                     if (type.isPresent()) {
                         BlockPosition blockPosition = new BlockPosition(tag.getIntValue("x").get(), tag.getIntValue("y").get(), tag.getIntValue("z").get());
