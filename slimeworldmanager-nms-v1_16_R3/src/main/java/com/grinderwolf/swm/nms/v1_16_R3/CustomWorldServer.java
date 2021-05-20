@@ -83,8 +83,8 @@ public class CustomWorldServer extends WorldServer {
 
             // Update level data
             NBTTagCompound compound = new NBTTagCompound();
-            worldDataServer.a(MinecraftServer.getServer().getCustomRegistry(), compound);
-            slimeWorld.getExtraData().getValue().put(Converter.convertTag("LevelData", compound));
+            NBTTagCompound nbtTagCompound = worldDataServer.a(MinecraftServer.getServer().getCustomRegistry(), compound);
+            slimeWorld.getExtraData().getValue().put(Converter.convertTag("LevelData", nbtTagCompound));
 
             if (MinecraftServer.getServer().isStopped()) { // Make sure the world gets saved before stopping the server by running it from the main thread
                 save();
@@ -213,6 +213,8 @@ public class CustomWorldServer extends WorldServer {
             if (tileEntities != null) {
                 for (CompoundTag tag : tileEntities) {
                     Optional<String> type = tag.getStringValue("id");
+
+                    Bukkit.broadcastMessage("TILE: " + type.get() + ".\n" + tag);
 
                     // Sometimes null tile entities are saved
                     if (type.isPresent()) {

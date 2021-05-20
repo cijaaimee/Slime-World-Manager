@@ -437,7 +437,7 @@ public class LoaderUtils {
                         paletteList.add(readCompoundTag(serializedTag));
                     }
 
-                    paletteTag = new ListTag<>("", TagType.TAG_LIST, paletteList);
+                    paletteTag = new ListTag<>("", TagType.TAG_COMPOUND, paletteList);
 
                     // Block states
                     int blockStatesArrayLength = dataStream.readInt();
@@ -479,7 +479,7 @@ public class LoaderUtils {
                     dataStream.skip(hypixelBlocksLength);
                 }
 
-                chunkSectionArray[i] = new CraftSlimeChunkSection(blockArray, dataArray, paletteTag, blockStatesArray,null, blockLightArray, skyLightArray);
+                chunkSectionArray[i] = new CraftSlimeChunkSection(blockArray, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
             }
         }
 
@@ -493,10 +493,6 @@ public class LoaderUtils {
 
         NBTInputStream stream = new NBTInputStream(new ByteArrayInputStream(serializedCompound), NBTInputStream.NO_COMPRESSION, ByteOrder.BIG_ENDIAN);
 
-        CompoundTag compoundTag = (CompoundTag) stream.readTag();
-
-//        System.out.println("READING TAG: " + compoundTag);
-
-        return compoundTag;
+        return (CompoundTag) stream.readTag();
     }
 }

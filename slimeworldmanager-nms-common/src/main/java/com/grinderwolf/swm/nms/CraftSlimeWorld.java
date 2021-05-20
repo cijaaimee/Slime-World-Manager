@@ -184,7 +184,7 @@ public class CraftSlimeWorld implements SlimeWorld {
             // Tile Entities
             List<CompoundTag> tileEntitiesList = sortedChunks.stream().flatMap(chunk -> chunk.getTileEntities().stream()).collect(Collectors.toList());
             ListTag<CompoundTag> tileEntitiesNbtList = new ListTag<>("tiles", TagType.TAG_COMPOUND, tileEntitiesList);
-            CompoundTag tileEntitiesCompound = new CompoundTag(tileEntitiesNbtList.getName(), new CompoundMap(Collections.singletonList(tileEntitiesNbtList)));
+            CompoundTag tileEntitiesCompound = new CompoundTag("", new CompoundMap(Collections.singletonList(tileEntitiesNbtList)));
             byte[] tileEntitiesData = serializeCompoundTag(tileEntitiesCompound);
             byte[] compressedTileEntitiesData = Zstd.compress(tileEntitiesData);
 
@@ -199,7 +199,7 @@ public class CraftSlimeWorld implements SlimeWorld {
 
             if (!entitiesList.isEmpty()) {
                 ListTag<CompoundTag> entitiesNbtList = new ListTag<>("entities", TagType.TAG_COMPOUND, entitiesList);
-                CompoundTag entitiesCompound = new CompoundTag(entitiesNbtList.getName(), new CompoundMap(Collections.singletonList(entitiesNbtList)));
+                CompoundTag entitiesCompound = new CompoundTag("", new CompoundMap(Collections.singletonList(entitiesNbtList)));
                 byte[] entitiesData = serializeCompoundTag(entitiesCompound);
                 byte[] compressedEntitiesData = Zstd.compress(entitiesData);
 

@@ -42,14 +42,6 @@ public interface SlimeChunkSection {
     long[] getBlockStates();
 
     /**
-     * Returns all the states of the entities of the chunk section, or
-     * <code>null</code> in case it's a pre 1.13 world.
-     *
-     * @return A <code>long[]</code> with every block state.
-     */
-    long[] getEntityStates();
-
-    /**
      * Returns the block light data.
      *
      * @return A {@link NibbleArray} with the block light data.

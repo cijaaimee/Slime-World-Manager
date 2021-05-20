@@ -76,7 +76,7 @@ public class NMSSlimeChunk implements SlimeChunk {
                     ListTag<CompoundTag> palette = (ListTag<CompoundTag>) Converter.convertTag("", paletteList);
                     long[] blockStates = blocksCompound.getLongArray("BlockStates");
 
-                    sections[sectionId] = new CraftSlimeChunkSection(null, null, palette, blockStates, null, blockLightArray, skyLightArray);
+                    sections[sectionId] = new CraftSlimeChunkSection(null, null, palette, blockStates, blockLightArray, skyLightArray);
                 }
             }
         }
@@ -109,7 +109,8 @@ public class NMSSlimeChunk implements SlimeChunk {
         List<CompoundTag> tileEntities = new ArrayList<>();
 
         for (TileEntity entity : chunk.getTileEntities().values()) {
-            NBTTagCompound entityNbt = entity.b();
+            NBTTagCompound entityNbt = new NBTTagCompound();
+            entity.save(entityNbt);
             tileEntities.add((CompoundTag) Converter.convertTag(entityNbt.getString("name"), entityNbt));
         }
 
