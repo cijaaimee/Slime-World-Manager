@@ -1,5 +1,6 @@
 package com.grinderwolf.swm.plugin.config;
 
+import io.lettuce.core.RedisURI;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -11,6 +12,7 @@ public class DatasourcesConfig {
     @Setting("file") private FileConfig fileConfig = new FileConfig();
     @Setting("mysql") private MysqlConfig mysqlConfig = new MysqlConfig();
     @Setting("mongodb") private MongoDBConfig mongoDbConfig = new MongoDBConfig();
+    @Setting("redis") private RedisConfig redisConfig = new RedisConfig();
 
     @Getter
     @ConfigSerializable
@@ -57,4 +59,12 @@ public class DatasourcesConfig {
         @Setting("path") private String path = "slime_worlds";
 
     }
+
+  @Getter
+  @ConfigSerializable
+  public static class RedisConfig {
+
+    @Setting("enabled") private boolean enabled = false;
+    @Setting("uri") private String uri = "redis://127.0.0.1/";
+  }
 }

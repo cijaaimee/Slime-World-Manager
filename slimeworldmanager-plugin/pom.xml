@@ -73,6 +73,11 @@
             <version>3.11.0-rc0</version>
         </dependency>
         <dependency>
+          <groupId>io.lettuce</groupId>
+          <artifactId>lettuce-core</artifactId>
+          <version>6.1.1.RELEASE</version>
+        </dependency>
+        <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>configurate-yaml</artifactId>
             <version>3.7-SNAPSHOT</version>
