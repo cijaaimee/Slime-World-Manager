@@ -67,16 +67,6 @@ public class GotoCmd implements Subcommand {
                 spawnLocation = world.getSpawnLocation();
             }
 
-            // Safe Spawn Location
-            spawnLocation.setY(0);
-            while (spawnLocation.getBlock().getType() != Material.AIR || spawnLocation.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
-                if(spawnLocation.getY() >= 256) {
-                    spawnLocation.getWorld().getBlockAt(0, 64 ,0).setType(Material.BEDROCK);
-                }else {
-                    spawnLocation.add(0, 1, 0);
-                }
-            }
-
             if(SWMPlugin.isPaperMC()) {
                 target.teleportAsync(spawnLocation);
             }else {
