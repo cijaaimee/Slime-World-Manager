@@ -73,9 +73,7 @@ public class CustomWorldServer extends WorldServer {
     @Override
     public void save(IProgressUpdate progressUpdate, boolean forceSave, boolean flag1) {
         if (!slimeWorld.isReadOnly() && !flag1) {
-            if (forceSave) { // TODO Is this really 'forceSave'? Doesn't look like it tbh
-                Bukkit.getPluginManager().callEvent(new WorldSaveEvent(getWorld()));
-            }
+            Bukkit.getPluginManager().callEvent(new WorldSaveEvent(getWorld()));
 
             this.getChunkProvider().save(forceSave);
             this.worldDataServer.a(this.getWorldBorder().t());
