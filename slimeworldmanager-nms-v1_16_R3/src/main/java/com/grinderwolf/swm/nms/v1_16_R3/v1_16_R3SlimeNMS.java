@@ -1,8 +1,6 @@
 package com.grinderwolf.swm.nms.v1_16_R3;
 
 import com.flowpowered.nbt.CompoundTag;
-import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
@@ -13,12 +11,10 @@ import lombok.Getter;
 import net.minecraft.server.v1_16_R3.*;
 import net.minecraft.server.v1_16_R3.GameRules.GameRuleKey;
 import net.minecraft.server.v1_16_R3.GameRules.GameRuleValue;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.longs.LongIterator;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers;

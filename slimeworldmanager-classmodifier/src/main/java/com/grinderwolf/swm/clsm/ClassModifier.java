@@ -1,7 +1,6 @@
 package com.grinderwolf.swm.clsm;
 
 import com.mojang.datafixers.util.Either;
-import org.bukkit.Bukkit;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
@@ -22,14 +21,6 @@ public class ClassModifier {
     public static final BooleanSupplier BOOLEAN_SUPPLIER = () -> true;
 
     private static CLSMBridge customLoader;
-
-//    private void d () {
-//        try {
-//            Class.forName("").isInstance(this);
-//        } catch(ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public static CompletableFuture getFutureChunk(Object world, int x, int z) {
         if (customLoader == null || !isCustomWorld(world)) {

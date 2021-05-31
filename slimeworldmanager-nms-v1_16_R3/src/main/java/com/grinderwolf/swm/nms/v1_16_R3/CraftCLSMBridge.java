@@ -10,8 +10,6 @@ import net.minecraft.server.v1_16_R3.ProtoChunkExtension;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CraftCLSMBridge implements CLSMBridge {

@@ -17,10 +17,8 @@ import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
 import org.bukkit.event.world.WorldSaveEvent;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;

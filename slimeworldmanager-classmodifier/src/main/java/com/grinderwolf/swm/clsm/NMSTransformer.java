@@ -18,10 +18,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.nio.charset.StandardCharsets;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -207,6 +204,5 @@ public class NMSTransformer implements ClassFileTransformer {
         private final String[] params;
         private final String content;
         private final boolean optional;
-
     }
 }
