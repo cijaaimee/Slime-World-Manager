@@ -3,7 +3,7 @@ package com.grinderwolf.swm.v1_17_R1;
 import com.flowpowered.nbt.*;
 import com.flowpowered.nbt.Tag;
 import com.grinderwolf.swm.api.utils.NibbleArray;
-import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.nbt.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,11 +14,11 @@ public class Converter {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM Converter");
 
-    static net.minecraft.server.v1_16_R3.NibbleArray convertArray(NibbleArray array) {
-        return new net.minecraft.server.v1_16_R3.NibbleArray(array.getBacking());
+    static net.minecraft.world.level.chunk.NibbleArray convertArray(NibbleArray array) {
+        return new net.minecraft.world.level.chunk.NibbleArray(array.getBacking());
     }
 
-    static NibbleArray convertArray(net.minecraft.server.v1_16_R3.NibbleArray array) {
+    static NibbleArray convertArray(net.minecraft.world.level.chunk.NibbleArray array) {
         if (array == null) {
             return null;
         }
@@ -97,7 +97,7 @@ public class Converter {
                     list.add(convertTag("", entry));
                 }
 
-                return new ListTag<>(name, TagType.getById(originalList.d_()), list);
+                return new ListTag<>(name, TagType.getById(originalList.e()), list);
             case 10:
                 NBTTagCompound originalCompound = ((NBTTagCompound) base);
                 CompoundTag compound = new CompoundTag(name, new CompoundMap());

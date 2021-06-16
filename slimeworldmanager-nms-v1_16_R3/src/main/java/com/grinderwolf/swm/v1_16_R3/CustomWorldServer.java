@@ -1,4 +1,4 @@
-package com.grinderwolf.swm.v1_17_R1;
+package com.grinderwolf.swm.v1_16_R3;
 
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
@@ -213,6 +213,7 @@ public class CustomWorldServer extends WorldServer {
         // Such a high level will let the server not tick the chunk,
         // but at the same time it won't be completely unloaded from memory
         getChunkProvider().addTicketAtLevel(SWM_TICKET, pos, 33, Unit.INSTANCE);
+
 
         Consumer<Chunk> loadEntities = (nmsChunk) -> {
 

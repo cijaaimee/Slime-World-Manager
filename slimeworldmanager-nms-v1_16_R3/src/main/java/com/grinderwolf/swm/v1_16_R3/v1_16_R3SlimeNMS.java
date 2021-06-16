@@ -1,4 +1,4 @@
-package com.grinderwolf.swm.v1_17_R1;
+package com.grinderwolf.swm.v1_16_R3;
 
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;

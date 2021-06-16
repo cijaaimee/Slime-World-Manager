@@ -10,9 +10,23 @@ import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.core.SectionPosition;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkCoordIntPair;
+import net.minecraft.world.level.EnumSkyBlock;
+import net.minecraft.world.level.block.entity.TileEntity;
+import net.minecraft.world.level.chunk.Chunk;
+import net.minecraft.world.level.chunk.ChunkSection;
+import net.minecraft.world.level.chunk.DataPaletteBlock;
+import net.minecraft.world.level.entity.PersistentEntitySectionManager;
+import net.minecraft.world.level.levelgen.HeightMap;
+import net.minecraft.world.level.lighting.LightEngine;
+import net.minecraft.world.level.storage.WorldDataServer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,23 +38,23 @@ public class NMSSlimeChunk implements SlimeChunk {
 
     @Override
     public String getWorldName() {
-        return ((WorldDataServer) chunk.getWorld().worldData).getName();
+        return ((WorldDataServer) chunk.getWorld().x).getName();
     }
 
     @Override
     public int getX() {
-        return chunk.getPos().x;
+        return chunk.getPos().b;
     }
 
     @Override
     public int getZ() {
-        return chunk.getPos().z;
+        return chunk.getPos().c;
     }
 
     @Override
     public SlimeChunkSection[] getSections() {
         SlimeChunkSection[] sections = new SlimeChunkSection[16];
-        LightEngine lightEngine = chunk.world.getChunkProvider().getLightEngine();
+        LightEngine lightEngine = chunk.getWorld().getChunkProvider().getLightEngine();
 
         for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
             ChunkSection section = chunk.getSections()[sectionId];
@@ -50,10 +64,10 @@ public class NMSSlimeChunk implements SlimeChunk {
 
                 if (!section.c()) { // If the section is empty, just ignore it to save space
                     // Block Light Nibble Array
-                    NibbleArray blockLightArray = Converter.convertArray(lightEngine.a(EnumSkyBlock.BLOCK).a(SectionPosition.a(chunk.getPos(), sectionId)));
+                    NibbleArray blockLightArray = Converter.convertArray(lightEngine.a(EnumSkyBlock.b).a(SectionPosition.a(chunk.getPos(), sectionId)));
 
                     // Sky light Nibble Array
-                    NibbleArray skyLightArray = Converter.convertArray(lightEngine.a(EnumSkyBlock.SKY).a(SectionPosition.a(chunk.getPos(), sectionId)));
+                    NibbleArray skyLightArray = Converter.convertArray(lightEngine.a(EnumSkyBlock.a).a(SectionPosition.a(chunk.getPos(), sectionId)));
 
                     // Block Data
                     DataPaletteBlock dataPaletteBlock = section.getBlocks();
@@ -76,7 +90,7 @@ public class NMSSlimeChunk implements SlimeChunk {
         // HeightMap
         CompoundMap heightMaps = new CompoundMap();
 
-        for (Map.Entry<HeightMap.Type, HeightMap> entry : chunk.heightMap.entrySet()) {
+        for (Map.Entry<HeightMap.Type, HeightMap> entry : chunk.j.entrySet()) {
             HeightMap.Type type = entry.getKey();
             HeightMap map = entry.getValue();
 
@@ -105,15 +119,23 @@ public class NMSSlimeChunk implements SlimeChunk {
     }
 
     @Override
+    @Deprecated
     public List<CompoundTag> getEntities() {
         List<CompoundTag> entities = new ArrayList<>();
 
-        for (int i = 0; i < chunk.getEntitySlices().length; i++) {
-            for (Entity entity : chunk.getEntitySlices()[i]) {
-                NBTTagCompound entityNbt = new NBTTagCompound();
+        PersistentEntitySectionManager<Entity> entitySectionManager = chunk.i.G;
+        Iterator<Entity> entityIterable = entitySectionManager.d().a().iterator();
 
+        while (entityIterable.hasNext()) {
+            Entity entity = entityIterable.next();
+
+            ChunkCoordIntPair chunkPos = chunk.getPos();
+            ChunkCoordIntPair entityPos = entity.cU();
+            //check x and z
+            if (chunkPos.b == entityPos.b && chunkPos.c == entityPos.c) {
+                NBTTagCompound entityNbt = new NBTTagCompound();
                 if (entity.d(entityNbt)) {
-                    chunk.d(true);
+                    chunk.b(true);
                     entities.add((CompoundTag) Converter.convertTag("", entityNbt));
                 }
             }

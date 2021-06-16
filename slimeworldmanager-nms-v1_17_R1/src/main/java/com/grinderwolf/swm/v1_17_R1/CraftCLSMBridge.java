@@ -4,7 +4,12 @@ import com.grinderwolf.swm.clsm.CLSMBridge;
 import com.grinderwolf.swm.clsm.ClassModifier;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.server.level.WorldServer;
+import net.minecraft.world.level.chunk.Chunk;
+import net.minecraft.world.level.chunk.IChunkAccess;
+import net.minecraft.world.level.chunk.ProtoChunkExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +44,7 @@ public class CraftCLSMBridge implements CLSMBridge {
         Chunk chunk;
 
         if (chunkAccess instanceof ProtoChunkExtension) {
-            chunk = ((ProtoChunkExtension) chunkAccess).u();
+            chunk = ((ProtoChunkExtension) chunkAccess).v();
         } else {
             chunk = (Chunk) chunkAccess;
         }
@@ -82,7 +87,7 @@ public class CraftCLSMBridge implements CLSMBridge {
     @Override
     public Object getDefaultGamemode() {
         if (nmsInstance.isLoadingDefaultWorlds()) {
-            return ((DedicatedServer) MinecraftServer.getServer()).getDedicatedServerProperties().gamemode;
+            return ((DedicatedServer) MinecraftServer.getServer()).getDedicatedServerProperties().o;
         }
 
         return null;
