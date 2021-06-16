@@ -1,4 +1,4 @@
-package com.grinderwolf.swm.v1_16_R3;
+package com.grinderwolf.swm.v1_17_R1;
 
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.world.SlimeWorld;
@@ -27,7 +27,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 @Getter
-public class v1_16_R3SlimeNMS implements SlimeNMS {
+public class v1_17_R1SlimeNMS implements SlimeNMS {
 
     private static final Logger LOGGER = LogManager.getLogger("SWM");
     private static final File UNIVERSE_DIR;
@@ -66,7 +66,7 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
     private CustomWorldServer defaultNetherWorld;
     private CustomWorldServer defaultEndWorld;
 
-    public v1_16_R3SlimeNMS() {
+    public v1_17_R1SlimeNMS() {
         try {
             CraftCLSMBridge.initialize(this);
         } catch (NoClassDefFoundError ex) {

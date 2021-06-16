@@ -31,7 +31,7 @@ import com.grinderwolf.swm.plugin.upgrade.WorldUpgrader;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import com.grinderwolf.swm.plugin.world.importer.WorldImporter;
 import com.grinderwolf.swm.v1_16_R2.v1_16_R2SlimeNMS;
-import com.grinderwolf.swm.v1_16_R3.v1_16_R3SlimeNMS;
+import com.grinderwolf.swm.v1_17_R1.v1_16_R3SlimeNMS;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bstats.bukkit.Metrics;
