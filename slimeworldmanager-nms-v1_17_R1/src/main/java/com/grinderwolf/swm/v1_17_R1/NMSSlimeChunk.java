@@ -119,7 +119,6 @@ public class NMSSlimeChunk implements SlimeChunk {
     }
 
     @Override
-    @Deprecated
     public List<CompoundTag> getEntities() {
         List<CompoundTag> entities = new ArrayList<>();
 
