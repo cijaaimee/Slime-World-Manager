@@ -276,7 +276,7 @@ public class CustomWorldServer extends WorldServer {
 
             if (entities != null) {
                 for (CompoundTag tag : entities) {
-                    EntityTypes.a((NBTTagCompound) Converter.convertTag(tag), nmsChunk.i, (entity) -> {
+                    EntityTypes.a((NBTTagCompound) Converter.convertTag(tag), nmsChunk.level, (entity) -> {
 
                         nmsChunk.a(entity);
                         return entity;
