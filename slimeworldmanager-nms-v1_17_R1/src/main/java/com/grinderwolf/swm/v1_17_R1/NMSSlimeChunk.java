@@ -122,7 +122,7 @@ public class NMSSlimeChunk implements SlimeChunk {
     public List<CompoundTag> getEntities() {
         List<CompoundTag> entities = new ArrayList<>();
 
-        PersistentEntitySectionManager<Entity> entitySectionManager = entitySectionManager = chunk.level.G;
+        PersistentEntitySectionManager<Entity> entitySectionManager = entitySectionManager = chunk.i.G;
 
         Iterator<Entity> entityIterable = entitySectionManager.d().a().iterator();
 
