@@ -123,7 +123,22 @@ public class NMSSlimeChunk implements SlimeChunk {
     public List<CompoundTag> getEntities() {
         List<CompoundTag> entities = new ArrayList<>();
 
-        PersistentEntitySectionManager<Entity> entitySectionManager = chunk.i.G;
+        boolean isPaper = false;
+        try {
+            Class.forName("com.destroystokyo.paper.PaperConfig");
+            isPaper = true;
+        } catch (ClassNotFoundException e) {
+        }
+
+        PersistentEntitySectionManager<Entity> entitySectionManager = null;
+
+        if (isPaper) {
+            //method only works on paper
+            entitySectionManager = chunk.level.G;
+        } else {
+            //method only works on spigot
+            entitySectionManager = chunk.i.G;
+        }
         Iterator<Entity> entityIterable = entitySectionManager.d().a().iterator();
 
         while (entityIterable.hasNext()) {
