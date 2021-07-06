@@ -58,6 +58,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.grinderwolf</groupId>
+            <artifactId>slimeworldmanager-nms-v1_17_R1</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.luben</groupId>
             <artifactId>zstd-jni</artifactId>
             <version>1.4.9-5</version>

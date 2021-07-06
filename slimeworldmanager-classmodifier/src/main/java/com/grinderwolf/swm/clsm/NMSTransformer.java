@@ -204,5 +204,6 @@ public class NMSTransformer implements ClassFileTransformer {
         private final String[] params;
         private final String content;
         private final boolean optional;
+
     }
 }
