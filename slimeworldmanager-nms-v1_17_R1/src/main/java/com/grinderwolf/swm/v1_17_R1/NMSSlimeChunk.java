@@ -122,25 +122,23 @@ public class NMSSlimeChunk implements SlimeChunk {
     public List<CompoundTag> getEntities() {
         List<CompoundTag> entities = new ArrayList<>();
 
-        PersistentEntitySectionManager<Entity> entitySectionManager = entitySectionManager = chunk.i.G;
+        PersistentEntitySectionManager<Entity> entityManager = chunk.i.G;
+        Iterator<Entity> entitySlices = entityManager.d().a().iterator();
 
-        Iterator<Entity> entityIterable = entitySectionManager.d().a().iterator();
-
-        while (entityIterable.hasNext()) {
-            Entity entity = entityIterable.next();
+        while(entitySlices.hasNext()) {
+            Entity entity = entitySlices.next();
 
             ChunkCoordIntPair chunkPos = chunk.getPos();
             ChunkCoordIntPair entityPos = entity.cU();
-            //check x and z
-            if (chunkPos.b == entityPos.b && chunkPos.c == entityPos.c) {
+
+            if(chunkPos.b == entityPos.b && chunkPos.c == entityPos.c) {
                 NBTTagCompound entityNbt = new NBTTagCompound();
-                if (entity.d(entityNbt)) {
+                if(entity.d(entityNbt)) {
                     chunk.b(true);
                     entities.add((CompoundTag) Converter.convertTag("", entityNbt));
                 }
             }
         }
-
         return entities;
     }
 }
