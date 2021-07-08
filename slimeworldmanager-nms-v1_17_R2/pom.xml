@@ -12,7 +12,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
-    <artifactId>slimeworldmanager-nms-v1_17_R1</artifactId>
+    <artifactId>slimeworldmanager-nms-v1_17_R2</artifactId>
 
     <dependencies>
         <dependency>
@@ -30,13 +30,13 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.17-R0.1-SNAPSHOT</version>
+            <version>1.17.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.17-R0.1-SNAPSHOT</version>
+            <version>1.17.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -51,4 +51,5 @@
             <version>2.8.6</version>
         </dependency>
     </dependencies>
+
 </project>
