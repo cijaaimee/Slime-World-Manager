@@ -123,7 +123,12 @@ public class NMSSlimeChunk implements SlimeChunk {
         for (int i = 0; i < chunk.getEntitySlices().length; i++) {
             for (Entity entity : chunk.getEntitySlices()[i]) {
                 NBTTagCompound entityNbt = new NBTTagCompound();
-
+                try {
+                    if (entity.origin != null && entity.origin.getWorld() == null) {
+                        entity.origin = null;
+                    }
+                } catch (NoSuchFieldError ignored){
+                }
                 if (entity.d(entityNbt)) {
                     chunk.d(true);
                     entities.add((CompoundTag) Converter.convertTag("", entityNbt));

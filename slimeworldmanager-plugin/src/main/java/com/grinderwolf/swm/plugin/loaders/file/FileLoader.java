@@ -154,9 +154,8 @@ public class FileLoader implements SlimeLoader {
         if (!worldExists(worldName)) {
             throw new UnknownWorldException(worldName);
         }else {
-            try {
+            try (RandomAccessFile randomAccessFile = worldFiles.get(worldName)) {
                 System.out.println("Deleting world.. " + worldName + ".");
-                RandomAccessFile randomAccessFile = worldFiles.get(worldName);
                 unlockWorld(worldName);
                 FileUtils.forceDelete(new File(worldDir, worldName + ".slime"));
                 if(randomAccessFile != null) {
