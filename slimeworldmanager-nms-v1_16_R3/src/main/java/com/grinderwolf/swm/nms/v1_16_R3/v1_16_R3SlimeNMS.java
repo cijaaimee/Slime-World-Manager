@@ -190,7 +190,7 @@ public class v1_16_R3SlimeNMS implements SlimeNMS {
 
         mcServer.server.addWorld(server.getWorld());
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> mcServer.worldServer.put(worldKey, server), 1);
+        mcServer.worldServer.put(worldKey, server);
         
         server.setSpawnFlags(world.getPropertyMap().getValue(SlimeProperties.ALLOW_MONSTERS), world.getPropertyMap().getValue(SlimeProperties.ALLOW_ANIMALS));
 

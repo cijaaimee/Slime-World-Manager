@@ -257,6 +257,10 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         return world;
     }
 
+    public SlimeWorld getWorld(SlimeLoader loader, String worldName) {
+        return worlds.stream().filter(world -> world.getName().equals(worldName)).findFirst().orElse(null);
+    }
+
     @Override
     public SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties) throws WorldAlreadyExistsException, IOException {
         Objects.requireNonNull(properties, "Properties cannot be null");

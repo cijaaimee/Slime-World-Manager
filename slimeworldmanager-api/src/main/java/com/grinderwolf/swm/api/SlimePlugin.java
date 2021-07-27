@@ -67,6 +67,8 @@ public interface SlimePlugin {
     SlimeWorld loadWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap) throws
             UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException;
 
+    SlimeWorld getWorld(SlimeLoader loader, String worldName);
+
     /**
      * Creates an empty world and stores it using a specified
      * {@link SlimeLoader}. This world can then be added to
