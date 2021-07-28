@@ -289,7 +289,11 @@ public class CustomWorldServer extends WorldServer {
             }
         }
 
-        HeightMap.a(nmsChunk, unsetHeightMaps);
+        // Don't try to populate heightmaps if there are none.
+        // Does a crazy amount of block lookups
+        if (!unsetHeightMaps.isEmpty()) {
+            HeightMap.a(nmsChunk, unsetHeightMaps);
+        }
         LOGGER.debug("Loaded chunk (" + pos.x + ", " + pos.z + ") on world " + slimeWorld.getName());
 
         return nmsChunk;
