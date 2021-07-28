@@ -53,6 +53,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class CustomWorldServer extends WorldServer {
 
@@ -254,17 +255,11 @@ public class CustomWorldServer extends WorldServer {
             loadedEntities = 0;
 
             if (entities != null) {
-                for (CompoundTag tag : entities) {
-                    EntityTypes.a((NBTTagCompound) Converter.convertTag(tag), nmsChunk.i, (entity) -> {
-
-                        nmsChunk.a(entity);
-                        return entity;
-
-                    });
-
-//                    nmsChunk.d(true);
-                    loadedEntities++;
-                }
+                this.G.a(EntityTypes.a(entities
+                                .stream()
+                                .map((tag) -> (NBTTagCompound) Converter.convertTag(tag))
+                                .collect(Collectors.toList()),
+                        this));
             }
         };
 
