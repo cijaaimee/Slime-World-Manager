@@ -275,17 +275,11 @@ public class CustomWorldServer extends WorldServer {
             loadedEntities = 0;
 
             if (entities != null) {
-                for (CompoundTag tag : entities) {
-                    EntityTypes.a((NBTTagCompound) Converter.convertTag(tag), nmsChunk.i, (entity) -> {
-
-                        nmsChunk.a(entity);
-                        return entity;
-
-                    });
-
-                    //nmsChunk.d(true);
-                    loadedEntities++;
-                }
+                this.G.a(EntityTypes.a(entities
+                                .stream()
+                                .map((tag) -> (NBTTagCompound) Converter.convertTag(tag))
+                                .collect(Collectors.toList()),
+                        this));
             }
 
             LOGGER.debug("Loaded " + loadedEntities + " entities for chunk (" + pos.b + ", " + pos.c + ") on world " + slimeWorld.getName());
