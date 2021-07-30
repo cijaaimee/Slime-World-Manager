@@ -32,6 +32,10 @@
             <id>glaremasters</id>
             <url>https://repo.glaremasters.me/repository/concuncan/</url>
         </repository>
+        <repository>
+            <id>private-snapshots</id>
+            <url>https://repo.rapture.pw/repository/private-snapshots/</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
