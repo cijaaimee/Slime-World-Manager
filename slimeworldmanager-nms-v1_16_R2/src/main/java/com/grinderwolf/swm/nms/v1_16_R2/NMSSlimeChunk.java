@@ -19,6 +19,8 @@ import net.minecraft.server.v1_16_R2.NBTTagCompound;
 import net.minecraft.server.v1_16_R2.NBTTagList;
 import net.minecraft.server.v1_16_R2.SectionPosition;
 import net.minecraft.server.v1_16_R2.TileEntity;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +123,14 @@ public class NMSSlimeChunk implements SlimeChunk {
         for (int i = 0; i < chunk.getEntitySlices().length; i++) {
             for (Entity entity : chunk.getEntitySlices()[i]) {
                 NBTTagCompound entityNbt = new NBTTagCompound();
-
+                try {
+                    if (entity.getBukkitEntity().getOrigin() != null && entity.getBukkitEntity().getOrigin().getWorld() == null) {
+                        Field field = entity.getClass().getDeclaredField("origin");
+                        field.setAccessible(true);
+                        field.set(entity, null);
+                    }
+                } catch (NoSuchFieldError | IllegalAccessException | NoSuchFieldException ignored){
+                }
                 if (entity.d(entityNbt)) {
                     chunk.d(true);
                     entities.add((CompoundTag) Converter.convertTag("", entityNbt));
