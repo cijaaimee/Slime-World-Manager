@@ -12,11 +12,11 @@
         <module>slimeworldmanager-plugin</module>
         <module>slimeworldmanager-importer</module>
         <module>slimeworldmanager-classmodifier</module>
-        <module>slimeworldmanager-nms-v1_16_R1</module>
-        <module>slimeworldmanager-nms-v1_16_R2</module>
-        <module>slimeworldmanager-nms-v1_16_R3</module>
-        <module>slimeworldmanager-nms-v1_17_R1</module>
-        <module>slimeworldmanager-nms-v1_17_R2</module>
+        <module>slimeworldmanager-nms-v116-0-1</module>
+        <module>slimeworldmanager-nms-v116-2-3</module>
+        <module>slimeworldmanager-nms-v116-4-5</module>
+        <module>slimeworldmanager-nms-v117-0</module>
+        <module>slimeworldmanager-nms-v117-1</module>
     </modules>
 
     <repositories>
