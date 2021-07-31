@@ -11,6 +11,7 @@ import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import com.mojang.serialization.Codec;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.BlockPosition;
@@ -31,6 +32,7 @@ import net.minecraft.world.level.ChunkCoordIntPair;
 import net.minecraft.world.level.EnumSkyBlock;
 import net.minecraft.world.level.World;
 import net.minecraft.world.level.biome.BiomeBase;
+import net.minecraft.world.level.biome.WorldChunkManager;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.TileEntity;
 import net.minecraft.world.level.block.state.IBlockData;
@@ -62,7 +64,7 @@ public class CustomWorldServer extends WorldServer {
     @Getter
     private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
-    private final BiomeBase defaultBiome;
+    private final WorldChunkManager defaultBiomeSource;
 
     @Getter
     @Setter
@@ -89,7 +91,25 @@ public class CustomWorldServer extends WorldServer {
 
         String biomeStr = slimeWorld.getPropertyMap().getValue(SlimeProperties.DEFAULT_BIOME);
         ResourceKey<BiomeBase> biomeKey = ResourceKey.a(IRegistry.aO, new MinecraftKey(biomeStr));
-        defaultBiome = MinecraftServer.getServer().getCustomRegistry().b(IRegistry.aO).a(biomeKey);
+        BiomeBase defaultBiome = MinecraftServer.getServer().getCustomRegistry().b(IRegistry.aO).a(biomeKey);
+
+        defaultBiomeSource = new WorldChunkManager(Collections.emptyList()) {
+            @Override
+            protected Codec<? extends WorldChunkManager> a() {
+                return null;
+            }
+
+            @Override
+            public WorldChunkManager a(long l) {
+                return this;
+            }
+
+            // Always return the default biome
+            @Override
+            public BiomeBase getBiome(int i, int i1, int i2) {
+                return defaultBiome;
+            }
+        };
     }
 
     @Override
@@ -148,9 +168,8 @@ public class CustomWorldServer extends WorldServer {
                 ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
 
                 // Biomes
-                BiomeBase[] biomes = new BiomeBase[BiomeStorage.a];
-                Arrays.fill(biomes, defaultBiome);
-                BiomeStorage biomeStorage = new BiomeStorage(t().b(IRegistry.aO), this, new int[BiomeStorage.a]);
+                // Use the default biome source to automatically populate the map with the default biome.
+                BiomeStorage biomeStorage = new BiomeStorage(MinecraftServer.getServer().getCustomRegistry().b(IRegistry.aO), this, pos, defaultBiomeSource);
 
                 // Tick lists
                 ProtoChunkTickList<Block> blockTickList = new ProtoChunkTickList<Block>((block) ->
