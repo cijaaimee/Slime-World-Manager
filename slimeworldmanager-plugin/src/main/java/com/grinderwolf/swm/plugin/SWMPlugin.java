@@ -6,15 +6,14 @@ import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.exceptions.*;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
-import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
-import com.grinderwolf.swm.nms.v1_16_R1.v1_16_R1SlimeNMS;
-import com.grinderwolf.swm.nms.v1_16_R2.v1_16_R2SlimeNMS;
-import com.grinderwolf.swm.nms.v1_16_R3.v1_16_R3SlimeNMS;
-import com.grinderwolf.swm.nms.v1_17_R1.v1_17_R1SlimeNMS;
-import com.grinderwolf.swm.nms.v1_17_R2.v1_17_R2SlimeNMS;
+import com.grinderwolf.swm.nms.v11601.v11601SlimeNMS;
+import com.grinderwolf.swm.nms.v11623.v11623SlimeNMS;
+import com.grinderwolf.swm.nms.v11645.v11645SlimeNMS;
+import com.grinderwolf.swm.nms.v117.v1170SlimeNMS;
+import com.grinderwolf.swm.nms.v1171.v1171SlimeNMS;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.config.WorldData;
@@ -38,8 +37,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.grinderwolf.swm.api.world.properties.SlimeProperties.*;
 
@@ -150,19 +147,24 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         String version = Bukkit.getServer().getClass().getPackage().getName();
         String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
 
-        switch (nmsVersion) {
-            case "v1_16_R1":
-                return new v1_16_R1SlimeNMS(isPaperMC);
-            case "v1_16_R2":
-                return new v1_16_R2SlimeNMS(isPaperMC);
-            case "v1_16_R3":
-                return new v1_16_R3SlimeNMS(isPaperMC, this);
-            case "v1_17_R1":
-                return new v1_17_R1SlimeNMS(isPaperMC);
-            case "v1_17_R2":
-                return new v1_17_R2SlimeNMS(isPaperMC);
+        int dataVersion = Bukkit.getUnsafe().getDataVersion();
+        switch(dataVersion) {
+            case 2566:
+            case 2567:
+                return new v11601SlimeNMS(isPaperMC);
+            case 2578:
+            case 2580:
+                return new v11623SlimeNMS(isPaperMC);
+            case 2584:
+            case 2586:
+                return new v11645SlimeNMS(isPaperMC, this);
+            case 2724:
+                return new v1170SlimeNMS(isPaperMC);
+            case 2730:
+                return new v1171SlimeNMS(isPaperMC);
             default:
-                throw new InvalidVersionException(nmsVersion);
+                throw new InvalidVersionException("" + dataVersion);
+
         }
     }
 
