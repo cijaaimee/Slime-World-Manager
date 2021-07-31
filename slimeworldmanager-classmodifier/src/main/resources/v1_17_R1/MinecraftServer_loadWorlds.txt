@@ -83,7 +83,17 @@
 
                     org.bukkit.generator.ChunkGenerator gen = $0.server.getGenerator(name);
                     net.minecraft.core.IRegistryCustom.Dimension iregistrycustom_dimension = $0.l;
-                    net.minecraft.resources.RegistryReadOps registryreadops = net.minecraft.resources.RegistryReadOps.a(net.minecraft.nbt.DynamicOpsNBT.a, $0.aC.i(), iregistrycustom_dimension);
+
+                    boolean fieldIsValid = net.minecraft.server.MinecraftServer.class.getField("aC") != null;
+
+                    net.minecraft.resources.RegistryReadOps registryreadops;
+                    if (fieldIsValid) {
+                        registryreadops = net.minecraft.resources.RegistryReadOps.a(net.minecraft.nbt.DynamicOpsNBT.a, ((net.minecraft.server.DataPackResources) net.minecraft.server.MinecraftServer.class.getDeclaredField("aC").get($0)).i(), iregistrycustom_dimension);
+                    } else {
+                        registryreadops = net.minecraft.resources.RegistryReadOps.a(net.minecraft.nbt.DynamicOpsNBT.a, ((net.minecraft.server.DataPackResources) net.minecraft.server.MinecraftServer.class.getDeclaredField("aB").get($0)).i(), iregistrycustom_dimension);
+                    }
+
+
                     worlddata = (net.minecraft.world.level.storage.WorldDataServer) worldSession.a(registryreadops, $0.datapackconfiguration);
                     net.minecraft.world.level.levelgen.GeneratorSettings generatorsettings;
 
@@ -96,7 +106,15 @@
                         } else {
                             net.minecraft.server.dedicated.DedicatedServerProperties dedicatedserverproperties = ((net.minecraft.server.dedicated.DedicatedServer)$0).getDedicatedServerProperties();
                             worldsettings = new net.minecraft.world.level.WorldSettings(dedicatedserverproperties.p, dedicatedserverproperties.o, dedicatedserverproperties.z, dedicatedserverproperties.n, false, new net.minecraft.world.level.GameRules(), $0.datapackconfiguration);
-                            generatorsettings = $0.options.has("bonusChest") ? dedicatedserverproperties.Y.j() : dedicatedserverproperties.Y;
+
+                            fieldIsValid = net.minecraft.server.dedicated.DedicatedServerProperties.class.getField("Y") != null;
+
+                            if (fieldIsValid) {
+                                generatorsettings = $0.options.has("bonusChest") ? ((net.minecraft.world.level.levelgen.GeneratorSettings) net.minecraft.server.dedicated.DedicatedServerProperties.class.getDeclaredField("Y").get(dedicatedserverproperties)).j() : ((net.minecraft.world.level.levelgen.GeneratorSettings) net.minecraft.server.dedicated.DedicatedServerProperties.class.getDeclaredField("Y").get(dedicatedserverproperties));
+                            } else {
+                                generatorsettings = $0.options.has("bonusChest") ? ((net.minecraft.world.level.levelgen.GeneratorSettings) net.minecraft.server.dedicated.DedicatedServerProperties.class.getDeclaredMethod("a", net.minecraft.core.IRegistryCustom.class).invoke(dedicatedserverproperties, (net.minecraft.core.IRegistryCustom.Dimension) net.minecraft.server.MinecraftServer.class.getDeclaredField("l").get($0))).j() : ((net.minecraft.world.level.levelgen.GeneratorSettings)net.minecraft.server.dedicated.DedicatedServerProperties.class.getDeclaredMethod("a", net.minecraft.core.IRegistryCustom.class).invoke(dedicatedserverproperties, (net.minecraft.core.IRegistryCustom.Dimension) net.minecraft.server.MinecraftServer.class.getDeclaredField("l").get($0)));
+                            }
+
                         }
 
                         worlddata = new net.minecraft.world.level.storage.WorldDataServer(worldsettings, generatorsettings, com.mojang.serialization.Lifecycle.stable());
@@ -138,10 +156,20 @@
                     net.minecraft.resources.ResourceKey worldKey = net.minecraft.resources.ResourceKey.a(net.minecraft.core.IRegistry.Q, dimensionKey.a());
                     net.minecraft.server.level.progress.WorldLoadListener worldloadlistener = $0.L.create(11);
 
+                    fieldIsValid = net.minecraft.server.dedicated.DedicatedServerProperties.class.getField("aA") != null;
+
                     if (worldId == 0) {
-                        world = new net.minecraft.server.level.WorldServer($0, $0.aA, worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                        if (fieldIsValid) {
+                            world = new net.minecraft.server.level.WorldServer($0, ((java.util.concurrent.Executor) net.minecraft.server.MinecraftServer.class.getDeclaredField("aA").get($0)), worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                        } else {
+                            world = new net.minecraft.server.level.WorldServer($0, ((java.util.concurrent.Executor) net.minecraft.server.MinecraftServer.class.getDeclaredField("az").get($0)), worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                        }
                     } else {
-                        world = new net.minecraft.server.level.WorldServer($0, $0.aA, worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, com.google.common.collect.ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                        if (fieldIsValid) {
+                            world = new net.minecraft.server.level.WorldServer($0, ((java.util.concurrent.Executor) net.minecraft.server.MinecraftServer.class.getDeclaredField("aA").get($0)), worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, com.google.common.collect.ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                        } else {
+                            world = new net.minecraft.server.level.WorldServer($0, ((java.util.concurrent.Executor) net.minecraft.server.MinecraftServer.class.getDeclaredField("az").get($0)), worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, com.google.common.collect.ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                        }
                     }
                 } else {
                     worlddata = world.E;
