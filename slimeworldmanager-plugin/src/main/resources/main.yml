@@ -1,2 +1,4 @@
 # TO PREVENT NULL.
-main.yml
+updater:
+  enabled: false
+  onjoinmessage: true
