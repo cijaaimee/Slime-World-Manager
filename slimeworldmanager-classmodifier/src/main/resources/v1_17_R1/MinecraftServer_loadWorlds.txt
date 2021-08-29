@@ -173,13 +173,13 @@
                         if (fieldIsValid) {
                             world = new net.minecraft.server.level.WorldServer($0, ((java.util.concurrent.Executor) net.minecraft.server.MinecraftServer.class.getDeclaredField("aA").get($0)), worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
                         } else {
-                            world = new net.minecraft.server.level.WorldServer($0, ((java.util.concurrent.Executor) net.minecraft.server.MinecraftServer.class.getDeclaredField("az").get($0)), worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                            world = new net.minecraft.server.level.WorldServer($0, ((java.util.concurrent.Executor) net.minecraft.server.MinecraftServer.class.getDeclaredField("az").get($0)), worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen, null);
                         }
                     } else {
                         if (fieldIsValid) {
                             world = new net.minecraft.server.level.WorldServer($0, ((java.util.concurrent.Executor) net.minecraft.server.MinecraftServer.class.getDeclaredField("aA").get($0)), worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, com.google.common.collect.ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
                         } else {
-                            world = new net.minecraft.server.level.WorldServer($0, ((java.util.concurrent.Executor) net.minecraft.server.MinecraftServer.class.getDeclaredField("az").get($0)), worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, com.google.common.collect.ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen);
+                            world = new net.minecraft.server.level.WorldServer($0, ((java.util.concurrent.Executor) net.minecraft.server.MinecraftServer.class.getDeclaredField("az").get($0)), worldSession, worlddata, worldKey, dimensionmanager, worldloadlistener, (net.minecraft.world.level.chunk.ChunkGenerator)chunkgenerator, flag, j, com.google.common.collect.ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen, null);
                         }
                     }
                 } else {
