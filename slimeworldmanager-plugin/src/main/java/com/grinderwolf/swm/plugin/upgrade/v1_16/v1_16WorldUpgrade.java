@@ -59,23 +59,6 @@ public class v1_16WorldUpgrade implements Upgrade {
         }
     }
 
-    @Override
-    public void downgrade(CraftSlimeWorld world) {
-        for (SlimeChunk chunk : world.getChunks().values()) {
-            // Remove padding from height maps and block states
-            // TODO
-            for (int sectionIndex = 0; sectionIndex < chunk.getSections().length; sectionIndex++) {
-                SlimeChunkSection section = chunk.getSections()[sectionIndex];
-
-                if (section != null) {
-                }
-            }
-
-            // Remove extra data from biomes
-            // TODO
-        }
-    }
-
     private static int ceillog2(int input) {
         input = isPowerOfTwo(input) ? input : smallestEncompassingPowerOfTwo(input);
         return MULTIPLY_DE_BRUIJN_BIT_POSITION[(int) ((long) input * 125613361L >> 27) & 31];

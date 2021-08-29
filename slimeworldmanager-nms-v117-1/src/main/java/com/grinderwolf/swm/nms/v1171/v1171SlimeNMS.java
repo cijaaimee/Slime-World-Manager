@@ -84,7 +84,7 @@ public class v1171SlimeNMS implements SlimeNMS {
         }));
     }
 
-    private final byte worldVersion = 0x06;
+    private final byte worldVersion = 0x07;
 
     private boolean loadingDefaultWorlds = true; // If true, the addWorld method will not be skipped
 

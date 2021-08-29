@@ -19,6 +19,8 @@ import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.config.WorldData;
 import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
+import com.grinderwolf.swm.plugin.loaders.slime.SlimeWorldReader;
+import com.grinderwolf.swm.plugin.loaders.slime.SlimeWorldReaderRegistry;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.update.Updater;
 import com.grinderwolf.swm.plugin.upgrade.WorldUpgrader;
@@ -239,10 +241,10 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         CraftSlimeWorld world;
 
         try {
-            world = LoaderUtils.deserializeWorld(loader, worldName, serializedWorld, propertyMap, readOnly);
+            world = SlimeWorldReaderRegistry.readWorld(loader, worldName, serializedWorld, propertyMap, readOnly);
 
             if (world.getVersion() > nms.getWorldVersion()) {
-                WorldUpgrader.downgradeWorld(world);
+                throw new NewerFormatException(world.getVersion());
             } else if (world.getVersion() < nms.getWorldVersion()) {
                 WorldUpgrader.upgradeWorld(world);
             }
