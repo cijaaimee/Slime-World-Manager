@@ -32,6 +32,7 @@ import net.minecraft.world.level.ChunkCoordIntPair;
 import net.minecraft.world.level.EnumSkyBlock;
 import net.minecraft.world.level.World;
 import net.minecraft.world.level.biome.BiomeBase;
+import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.WorldChunkManager;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.TileEntity;
@@ -45,7 +46,11 @@ import net.minecraft.world.level.material.FluidType;
 import net.minecraft.world.level.material.FluidTypes;
 import net.minecraft.world.level.storage.IWorldDataServer;
 import org.bukkit.Bukkit;
+import org.bukkit.block.Biome;
 import org.bukkit.event.world.WorldSaveEvent;
+import org.bukkit.generator.BiomeProvider;
+import org.bukkit.generator.WorldInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -79,7 +84,7 @@ public class CustomWorldServer extends WorldServer {
         super(MinecraftServer.getServer(), MinecraftServer.getServer().az,
                 v1171SlimeNMS.CONVERTABLE.c(world.getName(), dimensionKey),
                 worldData, worldKey, dimensionManager, MinecraftServer.getServer().L.create(11),
-                chunkGenerator, false, 0, new ArrayList<>(), true, environment, null);
+                chunkGenerator, false, 0, new ArrayList<>(), true, environment, null, null);
 
         this.slimeWorld = world;
 
@@ -90,29 +95,30 @@ public class CustomWorldServer extends WorldServer {
         super.setSpawnFlags(propertyMap.getValue(SlimeProperties.ALLOW_MONSTERS), propertyMap.getValue(SlimeProperties.ALLOW_ANIMALS));
 
         this.pvpMode = propertyMap.getValue(SlimeProperties.PVP);
+        {
+            String biomeStr = slimeWorld.getPropertyMap().getValue(SlimeProperties.DEFAULT_BIOME);
+            ResourceKey<BiomeBase> biomeKey = ResourceKey.a(IRegistry.aO, new MinecraftKey(biomeStr));
+            BiomeBase defaultBiome = MinecraftServer.getServer().getCustomRegistry().b(IRegistry.aO).a(biomeKey);
+            this.defaultBiomeSource = new WorldChunkManager(Collections.emptyList()) {
+                @Override
+                protected Codec<? extends WorldChunkManager> a() {
+                    return null;
+                }
 
-        String biomeStr = slimeWorld.getPropertyMap().getValue(SlimeProperties.DEFAULT_BIOME);
-        ResourceKey<BiomeBase> biomeKey = ResourceKey.a(IRegistry.aO, new MinecraftKey(biomeStr));
-        BiomeBase defaultBiome = MinecraftServer.getServer().getCustomRegistry().b(IRegistry.aO).a(biomeKey);
+                @Override
+                public WorldChunkManager a(long l) {
+                    return this;
+                }
 
-        defaultBiomeSource = new WorldChunkManager(Collections.emptyList()) {
-            @Override
-            protected Codec<? extends WorldChunkManager> a() {
-                return null;
-            }
-
-            @Override
-            public WorldChunkManager a(long l) {
-                return this;
-            }
-
-            // Always return the default biome
-            @Override
-            public BiomeBase getBiome(int i, int i1, int i2) {
-                return defaultBiome;
-            }
-        };
+                // Always return the default biome
+                @Override
+                public BiomeBase getBiome(int i, int i1, int i2) {
+                    return defaultBiome;
+                }
+            };
+        }
     }
+
 
     @Override
     public void save(IProgressUpdate progressUpdate, boolean forceSave, boolean flag1) {
