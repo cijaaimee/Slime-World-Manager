@@ -161,10 +161,10 @@ public class v1171SlimeNMS implements SlimeNMS {
                 dimension = WorldDimension.b;
                 break;
             case NETHER:
-                dimension = WorldDimension.d;
+                dimension = WorldDimension.c;
                 break;
             case THE_END:
-                dimension = WorldDimension.c;
+                dimension = WorldDimension.d;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown dimension supplied");
@@ -194,7 +194,7 @@ public class v1171SlimeNMS implements SlimeNMS {
             dragonBattle.k.setVisible(false);
 
             try {
-                Field battleField = WorldServer.class.getDeclaredField("dragonBattle");
+                Field battleField = WorldServer.class.getDeclaredField("Q");
                 battleField.setAccessible(true);
                 battleField.set(server, null);
             } catch(NoSuchFieldException | IllegalAccessException ex) {
