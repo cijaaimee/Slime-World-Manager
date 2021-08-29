@@ -11,6 +11,7 @@ import lombok.experimental.Wither;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * In-memory representation of a SRF world.
@@ -41,6 +42,14 @@ public interface SlimeWorld {
      * @return The {@link SlimeChunk} that belongs to those coordinates.
      */
      SlimeChunk getChunk(int x, int z);
+
+    /**
+     * Returns a {@link Map} with every {@link SlimeChunk} that is
+     * currently loaded in this slime world.
+     *
+     * @return A {@link Map} containing every loaded chunk.
+     */
+     Map<Long, SlimeChunk> getChunks();
 
     /**
      * Returns the extra data of the world. Inside this {@link CompoundTag}
