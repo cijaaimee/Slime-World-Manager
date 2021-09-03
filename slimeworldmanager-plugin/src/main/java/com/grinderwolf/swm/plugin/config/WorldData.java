@@ -1,6 +1,5 @@
 package com.grinderwolf.swm.plugin.config;
 
-import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import lombok.Data;
 import ninja.leaping.configurate.objectmapping.Setting;
@@ -18,7 +17,7 @@ public class WorldData {
     private String dataSource = "file";
 
     @Setting("spawn")
-    private String spawn = "0, 255, 0";
+    private String spawn = "0.5, 255, 0.5";
 
     @Setting("difficulty")
     private String difficulty = "peaceful";
