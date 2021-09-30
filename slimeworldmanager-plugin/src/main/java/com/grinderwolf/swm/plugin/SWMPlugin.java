@@ -145,6 +145,25 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         worlds.clear();
     }
 
+    @Override
+    public void onDisable() {
+        Bukkit.getWorlds().stream()
+                .map(world -> getNms().getSlimeWorld(world))
+                .filter(Objects::nonNull)
+                .map(w -> (CraftSlimeWorld) w)
+                .forEach(w -> {
+                    try {
+                        w.getLoader().saveWorld(
+                                w.getName(),
+                                w.serialize(),
+                                w.isLocked()
+                        );
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
     private SlimeNMS getNMSBridge() throws InvalidVersionException {
         String version = Bukkit.getServer().getClass().getPackage().getName();
         String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
