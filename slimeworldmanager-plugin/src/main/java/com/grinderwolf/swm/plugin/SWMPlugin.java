@@ -150,6 +150,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         Bukkit.getWorlds().stream()
                 .map(world -> getNms().getSlimeWorld(world))
                 .filter(Objects::nonNull)
+                .filter((slimeWorld -> !slimeWorld.isReadOnly()))
                 .map(w -> (CraftSlimeWorld) w)
                 .forEach(w -> {
                     try {
