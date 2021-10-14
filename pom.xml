@@ -5,7 +5,7 @@
     <groupId>com.grinderwolf</groupId>
     <artifactId>slimeworldmanager</artifactId>
     <packaging>pom</packaging>
-    <version>2.6.2-SNAPSHOT</version>
+    <version>2.6.3-SNAPSHOT</version>
     <modules>
         <module>slimeworldmanager-api</module>
         <module>slimeworldmanager-nms-common</module>
@@ -21,8 +21,8 @@
 
     <repositories>
         <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.io/repository/nms/</url>
+            <id>private-snapshots</id>
+            <url>https://repo.rapture.pw/repository/private-snapshots/</url>
         </repository>
         <repository>
             <id>spigot-repo</id>
