@@ -14,6 +14,7 @@ import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -163,11 +164,11 @@ public interface SlimePlugin {
     void importWorld(File worldDir, String worldName, SlimeLoader loader) throws WorldAlreadyExistsException,
             InvalidWorldException, WorldLoadedException, WorldTooBigException, IOException;
 
-    CompletableFuture<Object> asyncLoadWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap);
+    CompletableFuture<Optional<SlimeWorld>> asyncLoadWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap);
 
-    CompletableFuture<Object> asyncGetWorld(SlimeLoader loader, String worldName);
+    CompletableFuture<Optional<SlimeWorld>> asyncGetWorld(SlimeLoader loader, String worldName);
 
-    CompletableFuture<Object> asyncCreateEmptyWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap);
+    CompletableFuture<Optional<SlimeWorld>> asyncCreateEmptyWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap);
 
     CompletableFuture<Void> asyncGenerateWorld(SlimeWorld world);
 
