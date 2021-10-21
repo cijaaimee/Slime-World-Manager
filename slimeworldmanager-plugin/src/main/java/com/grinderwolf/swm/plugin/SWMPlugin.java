@@ -423,20 +423,20 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
 
     @Override
-    public CompletableFuture<Object> asyncLoadWorld(SlimeLoader slimeLoader, String worldName, boolean readOnly, SlimePropertyMap slimePropertyMap) {
+    public CompletableFuture<Optional<SlimeWorld>> asyncLoadWorld(SlimeLoader slimeLoader, String worldName, boolean readOnly, SlimePropertyMap slimePropertyMap) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 var preEvent = new AsyncPreLoadWorldEvent(slimeLoader, worldName, readOnly, slimePropertyMap);
                 Bukkit.getPluginManager().callEvent(preEvent);
 
                 if(preEvent.isCancelled()) {
-                    return null;
+                    return Optional.empty();
                 }
 
                 var world = loadWorld(preEvent.getSlimeLoader(), preEvent.getWorldName(), preEvent.isReadOnly(), preEvent.getSlimePropertyMap());
                 var postEvent = new AsyncPostLoadWorldEvent(world);
                 Bukkit.getPluginManager().callEvent(postEvent);
-                return postEvent.getSlimeWorld();
+                return Optional.ofNullable(postEvent.getSlimeWorld());
             } catch (UnknownWorldException | IOException | CorruptedWorldException | NewerFormatException | WorldInUseException e) {
                 throw new IllegalStateException(e);
             }
@@ -444,37 +444,37 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     }
 
     @Override
-    public CompletableFuture<Object> asyncGetWorld(SlimeLoader slimeLoader, String worldName) {
+    public CompletableFuture<Optional<SlimeWorld>> asyncGetWorld(SlimeLoader slimeLoader, String worldName) {
         return CompletableFuture.supplyAsync(() -> {
             var preEvent = new AsyncPreGetWorldEvent(slimeLoader, worldName);
             Bukkit.getPluginManager().callEvent(preEvent);
 
             if(preEvent.isCancelled()) {
-                return null;
+                return Optional.empty();
             }
 
             var world = getWorld(preEvent.getSlimeLoader(), preEvent.getWorldName());
             var postEvent = new AsyncPostGetWorldEvent(world);
             Bukkit.getPluginManager().callEvent(postEvent);
-            return postEvent.getSlimeWorld();
+            return Optional.ofNullable(postEvent.getSlimeWorld());
         });
     }
 
     @Override
-    public CompletableFuture<Object> asyncCreateEmptyWorld(SlimeLoader slimeLoader, String worldName, boolean readOnly, SlimePropertyMap slimePropertyMap) {
+    public CompletableFuture<Optional<SlimeWorld>> asyncCreateEmptyWorld(SlimeLoader slimeLoader, String worldName, boolean readOnly, SlimePropertyMap slimePropertyMap) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 var preEvent = new AsyncPreCreateEmptyWorldEvent(slimeLoader, worldName, readOnly, slimePropertyMap);
                 Bukkit.getPluginManager().callEvent(preEvent);
 
                 if(preEvent.isCancelled()) {
-                    return null;
+                    return Optional.empty();
                 }
 
                 var world = createEmptyWorld(preEvent.getSlimeLoader(), preEvent.getWorldName(), preEvent.isReadOnly(), preEvent.getSlimePropertyMap());
                 var postEvent = new AsyncPostCreateEmptyWorldEvent(world);
                 Bukkit.getPluginManager().callEvent(postEvent);
-                return postEvent.getSlimeWorld();
+                return Optional.ofNullable(postEvent.getSlimeWorld());
             } catch (WorldAlreadyExistsException | IOException e) {
                 throw new IllegalStateException(e);
             }
