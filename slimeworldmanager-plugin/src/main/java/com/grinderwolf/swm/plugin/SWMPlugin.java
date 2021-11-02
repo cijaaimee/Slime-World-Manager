@@ -3,6 +3,7 @@ package com.grinderwolf.swm.plugin;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.grinderwolf.swm.api.SlimePlugin;
+import com.grinderwolf.swm.api.events.*;
 import com.grinderwolf.swm.api.exceptions.*;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
@@ -19,10 +20,8 @@ import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.config.WorldData;
 import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
-import com.grinderwolf.swm.plugin.loaders.slime.SlimeWorldReader;
 import com.grinderwolf.swm.plugin.loaders.slime.SlimeWorldReaderRegistry;
 import com.grinderwolf.swm.plugin.log.Logging;
-import com.grinderwolf.swm.plugin.update.Updater;
 import com.grinderwolf.swm.plugin.upgrade.WorldUpgrader;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import com.grinderwolf.swm.plugin.world.importer.WorldImporter;
@@ -39,6 +38,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import static com.grinderwolf.swm.api.world.properties.SlimeProperties.*;
 
@@ -131,10 +131,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
-
-        if (ConfigManager.getMainConfig().getUpdaterOptions().isEnabled()) {
-            getServer().getPluginManager().registerEvents(new Updater(), this);
-        }
 
         for (SlimeWorld world : worlds) {
             if (Bukkit.getWorld(world.getName()) == null) {
@@ -417,6 +413,122 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         loader.saveWorld(worldName, serializedWorld, false);
+    }
+
+
+    @Override
+    public CompletableFuture<Optional<SlimeWorld>> asyncLoadWorld(SlimeLoader slimeLoader, String worldName, boolean readOnly, SlimePropertyMap slimePropertyMap) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                var preEvent = new AsyncPreLoadWorldEvent(slimeLoader, worldName, readOnly, slimePropertyMap);
+                Bukkit.getPluginManager().callEvent(preEvent);
+
+                if(preEvent.isCancelled()) {
+                    return Optional.empty();
+                }
+
+                var world = loadWorld(preEvent.getSlimeLoader(), preEvent.getWorldName(), preEvent.isReadOnly(), preEvent.getSlimePropertyMap());
+                var postEvent = new AsyncPostLoadWorldEvent(world);
+                Bukkit.getPluginManager().callEvent(postEvent);
+                return Optional.ofNullable(postEvent.getSlimeWorld());
+            } catch (UnknownWorldException | IOException | CorruptedWorldException | NewerFormatException | WorldInUseException e) {
+                throw new IllegalStateException(e);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Optional<SlimeWorld>> asyncGetWorld(SlimeLoader slimeLoader, String worldName) {
+        return CompletableFuture.supplyAsync(() -> {
+            var preEvent = new AsyncPreGetWorldEvent(slimeLoader, worldName);
+            Bukkit.getPluginManager().callEvent(preEvent);
+
+            if(preEvent.isCancelled()) {
+                return Optional.empty();
+            }
+
+            var world = getWorld(preEvent.getSlimeLoader(), preEvent.getWorldName());
+            var postEvent = new AsyncPostGetWorldEvent(world);
+            Bukkit.getPluginManager().callEvent(postEvent);
+            return Optional.ofNullable(postEvent.getSlimeWorld());
+        });
+    }
+
+    @Override
+    public CompletableFuture<Optional<SlimeWorld>> asyncCreateEmptyWorld(SlimeLoader slimeLoader, String worldName, boolean readOnly, SlimePropertyMap slimePropertyMap) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                var preEvent = new AsyncPreCreateEmptyWorldEvent(slimeLoader, worldName, readOnly, slimePropertyMap);
+                Bukkit.getPluginManager().callEvent(preEvent);
+
+                if(preEvent.isCancelled()) {
+                    return Optional.empty();
+                }
+
+                var world = createEmptyWorld(preEvent.getSlimeLoader(), preEvent.getWorldName(), preEvent.isReadOnly(), preEvent.getSlimePropertyMap());
+                var postEvent = new AsyncPostCreateEmptyWorldEvent(world);
+                Bukkit.getPluginManager().callEvent(postEvent);
+                return Optional.ofNullable(postEvent.getSlimeWorld());
+            } catch (WorldAlreadyExistsException | IOException e) {
+                throw new IllegalStateException(e);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> asyncGenerateWorld(SlimeWorld slimeWorld) {
+        return CompletableFuture.runAsync(() -> {
+            var preEvent = new AsyncPreGenerateWorldEvent(slimeWorld);
+            Bukkit.getPluginManager().callEvent(preEvent);
+
+            if(preEvent.isCancelled()) {
+                return;
+            }
+
+            generateWorld(preEvent.getSlimeWorld());
+            var postEvent = new AsyncPostGenerateWorldEvent(slimeWorld);
+            Bukkit.getPluginManager().callEvent(postEvent);
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> asyncMigrateWorld(String worldName, SlimeLoader currentLoader, SlimeLoader newLoader) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                var preEvent = new AsyncPreMigrateWorldEvent(worldName, currentLoader, newLoader);
+                Bukkit.getPluginManager().callEvent(preEvent);
+
+                if(preEvent.isCancelled()) {
+                    return;
+                }
+
+                migrateWorld(preEvent.getWorldName(), preEvent.getCurrentLoader(), preEvent.getNewLoader());
+                var postEvent = new AsyncPostMigrateWorldEvent(preEvent.getWorldName(), preEvent.getCurrentLoader(), preEvent.getNewLoader());
+                Bukkit.getPluginManager().callEvent(postEvent);
+            } catch (IOException | WorldInUseException | WorldAlreadyExistsException | UnknownWorldException e) {
+                throw new IllegalStateException(e);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> asyncImportWorld(File worldDir, String worldName, SlimeLoader slimeLoader) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                var preEvent = new AsyncPreImportWorldEvent(worldDir, worldName, slimeLoader);
+                Bukkit.getPluginManager().callEvent(preEvent);
+
+                if(preEvent.isCancelled()) {
+                    return;
+                }
+
+                importWorld(preEvent.getWorldDir(), preEvent.getWorldName(), preEvent.getSlimeLoader());
+                var postEvent = new AsyncPostImportWorldEvent(preEvent.getWorldDir(), preEvent.getWorldName(), preEvent.getSlimeLoader());
+                Bukkit.getPluginManager().callEvent(postEvent);
+            } catch (WorldAlreadyExistsException | InvalidWorldException | WorldLoadedException | WorldTooBigException | IOException e) {
+                throw new IllegalStateException(e);
+            }
+        });
     }
 
     public static boolean isPaperMC() {
