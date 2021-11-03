@@ -170,8 +170,6 @@ public interface SlimePlugin {
 
     CompletableFuture<Optional<SlimeWorld>> asyncCreateEmptyWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap);
 
-    CompletableFuture<Void> asyncGenerateWorld(SlimeWorld world);
-
     CompletableFuture<Void> asyncMigrateWorld(String worldName, SlimeLoader currentLoader, SlimeLoader newLoader);
 
     CompletableFuture<Void> asyncImportWorld(File worldDir, String worldName, SlimeLoader loader);
