@@ -3,6 +3,7 @@ package com.grinderwolf.swm.nms.v1171;
 import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.LongArrayTag;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
 import com.grinderwolf.swm.api.world.SlimeChunk;
@@ -27,12 +28,12 @@ import net.minecraft.server.level.WorldServer;
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.util.Unit;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.IInventory;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.ChunkCoordIntPair;
 import net.minecraft.world.level.EnumSkyBlock;
 import net.minecraft.world.level.World;
 import net.minecraft.world.level.biome.BiomeBase;
-import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.WorldChunkManager;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.TileEntity;
@@ -46,16 +47,13 @@ import net.minecraft.world.level.material.FluidType;
 import net.minecraft.world.level.material.FluidTypes;
 import net.minecraft.world.level.storage.IWorldDataServer;
 import org.bukkit.Bukkit;
-import org.bukkit.block.Biome;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.world.WorldSaveEvent;
-import org.bukkit.generator.BiomeProvider;
-import org.bukkit.generator.WorldInfo;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.Executor;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -119,6 +117,18 @@ public class CustomWorldServer extends WorldServer {
         }
     }
 
+    public static CompletableFuture<Integer> relight(World world, Collection<? extends Chunk> chunks) {
+        CompletableFuture<Integer> future = new CompletableFuture<>();
+        WorldServer level = world.getMinecraftWorld();
+
+        Set<ChunkCoordIntPair> chunkPos = chunks.stream()
+                .map(Chunk::getPos)
+                .collect(Collectors.toSet());
+
+        level.getChunkProvider().getLightEngine().relight(chunkPos, pos -> {}, future::complete);
+
+        return future;
+    }
 
     @Override
     public void save(IProgressUpdate progressUpdate, boolean forceSave, boolean flag1) {
@@ -220,9 +230,9 @@ public class CustomWorldServer extends WorldServer {
 
         // Chunk sections
         ChunkSection[] sections = new ChunkSection[16];
-        LightEngine lightEngine = getChunkProvider().getLightEngine();
-
-        lightEngine.b(pos, true);
+//        LightEngine lightEngine = getChunkProvider().getLightEngine();
+//
+//        lightEngine.b(pos, true);
 
         for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
             SlimeChunkSection slimeSection = chunk.getSections()[sectionId];
@@ -232,18 +242,20 @@ public class CustomWorldServer extends WorldServer {
 
                 section.getBlocks().a((NBTTagList) Converter.convertTag(slimeSection.getPalette()), slimeSection.getBlockStates());
 
-                if (slimeSection.getBlockLight() != null) {
-                    lightEngine.a(EnumSkyBlock.b, SectionPosition.a(pos, sectionId), Converter.convertArray(slimeSection.getBlockLight()), true);
-                }
-
-                if (slimeSection.getSkyLight() != null) {
-                    lightEngine.a(EnumSkyBlock.a, SectionPosition.a(pos, sectionId), Converter.convertArray(slimeSection.getSkyLight()), true);
-                }
+//                if (slimeSection.getBlockLight() != null) {
+//                    lightEngine.a(EnumSkyBlock.b, SectionPosition.a(pos, sectionId), Converter.convertArray(slimeSection.getBlockLight()), true);
+//                }
+//
+//                if (slimeSection.getSkyLight() != null) {
+//                    lightEngine.a(EnumSkyBlock.a, SectionPosition.a(pos, sectionId), Converter.convertArray(slimeSection.getSkyLight()), true);
+//                }
 
                 section.recalcBlockCounts();
                 sections[sectionId] = section;
             }
         }
+
+        relight(getMinecraftWorld(), List.of(getMinecraftWorld().getChunkIfLoaded(x, z)));
 
         // Keep the chunk loaded at level 33 to avoid light glitches
         // Such a high level will let the server not tick the chunk,
@@ -325,5 +337,24 @@ public class CustomWorldServer extends WorldServer {
         } else {
             slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
+    }
+
+    @Override
+    public void unloadChunk(Chunk chunk) {
+        Iterator<TileEntity> tileEntities = chunk.getTileEntities().values().iterator();
+        do {
+            TileEntity tileentity;
+            do {
+                if (!tileEntities.hasNext()) {
+                    chunk.C();
+                    return;
+                }
+                tileentity = tileEntities.next();
+            } while (!(tileentity instanceof IInventory));
+
+            for (HumanEntity h : Lists.newArrayList(((IInventory) tileentity).getViewers())) {
+                h.closeInventory();
+            }
+        } while (true);
     }
 }
