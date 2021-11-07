@@ -325,14 +325,23 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     }
 
     @Override
-    public void generateWorld(SlimeWorld world) {
-        Objects.requireNonNull(world, "SlimeWorld cannot be null");
+    public void generateWorld(SlimeWorld slimeWorld) {
+        Objects.requireNonNull(slimeWorld, "SlimeWorld cannot be null");
 
-        if (!world.isReadOnly() && !world.isLocked()) {
+        if (!slimeWorld.isReadOnly() && !slimeWorld.isLocked()) {
             throw new IllegalArgumentException("This world cannot be loaded, as it has not been locked.");
         }
 
-        nms.generateWorld(world);
+        var preEvent = new PreGenerateWorldEvent(slimeWorld);
+        Bukkit.getPluginManager().callEvent(preEvent);
+
+        if(preEvent.isCancelled()) {
+            return;
+        }
+
+        nms.generateWorld(slimeWorld);
+        var postEvent = new PostGenerateWorldEvent(slimeWorld);
+        Bukkit.getPluginManager().callEvent(postEvent);
     }
 
     @Override
@@ -472,22 +481,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             } catch (WorldAlreadyExistsException | IOException e) {
                 throw new IllegalStateException(e);
             }
-        });
-    }
-
-    @Override
-    public CompletableFuture<Void> asyncGenerateWorld(SlimeWorld slimeWorld) {
-        return CompletableFuture.runAsync(() -> {
-            var preEvent = new AsyncPreGenerateWorldEvent(slimeWorld);
-            Bukkit.getPluginManager().callEvent(preEvent);
-
-            if(preEvent.isCancelled()) {
-                return;
-            }
-
-            generateWorld(preEvent.getSlimeWorld());
-            var postEvent = new AsyncPostGenerateWorldEvent(slimeWorld);
-            Bukkit.getPluginManager().callEvent(postEvent);
         });
     }
 
