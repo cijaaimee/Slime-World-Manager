@@ -255,14 +255,13 @@ public class CustomWorldServer extends WorldServer {
             }
         }
 
-        relight(getMinecraftWorld(), List.of(getMinecraftWorld().getChunkIfLoaded(x, z)));
-
         // Keep the chunk loaded at level 33 to avoid light glitches
         // Such a high level will let the server not tick the chunk,
         // but at the same time it won't be completely unloaded from memory
 //        getChunkProvider().addTicket(SWM_TICKET, pos, 33, Unit.INSTANCE);
 
         Consumer<Chunk> loadEntities = (nmsChunk) -> {
+            relight(this, List.of(nmsChunk));
 
             // Load tile entities
 //            System.out.println("Loading tile entities for chunk (" + pos.x + ", " + pos.z + ") on world " + slimeWorld.getName());

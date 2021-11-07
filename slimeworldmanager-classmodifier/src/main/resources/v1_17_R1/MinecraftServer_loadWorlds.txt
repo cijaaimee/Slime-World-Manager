@@ -43,32 +43,18 @@
                         java.io.File oldWorld = new java.io.File(new java.io.File(s), dim);
                         java.io.File oldLevelDat = new java.io.File(new java.io.File(s), "level.dat");
                         if (!newWorld.isDirectory() && oldWorld.isDirectory() && oldLevelDat.isFile()) {
-                            //LOGGER.info("---- Migration of old " + worldType + " folder required ----");
-                            //LOGGER.info("Unfortunately due to the way that Minecraft implemented multiworld support in 1.6, Bukkit requires that you move your " + worldType + " folder to a new location in order to operate correctly.");
-                            //LOGGER.info("We will move $0 folder for you, but it will mean that you need to move it back should you wish to stop using Bukkit in the future.");
-                            //LOGGER.info("Attempting to move " + oldWorld + " to " + newWorld + "...");
                             if (newWorld.exists()) {
-                                //LOGGER.warn("A file or folder already exists at " + newWorld + "!");
-                                //LOGGER.info("---- Migration of old " + worldType + " folder failed ----");
                             } else if (newWorld.getParentFile().mkdirs()) {
                                 if (oldWorld.renameTo(newWorld)) {
-                                    //LOGGER.info("Success! To restore " + worldType + " in the future, simply move " + newWorld + " to " + oldWorld);
-
                                     try {
                                         com.google.common.io.Files.copy(oldLevelDat, new java.io.File(new java.io.File(name), "level.dat"));
                                         org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils.copyDirectory(new java.io.File(new java.io.File(s), "data"), new java.io.File(new java.io.File(name), "data"));
                                     } catch (java.io.IOException ex) {
-                                        //LOGGER.warn("Unable to migrate world data.");
                                     }
 
-                                    //LOGGER.info("---- Migration of old " + worldType + " folder complete ----");
                                 } else {
-                                    //LOGGER.warn("Could not move folder " + oldWorld + " to " + newWorld + "!");
-                                    //LOGGER.info("---- Migration of old " + worldType + " folder failed ----");
                                 }
                             } else {
-                                //LOGGER.warn("Could not create path for " + newWorld + "!");
-                                //LOGGER.info("---- Migration of old " + worldType + " folder failed ----");
                             }
                         }
 
