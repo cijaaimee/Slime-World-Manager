@@ -43,12 +43,15 @@ import net.minecraft.world.level.dimension.DimensionManager;
 import net.minecraft.world.level.dimension.WorldDimension;
 import net.minecraft.world.level.levelgen.HeightMap;
 import net.minecraft.world.level.lighting.LightEngine;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidType;
 import net.minecraft.world.level.material.FluidTypes;
 import net.minecraft.world.level.storage.IWorldDataServer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftHumanEntity;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 
 import java.io.IOException;
@@ -56,6 +59,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -210,6 +214,19 @@ public class CustomWorldServer extends WorldServer {
         return new ProtoChunkExtension(chunk);
     }
 
+    private boolean isSectionEmptyAsync(ChunkSection section) {
+        AtomicBoolean empty = new AtomicBoolean(true);
+        section.getBlocks().forEachLocation((state, location) -> {
+            if(!empty.get()) return;
+
+            if(!state.isAir() || state.getFluid().isEmpty()) {
+                empty.set(false);
+            }
+        });
+
+        return empty.get();
+    }
+
     private Chunk createChunk(SlimeChunk chunk) {
         int x = chunk.getX();
         int z = chunk.getZ();
@@ -250,7 +267,9 @@ public class CustomWorldServer extends WorldServer {
 //                    lightEngine.a(EnumSkyBlock.a, SectionPosition.a(pos, sectionId), Converter.convertArray(slimeSection.getSkyLight()), true);
 //                }
 
-                section.recalcBlockCounts();
+                if(!isSectionEmptyAsync(section)) {
+                    section.recalcBlockCounts();
+                }
                 sections[sectionId] = section;
             }
         }
@@ -345,15 +364,16 @@ public class CustomWorldServer extends WorldServer {
             TileEntity tileentity;
             do {
                 if (!tileEntities.hasNext()) {
-                    chunk.C();
+//                    chunk.C();
                     return;
                 }
                 tileentity = tileEntities.next();
             } while (!(tileentity instanceof IInventory));
 
             for (HumanEntity h : Lists.newArrayList(((IInventory) tileentity).getViewers())) {
-                h.closeInventory();
+                ((CraftHumanEntity) h).getHandle().closeUnloadedInventory(InventoryCloseEvent.Reason.UNLOADED);
             }
+            ((IInventory) tileentity).getViewers().clear();
         } while (true);
     }
 }
