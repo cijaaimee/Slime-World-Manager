@@ -91,6 +91,10 @@ public class SlimePropertyMap {
     public CompoundTag toCompound() {
         return new CompoundTag("properties", properties);
     }
+    
+    public static SlimePropertyMap fromCompound(CompoundTag compound) {
+        return new SlimePropertyMap(compound);
+    }
 
     @Override
     public String toString() {
