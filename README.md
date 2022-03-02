@@ -27,6 +27,7 @@ SWM releases can be found [here](https://www.spigotmc.org/resources/slimeworldma
     <groupId>com.grinderwolf</groupId>
     <artifactId>slimeworldmanager-api</artifactId>
     <version>INSERT LATEST VERSION HERE</version>
+    <scope>provided</scope>
   </dependency>
 </dependencies>
 ```
