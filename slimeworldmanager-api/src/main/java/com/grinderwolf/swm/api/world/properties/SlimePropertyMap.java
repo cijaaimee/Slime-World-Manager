@@ -92,7 +92,7 @@ public class SlimePropertyMap {
         return new CompoundTag("properties", properties);
     }
     
-    public static SlimePropertyMap fromCompound(CompoundTag compound) {
+    public static SlimePropertyMap fromCompound(CompoundMap compound) {
         return new SlimePropertyMap(compound);
     }
 
