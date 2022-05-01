@@ -1,5 +1,0 @@
-{
-    if (com.grinderwolf.swm.clsm.ClassModifier.skipWorldAdd(((org.bukkit.craftbukkit.v1_16_R2.CraftWorld) $1).getHandle())) {
-        return;
-    }
-}

@@ -3,6 +3,7 @@ package com.grinderwolf.swm.api.world.properties;
 import com.grinderwolf.swm.api.world.properties.type.SlimePropertyBoolean;
 import com.grinderwolf.swm.api.world.properties.type.SlimePropertyInt;
 import com.grinderwolf.swm.api.world.properties.type.SlimePropertyString;
+import org.jetbrains.annotations.*;
 
 /**
  * Class with all existing slime world properties.
@@ -72,5 +73,19 @@ public class SlimeProperties {
      * The default biome generated in empty chunks
      */
     public static final SlimeProperty<String> DEFAULT_BIOME = new SlimePropertyString("defaultBiome", "minecraft:plains");
+
+    @ApiStatus.Experimental
+    public static final SlimeProperty<Boolean> SHOULD_LIMIT_SAVE = new SlimePropertyBoolean("hasSaveBounds", false);
+
+    @ApiStatus.Experimental
+    public static final SlimeProperty<Integer> SAVE_MIN_X = new SlimePropertyInt("saveMinX", 0);
+    @ApiStatus.Experimental
+    public static final SlimeProperty<Integer> SAVE_MIN_Z = new SlimePropertyInt("saveMinZ", 0);
+
+    @ApiStatus.Experimental
+    public static final SlimeProperty<Integer> SAVE_MAX_X = new SlimePropertyInt("saveMaxX", 0);
+    @ApiStatus.Experimental
+    public static final SlimeProperty<Integer> SAVE_MAX_Z = new SlimePropertyInt("saveMaxZ", 0);
+
 
 }

@@ -69,7 +69,13 @@ public interface SlimePlugin {
     SlimeWorld loadWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap) throws
             UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException, WorldInUseException;
 
-    SlimeWorld getWorld(SlimeLoader loader, String worldName);
+    /**
+     * Gets a world which has already been loaded by ASWM.
+     *
+     * @param worldName the name of the world to get
+     * @return the loaded world, or {@code null} if no loaded world matches the given name
+     */
+    SlimeWorld getWorld(String worldName);
 
     /**
      * Creates an empty world and stores it using a specified
@@ -166,7 +172,7 @@ public interface SlimePlugin {
 
     CompletableFuture<Optional<SlimeWorld>> asyncLoadWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap);
 
-    CompletableFuture<Optional<SlimeWorld>> asyncGetWorld(SlimeLoader loader, String worldName);
+    CompletableFuture<Optional<SlimeWorld>> asyncGetWorld(String worldName);
 
     CompletableFuture<Optional<SlimeWorld>> asyncCreateEmptyWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap);
 

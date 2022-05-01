@@ -5,8 +5,8 @@ import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.utils.SlimeFormat;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
-import com.grinderwolf.swm.nms.CraftSlimeWorld;
-import com.grinderwolf.swm.plugin.loaders.slime.impl.v1_9SlimeWorldFormat;
+import com.grinderwolf.swm.nms.world.*;
+import com.grinderwolf.swm.plugin.loaders.slime.impl.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -30,7 +30,7 @@ public class SlimeWorldReaderRegistry {
         }
     }
 
-    public static CraftSlimeWorld readWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimePropertyMap propertyMap, boolean readOnly) throws IOException, CorruptedWorldException, NewerFormatException {
+    public static SlimeLoadedWorld readWorld(SlimeLoader loader, String worldName, byte[] serializedWorld, SlimePropertyMap propertyMap, boolean readOnly) throws IOException, CorruptedWorldException, NewerFormatException {
         DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(serializedWorld));
         byte[] fileHeader = new byte[SlimeFormat.SLIME_HEADER.length];
         dataStream.read(fileHeader);

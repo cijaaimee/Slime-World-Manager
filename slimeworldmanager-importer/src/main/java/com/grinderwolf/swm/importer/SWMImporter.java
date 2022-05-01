@@ -10,8 +10,7 @@ import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.utils.SlimeFormat;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.nms.CraftSlimeChunk;
-import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
+import com.grinderwolf.swm.nms.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -353,6 +352,9 @@ public class SWMImporter {
     }
 
     private static SlimeChunk readChunk(CompoundTag compound, List<CompoundTag> entityList, byte worldVersion) {
+        if (true) {
+            throw new UnsupportedOperationException("Not implemented yet."); // todo copy from WorldImporter
+        }
         int chunkX = compound.getAsIntTag("xPos").get().getValue();
         int chunkZ = compound.getAsIntTag("zPos").get().getValue();
         Optional<String> status = compound.getStringValue("Status");
@@ -408,9 +410,9 @@ public class SWMImporter {
             }
 
             byte[] blocks = sectionTag.getByteArrayValue("Blocks").orElse(null);
-            NibbleArray dataArray;
-            ListTag<CompoundTag> paletteTag;
-            long[] blockStatesArray;
+            NibbleArray dataArray = null;
+            ListTag<CompoundTag> paletteTag = null;
+            long[] blockStatesArray = null;
 
             if (worldVersion < 0x04) {
                 dataArray = new NibbleArray(sectionTag.getByteArrayValue("Data").get());
@@ -418,12 +420,7 @@ public class SWMImporter {
                 if (isEmpty(blocks)) { // Just skip it
                     continue;
                 }
-
-                paletteTag = null;
-                blockStatesArray = null;
-            } else {
-                dataArray = null;
-
+            } else if (worldVersion < 0x08) {
                 paletteTag = (ListTag<CompoundTag>) sectionTag.getAsListTag("Palette").orElse(null);
                 blockStatesArray = sectionTag.getLongArrayValue("BlockStates").orElse(null);
 
@@ -435,12 +432,12 @@ public class SWMImporter {
             NibbleArray blockLightArray = sectionTag.getValue().containsKey("BlockLight") ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get()) : null;
             NibbleArray skyLightArray = sectionTag.getValue().containsKey("SkyLight") ? new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get()) : null;
 
-            sectionArray[index] = new CraftSlimeChunkSection(blocks, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
+            sectionArray[index] = new CraftSlimeChunkSection(paletteTag, blockStatesArray, null, null, blockLightArray, skyLightArray);
         }
 
         for (SlimeChunkSection section : sectionArray) {
             if (section != null) { // Chunk isn't empty
-                return new CraftSlimeChunk(null, chunkX, chunkZ, sectionArray, heightMapsCompound, biomes, tileEntities, entities);
+                return new CraftSlimeChunk(null, chunkX, chunkZ, sectionArray, heightMapsCompound, biomes, tileEntities, entities, 0, sectionArray.length);
             }
         }
 
@@ -479,7 +476,7 @@ public class SWMImporter {
 
     private static byte[] generateSlimeWorld(List<SlimeChunk> chunks, byte worldVersion, LevelData levelData, List<CompoundTag> worldMaps) {
         List<SlimeChunk> sortedChunks = new ArrayList<>(chunks);
-        sortedChunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
+        sortedChunks.sort(Comparator.comparingLong(chunk -> NmsUtil.asLong(chunk.getX(), chunk.getZ())));
 
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         DataOutputStream outStream = new DataOutputStream(outByteStream);

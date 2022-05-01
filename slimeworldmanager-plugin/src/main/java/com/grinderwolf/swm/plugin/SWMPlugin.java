@@ -8,13 +8,11 @@ import com.grinderwolf.swm.api.exceptions.*;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
-import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
-import com.grinderwolf.swm.nms.v11601.v11601SlimeNMS;
-import com.grinderwolf.swm.nms.v11623.v11623SlimeNMS;
-import com.grinderwolf.swm.nms.v11645.v11645SlimeNMS;
-import com.grinderwolf.swm.nms.v117.v1170SlimeNMS;
 import com.grinderwolf.swm.nms.v1171.v1171SlimeNMS;
+import com.grinderwolf.swm.nms.v1181.v1181SlimeNMS;
+import com.grinderwolf.swm.nms.v1182.v1182SlimeNMS;
+import com.grinderwolf.swm.nms.world.*;
 import com.grinderwolf.swm.plugin.commands.CommandManager;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.config.WorldData;
@@ -25,13 +23,17 @@ import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.upgrade.WorldUpgrader;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import com.grinderwolf.swm.plugin.world.importer.WorldImporter;
+import it.unimi.dsi.fastutil.ints.*;
+import it.unimi.dsi.fastutil.longs.*;
 import lombok.Getter;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -39,15 +41,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.grinderwolf.swm.api.world.properties.SlimeProperties.*;
 
-public class SWMPlugin extends JavaPlugin implements SlimePlugin {
+public class SWMPlugin extends JavaPlugin implements SlimePlugin, Listener {
 
     @Getter
     private SlimeNMS nms;
 
-    private final List<SlimeWorld> worlds = new ArrayList<>();
+    private final Map<String, SlimeWorld> loadedWorlds = new ConcurrentHashMap<>();
+
+    private v1182SlimeNMS v1182SlimeNMS;
 
     private static boolean isPaperMC = false;
 
@@ -58,6 +63,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             return false;
         }
     }
+    
+    private static final int BSTATS_ID = 5419;
 
     @Override
     public void onLoad() {
@@ -65,7 +72,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         try {
             ConfigManager.initialize();
-        } catch (NullPointerException | IOException | ObjectMappingException ex) {
+        } catch (NullPointerException | IOException ex) {
             Logging.error("Failed to load config files:");
             ex.printStackTrace();
             return;
@@ -91,18 +98,18 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
             if (erroredWorlds.contains(defaultWorldName)) {
                 Logging.error("Shutting down server, as the default world could not be loaded.");
-                System.exit(1);
+                Bukkit.getServer().shutdown();
             } else if (getServer().getAllowNether() && erroredWorlds.contains(defaultWorldName + "_nether")) {
                 Logging.error("Shutting down server, as the default nether world could not be loaded.");
-                System.exit(1);
+                Bukkit.getServer().shutdown();
             } else if (getServer().getAllowEnd() && erroredWorlds.contains(defaultWorldName + "_the_end")) {
                 Logging.error("Shutting down server, as the default end world could not be loaded.");
-                System.exit(1);
+                Bukkit.getServer().shutdown();
             }
 
-            SlimeWorld defaultWorld = worlds.stream().filter(world -> world.getName().equals(defaultWorldName)).findFirst().orElse(null);
-            SlimeWorld netherWorld = (getServer().getAllowNether() ? worlds.stream().filter(world -> world.getName().equals(defaultWorldName + "_nether")).findFirst().orElse(null) : null);
-            SlimeWorld endWorld = (getServer().getAllowEnd() ? worlds.stream().filter(world -> world.getName().equals(defaultWorldName + "_the_end")).findFirst().orElse(null) : null);
+            SlimeWorld defaultWorld = loadedWorlds.get(defaultWorldName);
+            SlimeWorld netherWorld = getServer().getAllowNether() ? loadedWorlds.get(defaultWorldName + "_nether") : null;
+            SlimeWorld endWorld = getServer().getAllowEnd() ? loadedWorlds.get(defaultWorldName + "_the_end") : null;
 
             nms.setDefaultWorlds(defaultWorld, netherWorld, endWorld);
         } catch (IOException ex) {
@@ -117,8 +124,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             this.setEnabled(false);
             return;
         }
-
-        new Metrics(this);
+        
+        Metrics metrics = new Metrics(this, BSTATS_ID);
 
         final CommandManager commandManager = new CommandManager();
         final PluginCommand swmCommand = getCommand("swm");
@@ -132,13 +139,13 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
 
-        for (SlimeWorld world : worlds) {
-            if (Bukkit.getWorld(world.getName()) == null) {
-                generateWorld(world);
-            }
-        }
+        loadedWorlds.values().stream()
+                .filter(slimeWorld -> Objects.isNull(Bukkit.getWorld(slimeWorld.getName())))
+                .forEach(this::generateWorld);
 
-        worlds.clear();
+        this.getServer().getPluginManager().registerEvents(this, this);
+
+        //loadedWorlds.clear // - Commented out because not sure why this would be cleared. Needs checking
     }
 
     @Override
@@ -147,15 +154,22 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
                 .map(world -> getNms().getSlimeWorld(world))
                 .filter(Objects::nonNull)
                 .filter((slimeWorld -> !slimeWorld.isReadOnly()))
-                .map(w -> (CraftSlimeWorld) w)
-                .forEach(w -> {
+                .map(w -> (SlimeLoadedWorld) w)
+                .forEach(world -> {
                     try {
-                        w.getLoader().saveWorld(
-                                w.getName(),
-                                w.serialize(),
-                                w.isLocked()
+                        SlimeLoader loader = world.getLoader();
+                        String name = world.getName();
+
+                        loader.saveWorld(
+                                name,
+                                world.serialize().join(),
+                                world.isLocked()
                         );
-                    } catch (IOException e) {
+
+                        if (loader.isWorldLocked(name)) {
+                            loader.unlockWorld(name);
+                        }
+                    } catch (IOException | UnknownWorldException e) {
                         e.printStackTrace();
                     }
                 });
@@ -166,20 +180,13 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
 
         int dataVersion = Bukkit.getUnsafe().getDataVersion();
-        switch(dataVersion) {
-            case 2566:
-            case 2567:
-                return new v11601SlimeNMS(isPaperMC);
-            case 2578:
-            case 2580:
-                return new v11623SlimeNMS(isPaperMC);
-            case 2584:
-            case 2586:
-                return new v11645SlimeNMS(isPaperMC, this);
-            case 2724:
-                return new v1170SlimeNMS(isPaperMC);
+        switch (dataVersion) {
             case 2730:
                 return new v1171SlimeNMS(isPaperMC);
+            case 2865:
+                return new v1181SlimeNMS(isPaperMC);
+            case 2975:
+                return new v1182SlimeNMS(isPaperMC);
             default:
                 throw new InvalidVersionException("" + dataVersion);
 
@@ -205,12 +212,14 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
                     SlimePropertyMap propertyMap = worldData.toPropertyMap();
                     SlimeWorld world = loadWorld(loader, worldName, worldData.isReadOnly(), propertyMap);
 
-                    worlds.add(world);
+                    loadedWorlds.put(worldName, world);
                 } catch (IllegalArgumentException | UnknownWorldException | NewerFormatException | WorldInUseException | CorruptedWorldException | IOException ex) {
                     String message;
 
                     if (ex instanceof IllegalArgumentException) {
                         message = ex.getMessage();
+
+                        ex.printStackTrace();
                     } else if (ex instanceof UnknownWorldException) {
                         message = "world does not exist, are you sure you've set the correct data source?";
                     } else if (ex instanceof NewerFormatException) {
@@ -254,7 +263,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         Logging.info("Loading world " + worldName + ".");
         byte[] serializedWorld = loader.loadWorld(worldName, readOnly);
-        CraftSlimeWorld world;
+        SlimeLoadedWorld world;
 
         try {
             world = SlimeWorldReaderRegistry.readWorld(loader, worldName, serializedWorld, propertyMap, readOnly);
@@ -274,11 +283,12 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
+        registerWorld(world);
         return world;
     }
 
-    public SlimeWorld getWorld(SlimeLoader loader, String worldName) {
-        return worlds.stream().filter(world -> world.getName().equals(worldName)).findFirst().orElse(null);
+    public SlimeWorld getWorld(String worldName) {
+        return loadedWorlds.get(worldName);
     }
 
     @Override
@@ -300,12 +310,12 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         Logging.info("Creating empty world " + worldName + ".");
         long start = System.currentTimeMillis();
-        CraftSlimeWorld world = new CraftSlimeWorld(loader, worldName, new HashMap<>(), new CompoundTag("",
-                new CompoundMap()), new ArrayList<>(), nms.getWorldVersion(), propertyMap, readOnly, !readOnly);
-        loader.saveWorld(worldName, world.serialize(), !readOnly);
+        SlimeLoadedWorld world = SWMPlugin.getInstance().getNms().createSlimeWorld(loader, worldName, new Long2ObjectOpenHashMap<>(), new CompoundTag("", new CompoundMap()), new ArrayList<>(), nms.getWorldVersion(), propertyMap, readOnly, !readOnly, new Long2ObjectOpenHashMap<>());
+        loader.saveWorld(worldName, world.serialize().join(), !readOnly);
 
         Logging.info("World " + worldName + " created in " + (System.currentTimeMillis() - start) + "ms.");
 
+        registerWorld(world);
         return world;
     }
 
@@ -322,6 +332,24 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         propertyMap.setValue(ENVIRONMENT, properties.getEnvironment());
 
         return propertyMap;
+    }
+
+    /**
+     * Utility method to register a <b>loaded</b> {@link SlimeWorld} with the internal map (for {@link #getWorld} calls)
+     *
+     * @param world the world to register
+     */
+    private void registerWorld(SlimeWorld world) {
+        this.loadedWorlds.put(world.getName(), world);
+    }
+
+
+    /**
+     * Ensure worlds are removed from the loadedWorlds map when {@link Bukkit#unloadWorld} is called.
+     */
+    @EventHandler
+    public void onBukkitWorldUnload(WorldUnloadEvent worldUnloadEvent) {
+        loadedWorlds.remove(worldUnloadEvent.getWorld().getName());
     }
 
     @Override
@@ -361,7 +389,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         if (bukkitWorld != null) {
             // Make sure the loaded world really is a SlimeWorld and not a normal Bukkit world
-            CraftSlimeWorld slimeWorld = (CraftSlimeWorld) SWMPlugin.getInstance().getNms().getSlimeWorld(bukkitWorld);
+            SlimeLoadedWorld slimeWorld = (SlimeLoadedWorld) SWMPlugin.getInstance().getNms().getSlimeWorld(bukkitWorld);
 
             if (slimeWorld != null && currentLoader.equals(slimeWorld.getLoader())) {
                 slimeWorld.setLoader(newLoader);
@@ -411,12 +439,12 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             throw new WorldLoadedException(worldDir.getName());
         }
 
-        CraftSlimeWorld world = WorldImporter.readFromDirectory(worldDir);
+        SlimeLoadedWorld world = WorldImporter.readFromDirectory(worldDir);
 
         byte[] serializedWorld;
 
         try {
-            serializedWorld = world.serialize();
+            serializedWorld = world.serialize().join();
         } catch (IndexOutOfBoundsException ex) {
             throw new WorldTooBigException(worldDir.getName());
         }
@@ -447,16 +475,16 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     }
 
     @Override
-    public CompletableFuture<Optional<SlimeWorld>> asyncGetWorld(SlimeLoader slimeLoader, String worldName) {
+    public CompletableFuture<Optional<SlimeWorld>> asyncGetWorld(String worldName) {
         return CompletableFuture.supplyAsync(() -> {
-            var preEvent = new AsyncPreGetWorldEvent(slimeLoader, worldName);
+            var preEvent = new AsyncPreGetWorldEvent(worldName);
             Bukkit.getPluginManager().callEvent(preEvent);
 
-            if(preEvent.isCancelled()) {
+            if (preEvent.isCancelled()) {
                 return Optional.empty();
             }
 
-            var world = getWorld(preEvent.getSlimeLoader(), preEvent.getWorldName());
+            var world = getWorld(preEvent.getWorldName());
             var postEvent = new AsyncPostGetWorldEvent(world);
             Bukkit.getPluginManager().callEvent(postEvent);
             return Optional.ofNullable(postEvent.getSlimeWorld());

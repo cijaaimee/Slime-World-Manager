@@ -7,7 +7,7 @@ import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeChunk;
 import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
-import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import com.grinderwolf.swm.nms.world.*;
 import com.grinderwolf.swm.plugin.upgrade.Upgrade;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class v1_16WorldUpgrade implements Upgrade {
     };
 
     @Override
-    public void upgrade(CraftSlimeWorld world) {
+    public void upgrade(SlimeLoadedWorld world) {
         for (SlimeChunk chunk : new ArrayList<>(world.getChunks().values())) {
             // Add padding to height maps and block states
             CompoundTag heightMaps = chunk.getHeightMaps();
@@ -39,8 +39,8 @@ public class v1_16WorldUpgrade implements Upgrade {
                     int bitsPerBlock = Math.max(4, ceillog2(section.getPalette().getValue().size()));
 
                     if (!isPowerOfTwo(bitsPerBlock)) {
-                        section = new CraftSlimeChunkSection(null, null, section.getPalette(),
-                                addPadding(4096, bitsPerBlock, section.getBlockStates()),
+                        section = new CraftSlimeChunkSection(section.getPalette(),
+                                addPadding(4096, bitsPerBlock, section.getBlockStates()), null, null,
                                 section.getBlockLight(), section.getSkyLight());
                         chunk.getSections()[sectionIndex] = section;
                     }
@@ -55,7 +55,7 @@ public class v1_16WorldUpgrade implements Upgrade {
 
             world.updateChunk(new CraftSlimeChunk(chunk.getWorldName(), chunk.getX(), chunk.getZ(),
                     chunk.getSections(), chunk.getHeightMaps(), newBiomes,
-                    chunk.getTileEntities(), chunk.getEntities(), ((CraftSlimeChunk) chunk).getUpgradeData()));
+                    chunk.getTileEntities(), chunk.getEntities(), 0, 16));
         }
     }
 

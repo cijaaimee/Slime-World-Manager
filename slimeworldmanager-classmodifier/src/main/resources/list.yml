@@ -1,58 +1,38 @@
-# 1.16/1.16.1
-net/minecraft/server/v1_16_R1/PlayerChunkMap:
-  - saveChunk(net.minecraft.server.v1_16_R1.IChunkAccess)@v1_16_R1/PlayerChunkMap_saveChunk.txt
-  - f(net.minecraft.server.v1_16_R1.ChunkCoordIntPair)@v1_16_R1/PlayerChunkMap_loadChunk.txt
-net/minecraft/server/v1_16_R1/MobSpawnerTrader:
-  - a(net.minecraft.server.v1_16_R1.WorldServer,boolean, boolean)@v1_16_R1/MobSpawnerTrader_tickRaids.txt
-net/minecraft/server/v1_16_R1/PersistentBase:
-  - a(java.io.File)@v1_16_R1/PersistentBase_saveData.txt
-org/bukkit/craftbukkit/v1_16_R1/CraftServer:
-  - addWorld(org.bukkit.World)@v1_16_R1/CraftServer_addWorld.txt
-net/minecraft/server/v1_16_R1/MinecraftServer:
-  - loadWorld(java.lang.String)@v1_16_R1/MinecraftServer_loadWorlds.txt
-  - getGamemode()@v1_16_R1/MinecraftServer_getGamemode.txt
+# Good resources: nms.screamingsandals.org
+v1_17_R1:
+  net/minecraft/server/level/PlayerChunkMap:
+    - saveChunk(net.minecraft.world.level.chunk.IChunkAccess)@v1_17_R1/PlayerChunkMap_saveChunk.txt
+    - f(net.minecraft.world.level.ChunkCoordIntPair)@v1_17_R1/PlayerChunkMap_loadChunk.txt
+  net/minecraft/world/level/saveddata/PersistentBase:
+    - a(java.io.File)@v1_17_R1/PersistentBase_saveData.txt
+  net/minecraft/world/level/levelgen/GeneratorSettings:
+    - d()@v1_17_R1/GeneratorSettings_injectWorlds.txt
+  net/minecraft/world/level/chunk/storage/EntityStorage:
+    - a(net.minecraft.world.level.ChunkCoordIntPair)@v1_17_R1/EntityStorage_loadEntities.txt
+    - a(net.minecraft.world.level.entity.ChunkEntities)@v1_17_R1/EntityStorage_storeEntities.txt
+    - a(boolean)@v1_17_R1/EntityStorage_flush.txt
+v1_18_R1:
+  net/minecraft/server/level/PlayerChunkMap:
+    - a(net.minecraft.world.level.chunk.IChunkAccess)@v1_18_R1/PlayerChunkMap_saveChunk.txt
+    - g(net.minecraft.world.level.ChunkCoordIntPair)@v1_18_R1/PlayerChunkMap_loadChunk.txt
+  net/minecraft/world/level/saveddata/PersistentBase:
+    - a(java.io.File)@v1_18_R1/PersistentBase_saveData.txt
+  net/minecraft/world/level/levelgen/GeneratorSettings:
+    - d()@v1_18_R1/GeneratorSettings_injectWorlds.txt
+  net/minecraft/world/level/chunk/storage/EntityStorage:
+    - a(net.minecraft.world.level.ChunkCoordIntPair)@v1_18_R1/EntityStorage_loadEntities.txt
+    - a(net.minecraft.world.level.entity.ChunkEntities)@v1_18_R1/EntityStorage_storeEntities.txt
+    - a(boolean)@v1_18_R1/EntityStorage_flush.txt
 
-
-# 1.16.2
-net/minecraft/server/v1_16_R2/PlayerChunkMap:
-  - saveChunk(net.minecraft.server.v1_16_R2.IChunkAccess)@v1_16_R2/PlayerChunkMap_saveChunk.txt
-  - f(net.minecraft.server.v1_16_R2.ChunkCoordIntPair)@v1_16_R2/PlayerChunkMap_loadChunk.txt
-net/minecraft/server/v1_16_R2/MobSpawnerTrader:
-  - a(net.minecraft.server.v1_16_R2.WorldServer,boolean, boolean)@v1_16_R2/MobSpawnerTrader_tickRaids.txt
-net/minecraft/server/v1_16_R2/PersistentBase:
-  - a(java.io.File)@v1_16_R2/PersistentBase_saveData.txt
-org/bukkit/craftbukkit/v1_16_R2/CraftServer:
-  - addWorld(org.bukkit.World)@v1_16_R2/CraftServer_addWorld.txt
-net/minecraft/server/v1_16_R2/MinecraftServer:
-  - loadWorld(java.lang.String)@v1_16_R2/MinecraftServer_loadWorlds.txt
-  - getGamemode()@v1_16_R2/MinecraftServer_getGamemode.txt
-
-
-# 1.16.3/4/5
-net/minecraft/server/v1_16_R3/PlayerChunkMap:
-  - saveChunk(net.minecraft.server.v1_16_R3.IChunkAccess)@v1_16_R3/PlayerChunkMap_saveChunk.txt
-  - f(net.minecraft.server.v1_16_R3.ChunkCoordIntPair)@v1_16_R3/PlayerChunkMap_loadChunk.txt
-net/minecraft/server/v1_16_R3/MobSpawnerTrader:
-  - a(net.minecraft.server.v1_16_R3.WorldServer,boolean, boolean)@v1_16_R3/MobSpawnerTrader_tickRaids.txt
-net/minecraft/server/v1_16_R3/PersistentBase:
-  - a(java.io.File)@v1_16_R3/PersistentBase_saveData.txt
-org/bukkit/craftbukkit/v1_16_R3/CraftServer:
-  - addWorld(org.bukkit.World)@v1_16_R3/CraftServer_addWorld.txt
-net/minecraft/server/v1_16_R3/MinecraftServer:
-  - loadWorld(java.lang.String)@v1_16_R3/MinecraftServer_loadWorlds.txt
-  - getGamemode()@v1_16_R3/MinecraftServer_getGamemode.txt
-
-
-# 1.17
-net/minecraft/server/level/PlayerChunkMap:
-  - saveChunk(net.minecraft.world.level.chunk.IChunkAccess)@v1_17_R1/PlayerChunkMap_saveChunk.txt
-  - f(net.minecraft.world.level.ChunkCoordIntPair)@v1_17_R1/PlayerChunkMap_loadChunk.txt
-net/minecraft/world/entity/npc/MobSpawnerTrader:
-  - a(net.minecraft.server.level.WorldServer,boolean, boolean)@v1_17_R1/MobSpawnerTrader_tickRaids.txt
-net/minecraft/world/level/saveddata/PersistentBase:
-  - a(java.io.File)@v1_17_R1/PersistentBase_saveData.txt
-net/minecraft/server/MinecraftServer:
-  - loadWorld(java.lang.String)@v1_17_R1/MinecraftServer_loadWorlds.txt
-  - getGamemode()@v1_17_R1/MinecraftServer_getGamemode.txt
-org/bukkit/craftbukkit/v1_17_R1/CraftServer:
-  - addWorld(org.bukkit.World)@v1_17_R1/CraftServer_addWorld.txt
+v1_18_R2:
+  net/minecraft/server/level/PlayerChunkMap:
+    - a(net.minecraft.world.level.chunk.IChunkAccess)@v1_18_R2/PlayerChunkMap_saveChunk.txt
+    - g(net.minecraft.world.level.ChunkCoordIntPair)@v1_18_R2/PlayerChunkMap_loadChunk.txt
+  net/minecraft/world/level/saveddata/PersistentBase:
+    - a(java.io.File)@v1_18_R2/PersistentBase_saveData.txt
+  net/minecraft/world/level/levelgen/GeneratorSettings:
+    - d()@v1_18_R2/GeneratorSettings_injectWorlds.txt
+  net/minecraft/world/level/chunk/storage/EntityStorage:
+    - a(net.minecraft.world.level.ChunkCoordIntPair)@v1_18_R2/EntityStorage_loadEntities.txt
+    - a(net.minecraft.world.level.entity.ChunkEntities)@v1_18_R2/EntityStorage_storeEntities.txt
+    - a(boolean)@v1_18_R2/EntityStorage_flush.txt

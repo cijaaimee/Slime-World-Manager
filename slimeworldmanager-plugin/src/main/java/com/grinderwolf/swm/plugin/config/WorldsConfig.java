@@ -1,11 +1,10 @@
 package com.grinderwolf.swm.plugin.config;
 
-import com.google.common.reflect.TypeToken;
 import com.grinderwolf.swm.plugin.log.Logging;
+import io.leangen.geantyref.TypeToken;
 import lombok.Getter;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,8 +19,8 @@ public class WorldsConfig {
 
     public void save() {
         try {
-            ConfigManager.getWorldConfigLoader().save(ConfigManager.getWorldConfigLoader().createEmptyNode().setValue(TypeToken.of(WorldsConfig.class), this));
-        } catch (IOException | ObjectMappingException ex) {
+            ConfigManager.getWorldConfigLoader().save(ConfigManager.getWorldConfigLoader().createNode().set(TypeToken.get(WorldsConfig.class), this));
+        } catch (IOException ex) {
             Logging.error("Failed to save worlds config file:");
             ex.printStackTrace();
         }

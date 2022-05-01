@@ -7,12 +7,7 @@
 .settings/
 slimeworldmanager-test/
 .DS_Store/
-target/
-dependency-reduced-pom.xml
 release.properties
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-mvn.txt
 libs/
+.gradle/
+build/

@@ -1,13 +1,9 @@
 package com.grinderwolf.swm.plugin.upgrade;
 
-import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import com.grinderwolf.swm.nms.world.*;
 
 public interface Upgrade {
 
-    void upgrade(CraftSlimeWorld world);
+    void upgrade(SlimeLoadedWorld world);
 
-    @Deprecated(since = "2.6.2", forRemoval = true)
-    default void downgrade(CraftSlimeWorld world) {
-        throw new UnsupportedOperationException("Not implemented anymore.");
-    }
 }

@@ -2,14 +2,18 @@ package com.grinderwolf.swm.nms.v1171;
 
 import com.grinderwolf.swm.clsm.CLSMBridge;
 import com.grinderwolf.swm.clsm.ClassModifier;
+import com.mojang.datafixers.util.Either;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.server.level.WorldServer;
-import net.minecraft.world.level.chunk.Chunk;
-import net.minecraft.world.level.chunk.IChunkAccess;
-import net.minecraft.world.level.chunk.ProtoChunkExtension;
+import net.minecraft.server.*;
+import net.minecraft.server.level.*;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.level.*;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ImposterProtoChunk;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.storage.*;
+import net.minecraft.world.level.entity.*;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CraftCLSMBridge implements CLSMBridge {
@@ -19,7 +23,7 @@ public class CraftCLSMBridge implements CLSMBridge {
     @Override
     public Object getChunk(Object worldObject, int x, int z) {
         CustomWorldServer world = (CustomWorldServer) worldObject;
-        return world.getChunk(x, z);
+        return Either.left(world.getImposterChunk(x, z));
     }
 
     @Override
@@ -28,37 +32,55 @@ public class CraftCLSMBridge implements CLSMBridge {
             return false; // Returning false will just run the original saveChunk method
         }
 
-        if (!(chunkAccess instanceof ProtoChunkExtension || chunkAccess instanceof Chunk) || !((IChunkAccess) chunkAccess).isNeedsSaving()) {
+        if (!(chunkAccess instanceof ImposterProtoChunk || chunkAccess instanceof LevelChunk) || !((ChunkAccess) chunkAccess).isUnsaved()) {
             // We're only storing fully-loaded chunks that need to be saved
             return true;
         }
 
-        Chunk chunk;
+        LevelChunk chunk;
 
-        if (chunkAccess instanceof ProtoChunkExtension) {
-            chunk = ((ProtoChunkExtension) chunkAccess).v();
+        if (chunkAccess instanceof ImposterProtoChunk) {
+            chunk = ((ImposterProtoChunk) chunkAccess).getWrapped();
         } else {
-            chunk = (Chunk) chunkAccess;
+            chunk = (LevelChunk) chunkAccess;
         }
 
         ((CustomWorldServer) world).saveChunk(chunk);
-        chunk.setNeedsSaving(false);
+        chunk.setUnsaved(false);
 
         return true;
     }
 
     @Override
-    public Object[] getDefaultWorlds() {
-        WorldServer defaultWorld = nmsInstance.getDefaultWorld();
-        WorldServer netherWorld = nmsInstance.getDefaultNetherWorld();
-        WorldServer endWorld = nmsInstance.getDefaultEndWorld();
-
-        if (defaultWorld != null || netherWorld != null || endWorld != null) {
-            return new WorldServer[] { defaultWorld, netherWorld, endWorld };
+    public Object loadEntities(Object storage, Object chunkCoords) {
+        EntityStorage entityStorage = (EntityStorage) storage;
+        if (!isCustomWorld(entityStorage.level)) {
+            return null;
         }
 
-        // Returning null will just run the original load world method
-        return null;
+
+        return ((CustomWorldServer) entityStorage.level).handleEntityLoad(entityStorage, (ChunkPos) chunkCoords);
+    }
+
+    @Override
+    public boolean storeEntities(Object storage, Object entityList) {
+        EntityStorage entityStorage = (EntityStorage) storage;
+        if (!isCustomWorld(entityStorage.level)) {
+            return false;
+        }
+
+        ((CustomWorldServer) entityStorage.level).handleEntityUnLoad(entityStorage, (ChunkEntities<Entity>) entityList);
+        return true;
+    }
+
+    @Override
+    public boolean flushEntities(Object storage) {
+        EntityStorage entityStorage = (EntityStorage) storage;
+        if (!isCustomWorld(entityStorage.level)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -67,22 +89,8 @@ public class CraftCLSMBridge implements CLSMBridge {
     }
 
     @Override
-    public boolean skipWorldAdd(Object world) {
-        if (!isCustomWorld(world) || nmsInstance.isLoadingDefaultWorlds()) {
-            return false;
-        }
-
-        CustomWorldServer worldServer = (CustomWorldServer) world;
-        return !worldServer.isReady();
-    }
-
-    @Override
-    public Object getDefaultGamemode() {
-        if (nmsInstance.isLoadingDefaultWorlds()) {
-            return ((DedicatedServer) MinecraftServer.getServer()).getDedicatedServerProperties().o;
-        }
-
-        return null;
+    public Object injectCustomWorlds() {
+        return nmsInstance.injectDefaultWorlds();
     }
 
     static void initialize(v1171SlimeNMS instance) {

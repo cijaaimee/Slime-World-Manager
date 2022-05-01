@@ -9,6 +9,9 @@ import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.*;
+import com.grinderwolf.swm.nms.world.*;
+import com.grinderwolf.swm.plugin.*;
+import it.unimi.dsi.fastutil.longs.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +30,29 @@ public class WorldImporter {
     private static final Pattern MAP_FILE_PATTERN = Pattern.compile("^(?:map_([0-9]*).dat)$");
     private static final int SECTOR_SIZE = 4096;
 
-    public static CraftSlimeWorld readFromDirectory(File worldDir) throws InvalidWorldException, IOException {
+    private static byte convertDataVersionToWorldVersion(int dataVersion) {
+        if (dataVersion == -1) { // DataVersion tag was added in 1.9
+            return 0x01;
+        } else if (dataVersion < 818) {
+            return 0x02; // 1.9 world
+        } else if (dataVersion < 1501) {
+            return 0x03; // 1.11 world
+        } else if (dataVersion < 1517) {
+            return 0x04; // 1.13 world
+        } else if (dataVersion < 2566) {
+            return 0x05; // 1.14 world
+        } else if (dataVersion <= 2586) {
+            return 0x06; // 1.16 world
+        } else if (dataVersion <= 2730) {
+            return 0x07; // 1.17 world
+        } else if (dataVersion <= 2975) {
+            return 0x08; // 1.18 world
+        } else {
+            throw new UnsupportedOperationException("Unsupported world version: " + dataVersion);
+        }
+    }
+
+    public static SlimeLoadedWorld readFromDirectory(File worldDir) throws InvalidWorldException, IOException {
         File levelFile = new File(worldDir, "level.dat");
 
         if (!levelFile.exists() || !levelFile.isFile()) {
@@ -37,23 +62,7 @@ public class WorldImporter {
         LevelData data = readLevelData(levelFile);
 
         // World version
-        byte worldVersion;
-
-        if (data.getVersion() == -1) { // DataVersion tag was added in 1.9
-            worldVersion = 0x01;
-        } else if (data.getVersion() < 818) {
-            worldVersion = 0x02; // 1.9 world
-        } else if (data.getVersion() < 1501) {
-            worldVersion = 0x03; // 1.11 world
-        } else if (data.getVersion() < 1517) {
-            worldVersion = 0x04; // 1.13 world
-        } else if (data.getVersion() < 2566) {
-            worldVersion = 0x05; // 1.14 world
-        } else if (data.getVersion() < 2724) {
-            worldVersion = 0x06; // 1.16 world
-        } else {
-            worldVersion = 0x07;
-        }
+        byte worldVersion = convertDataVersionToWorldVersion(data.getVersion());
 
         // Chunks
         File regionDir = new File(worldDir, "region");
@@ -62,10 +71,10 @@ public class WorldImporter {
             throw new InvalidWorldException(worldDir);
         }
 
-        Map<Long, SlimeChunk> chunks = new HashMap<>();
+        Long2ObjectOpenHashMap<SlimeChunk> chunks = new Long2ObjectOpenHashMap<>();
 
         for (File file : regionDir.listFiles((dir, name) -> name.endsWith(".mca"))) {
-            chunks.putAll(loadChunks(file, worldVersion).stream().collect(Collectors.toMap((chunk) -> ((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()), (chunk) -> chunk)));
+            chunks.putAll(loadChunks(file, worldVersion).stream().collect(Collectors.toMap((chunk) -> NmsUtil.asLong(chunk.getX(), chunk.getZ()), (chunk) -> chunk)));
         }
 
         if (chunks.isEmpty()) {
@@ -102,8 +111,11 @@ public class WorldImporter {
         propertyMap.setValue(SlimeProperties.SPAWN_Y, data.getSpawnY());
         propertyMap.setValue(SlimeProperties.SPAWN_Z, data.getSpawnZ());
 
-        return new CraftSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", extraData),
-                maps, worldVersion, propertyMap, false, true);
+        if (worldVersion != SWMPlugin.getInstance().getNms().getWorldVersion()) {
+            throw new UnsupportedOperationException("Please ensure that this world is not outdated.");
+        }
+
+        return SWMPlugin.getInstance().getNms().createSlimeWorld(null, worldDir.getName(), chunks, new CompoundTag("", extraData), maps, worldVersion, propertyMap, false, true, null);
     }
 
     private static CompoundTag loadMap(File mapFile) throws IOException {
@@ -184,13 +196,12 @@ public class WorldImporter {
                 CompoundTag globalCompound = (CompoundTag) nbtStream.readTag();
                 CompoundMap globalMap = globalCompound.getValue();
 
-                if (!globalMap.containsKey("Level")) {
-                    throw new RuntimeException("Missing Level tag?");
+                CompoundTag levelDataTag = new CompoundTag("Level", globalMap);
+                if (globalMap.containsKey("Level")) {
+                    levelDataTag = (CompoundTag) globalMap.get("Level");
                 }
 
-                CompoundTag levelCompound = (CompoundTag) globalMap.get("Level");
-
-                return readChunk(levelCompound, worldVersion);
+                return readChunk(levelDataTag, worldVersion);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -201,6 +212,15 @@ public class WorldImporter {
     private static SlimeChunk readChunk(CompoundTag compound, byte worldVersion) {
         int chunkX = compound.getAsIntTag("xPos").get().getValue();
         int chunkZ = compound.getAsIntTag("zPos").get().getValue();
+
+        if (worldVersion >= 0x08) { // 1.18 chunks should have a DataVersion tag, we can check if the chunk has been converted to match the world
+            int dataVersion = convertDataVersionToWorldVersion(compound.getAsIntTag("DataVersion").map(IntTag::getValue).orElse(-1));
+            if (dataVersion != worldVersion) {
+                System.err.println("Cannot load chunk at " + chunkX + "," + chunkZ + ": data version " + dataVersion + " does not match world version " + worldVersion);
+                return null;
+            }
+        }
+
         Optional<String> status = compound.getStringValue("Status");
 
         if (status.isPresent() && !status.get().equals("postprocessed") && !status.get().startsWith("full")) {
@@ -233,55 +253,69 @@ public class WorldImporter {
             heightMapsCompound.getValue().put("heightMap", new IntArrayTag("heightMap", heightMap));
         }
 
-        List<CompoundTag> tileEntities = ((ListTag<CompoundTag>) compound.getAsListTag("TileEntities")
-                .orElse(new ListTag<>("TileEntities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
-        List<CompoundTag> entities = ((ListTag<CompoundTag>) compound.getAsListTag("Entities")
-                .orElse(new ListTag<>("Entities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
-        ListTag<CompoundTag> sectionsTag = (ListTag<CompoundTag>) compound.getAsListTag("Sections").get();
-        SlimeChunkSection[] sectionArray = new SlimeChunkSection[16];
+        List<CompoundTag> tileEntities;
+        List<CompoundTag> entities;
+        ListTag<CompoundTag> sectionsTag;
+
+        int minSectionY = 0;
+        int maxSectionY = 16;
+
+        if (worldVersion < 0x08) {
+            tileEntities = ((ListTag<CompoundTag>) compound.getAsListTag("TileEntities")
+                    .orElse(new ListTag<>("TileEntities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
+            entities = ((ListTag<CompoundTag>) compound.getAsListTag("Entities")
+                    .orElse(new ListTag<>("Entities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
+            sectionsTag = (ListTag<CompoundTag>) compound.getAsListTag("Sections").get();
+        } else {
+            tileEntities = ((ListTag<CompoundTag>) compound.getAsListTag("block_entities")
+                    .orElse(new ListTag<>("block_entities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
+            entities = ((ListTag<CompoundTag>) compound.getAsListTag("entities")
+                    .orElse(new ListTag<>("entities", TagType.TAG_COMPOUND, new ArrayList<>()))).getValue();
+            sectionsTag = (ListTag<CompoundTag>) compound.getAsListTag("sections").get();
+
+            minSectionY = compound.getIntValue("yPos").orElseThrow();
+            maxSectionY = sectionsTag.getValue().stream().map(c -> c.getByteValue("Y").orElseThrow()).max(Byte::compareTo).orElse((byte) 0) + 1; // Add 1 to the section, as we serialize it with the 1 added.
+        }
+        SlimeChunkSection[] sectionArray = new SlimeChunkSection[maxSectionY - minSectionY];
 
         for (CompoundTag sectionTag : sectionsTag.getValue()) {
             int index = sectionTag.getByteValue("Y").get();
 
-            if (index < 0) {
-                // For some reason MC 1.14 worlds contain an empty section with Y = -1.
+            if (worldVersion < 0x07 && index < 0) {
+                // For some reason MC 1.14 worlds contain an empty section with Y = -1, however 1.17+ worlds can use these sections
                 continue;
             }
 
-            byte[] blocks = sectionTag.getByteArrayValue("Blocks").orElse(null);
-            NibbleArray dataArray;
-            ListTag<CompoundTag> paletteTag;
-            long[] blockStatesArray;
+            ListTag<CompoundTag> paletteTag = null;
+            long[] blockStatesArray = null;
 
-            if (worldVersion < 0x04) {
-                dataArray = new NibbleArray(sectionTag.getByteArrayValue("Data").get());
-
-                if (isEmpty(blocks)) { // Just skip it
-                    continue;
-                }
-
-                paletteTag = null;
-                blockStatesArray = null;
-            } else {
-                dataArray = null;
-
+            CompoundTag blockStatesTag = null;
+            CompoundTag biomeTag = null;
+            if (worldVersion < 0x08) {
                 paletteTag = (ListTag<CompoundTag>) sectionTag.getAsListTag("Palette").orElse(null);
                 blockStatesArray = sectionTag.getLongArrayValue("BlockStates").orElse(null);
 
                 if (paletteTag == null || blockStatesArray == null || isEmpty(blockStatesArray)) { // Skip it
                     continue;
                 }
+            } else {
+                if (!sectionTag.getAsCompoundTag("block_states").isPresent() && !sectionTag.getAsCompoundTag("biomes").isPresent()) {
+                    continue; // empty section
+                }
+                blockStatesTag = sectionTag.getAsCompoundTag("block_states").orElseThrow();
+                biomeTag = sectionTag.getAsCompoundTag("biomes").orElseThrow();
             }
 
             NibbleArray blockLightArray = sectionTag.getValue().containsKey("BlockLight") ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get()) : null;
             NibbleArray skyLightArray = sectionTag.getValue().containsKey("SkyLight") ? new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get()) : null;
 
-            sectionArray[index] = new CraftSlimeChunkSection(blocks, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
+            // There is no need to do any custom processing here.
+            sectionArray[index - minSectionY] = new CraftSlimeChunkSection(paletteTag, blockStatesArray, blockStatesTag, biomeTag, blockLightArray, skyLightArray);
         }
 
         for (SlimeChunkSection section : sectionArray) {
             if (section != null) { // Chunk isn't empty
-                return new CraftSlimeChunk(null, chunkX, chunkZ, sectionArray, heightMapsCompound, biomes, tileEntities, entities);
+                return new CraftSlimeChunk(null, chunkX, chunkZ, sectionArray, heightMapsCompound, biomes, tileEntities, entities, minSectionY, maxSectionY);
             }
         }
 

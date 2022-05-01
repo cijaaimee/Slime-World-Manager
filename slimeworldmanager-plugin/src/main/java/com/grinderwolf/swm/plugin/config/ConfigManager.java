@@ -1,13 +1,12 @@
 package com.grinderwolf.swm.plugin.config;
 
-import com.google.common.reflect.TypeToken;
 import com.grinderwolf.swm.plugin.SWMPlugin;
+import io.leangen.geantyref.TypeToken;
 import lombok.AccessLevel;
 import lombok.Getter;
-import ninja.leaping.configurate.loader.HeaderMode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
-import org.yaml.snakeyaml.DumperOptions;
+import org.spongepowered.configurate.loader.HeaderMode;
+import org.spongepowered.configurate.yaml.NodeStyle;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,24 +21,24 @@ public class ConfigManager {
     @Getter
     private static WorldsConfig worldConfig;
     @Getter(value = AccessLevel.PACKAGE)
-    private static YAMLConfigurationLoader worldConfigLoader;
+    private static YamlConfigurationLoader worldConfigLoader;
 
     @Getter
     private static DatasourcesConfig datasourcesConfig;
 
-    public static void initialize() throws IOException, ObjectMappingException {
+    public static void initialize() throws IOException {
         copyDefaultConfigs();
 
-        worldConfigLoader = YAMLConfigurationLoader.builder().setPath(WORLDS_FILE.toPath())
-                .setFlowStyle(DumperOptions.FlowStyle.BLOCK).setHeaderMode(HeaderMode.PRESERVE).build();
-        worldConfig = worldConfigLoader.load().getValue(TypeToken.of(WorldsConfig.class));
+        worldConfigLoader = YamlConfigurationLoader.builder().file(WORLDS_FILE)
+                .nodeStyle(NodeStyle.BLOCK).headerMode(HeaderMode.PRESERVE).build();
+        worldConfig = worldConfigLoader.load().get(TypeToken.get(WorldsConfig.class));
 
-        YAMLConfigurationLoader datasourcesConfigLoader = YAMLConfigurationLoader.builder().setPath(SOURCES_FILE.toPath())
-                .setFlowStyle(DumperOptions.FlowStyle.BLOCK).setHeaderMode(HeaderMode.PRESERVE).build();
-        datasourcesConfig = datasourcesConfigLoader.load().getValue(TypeToken.of(DatasourcesConfig.class));
+        YamlConfigurationLoader datasourcesConfigLoader = YamlConfigurationLoader.builder().file(SOURCES_FILE)
+                .nodeStyle(NodeStyle.BLOCK).headerMode(HeaderMode.PRESERVE).build();
+        datasourcesConfig = datasourcesConfigLoader.load().get(TypeToken.get(DatasourcesConfig.class));
 
         worldConfig.save();
-        datasourcesConfigLoader.save(datasourcesConfigLoader.createEmptyNode().setValue(TypeToken.of(DatasourcesConfig.class), datasourcesConfig));
+        datasourcesConfigLoader.save(datasourcesConfigLoader.createNode().set(TypeToken.get(DatasourcesConfig.class), datasourcesConfig));
     }
 
     private static void copyDefaultConfigs() throws IOException {

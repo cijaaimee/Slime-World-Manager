@@ -2,8 +2,8 @@ package com.grinderwolf.swm.plugin.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+import org.spongepowered.configurate.objectmapping.meta.Setting;
 
 @Getter
 @ConfigSerializable

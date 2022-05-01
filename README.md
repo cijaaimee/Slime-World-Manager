@@ -69,7 +69,7 @@ Javadocs can be found [here](https://grinderwolf.github.io/Slime-World-Manager/a
 
 ## Credits
 
-Thanks to:
+Thanks to: 
  * All the contributors who helped me by adding features to SWM.
  * [Glare](https://glaremasters.me) for providing me with a Maven repository.
  * [Minikloon](https://twitter.com/Minikloon) and all the [Hypixel](https://twitter.com/HypixelNetwork) team for developing the SRF.

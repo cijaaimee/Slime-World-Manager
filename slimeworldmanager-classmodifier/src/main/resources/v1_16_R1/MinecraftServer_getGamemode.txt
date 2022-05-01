@@ -1,7 +1,0 @@
-{
-    net.minecraft.server.v1_16_R1.EnumGamemode gamemode = (net.minecraft.server.v1_16_R1.EnumGamemode) com.grinderwolf.swm.clsm.ClassModifier.getDefaultGamemode();
-
-    if (gamemode != null) {
-        return gamemode;
-    }
-}

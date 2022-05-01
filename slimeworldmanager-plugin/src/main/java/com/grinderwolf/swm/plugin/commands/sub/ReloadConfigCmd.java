@@ -1,10 +1,8 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
-
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -24,7 +22,7 @@ public class ReloadConfigCmd implements Subcommand {
     public boolean onCommand(CommandSender sender, String[] args) {
         try {
             ConfigManager.initialize();
-        } catch (IOException | ObjectMappingException ex) {
+        } catch (IOException ex) {
             if (!(sender instanceof ConsoleCommandSender)) {
                 sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to reload the config file. Take a look at the server console for more information.");
             }

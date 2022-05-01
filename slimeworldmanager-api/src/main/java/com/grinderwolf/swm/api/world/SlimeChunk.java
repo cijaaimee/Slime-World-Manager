@@ -37,6 +37,10 @@ public interface SlimeChunk {
      */
     SlimeChunkSection[] getSections();
 
+    int getMinSection();
+
+    int getMaxSection();
+
     /**
      * Returns the height maps of the chunk. If it's a pre 1.13 world,
      * a {@link com.flowpowered.nbt.IntArrayTag} containing the height
@@ -67,5 +71,6 @@ public interface SlimeChunk {
      *
      * @return A {@link CompoundTag} containing all the entities of the chunk.
      */
+    @Deprecated
     List<CompoundTag> getEntities();
 }

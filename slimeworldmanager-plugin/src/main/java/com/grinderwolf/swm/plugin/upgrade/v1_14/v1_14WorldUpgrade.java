@@ -7,7 +7,7 @@ import com.flowpowered.nbt.IntTag;
 import com.flowpowered.nbt.StringTag;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.nms.CraftSlimeWorld;
+import com.grinderwolf.swm.nms.world.*;
 import com.grinderwolf.swm.plugin.upgrade.Upgrade;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class v1_14WorldUpgrade implements Upgrade {
     }
 
     @Override
-    public void upgrade(CraftSlimeWorld world) {
+    public void upgrade(SlimeLoadedWorld world) {
         for (SlimeChunk chunk : new ArrayList<>(world.getChunks().values())) {
             // Update renamed blocks
             for (int sectionIndex = 0; sectionIndex < chunk.getSections().length; sectionIndex++) {

@@ -69,6 +69,8 @@ public class UnloadWorldCmd implements Subcommand {
         if (!Bukkit.unloadWorld(world, true)) {
             sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to unload world " + worldName + ".");
             return true;
+        }else{
+            world.save();
         }
 
         System.out.println("Attempting to unlock world.. " + worldName + ".");
