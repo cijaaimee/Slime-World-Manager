@@ -1,10 +1,12 @@
 plugins {
     `java-library`
+    id("org.kordamp.gradle.profiles") version "0.47.0"
 }
 
 buildscript {
     repositories {
         maven("https://plugins.gradle.org/m2/")
+        mavenCentral()
     }
     dependencies {
         classpath("io.freefair.gradle:lombok-plugin:6.3.0")
@@ -18,6 +20,7 @@ allprojects {
 
     apply(plugin = "java")
     apply(plugin = "io.freefair.lombok")
+    apply(plugin = "org.kordamp.gradle.profiles")
 
     repositories {
         mavenLocal()
