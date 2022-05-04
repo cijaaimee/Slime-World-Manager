@@ -1,6 +1,7 @@
 package com.grinderwolf.swm.nms;
 
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SlimeLogger {
 

@@ -1,7 +1,10 @@
 package com.grinderwolf.swm.nms.errorables;
 
-import java.util.concurrent.*;
-import java.util.function.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /*
 I hate checked exceptions

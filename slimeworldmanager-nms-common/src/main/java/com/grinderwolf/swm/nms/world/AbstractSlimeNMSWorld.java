@@ -1,19 +1,26 @@
 package com.grinderwolf.swm.nms.world;
 
-import com.flowpowered.nbt.*;
-import com.flowpowered.nbt.stream.*;
-import com.github.luben.zstd.*;
-import com.grinderwolf.swm.api.loaders.*;
-import com.grinderwolf.swm.api.utils.*;
-import com.grinderwolf.swm.api.world.*;
-import com.grinderwolf.swm.api.world.properties.*;
-import com.grinderwolf.swm.nms.*;
-import it.unimi.dsi.fastutil.longs.*;
+import com.flowpowered.nbt.CompoundMap;
+import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.TagType;
+import com.flowpowered.nbt.stream.NBTInputStream;
+import com.flowpowered.nbt.stream.NBTOutputStream;
+import com.github.luben.zstd.Zstd;
+import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.grinderwolf.swm.api.utils.SlimeFormat;
+import com.grinderwolf.swm.api.world.SlimeChunk;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
+import com.grinderwolf.swm.nms.NmsUtil;
+import com.grinderwolf.swm.nms.SlimeNMS;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
-import java.io.*;
-import java.nio.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
 
 import static com.grinderwolf.swm.api.world.properties.SlimeProperties.*;
 

@@ -1,7 +1,6 @@
 package com.grinderwolf.swm.api.world.properties;
 
 import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.Tag;
 import lombok.Getter;
 

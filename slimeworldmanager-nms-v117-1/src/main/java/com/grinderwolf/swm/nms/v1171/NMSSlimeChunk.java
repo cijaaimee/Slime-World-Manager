@@ -1,21 +1,31 @@
 package com.grinderwolf.swm.nms.v1171;
 
-import com.flowpowered.nbt.*;
-import com.grinderwolf.swm.api.utils.*;
-import com.grinderwolf.swm.api.world.*;
-import com.grinderwolf.swm.nms.*;
-import lombok.*;
-import net.minecraft.core.*;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.level.*;
-import net.minecraft.world.level.block.entity.*;
-import net.minecraft.world.level.block.state.*;
-import net.minecraft.world.level.chunk.*;
-import net.minecraft.world.level.entity.*;
-import net.minecraft.world.level.levelgen.*;
-import net.minecraft.world.level.lighting.*;
+import com.flowpowered.nbt.CompoundMap;
+import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.ListTag;
+import com.flowpowered.nbt.LongArrayTag;
+import com.grinderwolf.swm.api.utils.NibbleArray;
+import com.grinderwolf.swm.api.world.SlimeChunk;
+import com.grinderwolf.swm.api.world.SlimeChunkSection;
+import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import net.minecraft.core.SectionPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.entity.PersistentEntitySectionManager;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.lighting.LevelLightEngine;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor

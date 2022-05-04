@@ -5,7 +5,7 @@ import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.StringTag;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import com.grinderwolf.swm.nms.world.*;
+import com.grinderwolf.swm.nms.world.SlimeLoadedWorld;
 import com.grinderwolf.swm.plugin.upgrade.Upgrade;
 
 import java.util.ArrayList;

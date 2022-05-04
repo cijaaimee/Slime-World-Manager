@@ -1,12 +1,12 @@
 package com.grinderwolf.swm.plugin.upgrade;
 
-import com.grinderwolf.swm.nms.world.*;
+import com.grinderwolf.swm.nms.world.SlimeLoadedWorld;
 import com.grinderwolf.swm.plugin.SWMPlugin;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.grinderwolf.swm.plugin.upgrade.v117.v117WorldUpgrade;
 import com.grinderwolf.swm.plugin.upgrade.v1_14.v1_14WorldUpgrade;
 import com.grinderwolf.swm.plugin.upgrade.v1_16.v1_16WorldUpgrade;
-import com.grinderwolf.swm.plugin.upgrade.v1_18.*;
+import com.grinderwolf.swm.plugin.upgrade.v1_18.v118WorldUpgrade;
 
 import java.util.HashMap;
 import java.util.Map;

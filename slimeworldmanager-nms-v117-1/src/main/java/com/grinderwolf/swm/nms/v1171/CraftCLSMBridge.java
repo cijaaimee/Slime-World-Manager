@@ -5,15 +5,13 @@ import com.grinderwolf.swm.clsm.ClassModifier;
 import com.mojang.datafixers.util.Either;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.*;
-import net.minecraft.server.level.*;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.level.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.storage.*;
-import net.minecraft.world.level.entity.*;
+import net.minecraft.world.level.chunk.storage.EntityStorage;
+import net.minecraft.world.level.entity.ChunkEntities;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class CraftCLSMBridge implements CLSMBridge {

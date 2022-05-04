@@ -1,7 +1,6 @@
 package com.grinderwolf.swm.clsm;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BooleanSupplier;
 
 /**
  * This class serves as a bridge between the SWM and the Minecraft server.

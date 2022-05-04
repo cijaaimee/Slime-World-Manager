@@ -4,8 +4,10 @@ import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.ListTag;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
-import lombok.*;
-import org.jetbrains.annotations.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
 
 @Getter
 @AllArgsConstructor

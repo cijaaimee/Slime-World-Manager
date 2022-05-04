@@ -1,12 +1,13 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
 
-import com.grinderwolf.swm.nms.*;
-import com.grinderwolf.swm.plugin.log.*;
-import lombok.*;
-import org.bukkit.command.*;
+import com.grinderwolf.swm.nms.SlimeLogger;
+import com.grinderwolf.swm.plugin.log.Logging;
+import lombok.Getter;
+import org.bukkit.command.CommandSender;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 @Getter
 public class DebugCmd implements Subcommand {

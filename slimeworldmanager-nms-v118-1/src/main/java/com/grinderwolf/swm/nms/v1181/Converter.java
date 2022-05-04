@@ -1,21 +1,9 @@
 package com.grinderwolf.swm.nms.v1181;
 
-import com.flowpowered.nbt.*;
+import com.flowpowered.nbt.CompoundMap;
 import com.flowpowered.nbt.TagType;
 import com.grinderwolf.swm.api.utils.NibbleArray;
-import net.minecraft.nbt.ByteArrayTag;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.LongArrayTag;
-import net.minecraft.nbt.LongTag;
-import net.minecraft.nbt.ShortTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.world.level.chunk.DataLayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

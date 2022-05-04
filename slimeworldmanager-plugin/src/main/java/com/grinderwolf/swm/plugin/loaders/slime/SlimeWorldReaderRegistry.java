@@ -5,8 +5,8 @@ import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.utils.SlimeFormat;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
-import com.grinderwolf.swm.nms.world.*;
-import com.grinderwolf.swm.plugin.loaders.slime.impl.*;
+import com.grinderwolf.swm.nms.world.SlimeLoadedWorld;
+import com.grinderwolf.swm.plugin.loaders.slime.impl.v1_9SlimeWorldFormat;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;

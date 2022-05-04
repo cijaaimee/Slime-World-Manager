@@ -1,13 +1,13 @@
 package com.grinderwolf.swm.nms;
 
-import com.flowpowered.nbt.*;
-import com.grinderwolf.swm.api.loaders.*;
-import com.grinderwolf.swm.api.world.*;
-import com.grinderwolf.swm.api.world.properties.*;
-import com.grinderwolf.swm.nms.world.*;
-import it.unimi.dsi.fastutil.longs.*;
+import com.flowpowered.nbt.CompoundTag;
+import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.grinderwolf.swm.api.world.SlimeChunk;
+import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
+import com.grinderwolf.swm.nms.world.SlimeLoadedWorld;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
-import java.util.*;
+import java.util.List;
 
 public interface SlimeWorldSource {
 

@@ -8,10 +8,12 @@ import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
-import com.grinderwolf.swm.nms.*;
-import com.grinderwolf.swm.nms.world.*;
-import com.grinderwolf.swm.plugin.*;
-import it.unimi.dsi.fastutil.longs.*;
+import com.grinderwolf.swm.nms.CraftSlimeChunk;
+import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
+import com.grinderwolf.swm.nms.NmsUtil;
+import com.grinderwolf.swm.nms.world.SlimeLoadedWorld;
+import com.grinderwolf.swm.plugin.SWMPlugin;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

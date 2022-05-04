@@ -1,11 +1,11 @@
 package com.grinderwolf.swm.nms.world;
 
-import com.grinderwolf.swm.api.loaders.*;
-import com.grinderwolf.swm.api.world.*;
-import com.grinderwolf.swm.nms.*;
+import com.grinderwolf.swm.api.loaders.SlimeLoader;
+import com.grinderwolf.swm.api.world.SlimeChunk;
+import com.grinderwolf.swm.api.world.SlimeWorld;
 
-import java.io.*;
-import java.util.concurrent.*;
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 public interface SlimeLoadedWorld extends SlimeWorld {
 

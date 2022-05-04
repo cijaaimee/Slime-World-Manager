@@ -2,7 +2,6 @@ package com.grinderwolf.swm.api.world.properties.type;
 
 import com.flowpowered.nbt.ByteTag;
 import com.flowpowered.nbt.CompoundMap;
-import com.flowpowered.nbt.CompoundTag;
 import com.flowpowered.nbt.Tag;
 import com.grinderwolf.swm.api.world.properties.SlimeProperty;
 

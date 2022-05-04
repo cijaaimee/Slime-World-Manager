@@ -1,16 +1,12 @@
 package com.grinderwolf.swm.plugin.loaders;
 
-import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
-import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
-import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.config.DatasourcesConfig;
 import com.grinderwolf.swm.plugin.loaders.file.FileLoader;
 import com.grinderwolf.swm.plugin.loaders.mongo.MongoLoader;
 import com.grinderwolf.swm.plugin.loaders.mysql.MysqlLoader;
 import com.grinderwolf.swm.plugin.loaders.redis.RedisLoader;
-import com.grinderwolf.swm.plugin.loaders.slime.SlimeWorldReaderRegistry;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.mongodb.MongoException;
 import io.lettuce.core.RedisException;

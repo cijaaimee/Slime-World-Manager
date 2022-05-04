@@ -4,7 +4,7 @@ import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
-import com.grinderwolf.swm.nms.world.*;
+import com.grinderwolf.swm.nms.world.SlimeLoadedWorld;
 
 import java.io.DataInputStream;
 import java.io.IOException;

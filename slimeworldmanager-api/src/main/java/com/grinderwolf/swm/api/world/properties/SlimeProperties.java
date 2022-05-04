@@ -3,7 +3,7 @@ package com.grinderwolf.swm.api.world.properties;
 import com.grinderwolf.swm.api.world.properties.type.SlimePropertyBoolean;
 import com.grinderwolf.swm.api.world.properties.type.SlimePropertyInt;
 import com.grinderwolf.swm.api.world.properties.type.SlimePropertyString;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Class with all existing slime world properties.

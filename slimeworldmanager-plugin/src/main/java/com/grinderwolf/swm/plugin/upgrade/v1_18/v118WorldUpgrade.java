@@ -1,14 +1,19 @@
 package com.grinderwolf.swm.plugin.upgrade.v1_18;
 
 import com.flowpowered.nbt.*;
-import com.google.common.collect.*;
-import com.grinderwolf.swm.api.world.*;
-import com.grinderwolf.swm.nms.*;
-import com.grinderwolf.swm.nms.world.*;
-import com.grinderwolf.swm.plugin.upgrade.*;
-import it.unimi.dsi.fastutil.ints.*;
+import com.google.common.collect.ImmutableMap;
+import com.grinderwolf.swm.api.world.SlimeChunk;
+import com.grinderwolf.swm.api.world.SlimeChunkSection;
+import com.grinderwolf.swm.nms.CraftSlimeChunk;
+import com.grinderwolf.swm.nms.CraftSlimeChunkSection;
+import com.grinderwolf.swm.nms.world.SlimeLoadedWorld;
+import com.grinderwolf.swm.plugin.upgrade.Upgrade;
+import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class v118WorldUpgrade implements Upgrade {
 

@@ -1,6 +1,8 @@
 package com.grinderwolf.swm.api.world.properties.type;
 
-import com.flowpowered.nbt.*;
+import com.flowpowered.nbt.CompoundMap;
+import com.flowpowered.nbt.IntTag;
+import com.flowpowered.nbt.Tag;
 import com.grinderwolf.swm.api.world.properties.SlimeProperty;
 
 import java.util.function.Function;

@@ -1,7 +1,6 @@
 package com.grinderwolf.swm.api.events;
 
 import com.grinderwolf.swm.api.world.SlimeWorld;
-import lombok.NonNull;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
