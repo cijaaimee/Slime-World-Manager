@@ -13,6 +13,7 @@ import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import com.grinderwolf.swm.nms.NmsUtil;
+import com.grinderwolf.swm.nms.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import lombok.Getter;
@@ -160,28 +161,20 @@ public class CustomWorldServer extends ServerLevel {
         SlimeChunk slimeChunk = slimeWorld.getChunk(x, z);
         LevelChunk chunk;
 
-        if (slimeChunk instanceof NMSSlimeChunk) {
-            chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
+        if (slimeChunk == null) {
+            ChunkPos pos = new ChunkPos(x, z);
+            LevelChunkTicks<Block> blockLevelChunkTicks = new LevelChunkTicks<>();
+            LevelChunkTicks<Fluid> fluidLevelChunkTicks = new LevelChunkTicks<>();
+
+            chunk = new LevelChunk(this, pos, UpgradeData.EMPTY, blockLevelChunkTicks, fluidLevelChunkTicks,
+                    0L, null, null, null);
+
+            slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
+        } else if (slimeChunk instanceof NMSSlimeChunk) {
+            chunk = ((NMSSlimeChunk) slimeChunk).getChunk(); // This shouldn't happen anymore, unloading should cleanup the chunk
+            Bukkit.getLogger().log(Level.WARNING, "Improper cleanup of chunk at (%s, %s). Reusing NMS chunk".formatted(x, z));
         } else {
-            if (slimeChunk == null) {
-                ChunkPos pos = new ChunkPos(x, z);
-
-                // Biomes
-                // Use the default biome source to automatically populate the map with the default biome.
-                //ChunkBiomeContainer biomeStorage = new ChunkBiomeContainer(MinecraftServer.getServer().registryHolder.registryOrThrow(Registry.BIOME_REGISTRY), this, pos, defaultBiomeSource);
-
-                // Tick lists
-                LevelChunkTicks<Block> blockLevelChunkTicks = new LevelChunkTicks<>();
-                LevelChunkTicks<Fluid> fluidLevelChunkTicks = new LevelChunkTicks<>();
-
-                chunk = new LevelChunk(this, pos, UpgradeData.EMPTY, blockLevelChunkTicks, fluidLevelChunkTicks,
-                        0L, null, null, null);
-
-                // Height Maps
-//                HeightMap.a(chunk, ChunkStatus.FULL.h());
-            } else {
-                chunk = createChunk(slimeChunk);
-            }
+            chunk = convertChunk(slimeChunk);
 
             slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
@@ -189,7 +182,15 @@ public class CustomWorldServer extends ServerLevel {
         return new ImposterProtoChunk(chunk, false);
     }
 
-    private LevelChunk createChunk(SlimeChunk chunk) {
+    private SlimeChunk convertChunk(NMSSlimeChunk chunk) {
+        return new CraftSlimeChunk(
+                chunk.getWorldName(), chunk.getX(), chunk.getZ(),
+                chunk.getSections(), chunk.getHeightMaps(),
+                new int[0], chunk.getTileEntities(), new ArrayList<>(),
+                chunk.getMinSection(), chunk.getMaxSection());
+    }
+
+    private LevelChunk convertChunk(SlimeChunk chunk) {
         int x = chunk.getX();
         int z = chunk.getZ();
 
@@ -337,7 +338,6 @@ public class CustomWorldServer extends ServerLevel {
             slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         }
     }
-
     public CompletableFuture<ChunkEntities<Entity>> handleEntityLoad(EntityStorage storage, ChunkPos pos) {
         List<CompoundTag> entities = slimeWorld.getEntities().get(NmsUtil.asLong(pos.x, pos.z));
         if (entities == null) {
@@ -372,21 +372,14 @@ public class CustomWorldServer extends ServerLevel {
 
     @Override
     public void unload(LevelChunk chunk) {
-        Iterator<BlockEntity> tileEntities = chunk.getBlockEntities().values().iterator();
-        do {
-            BlockEntity tileentity;
-            do {
-                if (!tileEntities.hasNext()) {
-//                    chunk.C();
-                    return;
-                }
-                tileentity = tileEntities.next();
-            } while (!(tileentity instanceof Container));
+        SlimeChunk slimeChunk = slimeWorld.getChunk(chunk.locX, chunk.locZ);
 
-            for (HumanEntity h : Lists.newArrayList(((Container) tileentity).getViewers())) {
-                ((CraftHumanEntity) h).getHandle().closeUnloadedInventory(InventoryCloseEvent.Reason.UNLOADED);
-            }
-            ((Container) tileentity).getViewers().clear();
-        } while (true);
+        if (slimeChunk instanceof NMSSlimeChunk nmsSlimeChunk) {
+            slimeWorld.updateChunk(convertChunk(nmsSlimeChunk));
+        } else {
+            Bukkit.getLogger().log(Level.SEVERE, "Missing slime chunk for NMS chunk? (%s, %s)".formatted(chunk.locX, chunk.locZ));
+        }
+
+        super.unload(chunk);
     }
 }
