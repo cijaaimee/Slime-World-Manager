@@ -149,8 +149,9 @@ public class v1_9SlimeWorldFormat implements SlimeWorldReader {
                     int chunkZ = floor(listTag.getValue().get(2).getValue()) >> 4;
                     long chunkKey = NmsUtil.asLong(chunkX, chunkZ);
                     SlimeChunk chunk = chunks.get(chunkKey);
-                    chunk.getEntities().add(entityCompound);
-
+                    if (chunk != null) {
+                       chunk.getEntities().add(entityCompound);
+                    }
                     if (entityStorage.containsKey(chunkKey)) {
                         entityStorage.get(chunkKey).add(entityCompound);
                     } else {
