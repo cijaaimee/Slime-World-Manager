@@ -295,7 +295,19 @@ public class CustomWorldServer extends ServerLevel {
         LevelChunkTicks<Fluid> fluidLevelChunkTicks = new LevelChunkTicks<>();
         LevelChunk nmsChunk = new LevelChunk(this, pos,
                 UpgradeData.EMPTY,
-                blockLevelChunkTicks, fluidLevelChunkTicks, 0L, sections, loadEntities, null);
+                blockLevelChunkTicks, fluidLevelChunkTicks, 0L, sections, loadEntities, null){
+            @Override
+            public void unloadCallback() {
+                super.unloadCallback();
+                SlimeChunk slimeChunk = slimeWorld.getChunk(pos.x, pos.z);
+
+                if (slimeChunk instanceof NMSSlimeChunk nmsSlimeChunk) {
+                    slimeWorld.updateChunk(convertChunk(nmsSlimeChunk));
+                } else {
+                    Bukkit.getLogger().log(Level.SEVERE, "Missing slime chunk for NMS chunk? (%s, %s)".formatted(pos.x, pos.z));
+                }
+            }
+        };
 
         // Height Maps
         EnumSet<Heightmap.Types> heightMapTypes = nmsChunk.getStatus().heightmapsAfter();
@@ -370,16 +382,4 @@ public class CustomWorldServer extends ServerLevel {
         slimeWorld.getEntities().put(NmsUtil.asLong(pos.x, pos.z), entitiesSerialized);
     }
 
-    @Override
-    public void unload(LevelChunk chunk) {
-        SlimeChunk slimeChunk = slimeWorld.getChunk(chunk.locX, chunk.locZ);
-
-        if (slimeChunk instanceof NMSSlimeChunk nmsSlimeChunk) {
-            slimeWorld.updateChunk(convertChunk(nmsSlimeChunk));
-        } else {
-            Bukkit.getLogger().log(Level.SEVERE, "Missing slime chunk for NMS chunk? (%s, %s)".formatted(chunk.locX, chunk.locZ));
-        }
-
-        super.unload(chunk);
-    }
 }
