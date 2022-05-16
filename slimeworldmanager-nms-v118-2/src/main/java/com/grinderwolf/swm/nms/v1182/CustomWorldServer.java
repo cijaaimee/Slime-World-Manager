@@ -383,4 +383,29 @@ public class CustomWorldServer extends ServerLevel {
         slimeWorld.getEntities().put(NmsUtil.asLong(pos.x, pos.z), entitiesSerialized);
     }
 
+    @Override
+    public void unload(LevelChunk chunk) {
+        SlimeChunk slimeChunk = slimeWorld.getChunk(chunk.getPos().x, chunk.getPos().z);
+        //System.out.println("Fetching chunk for unload: " + slimeChunk);
+
+        if (slimeChunk instanceof NMSSlimeChunk nmsSlimeChunk) {
+            Bukkit.getLogger().log(Level.INFO, "World ran unload BEFORE chunk was converted. This is fine but let owen know (%s,%s)".formatted(nmsSlimeChunk.getX(), nmsSlimeChunk.getZ()));
+        }
+
+        // Spigot Start
+        for (net.minecraft.world.level.block.entity.BlockEntity tileentity : chunk.getBlockEntities().values()) {
+            if (tileentity instanceof net.minecraft.world.Container) {
+                // Paper start - this area looks like it can load chunks, change the behavior
+                // chests for example can apply physics to the world
+                // so instead we just change the active container and call the event
+                for (org.bukkit.entity.HumanEntity h : Lists.newArrayList(((net.minecraft.world.Container) tileentity).getViewers())) {
+                    ((org.bukkit.craftbukkit.v1_18_R2.entity.CraftHumanEntity)h).getHandle().closeUnloadedInventory(org.bukkit.event.inventory.InventoryCloseEvent.Reason.UNLOADED); // Paper
+                }
+                // Paper end
+            }
+        }
+        // Spigot End
+
+        chunk.unregisterTickContainerFromLevel(this);
+    }
 }
