@@ -300,12 +300,12 @@ public class CustomWorldServer extends ServerLevel {
             public void unloadCallback() {
                 super.unloadCallback();
                 SlimeChunk slimeChunk = slimeWorld.getChunk(pos.x, pos.z);
-                System.out.println("Fetching chunk for unload: " + slimeChunk);
+                //System.out.println("Fetching chunk for unload: " + slimeChunk);
 
                 if (slimeChunk instanceof NMSSlimeChunk nmsSlimeChunk) {
                     slimeWorld.updateChunk(convertChunk(nmsSlimeChunk));
                 } else {
-                    Bukkit.getLogger().log(Level.SEVERE, "Missing slime chunk for NMS chunk? (%s, %s)".formatted(pos.x, pos.z));
+                   // Bukkit.getLogger().log(Level.SEVERE, "Missing slime chunk for NMS chunk? (%s, %s)".formatted(pos.x, pos.z));
                 }
             }
         };
