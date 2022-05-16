@@ -120,11 +120,7 @@ public class v1_9SlimeWorldFormat implements SlimeWorldReader {
 
                 dataStream.read(compressedMapsTag);
             }
-
-            if (dataStream.read() != -1) {
-                throw new CorruptedWorldException(worldName);
-            }
-
+            
             // Data decompression
             Zstd.decompress(chunkData, compressedChunkData);
             Zstd.decompress(tileEntities, compressedTileEntities);
