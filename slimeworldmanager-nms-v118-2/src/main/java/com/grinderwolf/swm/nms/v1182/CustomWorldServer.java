@@ -389,7 +389,7 @@ public class CustomWorldServer extends ServerLevel {
         //System.out.println("Fetching chunk for unload: " + slimeChunk);
 
         if (slimeChunk instanceof NMSSlimeChunk nmsSlimeChunk) {
-            Bukkit.getLogger().log(Level.INFO, "World ran unload BEFORE chunk was converted. This is fine but let owen know (%s,%s)".formatted(nmsSlimeChunk.getX(), nmsSlimeChunk.getZ()));
+           // Bukkit.getLogger().log(Level.INFO, "World ran unload BEFORE chunk was converted. This is fine but let owen know (%s,%s)".formatted(nmsSlimeChunk.getX(), nmsSlimeChunk.getZ()));
         }
 
         // Spigot Start
