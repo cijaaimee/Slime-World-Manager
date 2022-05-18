@@ -172,7 +172,7 @@ public class CustomWorldServer extends ServerLevel {
             slimeWorld.updateChunk(new NMSSlimeChunk(chunk));
         } else if (slimeChunk instanceof NMSSlimeChunk) {
             chunk = ((NMSSlimeChunk) slimeChunk).getChunk(); // This shouldn't happen anymore, unloading should cleanup the chunk
-            Bukkit.getLogger().log(Level.WARNING, "Improper cleanup of chunk at (%s, %s). Reusing NMS chunk".formatted(x, z));
+           // Bukkit.getLogger().log(Level.WARNING, "Improper cleanup of chunk at (%s, %s). Reusing NMS chunk".formatted(x, z));
         } else {
             chunk = convertChunk(slimeChunk);
 
