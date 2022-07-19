@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 
 public class CustomWorldServer extends WorldServer {
 
+    private static final boolean DEBUG_SAVES = false;
     private static final Logger LOGGER = LogManager.getLogger("SWM World");
     private static final ExecutorService WORLD_SAVER_SERVICE =
             Executors.newFixedThreadPool(
@@ -35,7 +36,7 @@ public class CustomWorldServer extends WorldServer {
     @Getter private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
 
-    @Getter @Setter private boolean ready = false, debugSaves = false;
+    @Getter @Setter private boolean ready = false;
 
     CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, int dimension) {
         super(
@@ -112,7 +113,7 @@ public class CustomWorldServer extends WorldServer {
         synchronized (saveLock) { // Don't want to save the slimeWorld from multiple threads
             // simultaneously
             try {
-                if (debugSaves) {
+                if (DEBUG_SAVES) {
                     LOGGER.info("Saving world " + slimeWorld.getName() + "...");
                 }
 
@@ -120,7 +121,7 @@ public class CustomWorldServer extends WorldServer {
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
 
-                if (debugSaves) {
+                if (DEBUG_SAVES) {
                     LOGGER.info(
                             "World "
                                     + slimeWorld.getName()
