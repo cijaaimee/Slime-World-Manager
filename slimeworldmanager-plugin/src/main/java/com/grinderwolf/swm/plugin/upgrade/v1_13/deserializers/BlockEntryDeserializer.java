@@ -1,11 +1,6 @@
 package com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import com.grinderwolf.swm.plugin.upgrade.v1_13.DowngradeData;
 
 import java.lang.reflect.Type;
@@ -21,7 +16,9 @@ public class BlockEntryDeserializer implements JsonDeserializer<DowngradeData.Bl
     private static final Pattern PATTERN = Pattern.compile("([!A-Za-z1-9]+)=([A-Za-z1-9]+)");
 
     @Override
-    public DowngradeData.BlockEntry deserialize(JsonElement el, Type type, JsonDeserializationContext context) throws JsonParseException {
+    public DowngradeData.BlockEntry deserialize(
+            JsonElement el, Type type, JsonDeserializationContext context)
+            throws JsonParseException {
         JsonObject obj = el.getAsJsonObject();
         List<DowngradeData.BlockProperty> properties;
 
@@ -78,7 +75,9 @@ public class BlockEntryDeserializer implements JsonDeserializer<DowngradeData.Bl
         int id = obj.has("id") ? obj.getAsJsonPrimitive("id").getAsInt() : 0;
         int data = obj.has("data") ? obj.getAsJsonPrimitive("data").getAsInt() : 0;
 
-        DowngradeData.TileEntityData tileEntityData = context.deserialize(obj.getAsJsonObject("tile_entity"), DowngradeData.TileEntityData.class);
+        DowngradeData.TileEntityData tileEntityData =
+                context.deserialize(
+                        obj.getAsJsonObject("tile_entity"), DowngradeData.TileEntityData.class);
         return new DowngradeData.BlockEntry(id, data, properties, tileEntityData);
     }
 }

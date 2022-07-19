@@ -32,7 +32,8 @@ public class Updater implements Listener {
         Version currentVersion = new Version(currentVersionString);
 
         if (currentVersion.getTag().toLowerCase().endsWith("snapshot")) {
-            Logging.warning("You are using a snapshot version of SWM. Update checking is disabled.");
+            Logging.warning(
+                    "You are using a snapshot version of SWM. Update checking is disabled.");
             outdatedVersion = false;
             return;
         }
@@ -55,31 +56,28 @@ public class Updater implements Listener {
         if (result == 0) {
             Logging.info("You are running the latest version of Slime World Manager.");
         } else if (outdatedVersion) {
-            Logging.warning("You are running an outdated version of Slime World Manager. Please download the latest version at SpigotMC.org.");
+            Logging.warning(
+                    "You are running an outdated version of Slime World Manager. Please download the latest version at SpigotMC.org.");
         } else {
             Logging.warning("You are running an unreleased version of Slime World Manager.");
         }
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-
-        if (outdatedVersion && ConfigManager.getMainConfig().getUpdaterOptions().isMessageEnabled() && player.hasPermission("swm.updater")) {
-            player.sendMessage(Logging.COMMAND_PREFIX + "This server is running an outdated of Slime World Manager. Please download the latest version at SpigotMC.org.");
-        }
-    }
-
     private static String getLatestVersion() throws IOException {
-        URL url = new URL("https://api.spiget.org/v2/resources/69974/versions/latest?" + System.currentTimeMillis());
+        URL url =
+                new URL(
+                        "https://api.spiget.org/v2/resources/69974/versions/latest?"
+                                + System.currentTimeMillis());
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.addRequestProperty("User-Agent", "SWM " + SWMPlugin.getInstance().getDescription().getVersion());
+        connection.addRequestProperty(
+                "User-Agent", "SWM " + SWMPlugin.getInstance().getDescription().getVersion());
 
         connection.setUseCaches(true);
         connection.setDoOutput(true);
 
         StringBuilder content = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+        try (BufferedReader br =
+                new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
             String input;
 
             while ((input = br.readLine()) != null) {
@@ -89,5 +87,18 @@ public class Updater implements Listener {
 
         JsonObject statistics = new JsonParser().parse(content.toString()).getAsJsonObject();
         return statistics.get("name").getAsString();
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+
+        if (outdatedVersion
+                && ConfigManager.getMainConfig().getUpdaterOptions().isMessageEnabled()
+                && player.hasPermission("swm.updater")) {
+            player.sendMessage(
+                    Logging.COMMAND_PREFIX
+                            + "This server is running an outdated of Slime World Manager. Please download the latest version at SpigotMC.org.");
+        }
     }
 }

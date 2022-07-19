@@ -5,7 +5,8 @@ import org.bukkit.ChatColor;
 
 public class Logging {
 
-    public static final String COMMAND_PREFIX = ChatColor.BLUE + ChatColor.BOLD.toString() + "SWM " + ChatColor.GRAY + ">> ";
+    public static final String COMMAND_PREFIX =
+            ChatColor.BLUE + ChatColor.BOLD.toString() + "SWM " + ChatColor.GRAY + ">> ";
     private static final String CONSOLE_PREFIX = ChatColor.BLUE + "[SWM] ";
 
     public static void info(String message) {

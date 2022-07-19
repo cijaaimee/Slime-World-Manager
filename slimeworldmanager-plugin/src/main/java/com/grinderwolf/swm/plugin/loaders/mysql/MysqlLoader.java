@@ -27,26 +27,38 @@ import java.util.concurrent.TimeUnit;
 public class MysqlLoader extends UpdatableLoader {
 
     // World locking executor service
-    private static final ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool(2, new ThreadFactoryBuilder()
-            .setNameFormat("SWM MySQL Lock Pool Thread #%1$d").build());
+    private static final ScheduledExecutorService SERVICE =
+            Executors.newScheduledThreadPool(
+                    2,
+                    new ThreadFactoryBuilder()
+                            .setNameFormat("SWM MySQL Lock Pool Thread #%1$d")
+                            .build());
 
     private static final int CURRENT_DB_VERSION = 1;
 
     // Database version handling queries
-    private static final String CREATE_VERSIONING_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS `database_version` (`id` INT NOT NULL AUTO_INCREMENT, " +
-            "`version` INT(11), PRIMARY KEY(id));";
-    private static final String INSERT_VERSION_QUERY = "INSERT INTO `database_version` (`id`, `version`) VALUES (1, ?) ON DUPLICATE KEY UPDATE `id` = ?;";
-    private static final String GET_VERSION_QUERY = "SELECT `version` FROM `database_version` WHERE `id` = 1;";
+    private static final String CREATE_VERSIONING_TABLE_QUERY =
+            "CREATE TABLE IF NOT EXISTS `database_version` (`id` INT NOT NULL AUTO_INCREMENT, "
+                    + "`version` INT(11), PRIMARY KEY(id));";
+    private static final String INSERT_VERSION_QUERY =
+            "INSERT INTO `database_version` (`id`, `version`) VALUES (1, ?) ON DUPLICATE KEY UPDATE `id` = ?;";
+    private static final String GET_VERSION_QUERY =
+            "SELECT `version` FROM `database_version` WHERE `id` = 1;";
 
     // v1 update query
-    private static final String ALTER_LOCKED_COLUMN_QUERY = "ALTER TABLE `worlds` CHANGE COLUMN `locked` `locked` BIGINT NOT NULL DEFAULT 0;";
+    private static final String ALTER_LOCKED_COLUMN_QUERY =
+            "ALTER TABLE `worlds` CHANGE COLUMN `locked` `locked` BIGINT NOT NULL DEFAULT 0;";
 
     // World handling queries
-    private static final String CREATE_WORLDS_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS `worlds` (`id` INT NOT NULL AUTO_INCREMENT, " +
-            "`name` VARCHAR(255) UNIQUE, `world` MEDIUMBLOB, `locked` BIGINT, PRIMARY KEY(id));";
-    private static final String SELECT_WORLD_QUERY = "SELECT `world`, `locked` FROM `worlds` WHERE `name` = ?;";
-    private static final String UPDATE_WORLD_QUERY = "INSERT INTO `worlds` (`name`, `world`, `locked`) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE `world` = ?;";
-    private static final String UPDATE_LOCK_QUERY = "UPDATE `worlds` SET `locked` = ? WHERE `name` = ?;";
+    private static final String CREATE_WORLDS_TABLE_QUERY =
+            "CREATE TABLE IF NOT EXISTS `worlds` (`id` INT NOT NULL AUTO_INCREMENT, "
+                    + "`name` VARCHAR(255) UNIQUE, `world` MEDIUMBLOB, `locked` BIGINT, PRIMARY KEY(id));";
+    private static final String SELECT_WORLD_QUERY =
+            "SELECT `world`, `locked` FROM `worlds` WHERE `name` = ?;";
+    private static final String UPDATE_WORLD_QUERY =
+            "INSERT INTO `worlds` (`name`, `world`, `locked`) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE `world` = ?;";
+    private static final String UPDATE_LOCK_QUERY =
+            "UPDATE `worlds` SET `locked` = ? WHERE `name` = ?;";
     private static final String DELETE_WORLD_QUERY = "DELETE FROM `worlds` WHERE `name` = ?;";
     private static final String LIST_WORLDS_QUERY = "SELECT `name` FROM `worlds`;";
 
@@ -56,7 +68,14 @@ public class MysqlLoader extends UpdatableLoader {
     public MysqlLoader(DatasourcesConfig.MysqlConfig config) throws SQLException {
         HikariConfig hikariConfig = new HikariConfig();
 
-        hikariConfig.setJdbcUrl("jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabase() + "?autoReconnect=true&allowMultiQueries=true");
+        hikariConfig.setJdbcUrl(
+                "jdbc:mysql://"
+                        + config.getHost()
+                        + ":"
+                        + config.getPort()
+                        + "/"
+                        + config.getDatabase()
+                        + "?autoReconnect=true&allowMultiQueries=true");
         hikariConfig.setUsername(config.getUsername());
         hikariConfig.setPassword(config.getPassword());
 
@@ -80,7 +99,8 @@ public class MysqlLoader extends UpdatableLoader {
             }
 
             // Create versioning table
-            try (PreparedStatement statement = con.prepareStatement(CREATE_VERSIONING_TABLE_QUERY)) {
+            try (PreparedStatement statement =
+                    con.prepareStatement(CREATE_VERSIONING_TABLE_QUERY)) {
                 statement.execute();
             }
         }
@@ -92,7 +112,7 @@ public class MysqlLoader extends UpdatableLoader {
             int version;
 
             try (PreparedStatement statement = con.prepareStatement(GET_VERSION_QUERY);
-                 ResultSet set = statement.executeQuery()) {
+                    ResultSet set = statement.executeQuery()) {
                 version = set.next() ? set.getInt(1) : -1;
             }
 
@@ -101,10 +121,14 @@ public class MysqlLoader extends UpdatableLoader {
             }
 
             if (version < CURRENT_DB_VERSION) {
-                Logging.warning("Your SWM MySQL database is outdated. The update process will start in 10 seconds.");
-                Logging.warning("Note that this update might make your database incompatible with older SWM versions.");
-                Logging.warning("Make sure no other servers with older SWM versions are using this database.");
-                Logging.warning("Shut down the server to prevent your database from being updated.");
+                Logging.warning(
+                        "Your SWM MySQL database is outdated. The update process will start in 10 seconds.");
+                Logging.warning(
+                        "Note that this update might make your database incompatible with older SWM versions.");
+                Logging.warning(
+                        "Make sure no other servers with older SWM versions are using this database.");
+                Logging.warning(
+                        "Shut down the server to prevent your database from being updated.");
 
                 try {
                     Thread.sleep(10000L);
@@ -113,7 +137,8 @@ public class MysqlLoader extends UpdatableLoader {
                 }
 
                 // Update to v1: alter locked column to store a long
-                try (PreparedStatement statement = con.prepareStatement(ALTER_LOCKED_COLUMN_QUERY)) {
+                try (PreparedStatement statement =
+                        con.prepareStatement(ALTER_LOCKED_COLUMN_QUERY)) {
                     statement.executeUpdate();
                 }
 
@@ -130,9 +155,10 @@ public class MysqlLoader extends UpdatableLoader {
     }
 
     @Override
-    public byte[] loadWorld(String worldName, boolean readOnly) throws UnknownWorldException, IOException, WorldInUseException {
+    public byte[] loadWorld(String worldName, boolean readOnly)
+            throws UnknownWorldException, IOException, WorldInUseException {
         try (Connection con = source.getConnection();
-            PreparedStatement statement = con.prepareStatement(SELECT_WORLD_QUERY)) {
+                PreparedStatement statement = con.prepareStatement(SELECT_WORLD_QUERY)) {
             statement.setString(1, worldName);
             ResultSet set = statement.executeQuery();
 
@@ -158,7 +184,7 @@ public class MysqlLoader extends UpdatableLoader {
 
     private void updateLock(String worldName, boolean forceSchedule) {
         try (Connection con = source.getConnection();
-             PreparedStatement statement = con.prepareStatement(UPDATE_LOCK_QUERY)) {
+                PreparedStatement statement = con.prepareStatement(UPDATE_LOCK_QUERY)) {
             statement.setLong(1, System.currentTimeMillis());
             statement.setString(2, worldName);
 
@@ -168,15 +194,23 @@ public class MysqlLoader extends UpdatableLoader {
             ex.printStackTrace();
         }
 
-        if (forceSchedule || lockedWorlds.containsKey(worldName)) { // Only schedule another update if the world is still on the map
-            lockedWorlds.put(worldName, SERVICE.schedule(() -> updateLock(worldName, false), LoaderUtils.LOCK_INTERVAL, TimeUnit.MILLISECONDS));
+        if (forceSchedule
+                || lockedWorlds.containsKey(
+                        worldName)) { // Only schedule another update if the world is still on the
+                                      // map
+            lockedWorlds.put(
+                    worldName,
+                    SERVICE.schedule(
+                            () -> updateLock(worldName, false),
+                            LoaderUtils.LOCK_INTERVAL,
+                            TimeUnit.MILLISECONDS));
         }
     }
 
     @Override
     public boolean worldExists(String worldName) throws IOException {
         try (Connection con = source.getConnection();
-             PreparedStatement statement = con.prepareStatement(SELECT_WORLD_QUERY)) {
+                PreparedStatement statement = con.prepareStatement(SELECT_WORLD_QUERY)) {
             statement.setString(1, worldName);
             ResultSet set = statement.executeQuery();
 
@@ -191,7 +225,7 @@ public class MysqlLoader extends UpdatableLoader {
         List<String> worldList = new ArrayList<>();
 
         try (Connection con = source.getConnection();
-             PreparedStatement statement = con.prepareStatement(LIST_WORLDS_QUERY)) {
+                PreparedStatement statement = con.prepareStatement(LIST_WORLDS_QUERY)) {
             ResultSet set = statement.executeQuery();
 
             while (set.next()) {
@@ -205,9 +239,10 @@ public class MysqlLoader extends UpdatableLoader {
     }
 
     @Override
-    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException {
+    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock)
+            throws IOException {
         try (Connection con = source.getConnection();
-             PreparedStatement statement = con.prepareStatement(UPDATE_WORLD_QUERY)) {
+                PreparedStatement statement = con.prepareStatement(UPDATE_WORLD_QUERY)) {
             statement.setString(1, worldName);
             statement.setBytes(2, serializedWorld);
             statement.setBytes(3, serializedWorld);
@@ -230,7 +265,7 @@ public class MysqlLoader extends UpdatableLoader {
         }
 
         try (Connection con = source.getConnection();
-             PreparedStatement statement = con.prepareStatement(UPDATE_LOCK_QUERY)) {
+                PreparedStatement statement = con.prepareStatement(UPDATE_LOCK_QUERY)) {
             statement.setLong(1, 0L);
             statement.setString(2, worldName);
 
@@ -249,7 +284,7 @@ public class MysqlLoader extends UpdatableLoader {
         }
 
         try (Connection con = source.getConnection();
-             PreparedStatement statement = con.prepareStatement(SELECT_WORLD_QUERY)) {
+                PreparedStatement statement = con.prepareStatement(SELECT_WORLD_QUERY)) {
             statement.setString(1, worldName);
             ResultSet set = statement.executeQuery();
 
@@ -272,7 +307,7 @@ public class MysqlLoader extends UpdatableLoader {
         }
 
         try (Connection con = source.getConnection();
-             PreparedStatement statement = con.prepareStatement(DELETE_WORLD_QUERY)) {
+                PreparedStatement statement = con.prepareStatement(DELETE_WORLD_QUERY)) {
             statement.setString(1, worldName);
 
             if (statement.executeUpdate() == 0) {

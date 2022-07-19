@@ -14,31 +14,6 @@ public class v1_9WorldUpgrade implements Upgrade {
 
     private static final JsonParser PARSER = new JsonParser();
 
-    @Override
-    public void upgrade(CraftSlimeWorld world) {
-        // In 1.9, all signs must be formatted using JSON
-        for (SlimeChunk chunk : world.getChunks().values()) {
-            for (CompoundTag entityTag : chunk.getTileEntities()) {
-                String type = entityTag.getAsStringTag("id").get().getValue();
-
-                if (type.equals("Sign")) {
-                    CompoundMap map = entityTag.getValue();
-
-                    for (int i = 1; i < 5; i++) {
-                        String id = "Text" + i;
-
-                        map.put(id, new StringTag(id, fixJson(entityTag.getAsStringTag(id).map(StringTag::getValue).orElse(null))));
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    public void downgrade(CraftSlimeWorld world) {
-        // No need to downgrade as JSON signs are compatible with 1.8
-    }
-
     private static String fixJson(String value) {
         if (value == null || value.equalsIgnoreCase("null") || value.isEmpty()) {
             return "{\"text\":\"\"}";
@@ -54,5 +29,38 @@ public class v1_9WorldUpgrade implements Upgrade {
         }
 
         return value;
+    }
+
+    @Override
+    public void upgrade(CraftSlimeWorld world) {
+        // In 1.9, all signs must be formatted using JSON
+        for (SlimeChunk chunk : world.getChunks().values()) {
+            for (CompoundTag entityTag : chunk.getTileEntities()) {
+                String type = entityTag.getAsStringTag("id").get().getValue();
+
+                if (type.equals("Sign")) {
+                    CompoundMap map = entityTag.getValue();
+
+                    for (int i = 1; i < 5; i++) {
+                        String id = "Text" + i;
+
+                        map.put(
+                                id,
+                                new StringTag(
+                                        id,
+                                        fixJson(
+                                                entityTag
+                                                        .getAsStringTag(id)
+                                                        .map(StringTag::getValue)
+                                                        .orElse(null))));
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void downgrade(CraftSlimeWorld world) {
+        // No need to downgrade as JSON signs are compatible with 1.8
     }
 }

@@ -14,6 +14,12 @@ public class DowngradeData {
     private final Map<String, BlockEntry> blocks;
 
     @Getter
+    public enum Operation {
+        REPLACE,
+        OR;
+    }
+
+    @Getter
     @RequiredArgsConstructor
     public static class BlockEntry {
 
@@ -22,7 +28,6 @@ public class DowngradeData {
 
         private final List<BlockProperty> properties;
         private final TileEntityData tileEntityData;
-
     }
 
     @Getter
@@ -35,12 +40,6 @@ public class DowngradeData {
         private final int data;
 
         private final Operation operation;
-
-    }
-
-    @Getter
-    public enum Operation {
-        REPLACE, OR;
     }
 
     @Getter
@@ -48,16 +47,15 @@ public class DowngradeData {
 
         @SerializedName("create")
         private TileCreateAction createAction;
+
         @SerializedName("set")
         private TileSetAction setAction;
-
     }
 
     @Getter
     public static class TileCreateAction {
 
         private String name;
-
     }
 
     @Getter
@@ -65,7 +63,6 @@ public class DowngradeData {
     public static class TileSetAction {
 
         private final Map<String, TileSetEntry> entries;
-
     }
 
     @Getter
@@ -73,6 +70,5 @@ public class DowngradeData {
 
         private String type;
         private String value;
-
     }
 }

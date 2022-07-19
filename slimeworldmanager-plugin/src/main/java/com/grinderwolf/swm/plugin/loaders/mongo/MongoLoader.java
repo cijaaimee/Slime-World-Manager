@@ -9,11 +9,7 @@ import com.grinderwolf.swm.plugin.loaders.UpdatableLoader;
 import com.grinderwolf.swm.plugin.log.Logging;
 import com.mongodb.MongoException;
 import com.mongodb.MongoNamespace;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.model.GridFSFile;
@@ -39,8 +35,12 @@ import java.util.concurrent.TimeUnit;
 public class MongoLoader extends UpdatableLoader {
 
     // World locking executor service
-    private static final ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool(2, new ThreadFactoryBuilder()
-            .setNameFormat("SWM MongoDB Lock Pool Thread #%1$d").build());
+    private static final ScheduledExecutorService SERVICE =
+            Executors.newScheduledThreadPool(
+                    2,
+                    new ThreadFactoryBuilder()
+                            .setNameFormat("SWM MongoDB Lock Pool Thread #%1$d")
+                            .build());
 
     private final Map<String, ScheduledFuture> lockedWorlds = new HashMap<>();
 
@@ -52,9 +52,21 @@ public class MongoLoader extends UpdatableLoader {
         this.database = config.getDatabase();
         this.collection = config.getCollection();
 
-        String authParams = !config.getUsername().isEmpty() && !config.getPassword().isEmpty() ? config.getUsername() + ":" + config.getPassword() + "@" : "";
-        String authSource = !config.getAuthSource().isEmpty() ? "/?authSource=" + config.getAuthSource() : "";
-        String uri = !config.getUri().isEmpty() ? config.getUri() : "mongodb://" + authParams + config.getHost() + ":" + config.getPort() + authSource;
+        String authParams =
+                !config.getUsername().isEmpty() && !config.getPassword().isEmpty()
+                        ? config.getUsername() + ":" + config.getPassword() + "@"
+                        : "";
+        String authSource =
+                !config.getAuthSource().isEmpty() ? "/?authSource=" + config.getAuthSource() : "";
+        String uri =
+                !config.getUri().isEmpty()
+                        ? config.getUri()
+                        : "mongodb://"
+                                + authParams
+                                + config.getHost()
+                                + ":"
+                                + config.getPort()
+                                + authSource;
 
         this.client = MongoClients.create(uri);
 
@@ -70,11 +82,16 @@ public class MongoLoader extends UpdatableLoader {
 
         // Old GridFS importing
         for (String collectionName : mongoDatabase.listCollectionNames()) {
-            if (collectionName.equals(collection + "_files.files") || collectionName.equals(collection + "_files.chunks")) {
+            if (collectionName.equals(collection + "_files.files")
+                    || collectionName.equals(collection + "_files.chunks")) {
                 Logging.info("Updating MongoDB database...");
 
-                mongoDatabase.getCollection(collection + "_files.files").renameCollection(new MongoNamespace(database, collection + ".files"));
-                mongoDatabase.getCollection(collection + "_files.chunks").renameCollection(new MongoNamespace(database, collection + ".chunks"));
+                mongoDatabase
+                        .getCollection(collection + "_files.files")
+                        .renameCollection(new MongoNamespace(database, collection + ".files"));
+                mongoDatabase
+                        .getCollection(collection + "_files.chunks")
+                        .renameCollection(new MongoNamespace(database, collection + ".chunks"));
 
                 Logging.info("MongoDB database updated!");
 
@@ -85,13 +102,18 @@ public class MongoLoader extends UpdatableLoader {
         MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
 
         // Old world lock importing
-        MongoCursor<Document> documents = mongoCollection.find(Filters.or(Filters.eq("locked", true),
-                Filters.eq("locked", false))).cursor();
+        MongoCursor<Document> documents =
+                mongoCollection
+                        .find(Filters.or(Filters.eq("locked", true), Filters.eq("locked", false)))
+                        .cursor();
 
         if (documents.hasNext()) {
-            Logging.warning("Your SWM MongoDB database is outdated. The update process will start in 10 seconds.");
-            Logging.warning("Note that this update will make your database incompatible with older SWM versions.");
-            Logging.warning("Make sure no other servers with older SWM versions are using this database.");
+            Logging.warning(
+                    "Your SWM MongoDB database is outdated. The update process will start in 10 seconds.");
+            Logging.warning(
+                    "Note that this update will make your database incompatible with older SWM versions.");
+            Logging.warning(
+                    "Make sure no other servers with older SWM versions are using this database.");
             Logging.warning("Shut down the server to prevent your database from being updated.");
 
             try {
@@ -108,7 +130,8 @@ public class MongoLoader extends UpdatableLoader {
     }
 
     @Override
-    public byte[] loadWorld(String worldName, boolean readOnly) throws UnknownWorldException, IOException, WorldInUseException {
+    public byte[] loadWorld(String worldName, boolean readOnly)
+            throws UnknownWorldException, IOException, WorldInUseException {
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
@@ -142,14 +165,24 @@ public class MongoLoader extends UpdatableLoader {
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
-            mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", System.currentTimeMillis()));
+            mongoCollection.updateOne(
+                    Filters.eq("name", worldName),
+                    Updates.set("locked", System.currentTimeMillis()));
         } catch (MongoException ex) {
             Logging.error("Failed to update the lock for world " + worldName + ":");
             ex.printStackTrace();
         }
 
-        if (forceSchedule || lockedWorlds.containsKey(worldName)) { // Only schedule another update if the world is still on the map
-            lockedWorlds.put(worldName, SERVICE.schedule(() -> updateLock(worldName, false), LoaderUtils.LOCK_INTERVAL, TimeUnit.MILLISECONDS));
+        if (forceSchedule
+                || lockedWorlds.containsKey(
+                        worldName)) { // Only schedule another update if the world is still on the
+                                      // map
+            lockedWorlds.put(
+                    worldName,
+                    SERVICE.schedule(
+                            () -> updateLock(worldName, false),
+                            LoaderUtils.LOCK_INTERVAL,
+                            TimeUnit.MILLISECONDS));
         }
     }
 
@@ -186,7 +219,8 @@ public class MongoLoader extends UpdatableLoader {
     }
 
     @Override
-    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException {
+    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock)
+            throws IOException {
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection);
@@ -204,8 +238,11 @@ public class MongoLoader extends UpdatableLoader {
             long lockMillis = lock ? System.currentTimeMillis() : 0L;
 
             if (worldDoc == null) {
-                mongoCollection.insertOne(new Document().append("name", worldName).append("locked", lockMillis));
-            } else if (System.currentTimeMillis() - worldDoc.getLong("locked") > LoaderUtils.MAX_LOCK_TIME && lock) {
+                mongoCollection.insertOne(
+                        new Document().append("name", worldName).append("locked", lockMillis));
+            } else if (System.currentTimeMillis() - worldDoc.getLong("locked")
+                            > LoaderUtils.MAX_LOCK_TIME
+                    && lock) {
                 updateLock(worldName, true);
             }
         } catch (MongoException ex) {
@@ -224,7 +261,9 @@ public class MongoLoader extends UpdatableLoader {
         try {
             MongoDatabase mongoDatabase = client.getDatabase(database);
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(collection);
-            UpdateResult result = mongoCollection.updateOne(Filters.eq("name", worldName), Updates.set("locked", 0L));
+            UpdateResult result =
+                    mongoCollection.updateOne(
+                            Filters.eq("name", worldName), Updates.set("locked", 0L));
 
             if (result.getMatchedCount() == 0) {
                 throw new UnknownWorldException(worldName);
@@ -249,7 +288,8 @@ public class MongoLoader extends UpdatableLoader {
                 throw new UnknownWorldException(worldName);
             }
 
-            return System.currentTimeMillis() - worldDoc.getLong("locked") <= LoaderUtils.MAX_LOCK_TIME;
+            return System.currentTimeMillis() - worldDoc.getLong("locked")
+                    <= LoaderUtils.MAX_LOCK_TIME;
         } catch (MongoException ex) {
             throw new IOException(ex);
         }

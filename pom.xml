@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.grinderwolf</groupId>
@@ -51,14 +52,14 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-    
+
     <scm>
         <connection>scm:git:git@github.com:Grinderwolf/Slime-World-Manager.git</connection>
         <developerConnection>scm:git:git@github.com:Grinderwolf/Slime-World-Manager.git</developerConnection>
         <url>git@github.com:Grinderwolf/Slime-World-Manager.git</url>
-      <tag>HEAD</tag>
-  </scm>
-    
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
@@ -74,13 +75,13 @@
                 </dependencies>
             </plugin>
         </plugins>
-  </build>
+    </build>
 
-  <distributionManagement>
+    <distributionManagement>
         <repository>
             <id>glaremasters</id>
             <url>https://repo.glaremasters.me/repository/concuncan/</url>
         </repository>
-  </distributionManagement>
+    </distributionManagement>
 
 </project>

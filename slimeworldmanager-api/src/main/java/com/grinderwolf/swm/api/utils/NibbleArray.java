@@ -5,13 +5,13 @@ import lombok.Getter;
 /**
  * Credits to Minikloon for this class.
  *
- * Source: https://github.com/Minikloon/CraftyWorld/blob/master/crafty-common/src/main/kotlin/world/crafty/common/utils/NibbleArray.kt
+ * <p>Source:
+ * https://github.com/Minikloon/CraftyWorld/blob/master/crafty-common/src/main/kotlin/world/crafty/common/utils/NibbleArray.kt
  */
 public class NibbleArray {
 
     private final int size;
-    @Getter
-    private final byte[] backing;
+    @Getter private final byte[] backing;
 
     public NibbleArray(int size) {
         this(new byte[size / 2]);

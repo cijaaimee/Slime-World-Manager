@@ -1,4 +1,6 @@
-You need three things to import a world: a world folder, a world name and a data source. Here's an example of how to import a world:
+You need three things to import a world: a world folder, a world name and a data source. Here's an example of how to
+import a world:
+
 ```java
 SlimePlugin plugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
 

@@ -23,6 +23,7 @@ public class WorldData {
 
     @Setting("allowMonsters")
     private boolean allowMonsters = true;
+
     @Setting("allowAnimals")
     private boolean allowAnimals = true;
 
@@ -31,11 +32,13 @@ public class WorldData {
 
     @Setting("environment")
     private String environment = "NORMAL";
+
     @Setting("worldType")
     private String worldType = "DEFAULT";
 
     @Setting("loadOnStartup")
     private boolean loadOnStartup = true;
+
     @Setting("readOnly")
     private boolean readOnly = false;
 
@@ -72,7 +75,8 @@ public class WorldData {
 
                 environment = World.Environment.getEnvironment(envId).name();
             } catch (NumberFormatException ex2) {
-                throw new IllegalArgumentException("unknown environment '" + this.environment + "'");
+                throw new IllegalArgumentException(
+                        "unknown environment '" + this.environment + "'");
             }
         }
 

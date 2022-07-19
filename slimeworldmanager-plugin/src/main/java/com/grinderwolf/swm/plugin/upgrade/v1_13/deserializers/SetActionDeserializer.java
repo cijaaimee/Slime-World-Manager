@@ -1,10 +1,6 @@
 package com.grinderwolf.swm.plugin.upgrade.v1_13.deserializers;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 import com.grinderwolf.swm.plugin.upgrade.v1_13.DowngradeData;
 
 import java.lang.reflect.Type;
@@ -14,7 +10,9 @@ import java.util.Map;
 public class SetActionDeserializer implements JsonDeserializer<DowngradeData.TileSetAction> {
 
     @Override
-    public DowngradeData.TileSetAction deserialize(JsonElement el, Type type, JsonDeserializationContext context) throws JsonParseException {
+    public DowngradeData.TileSetAction deserialize(
+            JsonElement el, Type type, JsonDeserializationContext context)
+            throws JsonParseException {
         JsonObject obj = el.getAsJsonObject();
         Map<String, DowngradeData.TileSetEntry> entries = new HashMap<>();
 

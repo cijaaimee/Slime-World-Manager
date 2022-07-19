@@ -5,11 +5,7 @@ import com.grinderwolf.swm.api.exceptions.WorldInUseException;
 import com.grinderwolf.swm.api.loaders.SlimeLoader;
 import com.grinderwolf.swm.plugin.log.Logging;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
@@ -31,7 +27,10 @@ public class FileLoader implements SlimeLoader {
         this.worldDir = worldDir;
 
         if (worldDir.exists() && !worldDir.isDirectory()) {
-            Logging.warning("A file named '" + worldDir.getName() + "' has been deleted, as this is the name used for the worlds directory.");
+            Logging.warning(
+                    "A file named '"
+                            + worldDir.getName()
+                            + "' has been deleted, as this is the name used for the worlds directory.");
             worldDir.delete();
         }
 
@@ -39,20 +38,24 @@ public class FileLoader implements SlimeLoader {
     }
 
     @Override
-    public byte[] loadWorld(String worldName, boolean readOnly) throws UnknownWorldException, IOException, WorldInUseException {
+    public byte[] loadWorld(String worldName, boolean readOnly)
+            throws UnknownWorldException, IOException, WorldInUseException {
         if (!worldExists(worldName)) {
             throw new UnknownWorldException(worldName);
         }
 
-        RandomAccessFile file = worldFiles.computeIfAbsent(worldName, (world) -> {
-
-            try {
-                return new RandomAccessFile(new File(worldDir, worldName + ".slime"), "rw");
-            } catch (FileNotFoundException ex) {
-                return null; // This is never going to happen as we've just checked if the world exists
-            }
-
-        });
+        RandomAccessFile file =
+                worldFiles.computeIfAbsent(
+                        worldName,
+                        (world) -> {
+                            try {
+                                return new RandomAccessFile(
+                                        new File(worldDir, worldName + ".slime"), "rw");
+                            } catch (FileNotFoundException ex) {
+                                return null; // This is never going to happen as we've just checked
+                                             // if the world exists
+                            }
+                        });
 
         if (!readOnly) {
             FileChannel channel = file.getChannel();
@@ -86,15 +89,18 @@ public class FileLoader implements SlimeLoader {
     public List<String> listWorlds() throws NotDirectoryException {
         String[] worlds = worldDir.list(WORLD_FILE_FILTER);
 
-        if(worlds == null) {
+        if (worlds == null) {
             throw new NotDirectoryException(worldDir.getPath());
         }
 
-        return Arrays.stream(worlds).map((c) -> c.substring(0, c.length() - 6)).collect(Collectors.toList());
+        return Arrays.stream(worlds)
+                .map((c) -> c.substring(0, c.length() - 6))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException {
+    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock)
+            throws IOException {
         RandomAccessFile worldFile = worldFiles.get(worldName);
         boolean tempFile = worldFile == null;
 

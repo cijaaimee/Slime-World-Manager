@@ -8,49 +8,75 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class DatasourcesConfig {
 
-    @Setting("file") private FileConfig fileConfig = new FileConfig();
-    @Setting("mysql") private MysqlConfig mysqlConfig = new MysqlConfig();
-    @Setting("mongodb") private MongoDBConfig mongoDbConfig = new MongoDBConfig();
+    @Setting("file")
+    private FileConfig fileConfig = new FileConfig();
+
+    @Setting("mysql")
+    private MysqlConfig mysqlConfig = new MysqlConfig();
+
+    @Setting("mongodb")
+    private MongoDBConfig mongoDbConfig = new MongoDBConfig();
 
     @Getter
     @ConfigSerializable
     public static class MysqlConfig {
 
-        @Setting("enabled") private boolean enabled = false;
+        @Setting("enabled")
+        private boolean enabled = false;
 
-        @Setting("host") private String host = "127.0.0.1";
-        @Setting("port") private int port = 3306;
+        @Setting("host")
+        private String host = "127.0.0.1";
 
-        @Setting("username") private String username = "slimeworldmanager";
-        @Setting("password") private String password = "";
+        @Setting("port")
+        private int port = 3306;
 
-        @Setting("database") private String database = "slimeworldmanager";
+        @Setting("username")
+        private String username = "slimeworldmanager";
+
+        @Setting("password")
+        private String password = "";
+
+        @Setting("database")
+        private String database = "slimeworldmanager";
     }
 
     @Getter
     @ConfigSerializable
     public static class MongoDBConfig {
 
-        @Setting("enabled") private boolean enabled = false;
+        @Setting("enabled")
+        private boolean enabled = false;
 
-        @Setting("host") private String host = "127.0.0.1";
-        @Setting("port") private int port = 27017;
+        @Setting("host")
+        private String host = "127.0.0.1";
 
-        @Setting("auth") private String authSource = "admin";
-        @Setting("username") private String username = "slimeworldmanager";
-        @Setting("password") private String password = "";
+        @Setting("port")
+        private int port = 27017;
 
-        @Setting("database") private String database = "slimeworldmanager";
-        @Setting("collection") private String collection = "worlds";
+        @Setting("auth")
+        private String authSource = "admin";
 
-        @Setting("uri") private String uri = "";
+        @Setting("username")
+        private String username = "slimeworldmanager";
+
+        @Setting("password")
+        private String password = "";
+
+        @Setting("database")
+        private String database = "slimeworldmanager";
+
+        @Setting("collection")
+        private String collection = "worlds";
+
+        @Setting("uri")
+        private String uri = "";
     }
 
     @Getter
     @ConfigSerializable
     public static class FileConfig {
 
-        @Setting("path") private String path = "slime_worlds";
-
+        @Setting("path")
+        private String path = "slime_worlds";
     }
 }

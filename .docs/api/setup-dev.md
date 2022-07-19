@@ -18,6 +18,7 @@ If your plugin wants to use Slime World Manager add the following in your pom.xm
     <url>https://repo.glaremasters.me/repository/concuncan/</url>
 </repository>
 ```
+
 ```xml
 <dependency>
     <groupId>com.grinderwolf</groupId>

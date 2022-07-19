@@ -19,7 +19,8 @@ public class WorldUnlocker implements Listener {
         SlimeWorld world = SWMPlugin.getInstance().getNms().getSlimeWorld(event.getWorld());
 
         if (world != null) {
-            Bukkit.getScheduler().runTaskAsynchronously(SWMPlugin.getInstance(), () -> unlockWorld(world));
+            Bukkit.getScheduler()
+                    .runTaskAsynchronously(SWMPlugin.getInstance(), () -> unlockWorld(world));
         }
     }
 
@@ -27,10 +28,15 @@ public class WorldUnlocker implements Listener {
         try {
             world.getLoader().unlockWorld(world.getName());
         } catch (IOException ex) {
-            Logging.error("Failed to unlock world " + world.getName() + ". Retrying in 5 seconds. Stack trace:");
+            Logging.error(
+                    "Failed to unlock world "
+                            + world.getName()
+                            + ". Retrying in 5 seconds. Stack trace:");
             ex.printStackTrace();
 
-            Bukkit.getScheduler().runTaskLaterAsynchronously(SWMPlugin.getInstance(), () -> unlockWorld(world), 100);
+            Bukkit.getScheduler()
+                    .runTaskLaterAsynchronously(
+                            SWMPlugin.getInstance(), () -> unlockWorld(world), 100);
         } catch (UnknownWorldException ignored) {
 
         }

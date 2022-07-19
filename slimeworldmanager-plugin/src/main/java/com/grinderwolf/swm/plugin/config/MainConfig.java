@@ -14,11 +14,26 @@ import java.io.IOException;
 @ConfigSerializable
 public class MainConfig {
 
-    @Setting(value = "enable_async_world_gen", comment = "Only enable this if you don't have any other plugins that generate worlds.")
+    @Setting(
+            value = "enable_async_world_gen",
+            comment = "Only enable this if you don't have any other plugins that generate worlds.")
     private boolean asyncWorldGenerate = false;
 
     @Setting("updater")
     private UpdaterOptions updaterOptions = new UpdaterOptions();
+
+    public void save() {
+        try {
+            ConfigManager.getMainConfigLoader()
+                    .save(
+                            ConfigManager.getMainConfigLoader()
+                                    .createEmptyNode()
+                                    .setValue(TypeToken.of(MainConfig.class), this));
+        } catch (IOException | ObjectMappingException ex) {
+            Logging.error("Failed to save worlds config file:");
+            ex.printStackTrace();
+        }
+    }
 
     @Getter
     @ConfigSerializable
@@ -29,14 +44,5 @@ public class MainConfig {
 
         @Setting(value = "onjoinmessage")
         private boolean messageEnabled = true;
-    }
-
-    public void save() {
-        try {
-            ConfigManager.getMainConfigLoader().save(ConfigManager.getMainConfigLoader().createEmptyNode().setValue(TypeToken.of(MainConfig.class), this));
-        } catch (IOException | ObjectMappingException ex) {
-            Logging.error("Failed to save worlds config file:");
-            ex.printStackTrace();
-        }
     }
 }
