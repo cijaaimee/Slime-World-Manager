@@ -121,9 +121,9 @@ public class LoaderUtils {
             SlimePropertyMap propertyMap,
             boolean readOnly)
             throws IOException, CorruptedWorldException, NewerFormatException {
-        DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(serializedWorld));
 
-        try {
+        try (DataInputStream dataStream =
+                new DataInputStream(new ByteArrayInputStream(serializedWorld))) {
             byte[] fileHeader = new byte[SlimeFormat.SLIME_HEADER.length];
             dataStream.read(fileHeader);
 

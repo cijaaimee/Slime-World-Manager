@@ -161,10 +161,11 @@ public class MongoLoader extends UpdatableLoader {
             }
 
             GridFSBucket bucket = GridFSBuckets.create(mongoDatabase, collection);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bucket.downloadToStream(worldName, stream);
+            try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+                bucket.downloadToStream(worldName, stream);
 
-            return stream.toByteArray();
+                return stream.toByteArray();
+            }
         } catch (MongoException ex) {
             throw new IOException(ex);
         }
@@ -185,7 +186,7 @@ public class MongoLoader extends UpdatableLoader {
         if (forceSchedule
                 || lockedWorlds.containsKey(
                         worldName)) { // Only schedule another update if the world is still on the
-                                      // map
+            // map
             lockedWorlds.put(
                     worldName,
                     SERVICE.schedule(
