@@ -10,6 +10,10 @@ public class CraftCLSMBridge implements CLSMBridge {
 
     private final v1_8_R3SlimeNMS nmsInstance;
 
+    static void initialize(v1_8_R3SlimeNMS instance) {
+        ClassModifier.setLoader(new CraftCLSMBridge(instance));
+    }
+
     @Override
     public Object[] getDefaultWorlds() {
         WorldServer defaultWorld = nmsInstance.getDefaultWorld();
@@ -17,7 +21,7 @@ public class CraftCLSMBridge implements CLSMBridge {
         WorldServer endWorld = nmsInstance.getDefaultEndWorld();
 
         if (defaultWorld != null || netherWorld != null || endWorld != null) {
-            return new WorldServer[] { defaultWorld, netherWorld, endWorld };
+            return new WorldServer[] {defaultWorld, netherWorld, endWorld};
         }
 
         // Returning null will just run the original load world method
@@ -37,9 +41,5 @@ public class CraftCLSMBridge implements CLSMBridge {
 
         CustomWorldServer worldServer = (CustomWorldServer) world;
         return !worldServer.isReady();
-    }
-
-    static void initialize(v1_8_R3SlimeNMS instance) {
-        ClassModifier.setLoader(new CraftCLSMBridge(instance));
     }
 }

@@ -7,13 +7,7 @@ import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.GameRules;
-import net.minecraft.server.v1_8_R3.IChunkLoader;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.WorldData;
-import net.minecraft.server.v1_8_R3.WorldNBTStorage;
-import net.minecraft.server.v1_8_R3.WorldProvider;
+import net.minecraft.server.v1_8_R3.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,11 +25,13 @@ public class CustomDataManager extends WorldNBTStorage {
         GameRules emptyRules = new GameRules();
         String[] rules = emptyRules.getGameRules();
 
-        defaultValues = Arrays.stream(rules).collect(Collectors.toMap((rule) -> rule, emptyRules::get));
+        defaultValues =
+                Arrays.stream(rules).collect(Collectors.toMap((rule) -> rule, emptyRules::get));
     }
 
     @Getter(value = AccessLevel.NONE)
     private final UUID uuid = UUID.randomUUID();
+
     private final SlimeWorld world;
     private final CustomChunkLoader chunkLoader;
     private WorldData worldData;
@@ -49,7 +45,8 @@ public class CustomDataManager extends WorldNBTStorage {
     CustomDataManager(SlimeWorld world) {
         super(new File("temp_" + world.getName()), world.getName(), false);
 
-        // The WorldNBTStorage automatically creates some files inside the base dir, so we have to delete them
+        // The WorldNBTStorage automatically creates some files inside the base dir, so we have to
+        // delete them
         // (Thanks again Spigot)
 
         // Can't just access the baseDir field inside WorldNBTStorage cause it's private :P
@@ -73,7 +70,8 @@ public class CustomDataManager extends WorldNBTStorage {
         return worldData;
     }
 
-    @Override public void checkSession() { }
+    @Override
+    public void checkSession() {}
 
     @Override
     public IChunkLoader createChunkLoader(WorldProvider worldProvider) {
@@ -82,14 +80,19 @@ public class CustomDataManager extends WorldNBTStorage {
 
     @Override
     public void saveWorldData(WorldData worldData, NBTTagCompound nbtTagCompound) {
-        CompoundTag gameRules = (CompoundTag) Converter.convertTag("gamerules", worldData.x().a()).getAsCompoundTag().get();
+        CompoundTag gameRules =
+                (CompoundTag)
+                        Converter.convertTag("gamerules", worldData.x().a())
+                                .getAsCompoundTag()
+                                .get();
         CompoundTag extraData = this.world.getExtraData();
 
         extraData.getValue().remove("gamerules");
 
         if (!gameRules.getValue().isEmpty()) {
             // Remove default values to save space
-            for (Map.Entry<String, Tag<?>> entry : new ArrayList<>(gameRules.getValue().entrySet())) {
+            for (Map.Entry<String, Tag<?>> entry :
+                    new ArrayList<>(gameRules.getValue().entrySet())) {
                 String rule = entry.getKey();
                 StringTag valueTag = (StringTag) entry.getValue();
                 String defaultValue = defaultValues.get(rule);
@@ -112,9 +115,7 @@ public class CustomDataManager extends WorldNBTStorage {
     }
 
     @Override
-    public void a() {
-
-    }
+    public void a() {}
 
     @Override
     public File getDataFile(String s) {
@@ -132,16 +133,15 @@ public class CustomDataManager extends WorldNBTStorage {
     }
 
     @Override
-    public void save(EntityHuman entityHuman) {
-
-    }
+    public void save(EntityHuman entityHuman) {}
 
     @Override
     public NBTTagCompound load(EntityHuman entityHuman) {
         return null;
     }
 
-    @Override public String[] getSeenPlayers() {
+    @Override
+    public String[] getSeenPlayers() {
         return new String[0];
     }
 }

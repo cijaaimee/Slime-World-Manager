@@ -6,21 +6,14 @@ import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_8_R3.Block;
-import net.minecraft.server.v1_8_R3.Chunk;
-import net.minecraft.server.v1_8_R3.ChunkSection;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.EntityTypes;
-import net.minecraft.server.v1_8_R3.IChunkLoader;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.TileEntity;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_8_R3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class CustomChunkLoader implements IChunkLoader {
@@ -54,7 +47,13 @@ public class CustomChunkLoader implements IChunkLoader {
         nmsChunk.a(heightMap);
 
         // Load chunk sections
-        LOGGER.debug("Loading chunk sections for chunk (" + x + ", " + z + ") on world " + world.getName());
+        LOGGER.debug(
+                "Loading chunk sections for chunk ("
+                        + x
+                        + ", "
+                        + z
+                        + ") on world "
+                        + world.getName());
         ChunkSection[] sections = new ChunkSection[16];
 
         for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
@@ -89,13 +88,28 @@ public class CustomChunkLoader implements IChunkLoader {
                     blockIds[id] = (char) packed;
                 }
 
-                LOGGER.debug("ChunkSection #" + sectionId + " - Chunk (" + x + ", " + z + ") - World " + world.getName() + ":");
+                LOGGER.debug(
+                        "ChunkSection #"
+                                + sectionId
+                                + " - Chunk ("
+                                + x
+                                + ", "
+                                + z
+                                + ") - World "
+                                + world.getName()
+                                + ":");
                 LOGGER.debug("Blocks:");
                 LOGGER.debug(blockIds);
                 LOGGER.debug("Block light array:");
-                LOGGER.debug(slimeSection.getBlockLight() != null ? slimeSection.getBlockLight().getBacking() : "Not present");
+                LOGGER.debug(
+                        slimeSection.getBlockLight() != null
+                                ? slimeSection.getBlockLight().getBacking()
+                                : "Not present");
                 LOGGER.debug("Sky light array:");
-                LOGGER.debug(slimeSection.getSkyLight() != null ? slimeSection.getSkyLight().getBacking() : "Not present");
+                LOGGER.debug(
+                        slimeSection.getSkyLight() != null
+                                ? slimeSection.getSkyLight().getBacking()
+                                : "Not present");
 
                 section.a(blockIds);
 
@@ -118,7 +132,13 @@ public class CustomChunkLoader implements IChunkLoader {
         nmsChunk.a(toByteArray(chunk.getBiomes()));
 
         // Load tile entities
-        LOGGER.debug("Loading tile entities for chunk (" + x + ", " + z + ") on world " + world.getName());
+        LOGGER.debug(
+                "Loading tile entities for chunk ("
+                        + x
+                        + ", "
+                        + z
+                        + ") on world "
+                        + world.getName());
         List<CompoundTag> tileEntities = chunk.getTileEntities();
         int loadedEntities = 0;
 
@@ -133,10 +153,19 @@ public class CustomChunkLoader implements IChunkLoader {
             }
         }
 
-        LOGGER.debug("Loaded " + loadedEntities + " tile entities for chunk (" + x + ", " + z + ") on world " + world.getName());
+        LOGGER.debug(
+                "Loaded "
+                        + loadedEntities
+                        + " tile entities for chunk ("
+                        + x
+                        + ", "
+                        + z
+                        + ") on world "
+                        + world.getName());
 
         // Load entities
-        LOGGER.debug("Loading entities for chunk (" + x + ", " + z + ") on world " + world.getName());
+        LOGGER.debug(
+                "Loading entities for chunk (" + x + ", " + z + ") on world " + world.getName());
         List<CompoundTag> entities = chunk.getEntities();
         loadedEntities = 0;
 
@@ -149,8 +178,15 @@ public class CustomChunkLoader implements IChunkLoader {
                     nmsChunk.a(entity);
                     Entity entity1 = entity;
 
-                    for (CompoundTag ridingTag = tag; ridingTag.getValue().containsKey("Riding"); ridingTag = (CompoundTag) ridingTag.getValue().get("Riding")) {
-                        Entity entity2 = EntityTypes.a((NBTTagCompound) Converter.convertTag(ridingTag.getValue().get("Riding")), server);
+                    for (CompoundTag ridingTag = tag;
+                            ridingTag.getValue().containsKey("Riding");
+                            ridingTag = (CompoundTag) ridingTag.getValue().get("Riding")) {
+                        Entity entity2 =
+                                EntityTypes.a(
+                                        (NBTTagCompound)
+                                                Converter.convertTag(
+                                                        ridingTag.getValue().get("Riding")),
+                                        server);
 
                         if (entity2 != null) {
                             nmsChunk.a(entity2);
@@ -166,7 +202,15 @@ public class CustomChunkLoader implements IChunkLoader {
             }
         }
 
-        LOGGER.debug("Loaded " + loadedEntities + " entities for chunk (" + x + ", " + z + ") on world " + world.getName());
+        LOGGER.debug(
+                "Loaded "
+                        + loadedEntities
+                        + " entities for chunk ("
+                        + x
+                        + ", "
+                        + z
+                        + ") on world "
+                        + world.getName());
         LOGGER.debug("Loaded chunk (" + x + ", " + z + ") on world " + world.getName());
 
         return nmsChunk;
@@ -192,8 +236,14 @@ public class CustomChunkLoader implements IChunkLoader {
             chunk.e(true);
         } else if (slimeChunk instanceof NMSSlimeChunk) {
             chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
-        } else { // All SlimeChunk objects should be converted to NMSSlimeChunks when loading the world
-            throw new IllegalStateException("Chunk (" + x + ", " + z + ") has not been converted to a NMSSlimeChunk object!");
+        } else { // All SlimeChunk objects should be converted to NMSSlimeChunks when loading the
+                 // world
+            throw new IllegalStateException(
+                    "Chunk ("
+                            + x
+                            + ", "
+                            + z
+                            + ") has not been converted to a NMSSlimeChunk object!");
         }
 
         return chunk;
@@ -204,25 +254,25 @@ public class CustomChunkLoader implements IChunkLoader {
     public void a(World world, Chunk chunk) {
         SlimeChunk slimeChunk = this.world.getChunk(chunk.locX, chunk.locZ);
 
-        if (slimeChunk instanceof NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some reason)
+        if (slimeChunk
+                instanceof
+                NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some
+                                 // reason)
             ((NMSSlimeChunk) slimeChunk).setChunk(chunk);
         } else {
             this.world.updateChunk(new NMSSlimeChunk(chunk));
         }
     }
 
-
     // Save all chunks
     @Override
-    public void b() {
-
-    }
+    public void b() {}
 
     // Does literally nothing
     @Override
-    public void b(World world, Chunk chunk) { }
+    public void b(World world, Chunk chunk) {}
 
     // Does literally nothing
     @Override
-    public void a() {  }
+    public void a() {}
 }

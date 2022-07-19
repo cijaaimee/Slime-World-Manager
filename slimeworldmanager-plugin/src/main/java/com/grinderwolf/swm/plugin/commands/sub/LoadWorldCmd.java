@@ -1,6 +1,5 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
-
 import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
 import com.grinderwolf.swm.api.exceptions.NewerFormatException;
 import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
@@ -39,7 +38,12 @@ public class LoadWorldCmd implements Subcommand {
             World world = Bukkit.getWorld(worldName);
 
             if (world != null) {
-                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + " is already loaded!");
+                sender.sendMessage(
+                        Logging.COMMAND_PREFIX
+                                + ChatColor.RED
+                                + "World "
+                                + worldName
+                                + " is already loaded!");
 
                 return true;
             }
@@ -48,76 +52,159 @@ public class LoadWorldCmd implements Subcommand {
             WorldData worldData = config.getWorlds().get(worldName);
 
             if (worldData == null) {
-                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to find world " + worldName + " inside the worlds config file.");
+                sender.sendMessage(
+                        Logging.COMMAND_PREFIX
+                                + ChatColor.RED
+                                + "Failed to find world "
+                                + worldName
+                                + " inside the worlds config file.");
 
                 return true;
             }
 
             if (CommandManager.getInstance().getWorldsInUse().contains(worldName)) {
-                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "World " + worldName + " is already being used on another command! Wait some time and try again.");
+                sender.sendMessage(
+                        Logging.COMMAND_PREFIX
+                                + ChatColor.RED
+                                + "World "
+                                + worldName
+                                + " is already being used on another command! Wait some time and try again.");
 
                 return true;
             }
 
             CommandManager.getInstance().getWorldsInUse().add(worldName);
-            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GRAY + "Loading world " + ChatColor.YELLOW + worldName + ChatColor.GRAY + "...");
+            sender.sendMessage(
+                    Logging.COMMAND_PREFIX
+                            + ChatColor.GRAY
+                            + "Loading world "
+                            + ChatColor.YELLOW
+                            + worldName
+                            + ChatColor.GRAY
+                            + "...");
 
-            // It's best to load the world async, and then just go back to the server thread and add it to the world list
-            Bukkit.getScheduler().runTaskAsynchronously(SWMPlugin.getInstance(), () -> {
+            // It's best to load the world async, and then just go back to the server thread and add
+            // it to the world list
+            Bukkit.getScheduler()
+                    .runTaskAsynchronously(
+                            SWMPlugin.getInstance(),
+                            () -> {
+                                try {
+                                    long start = System.currentTimeMillis();
+                                    SlimeLoader loader =
+                                            SWMPlugin.getInstance()
+                                                    .getLoader(worldData.getDataSource());
 
-                try {
-                    long start = System.currentTimeMillis();
-                    SlimeLoader loader = SWMPlugin.getInstance().getLoader(worldData.getDataSource());
+                                    if (loader == null) {
+                                        throw new IllegalArgumentException(
+                                                "invalid data source " + worldData.getDataSource());
+                                    }
 
-                    if (loader == null) {
-                        throw new IllegalArgumentException("invalid data source " + worldData.getDataSource());
-                    }
+                                    SlimeWorld slimeWorld =
+                                            SWMPlugin.getInstance()
+                                                    .loadWorld(
+                                                            loader,
+                                                            worldName,
+                                                            worldData.isReadOnly(),
+                                                            worldData.toPropertyMap());
+                                    Bukkit.getScheduler()
+                                            .runTask(
+                                                    SWMPlugin.getInstance(),
+                                                    () -> {
+                                                        try {
+                                                            SWMPlugin.getInstance()
+                                                                    .generateWorld(slimeWorld);
+                                                        } catch (IllegalArgumentException ex) {
+                                                            sender.sendMessage(
+                                                                    Logging.COMMAND_PREFIX
+                                                                            + ChatColor.RED
+                                                                            + "Failed to generate world "
+                                                                            + worldName
+                                                                            + ": "
+                                                                            + ex.getMessage()
+                                                                            + ".");
 
-                    SlimeWorld slimeWorld = SWMPlugin.getInstance().loadWorld(loader, worldName, worldData.isReadOnly(), worldData.toPropertyMap());
-                    Bukkit.getScheduler().runTask(SWMPlugin.getInstance(), () -> {
-                        try {
-                            SWMPlugin.getInstance().generateWorld(slimeWorld);
-                        } catch (IllegalArgumentException ex) {
-                            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to generate world " + worldName + ": " + ex.getMessage() + ".");
+                                                            return;
+                                                        }
 
-                            return;
-                        }
+                                                        sender.sendMessage(
+                                                                Logging.COMMAND_PREFIX
+                                                                        + ChatColor.GREEN
+                                                                        + "World "
+                                                                        + ChatColor.YELLOW
+                                                                        + worldName
+                                                                        + ChatColor.GREEN
+                                                                        + " loaded and generated in "
+                                                                        + (System
+                                                                                        .currentTimeMillis()
+                                                                                - start)
+                                                                        + "ms!");
+                                                    });
+                                } catch (CorruptedWorldException ex) {
+                                    if (!(sender instanceof ConsoleCommandSender)) {
+                                        sender.sendMessage(
+                                                Logging.COMMAND_PREFIX
+                                                        + ChatColor.RED
+                                                        + "Failed to load world "
+                                                        + worldName
+                                                        + ": world seems to be corrupted.");
+                                    }
 
-                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GREEN + "World " + ChatColor.YELLOW + worldName
-                                + ChatColor.GREEN + " loaded and generated in " + (System.currentTimeMillis() - start) + "ms!");
-                    });
-                } catch (CorruptedWorldException ex) {
-                    if (!(sender instanceof ConsoleCommandSender)) {
-                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
-                                ": world seems to be corrupted.");
-                    }
+                                    Logging.error(
+                                            "Failed to load world "
+                                                    + worldName
+                                                    + ": world seems to be corrupted.");
+                                    ex.printStackTrace();
+                                } catch (NewerFormatException ex) {
+                                    sender.sendMessage(
+                                            Logging.COMMAND_PREFIX
+                                                    + ChatColor.RED
+                                                    + "Failed to load world "
+                                                    + worldName
+                                                    + ": this world"
+                                                    + " was serialized with a newer version of the Slime Format ("
+                                                    + ex.getMessage()
+                                                    + ") that SWM cannot understand.");
+                                } catch (UnknownWorldException ex) {
+                                    sender.sendMessage(
+                                            Logging.COMMAND_PREFIX
+                                                    + ChatColor.RED
+                                                    + "Failed to load world "
+                                                    + worldName
+                                                    + ": world could not be found (using data source '"
+                                                    + worldData.getDataSource()
+                                                    + "').");
+                                } catch (WorldInUseException ex) {
+                                    sender.sendMessage(
+                                            Logging.COMMAND_PREFIX
+                                                    + ChatColor.RED
+                                                    + "Failed to load world "
+                                                    + worldName
+                                                    + ": world is already in use. If you think this is a mistake, please wait some time and try again.");
+                                } catch (IllegalArgumentException ex) {
+                                    sender.sendMessage(
+                                            Logging.COMMAND_PREFIX
+                                                    + ChatColor.RED
+                                                    + "Failed to load world "
+                                                    + worldName
+                                                    + ": "
+                                                    + ex.getMessage());
+                                } catch (IOException ex) {
+                                    if (!(sender instanceof ConsoleCommandSender)) {
+                                        sender.sendMessage(
+                                                Logging.COMMAND_PREFIX
+                                                        + ChatColor.RED
+                                                        + "Failed to load world "
+                                                        + worldName
+                                                        + ". Take a look at the server console for more information.");
+                                    }
 
-                    Logging.error("Failed to load world " + worldName + ": world seems to be corrupted.");
-                    ex.printStackTrace();
-                } catch (NewerFormatException ex) {
-                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName + ": this world" +
-                            " was serialized with a newer version of the Slime Format (" + ex.getMessage() + ") that SWM cannot understand.");
-                } catch (UnknownWorldException ex) {
-                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
-                            ": world could not be found (using data source '" + worldData.getDataSource() + "').");
-                } catch (WorldInUseException ex) {
-                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
-                            ": world is already in use. If you think this is a mistake, please wait some time and try again.");
-                } catch (IllegalArgumentException ex) {
-                    sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName +
-                            ": " + ex.getMessage());
-                } catch (IOException ex) {
-                    if (!(sender instanceof ConsoleCommandSender)) {
-                        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to load world " + worldName
-                                + ". Take a look at the server console for more information.");
-                    }
-
-                    Logging.error("Failed to load world " + worldName + ":");
-                    ex.printStackTrace();
-                } finally {
-                    CommandManager.getInstance().getWorldsInUse().remove(worldName);
-                }
-            });
+                                    Logging.error("Failed to load world " + worldName + ":");
+                                    ex.printStackTrace();
+                                } finally {
+                                    CommandManager.getInstance().getWorldsInUse().remove(worldName);
+                                }
+                            });
 
             return true;
         }
@@ -147,4 +234,3 @@ public class LoadWorldCmd implements Subcommand {
         return toReturn == null ? Collections.emptyList() : toReturn;
     }
 }
-

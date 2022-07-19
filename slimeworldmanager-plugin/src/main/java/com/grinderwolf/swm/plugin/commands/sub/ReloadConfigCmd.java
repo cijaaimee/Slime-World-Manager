@@ -1,6 +1,5 @@
 package com.grinderwolf.swm.plugin.commands.sub;
 
-
 import com.grinderwolf.swm.plugin.config.ConfigManager;
 import com.grinderwolf.swm.plugin.log.Logging;
 import lombok.Getter;
@@ -11,7 +10,6 @@ import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -27,7 +25,10 @@ public class ReloadConfigCmd implements Subcommand {
             ConfigManager.initialize();
         } catch (IOException | ObjectMappingException ex) {
             if (!(sender instanceof ConsoleCommandSender)) {
-                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Failed to reload the config file. Take a look at the server console for more information.");
+                sender.sendMessage(
+                        Logging.COMMAND_PREFIX
+                                + ChatColor.RED
+                                + "Failed to reload the config file. Take a look at the server console for more information.");
             }
 
             Logging.error("Failed to load config files:");
@@ -46,4 +47,3 @@ public class ReloadConfigCmd implements Subcommand {
         return Collections.emptyList();
     }
 }
-

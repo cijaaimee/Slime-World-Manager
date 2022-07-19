@@ -31,32 +31,58 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
     public v1_8_R3SlimeNMS() {
         try {
             CraftCLSMBridge.initialize(this);
-        }  catch (NoClassDefFoundError ex) {
-            LOGGER.error("Failed to find ClassModifier classes. Are you sure you installed it correctly?");
+        } catch (NoClassDefFoundError ex) {
+            LOGGER.error(
+                    "Failed to find ClassModifier classes. Are you sure you installed it correctly?");
             System.exit(1); // No ClassModifier, no party
         }
     }
 
     @Override
-    public void setDefaultWorlds(SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
+    public void setDefaultWorlds(
+            SlimeWorld normalWorld, SlimeWorld netherWorld, SlimeWorld endWorld) {
         if (normalWorld != null) {
-            World.Environment env = World.Environment.valueOf(normalWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
+            World.Environment env =
+                    World.Environment.valueOf(
+                            normalWorld
+                                    .getPropertyMap()
+                                    .getString(SlimeProperties.ENVIRONMENT)
+                                    .toUpperCase());
 
             if (env != World.Environment.NORMAL) {
                 LOGGER.warn("The environment for the default world must always be 'NORMAL'.");
             }
 
-            defaultWorld = new CustomWorldServer((CraftSlimeWorld) normalWorld, new CustomDataManager(normalWorld), 0);
+            defaultWorld =
+                    new CustomWorldServer(
+                            (CraftSlimeWorld) normalWorld, new CustomDataManager(normalWorld), 0);
         }
 
         if (netherWorld != null) {
-            World.Environment env = World.Environment.valueOf(netherWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-            defaultNetherWorld = new CustomWorldServer((CraftSlimeWorld) netherWorld, new CustomDataManager(netherWorld), env.getId());
+            World.Environment env =
+                    World.Environment.valueOf(
+                            netherWorld
+                                    .getPropertyMap()
+                                    .getString(SlimeProperties.ENVIRONMENT)
+                                    .toUpperCase());
+            defaultNetherWorld =
+                    new CustomWorldServer(
+                            (CraftSlimeWorld) netherWorld,
+                            new CustomDataManager(netherWorld),
+                            env.getId());
         }
 
         if (endWorld != null) {
-            World.Environment env = World.Environment.valueOf(endWorld.getPropertyMap().getString(SlimeProperties.ENVIRONMENT).toUpperCase());
-            defaultEndWorld = new CustomWorldServer((CraftSlimeWorld) endWorld, new CustomDataManager(endWorld), env.getId());
+            World.Environment env =
+                    World.Environment.valueOf(
+                            endWorld.getPropertyMap()
+                                    .getString(SlimeProperties.ENVIRONMENT)
+                                    .toUpperCase());
+            defaultEndWorld =
+                    new CustomWorldServer(
+                            (CraftSlimeWorld) endWorld,
+                            new CustomDataManager(endWorld),
+                            env.getId());
         }
 
         loadingDefaultWorlds = false;
@@ -99,7 +125,10 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
         String worldName = server.getWorldData().getName();
 
         if (Bukkit.getWorld(worldName) != null) {
-            throw new IllegalArgumentException("World " + worldName + " already exists! Maybe it's an outdated SlimeWorld object?");
+            throw new IllegalArgumentException(
+                    "World "
+                            + worldName
+                            + " already exists! Maybe it's an outdated SlimeWorld object?");
         }
 
         LOGGER.info("Loading world " + worldName);
@@ -114,7 +143,12 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
         Bukkit.getPluginManager().callEvent(new WorldInitEvent(server.getWorld()));
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
 
-        LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+        LOGGER.info(
+                "World "
+                        + worldName
+                        + " loaded in "
+                        + (System.currentTimeMillis() - startTime)
+                        + "ms.");
     }
 
     @Override

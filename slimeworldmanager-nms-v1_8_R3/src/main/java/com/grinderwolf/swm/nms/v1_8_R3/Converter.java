@@ -44,13 +44,16 @@ public class Converter {
                     return new NBTTagIntArray(((IntArrayTag) tag).getValue());
                 case TAG_LIST:
                     NBTTagList list = new NBTTagList();
-                    ((ListTag<?>) tag).getValue().stream().map(Converter::convertTag).forEach(list::add);
+                    ((ListTag<?>) tag)
+                            .getValue().stream().map(Converter::convertTag).forEach(list::add);
 
                     return list;
                 case TAG_COMPOUND:
                     NBTTagCompound compound = new NBTTagCompound();
 
-                    ((CompoundTag) tag).getValue().forEach((key, value) -> compound.set(key, convertTag(value)));
+                    ((CompoundTag) tag)
+                            .getValue()
+                            .forEach((key, value) -> compound.set(key, convertTag(value)));
 
                     return compound;
                 default:
@@ -107,5 +110,4 @@ public class Converter {
                 throw new IllegalArgumentException("Invalid tag type " + base.getTypeId());
         }
     }
-
 }

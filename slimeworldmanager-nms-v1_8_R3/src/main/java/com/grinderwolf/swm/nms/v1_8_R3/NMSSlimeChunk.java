@@ -1,6 +1,8 @@
 package com.grinderwolf.swm.nms.v1_8_R3;
 
-import com.flowpowered.nbt.*;
+import com.flowpowered.nbt.CompoundMap;
+import com.flowpowered.nbt.CompoundTag;
+import com.flowpowered.nbt.IntArrayTag;
 import com.grinderwolf.swm.api.utils.NibbleArray;
 import com.grinderwolf.swm.api.world.SlimeChunk;
 import com.grinderwolf.swm.api.world.SlimeChunkSection;
@@ -19,6 +21,15 @@ import java.util.List;
 public class NMSSlimeChunk implements SlimeChunk {
 
     private Chunk chunk;
+
+    private static int[] toIntArray(byte[] buf) {
+        ByteBuffer buffer = ByteBuffer.wrap(buf).order(ByteOrder.BIG_ENDIAN);
+        int[] ret = new int[buf.length / 4];
+
+        buffer.asIntBuffer().get(ret);
+
+        return ret;
+    }
 
     @Override
     public String getWorldName() {
@@ -47,7 +58,8 @@ public class NMSSlimeChunk implements SlimeChunk {
 
                 if (!section.a()) { // If the section is empty, just ignore it to save space
                     // Block Light Nibble Array
-                    NibbleArray blockLightArray = Converter.convertArray(section.getEmittedLightArray());
+                    NibbleArray blockLightArray =
+                            Converter.convertArray(section.getEmittedLightArray());
 
                     // Sky light Nibble Array
                     NibbleArray skyLightArray = Converter.convertArray(section.getSkyLightArray());
@@ -63,7 +75,14 @@ public class NMSSlimeChunk implements SlimeChunk {
                         blockDataArray.set(i, packed & 15);
                     }
 
-                    sections[sectionId] = new CraftSlimeChunkSection(blocks, blockDataArray, null, null, blockLightArray, skyLightArray);
+                    sections[sectionId] =
+                            new CraftSlimeChunkSection(
+                                    blocks,
+                                    blockDataArray,
+                                    null,
+                                    null,
+                                    blockLightArray,
+                                    skyLightArray);
                 }
             }
         }
@@ -74,7 +93,9 @@ public class NMSSlimeChunk implements SlimeChunk {
     @Override
     public CompoundTag getHeightMaps() {
         CompoundTag heightMapsCompound = new CompoundTag("", new CompoundMap());
-        heightMapsCompound.getValue().put("heightMap", new IntArrayTag("heightMap", chunk.heightMap));
+        heightMapsCompound
+                .getValue()
+                .put("heightMap", new IntArrayTag("heightMap", chunk.heightMap));
 
         return heightMapsCompound;
     }
@@ -113,14 +134,5 @@ public class NMSSlimeChunk implements SlimeChunk {
         }
 
         return entities;
-    }
-
-    private static int[] toIntArray(byte[] buf) {
-        ByteBuffer buffer = ByteBuffer.wrap(buf).order(ByteOrder.BIG_ENDIAN);
-        int[] ret = new int[buf.length / 4];
-
-        buffer.asIntBuffer().get(ret);
-
-        return ret;
     }
 }

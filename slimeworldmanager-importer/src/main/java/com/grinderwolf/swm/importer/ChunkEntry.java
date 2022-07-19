@@ -9,5 +9,4 @@ public class ChunkEntry {
 
     private final int offset;
     private final int paddedSize;
-
 }

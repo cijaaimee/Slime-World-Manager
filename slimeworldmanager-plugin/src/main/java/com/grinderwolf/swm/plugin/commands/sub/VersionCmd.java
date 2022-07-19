@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -19,8 +18,20 @@ public class VersionCmd implements Subcommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
-        sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.GRAY + "This server is running SWM " + ChatColor.YELLOW + "v" + SWMPlugin.getInstance()
-                .getDescription().getVersion() + ChatColor.GRAY + ", which supports up to Slime Format " + ChatColor.AQUA + "v" + SlimeFormat.SLIME_VERSION + ChatColor.GRAY + ".");
+        sender.sendMessage(
+                Logging.COMMAND_PREFIX
+                        + ChatColor.GRAY
+                        + "This server is running SWM "
+                        + ChatColor.YELLOW
+                        + "v"
+                        + SWMPlugin.getInstance().getDescription().getVersion()
+                        + ChatColor.GRAY
+                        + ", which supports up to Slime Format "
+                        + ChatColor.AQUA
+                        + "v"
+                        + SlimeFormat.SLIME_VERSION
+                        + ChatColor.GRAY
+                        + ".");
 
         return true;
     }
