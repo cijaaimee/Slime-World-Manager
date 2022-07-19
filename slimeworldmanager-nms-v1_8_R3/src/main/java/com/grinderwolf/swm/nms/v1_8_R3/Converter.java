@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2022.
+ *
+ * Author (Fork): Pedro Aguiar
+ * Original author: github.com/Grinderwolf/Slime-World-Manager
+ *
+ * Force, Inc (github.com/rede-force)
+ */
+
 package com.grinderwolf.swm.nms.v1_8_R3;
 
 import com.flowpowered.nbt.*;

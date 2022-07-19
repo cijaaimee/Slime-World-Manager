@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2022.
+ *
+ * Author (Fork): Pedro Aguiar
+ * Original author: github.com/Grinderwolf/Slime-World-Manager
+ *
+ * Force, Inc (github.com/rede-force)
+ */
+
 package com.grinderwolf.swm.plugin.world.importer;
 
 import com.flowpowered.nbt.*;
@@ -111,15 +120,15 @@ public class WorldImporter {
         propertyMap.setInt(SlimeProperties.SPAWN_Z, data.getSpawnZ());
 
         return new CraftSlimeWorld(
-                null,
                 worldDir.getName(),
                 chunks,
                 new CompoundTag("", extraData),
                 maps,
-                worldVersion,
                 propertyMap,
                 false,
-                true);
+                true,
+                null,
+                worldVersion);
     }
 
     private static CompoundTag loadMap(File mapFile) throws IOException {
@@ -129,7 +138,7 @@ public class WorldImporter {
 
         try (NBTInputStream nbtStream =
                 new NBTInputStream(
-                        new FileInputStream(mapFile),
+                        Files.newInputStream(mapFile.toPath()),
                         NBTInputStream.GZIP_COMPRESSION,
                         ByteOrder.BIG_ENDIAN)) {
             tag = nbtStream.readTag().getAsCompoundTag().get().getAsCompoundTag("data").get();

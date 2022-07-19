@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2022.
+ *
+ * Author (Fork): Pedro Aguiar
+ * Original author: github.com/Grinderwolf/Slime-World-Manager
+ *
+ * Force, Inc (github.com/rede-force)
+ */
+
 package com.grinderwolf.swm.plugin;
 
 import com.flowpowered.nbt.CompoundMap;
@@ -23,7 +32,6 @@ import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import com.grinderwolf.swm.plugin.world.importer.WorldImporter;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
@@ -31,8 +39,10 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,9 +50,13 @@ import java.util.concurrent.Executors;
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Getter private static SWMPlugin instance;
+
     private final List<SlimeWorld> worlds = new ArrayList<>();
+
     private final ExecutorService worldGeneratorService = Executors.newFixedThreadPool(1);
+
     @Getter private SlimeNMS nms;
+
     private boolean asyncWorldGen;
 
     @Override
@@ -66,13 +80,13 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             return;
         }
 
-        List<String> erroredWorlds = loadWorlds();
+        final List<String> erroredWorlds = loadWorlds();
 
         // Default world override
-        try {
-            Properties props = new Properties();
+        try (InputStream propertiesInput = Files.newInputStream(Paths.get("server.properties"))) {
+            final Properties props = new Properties();
 
-            props.load(new FileInputStream("server.properties"));
+            props.load(propertiesInput);
             String defaultWorldName = props.getProperty("level-name");
 
             if (erroredWorlds.contains(defaultWorldName)) {
@@ -130,8 +144,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             return;
         }
 
-        new Metrics(this);
-
         final CommandManager commandManager = new CommandManager();
         final PluginCommand swmCommand = getCommand("swm");
         swmCommand.setExecutor(commandManager);
@@ -154,7 +166,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             } catch (
                     IllegalArgumentException
                             ignored) { // This exception is thrown as null is not a WorldServer
-                                       // object
+                // object
                 Logging.warning(
                         "You've enabled async world generation. Although it's quite faster, this feature is EXPERIMENTAL. Use at your own risk.");
                 asyncWorldGen = true;
@@ -178,12 +190,11 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         String version = Bukkit.getServer().getClass().getPackage().getName();
         String nmsVersion = version.substring(version.lastIndexOf('.') + 1);
 
-        switch (nmsVersion) {
-            case "v1_8_R3":
-                return new v1_8_R3SlimeNMS();
-            default:
-                throw new InvalidVersionException(nmsVersion);
+        if (nmsVersion.equals("v1_8_R3")) {
+            return new v1_8_R3SlimeNMS();
         }
+
+        throw new InvalidVersionException(nmsVersion);
     }
 
     private List<String> loadWorlds() {
@@ -329,15 +340,15 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         long start = System.currentTimeMillis();
         CraftSlimeWorld world =
                 new CraftSlimeWorld(
-                        loader,
                         worldName,
                         new HashMap<>(),
                         new CompoundTag("", new CompoundMap()),
                         new ArrayList<>(),
-                        nms.getWorldVersion(),
                         propertyMap,
                         readOnly,
-                        !readOnly);
+                        !readOnly,
+                        loader,
+                        nms.getWorldVersion());
         loader.saveWorld(worldName, world.serialize(), !readOnly);
 
         Logging.info(
@@ -412,9 +423,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             if (slimeWorld != null && currentLoader.equals(slimeWorld.getLoader())) {
                 slimeWorld.setLoader(newLoader);
 
-                if (!slimeWorld
-                        .isReadOnly()) { // We have to manually unlock the world so no
-                                         // WorldInUseException is thrown
+                if (!slimeWorld.isReadOnly()) { // We have to manually unlock the world so no
+                    // WorldInUseException is thrown
                     currentLoader.unlockWorld(worldName);
                     leaveLock = true;
                 }

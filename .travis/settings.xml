@@ -1,3 +1,12 @@
+<!--
+  ~ Copyright (c) 2022.
+  ~
+  ~ Author (Fork): Pedro Aguiar
+  ~ Original author: github.com/Grinderwolf/Slime-World-Manager
+  ~
+  ~ Force, Inc (github.com/rede-force)
+  -->
+
 <settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0

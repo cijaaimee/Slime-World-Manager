@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+#
+# Copyright (c) 2022.
+#
+# Author (Fork): Pedro Aguiar
+# Original author: github.com/Grinderwolf/Slime-World-Manager
+#
+# Force, Inc (github.com/rede-force)
+#
+
 set -e
 
 echo "Ensuring that pom  matches $TRAVIS_TAG"

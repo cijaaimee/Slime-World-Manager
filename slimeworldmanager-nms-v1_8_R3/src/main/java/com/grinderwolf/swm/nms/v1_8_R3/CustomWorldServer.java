@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2022.
+ *
+ * Author (Fork): Pedro Aguiar
+ * Original author: github.com/Grinderwolf/Slime-World-Manager
+ *
+ * Force, Inc (github.com/rede-force)
+ */
+
 package com.grinderwolf.swm.nms.v1_8_R3;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -26,7 +35,7 @@ public class CustomWorldServer extends WorldServer {
     @Getter private final CraftSlimeWorld slimeWorld;
     private final Object saveLock = new Object();
 
-    @Getter @Setter private boolean ready = false;
+    @Getter @Setter private boolean ready = false, debugSaves = false;
 
     CustomWorldServer(CraftSlimeWorld world, IDataManager dataManager, int dimension) {
         super(
@@ -77,7 +86,7 @@ public class CustomWorldServer extends WorldServer {
 
             if (MinecraftServer.getServer()
                     .isStopped()) { // Make sure the SlimeWorld gets saved before stopping the
-                                    // server by running it from the main thread
+                // server by running it from the main thread
                 save();
 
                 // Have to manually unlock the world as well
@@ -100,20 +109,25 @@ public class CustomWorldServer extends WorldServer {
     }
 
     private void save() {
-        synchronized (
-                saveLock) { // Don't want to save the slimeWorld from multiple threads
-                            // simultaneously
+        synchronized (saveLock) { // Don't want to save the slimeWorld from multiple threads
+            // simultaneously
             try {
-                LOGGER.info("Saving world " + slimeWorld.getName() + "...");
+                if (debugSaves) {
+                    LOGGER.info("Saving world " + slimeWorld.getName() + "...");
+                }
+
                 long start = System.currentTimeMillis();
                 byte[] serializedWorld = slimeWorld.serialize();
                 slimeWorld.getLoader().saveWorld(slimeWorld.getName(), serializedWorld, false);
-                LOGGER.info(
-                        "World "
-                                + slimeWorld.getName()
-                                + " saved in "
-                                + (System.currentTimeMillis() - start)
-                                + "ms.");
+
+                if (debugSaves) {
+                    LOGGER.info(
+                            "World "
+                                    + slimeWorld.getName()
+                                    + " saved in "
+                                    + (System.currentTimeMillis() - start)
+                                    + "ms.");
+                }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

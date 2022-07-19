@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2022.
+ *
+ * Author (Fork): Pedro Aguiar
+ * Original author: github.com/Grinderwolf/Slime-World-Manager
+ *
+ * Force, Inc (github.com/rede-force)
+ */
+
 package com.grinderwolf.swm.plugin.loaders;
 
 import com.flowpowered.nbt.*;
@@ -136,7 +145,7 @@ public class LoaderUtils {
                 worldVersion = dataStream.readByte();
             } else if (version
                     >= 4) { // In v4 there's just a boolean indicating whether the world is pre-1.13
-                            // or post-1.13
+                // or post-1.13
                 worldVersion = (byte) (dataStream.readBoolean() ? 0x04 : 0x01);
             } else {
                 worldVersion = 0; // We'll try to automatically detect it later
@@ -332,15 +341,15 @@ public class LoaderUtils {
             }
 
             return new CraftSlimeWorld(
-                    loader,
                     worldName,
                     chunks,
                     extraCompound,
                     mapList,
-                    worldVersion,
                     worldPropertyMap,
                     readOnly,
-                    !readOnly);
+                    !readOnly,
+                    loader,
+                    worldVersion);
         } catch (EOFException ex) {
             throw new CorruptedWorldException(worldName, ex);
         }

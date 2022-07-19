@@ -15,3 +15,8 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
 mvn.txt
+
+### Gradle ###
+.gradle
+**/build/
+!src/**/build/

@@ -11,7 +11,7 @@ install:
   - wget -O spigot-1.9.jar https://cdn.getbukkit.org/spigot/spigot-1.9-R0.1-SNAPSHOT-latest.jar && mvn install:install-file -Dfile=spigot-1.9.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.9-R0.1-SNAPSHOT -Dpackaging=jar
   - wget -O spigot-1.8.8.jar https://cdn.getbukkit.org/spigot/spigot-1.8.8-R0.1-SNAPSHOT-latest.jar && mvn install:install-file -Dfile=spigot-1.8.8.jar -DgroupId=org.spigotmc -DartifactId=spigot -Dversion=1.8.8-R0.1-SNAPSHOT -Dpackaging=jar
 jdk:
-  - oraclejdk8
+  - oraclejdk11
 dist: trusty
 deploy:
   provider: script
