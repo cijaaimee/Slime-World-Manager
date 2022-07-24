@@ -49,6 +49,10 @@ public class CommandManager implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (!sender.hasPermission("swm.admin")) {
+            return false;
+        }
+
         if (args.length == 0) {
             sender.sendMessage(
                     Logging.COMMAND_PREFIX

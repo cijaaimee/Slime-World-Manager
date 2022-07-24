@@ -44,7 +44,6 @@ bukkit {
     commands {
         register("swm") {
             description = "Slime World Manager command helper"
-            usage = "/swm <cmd>"
         }
     }
 }
