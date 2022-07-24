@@ -38,7 +38,7 @@ bukkit {
             "designed by the Hypixel Team to load and save worlds more efficiently."
     prefix = "SWM"
     apiVersion = "1.8"
-    version = "3.0.1"
+    version = "${project.version}"
     website = "redeforce.net"
     authors = listOf("Pedro Aguiar", "Grinderwolf")
     commands {
