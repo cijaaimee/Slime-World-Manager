@@ -166,12 +166,11 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             } catch (
                     IllegalArgumentException
                             ignored) { // This exception is thrown as null is not a WorldServer
-                // object
-                Logging.warning(
-                        "You've enabled async world generation. Although it's quite faster, this feature is EXPERIMENTAL. Use at your own risk.");
+                Logging.warning("You've enabled async world generation.");
                 asyncWorldGen = true;
-            } catch (UnsupportedOperationException ex) {
+            } catch (UnsupportedOperationException exception) {
                 Logging.error("Async world generation does not support this spigot version.");
+
                 ConfigManager.getMainConfig().setAsyncWorldGenerate(false);
                 ConfigManager.getMainConfig().save();
             }

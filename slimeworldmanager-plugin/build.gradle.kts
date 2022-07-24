@@ -7,6 +7,10 @@
  * Force, Inc (github.com/rede-force)
  */
 
+plugins {
+    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
+}
+
 dependencies {
     implementation(project(":slimeworldmanager-api"))
     implementation(project(":slimeworldmanager-nms-common"))
@@ -20,11 +24,29 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.13-R0.1-SNAPSHOT")
 }
 
-version = "3.0.0"
+version = "3.0.1"
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     archiveClassifier.set("")
     archiveFileName.set("${project.name}-${version}.jar")
+}
+
+bukkit {
+    name = "SlimeWorldManager"
+    main = "com.grinderwolf.swm.plugin.SWMPlugin"
+    description = "Slime World Manager is a resource that implements the Slime Region Format, " +
+            "designed by the Hypixel Team to load and save worlds more efficiently."
+    prefix = "SWM"
+    apiVersion = "1.8"
+    version = "3.0.1"
+    website = "redeforce.net"
+    authors = listOf("Pedro Aguiar", "Grinderwolf")
+    commands {
+        register("swm") {
+            description = "Slime World Manager command helper"
+            usage = "/swm <cmd>"
+        }
+    }
 }
 
 publishing {
