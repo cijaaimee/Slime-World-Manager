@@ -36,10 +36,9 @@ public class FileLoader implements SlimeLoader {
         this.worldDir = worldDir;
 
         if (worldDir.exists() && !worldDir.isDirectory()) {
-            Logging.warning(
-                    "A file named '"
-                            + worldDir.getName()
-                            + "' has been deleted, as this is the name used for the worlds directory.");
+            Logging.warning("A file named '"
+                    + worldDir.getName()
+                    + "' has been deleted, as this is the name used for the worlds directory.");
             worldDir.delete();
         }
 
@@ -53,18 +52,14 @@ public class FileLoader implements SlimeLoader {
             throw new UnknownWorldException(worldName);
         }
 
-        RandomAccessFile file =
-                worldFiles.computeIfAbsent(
-                        worldName,
-                        (world) -> {
-                            try {
-                                return new RandomAccessFile(
-                                        new File(worldDir, worldName + ".slime"), "rw");
-                            } catch (FileNotFoundException ex) {
-                                return null; // This is never going to happen as we've just checked
-                                             // if the world exists
-                            }
-                        });
+        RandomAccessFile file = worldFiles.computeIfAbsent(worldName, (world) -> {
+            try {
+                return new RandomAccessFile(new File(worldDir, worldName + ".slime"), "rw");
+            } catch (FileNotFoundException ex) {
+                return null; // This is never going to happen as we've just checked
+                // if the world exists
+            }
+        });
 
         if (!readOnly) {
             FileChannel channel = file.getChannel();
@@ -102,14 +97,11 @@ public class FileLoader implements SlimeLoader {
             throw new NotDirectoryException(worldDir.getPath());
         }
 
-        return Arrays.stream(worlds)
-                .map((c) -> c.substring(0, c.length() - 6))
-                .collect(Collectors.toList());
+        return Arrays.stream(worlds).map((c) -> c.substring(0, c.length() - 6)).collect(Collectors.toList());
     }
 
     @Override
-    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock)
-            throws IOException {
+    public void saveWorld(String worldName, byte[] serializedWorld, boolean lock) throws IOException {
         RandomAccessFile worldFile = worldFiles.get(worldName);
         boolean tempFile = worldFile == null;
 

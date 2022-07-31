@@ -26,18 +26,14 @@ public class SlimeProperty {
         this(nbtName, type, defaultValue, null);
     }
 
-    SlimeProperty(
-            String nbtName,
-            PropertyType type,
-            Object defaultValue,
-            Function<Object, Boolean> validator) {
+    SlimeProperty(String nbtName, PropertyType type, Object defaultValue, Function<Object, Boolean> validator) {
         this.nbtName = nbtName;
         this.type = type;
 
         if (defaultValue != null) {
             if (!type.getValueClazz().isInstance(defaultValue)) {
-                throw new IllegalArgumentException(
-                        defaultValue + " does not match class " + type.getValueClazz().getName());
+                throw new IllegalArgumentException(defaultValue + " does not match class "
+                        + type.getValueClazz().getName());
             }
 
             if (validator != null) {

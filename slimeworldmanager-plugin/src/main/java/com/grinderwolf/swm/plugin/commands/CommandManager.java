@@ -23,9 +23,12 @@ import java.util.*;
 
 public class CommandManager implements TabExecutor {
 
-    @Getter private static CommandManager instance;
+    @Getter
+    private static CommandManager instance;
     /* A list containing all the worlds that are being performed operations on, so two commands cannot be run at the same time */
-    @Getter private final Set<String> worldsInUse = new HashSet<>();
+    @Getter
+    private final Set<String> worldsInUse = new HashSet<>();
+
     private Map<String, Subcommand> commands = new HashMap<>();
 
     public CommandManager() {
@@ -54,17 +57,16 @@ public class CommandManager implements TabExecutor {
         }
 
         if (args.length == 0) {
-            sender.sendMessage(
-                    Logging.COMMAND_PREFIX
-                            + ChatColor.AQUA
-                            + "Slime World Manager"
-                            + ChatColor.GRAY
-                            + " is a plugin that implements the Slime Region Format, "
-                            + "designed by the Hypixel Dev Team to load and save worlds more efficiently. To check out the help page, type "
-                            + ChatColor.YELLOW
-                            + "/swm help"
-                            + ChatColor.GRAY
-                            + ".");
+            sender.sendMessage(Logging.COMMAND_PREFIX
+                    + ChatColor.AQUA
+                    + "Slime World Manager"
+                    + ChatColor.GRAY
+                    + " is a plugin that implements the Slime Region Format, "
+                    + "designed by the Hypixel Dev Team to load and save worlds more efficiently. To check out the help page, type "
+                    + ChatColor.YELLOW
+                    + "/swm help"
+                    + ChatColor.GRAY
+                    + ".");
 
             return true;
         }
@@ -72,23 +74,19 @@ public class CommandManager implements TabExecutor {
         Subcommand command = commands.get(args[0]);
 
         if (command == null) {
-            sender.sendMessage(
-                    Logging.COMMAND_PREFIX
-                            + ChatColor.RED
-                            + "Unknown command. To check out the help page, type "
-                            + ChatColor.GRAY
-                            + "/swm help"
-                            + ChatColor.RED
-                            + ".");
+            sender.sendMessage(Logging.COMMAND_PREFIX
+                    + ChatColor.RED
+                    + "Unknown command. To check out the help page, type "
+                    + ChatColor.GRAY
+                    + "/swm help"
+                    + ChatColor.RED
+                    + ".");
 
             return true;
         }
 
         if (command.inGameOnly() && !(sender instanceof Player)) {
-            sender.sendMessage(
-                    Logging.COMMAND_PREFIX
-                            + ChatColor.RED
-                            + "This command can only be run in-game.");
+            sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "This command can only be run in-game.");
 
             return true;
         }
@@ -97,9 +95,7 @@ public class CommandManager implements TabExecutor {
                 && !sender.hasPermission(command.getPermission())
                 && !sender.hasPermission("swm.*")) {
             sender.sendMessage(
-                    Logging.COMMAND_PREFIX
-                            + ChatColor.RED
-                            + "You do not have permission to perform this command.");
+                    Logging.COMMAND_PREFIX + ChatColor.RED + "You do not have permission to perform this command.");
 
             return true;
         }
@@ -108,14 +104,13 @@ public class CommandManager implements TabExecutor {
         System.arraycopy(args, 1, subCmdArgs, 0, subCmdArgs.length);
 
         if (!command.onCommand(sender, subCmdArgs)) {
-            sender.sendMessage(
-                    Logging.COMMAND_PREFIX
-                            + ChatColor.RED
-                            + "Command usage: /swm "
-                            + ChatColor.GRAY
-                            + command.getUsage()
-                            + ChatColor.RED
-                            + ".");
+            sender.sendMessage(Logging.COMMAND_PREFIX
+                    + ChatColor.RED
+                    + "Command usage: /swm "
+                    + ChatColor.GRAY
+                    + command.getUsage()
+                    + ChatColor.RED
+                    + ".");
         }
 
         return true;
@@ -126,8 +121,7 @@ public class CommandManager implements TabExecutor {
     }
 
     @Override
-    public List<String> onTabComplete(
-            CommandSender sender, Command cmd, String label, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         List<String> toReturn = null;
         final String typed = args[0].toLowerCase();
 
@@ -138,8 +132,7 @@ public class CommandManager implements TabExecutor {
 
                 if (name.startsWith(typed)
                         && !subcommand.getPermission().equals("")
-                        && (sender.hasPermission(subcommand.getPermission())
-                                || sender.hasPermission("swm.*"))) {
+                        && (sender.hasPermission(subcommand.getPermission()) || sender.hasPermission("swm.*"))) {
 
                     if (name.equalsIgnoreCase("goto") && (sender instanceof ConsoleCommandSender)) {
                         continue;

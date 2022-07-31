@@ -19,8 +19,7 @@ import java.util.Map;
 public class SetActionDeserializer implements JsonDeserializer<DowngradeData.TileSetAction> {
 
     @Override
-    public DowngradeData.TileSetAction deserialize(
-            JsonElement el, Type type, JsonDeserializationContext context)
+    public DowngradeData.TileSetAction deserialize(JsonElement el, Type type, JsonDeserializationContext context)
             throws JsonParseException {
         JsonObject obj = el.getAsJsonObject();
         Map<String, DowngradeData.TileSetEntry> entries = new HashMap<>();

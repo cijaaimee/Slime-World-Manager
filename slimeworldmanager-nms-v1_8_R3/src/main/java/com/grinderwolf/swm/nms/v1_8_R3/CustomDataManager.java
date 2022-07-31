@@ -34,8 +34,7 @@ public class CustomDataManager extends WorldNBTStorage {
         GameRules emptyRules = new GameRules();
         String[] rules = emptyRules.getGameRules();
 
-        defaultValues =
-                Arrays.stream(rules).collect(Collectors.toMap((rule) -> rule, emptyRules::get));
+        defaultValues = Arrays.stream(rules).collect(Collectors.toMap((rule) -> rule, emptyRules::get));
     }
 
     @Getter(value = AccessLevel.NONE)
@@ -90,10 +89,9 @@ public class CustomDataManager extends WorldNBTStorage {
     @Override
     public void saveWorldData(WorldData worldData, NBTTagCompound nbtTagCompound) {
         CompoundTag gameRules =
-                (CompoundTag)
-                        Converter.convertTag("gamerules", worldData.x().a())
-                                .getAsCompoundTag()
-                                .get();
+                (CompoundTag) Converter.convertTag("gamerules", worldData.x().a())
+                        .getAsCompoundTag()
+                        .get();
         CompoundTag extraData = this.world.getExtraData();
 
         extraData.getValue().remove("gamerules");

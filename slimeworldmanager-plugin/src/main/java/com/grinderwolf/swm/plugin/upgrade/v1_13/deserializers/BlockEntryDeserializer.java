@@ -25,8 +25,7 @@ public class BlockEntryDeserializer implements JsonDeserializer<DowngradeData.Bl
     private static final Pattern PATTERN = Pattern.compile("([!A-Za-z1-9]+)=([A-Za-z1-9]+)");
 
     @Override
-    public DowngradeData.BlockEntry deserialize(
-            JsonElement el, Type type, JsonDeserializationContext context)
+    public DowngradeData.BlockEntry deserialize(JsonElement el, Type type, JsonDeserializationContext context)
             throws JsonParseException {
         JsonObject obj = el.getAsJsonObject();
         List<DowngradeData.BlockProperty> properties;
@@ -85,8 +84,7 @@ public class BlockEntryDeserializer implements JsonDeserializer<DowngradeData.Bl
         int data = obj.has("data") ? obj.getAsJsonPrimitive("data").getAsInt() : 0;
 
         DowngradeData.TileEntityData tileEntityData =
-                context.deserialize(
-                        obj.getAsJsonObject("tile_entity"), DowngradeData.TileEntityData.class);
+                context.deserialize(obj.getAsJsonObject("tile_entity"), DowngradeData.TileEntityData.class);
         return new DowngradeData.BlockEntry(id, data, properties, tileEntityData);
     }
 }

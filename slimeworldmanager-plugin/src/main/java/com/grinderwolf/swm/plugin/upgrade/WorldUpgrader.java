@@ -38,10 +38,7 @@ public class WorldUpgrader {
             Upgrade upgrade = upgrades.get(ver);
 
             if (upgrade == null) {
-                Logging.warning(
-                        "Missing world upgrader for version "
-                                + ver
-                                + ". World will not be upgraded.");
+                Logging.warning("Missing world upgrader for version " + ver + ". World will not be upgraded.");
                 continue;
             }
 
@@ -58,10 +55,7 @@ public class WorldUpgrader {
             Upgrade upgrade = upgrades.get(ver);
 
             if (upgrade == null) {
-                Logging.warning(
-                        "Missing world upgrader for version "
-                                + ver
-                                + ". World will not be downgraded.");
+                Logging.warning("Missing world upgrader for version " + ver + ". World will not be downgraded.");
                 continue;
             }
 

@@ -20,7 +20,9 @@ import lombok.Getter;
 public class NibbleArray {
 
     private final int size;
-    @Getter private final byte[] backing;
+
+    @Getter
+    private final byte[] backing;
 
     public NibbleArray(int size) {
         this(new byte[size / 2]);

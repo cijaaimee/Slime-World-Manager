@@ -39,8 +39,7 @@ public class SWMImporter {
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.err.println(
-                    "Usage: java -jar slimeworldmanager-importer-1.0.0.jar <path-to-world-folder>");
+            System.err.println("Usage: java -jar slimeworldmanager-importer-1.0.0.jar <path-to-world-folder>");
 
             return;
         }
@@ -73,8 +72,7 @@ public class SWMImporter {
                 "The Slime Format is meant to be used on tiny maps, not big survival worlds. It is recommended "
                         + "to trim your world by using the Prune MCEdit tool to ensure you don't save more chunks than you want to.");
         System.out.println();
-        System.out.println(
-                "NOTE: This utility will automatically ignore every chunk that doesn't contain any blocks.");
+        System.out.println("NOTE: This utility will automatically ignore every chunk that doesn't contain any blocks.");
         System.out.print("Do you want to continue? [Y/N]: ");
 
         Scanner scanner = new Scanner(System.in);
@@ -129,8 +127,7 @@ public class SWMImporter {
                 }
             }
 
-            System.out.println(
-                    "World " + worldDir.getName() + " contains " + chunks.size() + " chunks.");
+            System.out.println("World " + worldDir.getName() + " contains " + chunks.size() + " chunks.");
 
             // World maps
             File dataDir = new File(worldDir, "data");
@@ -143,9 +140,8 @@ public class SWMImporter {
                 }
 
                 try {
-                    for (File mapFile :
-                            dataDir.listFiles(
-                                    (dir, name) -> MAP_FILE_PATTERN.matcher(name).matches())) {
+                    for (File mapFile : dataDir.listFiles(
+                            (dir, name) -> MAP_FILE_PATTERN.matcher(name).matches())) {
                         maps.add(loadMap(mapFile));
                     }
                 } catch (IOException ex) {
@@ -158,14 +154,12 @@ public class SWMImporter {
                 long start = System.currentTimeMillis();
                 byte[] slimeFormattedWorld = generateSlimeWorld(chunks, worldVersion, data, maps);
 
-                System.out.println(
-                        Chalk.on(
-                                        "World "
-                                                + worldDir.getName()
-                                                + " successfully serialized to the Slime Format in "
-                                                + (System.currentTimeMillis() - start)
-                                                + "ms!")
-                                .green());
+                System.out.println(Chalk.on("World "
+                                + worldDir.getName()
+                                + " successfully serialized to the Slime Format in "
+                                + (System.currentTimeMillis() - start)
+                                + "ms!")
+                        .green());
 
                 File slimeFile = new File(worldDir.getName() + ".slime");
 
@@ -203,17 +197,10 @@ public class SWMImporter {
                 Map<String, String> gameRules = new HashMap<>();
                 Optional<CompoundTag> rulesList = dataTag.get().getAsCompoundTag("GameRules");
 
-                rulesList.ifPresent(
-                        compoundTag ->
-                                compoundTag
-                                        .getValue()
-                                        .forEach(
-                                                (ruleName, ruleTag) ->
-                                                        gameRules.put(
-                                                                ruleName,
-                                                                ruleTag.getAsStringTag()
-                                                                        .get()
-                                                                        .getValue())));
+                rulesList.ifPresent(compoundTag -> compoundTag
+                        .getValue()
+                        .forEach((ruleName, ruleTag) -> gameRules.put(
+                                ruleName, ruleTag.getAsStringTag().get().getValue())));
 
                 return new LevelData(dataVersion, gameRules);
             }
@@ -227,12 +214,13 @@ public class SWMImporter {
         int mapId = Integer.parseInt(fileName.substring(4, fileName.length() - 4));
 
         NBTInputStream nbtStream =
-                new NBTInputStream(
-                        new FileInputStream(mapFile),
-                        NBTInputStream.GZIP_COMPRESSION,
-                        ByteOrder.BIG_ENDIAN);
-        CompoundTag tag =
-                nbtStream.readTag().getAsCompoundTag().get().getAsCompoundTag("data").get();
+                new NBTInputStream(new FileInputStream(mapFile), NBTInputStream.GZIP_COMPRESSION, ByteOrder.BIG_ENDIAN);
+        CompoundTag tag = nbtStream
+                .readTag()
+                .getAsCompoundTag()
+                .get()
+                .getAsCompoundTag("data")
+                .get();
         tag.getValue().put("id", new IntTag("id", mapId));
 
         return tag;
@@ -241,8 +229,7 @@ public class SWMImporter {
     private static List<SlimeChunk> loadChunks(File file, byte worldVersion) throws IOException {
         System.out.println("Loading chunks from region file '" + file.getName() + "':");
         byte[] regionByteArray = Files.readAllBytes(file.toPath());
-        DataInputStream inputStream =
-                new DataInputStream(new ByteArrayInputStream(regionByteArray));
+        DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(regionByteArray));
 
         List<ChunkEntry> chunks = new ArrayList<>(1024);
 
@@ -252,60 +239,43 @@ public class SWMImporter {
             int chunkSize = entry & 15;
 
             if (entry != 0) {
-                ChunkEntry chunkEntry =
-                        new ChunkEntry(chunkOffset * SECTOR_SIZE, chunkSize * SECTOR_SIZE);
+                ChunkEntry chunkEntry = new ChunkEntry(chunkOffset * SECTOR_SIZE, chunkSize * SECTOR_SIZE);
                 chunks.add(chunkEntry);
             }
         }
 
-        List<SlimeChunk> loadedChunks =
-                chunks.stream()
-                        .map(
-                                (entry) -> {
-                                    try {
-                                        DataInputStream headerStream =
-                                                new DataInputStream(
-                                                        new ByteArrayInputStream(
-                                                                regionByteArray,
-                                                                entry.getOffset(),
-                                                                entry.getPaddedSize()));
+        List<SlimeChunk> loadedChunks = chunks.stream()
+                .map((entry) -> {
+                    try {
+                        DataInputStream headerStream = new DataInputStream(
+                                new ByteArrayInputStream(regionByteArray, entry.getOffset(), entry.getPaddedSize()));
 
-                                        int chunkSize = headerStream.readInt() - 1;
-                                        int compressionScheme = headerStream.readByte();
+                        int chunkSize = headerStream.readInt() - 1;
+                        int compressionScheme = headerStream.readByte();
 
-                                        DataInputStream chunkStream =
-                                                new DataInputStream(
-                                                        new ByteArrayInputStream(
-                                                                regionByteArray,
-                                                                entry.getOffset() + 5,
-                                                                chunkSize));
-                                        InputStream decompressorStream =
-                                                compressionScheme == 1
-                                                        ? new GZIPInputStream(chunkStream)
-                                                        : new InflaterInputStream(chunkStream);
-                                        NBTInputStream nbtStream =
-                                                new NBTInputStream(
-                                                        decompressorStream,
-                                                        NBTInputStream.NO_COMPRESSION,
-                                                        ByteOrder.BIG_ENDIAN);
-                                        CompoundTag globalCompound =
-                                                (CompoundTag) nbtStream.readTag();
-                                        CompoundMap globalMap = globalCompound.getValue();
+                        DataInputStream chunkStream = new DataInputStream(
+                                new ByteArrayInputStream(regionByteArray, entry.getOffset() + 5, chunkSize));
+                        InputStream decompressorStream = compressionScheme == 1
+                                ? new GZIPInputStream(chunkStream)
+                                : new InflaterInputStream(chunkStream);
+                        NBTInputStream nbtStream = new NBTInputStream(
+                                decompressorStream, NBTInputStream.NO_COMPRESSION, ByteOrder.BIG_ENDIAN);
+                        CompoundTag globalCompound = (CompoundTag) nbtStream.readTag();
+                        CompoundMap globalMap = globalCompound.getValue();
 
-                                        if (!globalMap.containsKey("Level")) {
-                                            throw new RuntimeException("Missing Level tag?");
-                                        }
+                        if (!globalMap.containsKey("Level")) {
+                            throw new RuntimeException("Missing Level tag?");
+                        }
 
-                                        CompoundTag levelCompound =
-                                                (CompoundTag) globalMap.get("Level");
+                        CompoundTag levelCompound = (CompoundTag) globalMap.get("Level");
 
-                                        return readChunk(levelCompound, worldVersion);
-                                    } catch (IOException ex) {
-                                        throw new RuntimeException(ex);
-                                    }
-                                })
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                        return readChunk(levelCompound, worldVersion);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         System.out.println(loadedChunks.size() + " chunks loaded.");
 
         return loadedChunks;
@@ -348,24 +318,12 @@ public class SWMImporter {
             heightMapsCompound.getValue().put("heightMap", new IntArrayTag("heightMap", heightMap));
         }
 
-        List<CompoundTag> tileEntities =
-                ((ListTag<CompoundTag>)
-                                compound.getAsListTag("TileEntities")
-                                        .orElse(
-                                                new ListTag<>(
-                                                        "TileEntities",
-                                                        TagType.TAG_COMPOUND,
-                                                        new ArrayList<>())))
-                        .getValue();
-        List<CompoundTag> entities =
-                ((ListTag<CompoundTag>)
-                                compound.getAsListTag("Entities")
-                                        .orElse(
-                                                new ListTag<>(
-                                                        "Entities",
-                                                        TagType.TAG_COMPOUND,
-                                                        new ArrayList<>())))
-                        .getValue();
+        List<CompoundTag> tileEntities = ((ListTag<CompoundTag>) compound.getAsListTag("TileEntities")
+                        .orElse(new ListTag<>("TileEntities", TagType.TAG_COMPOUND, new ArrayList<>())))
+                .getValue();
+        List<CompoundTag> entities = ((ListTag<CompoundTag>) compound.getAsListTag("Entities")
+                        .orElse(new ListTag<>("Entities", TagType.TAG_COMPOUND, new ArrayList<>())))
+                .getValue();
         ListTag<CompoundTag> sectionsTag =
                 (ListTag<CompoundTag>) compound.getAsListTag("Sections").get();
         SlimeChunkSection[] sectionArray = new SlimeChunkSection[16];
@@ -395,46 +353,30 @@ public class SWMImporter {
             } else {
                 dataArray = null;
 
-                paletteTag = (ListTag<CompoundTag>) sectionTag.getAsListTag("Palette").orElse(null);
+                paletteTag = (ListTag<CompoundTag>)
+                        sectionTag.getAsListTag("Palette").orElse(null);
                 blockStatesArray = sectionTag.getLongArrayValue("BlockStates").orElse(null);
 
-                if (paletteTag == null
-                        || blockStatesArray == null
-                        || isEmpty(blockStatesArray)) { // Skip it
+                if (paletteTag == null || blockStatesArray == null || isEmpty(blockStatesArray)) { // Skip it
                     continue;
                 }
             }
 
-            NibbleArray blockLightArray =
-                    sectionTag.getValue().containsKey("BlockLight")
-                            ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get())
-                            : null;
-            NibbleArray skyLightArray =
-                    sectionTag.getValue().containsKey("SkyLight")
-                            ? new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get())
-                            : null;
+            NibbleArray blockLightArray = sectionTag.getValue().containsKey("BlockLight")
+                    ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get())
+                    : null;
+            NibbleArray skyLightArray = sectionTag.getValue().containsKey("SkyLight")
+                    ? new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get())
+                    : null;
 
-            sectionArray[index] =
-                    new CraftSlimeChunkSection(
-                            blocks,
-                            dataArray,
-                            paletteTag,
-                            blockStatesArray,
-                            blockLightArray,
-                            skyLightArray);
+            sectionArray[index] = new CraftSlimeChunkSection(
+                    blocks, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
         }
 
         for (SlimeChunkSection section : sectionArray) {
             if (section != null) { // Chunk isn't empty
                 return new CraftSlimeChunk(
-                        null,
-                        chunkX,
-                        chunkZ,
-                        sectionArray,
-                        heightMapsCompound,
-                        biomes,
-                        tileEntities,
-                        entities);
+                        null, chunkX, chunkZ, sectionArray, heightMapsCompound, biomes, tileEntities, entities);
             }
         }
 
@@ -472,14 +414,10 @@ public class SWMImporter {
     }
 
     private static byte[] generateSlimeWorld(
-            List<SlimeChunk> chunks,
-            byte worldVersion,
-            LevelData levelData,
-            List<CompoundTag> worldMaps) {
+            List<SlimeChunk> chunks, byte worldVersion, LevelData levelData, List<CompoundTag> worldMaps) {
         List<SlimeChunk> sortedChunks = new ArrayList<>(chunks);
         sortedChunks.sort(
-                Comparator.comparingLong(
-                        chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
+                Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
 
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         DataOutputStream outStream = new DataOutputStream(outByteStream);
@@ -529,15 +467,12 @@ public class SWMImporter {
             outStream.write(compressedChunkData);
 
             // Tile Entities
-            List<CompoundTag> tileEntitiesList =
-                    sortedChunks.stream()
-                            .flatMap(chunk -> chunk.getTileEntities().stream())
-                            .collect(Collectors.toList());
-            ListTag<CompoundTag> tileEntitiesNbtList =
-                    new ListTag<>("tiles", TagType.TAG_COMPOUND, tileEntitiesList);
+            List<CompoundTag> tileEntitiesList = sortedChunks.stream()
+                    .flatMap(chunk -> chunk.getTileEntities().stream())
+                    .collect(Collectors.toList());
+            ListTag<CompoundTag> tileEntitiesNbtList = new ListTag<>("tiles", TagType.TAG_COMPOUND, tileEntitiesList);
             CompoundTag tileEntitiesCompound =
-                    new CompoundTag(
-                            "", new CompoundMap(Collections.singletonList(tileEntitiesNbtList)));
+                    new CompoundTag("", new CompoundMap(Collections.singletonList(tileEntitiesNbtList)));
             byte[] tileEntitiesData = serializeCompoundTag(tileEntitiesCompound);
             byte[] compressedTileEntitiesData = Zstd.compress(tileEntitiesData);
 
@@ -546,19 +481,16 @@ public class SWMImporter {
             outStream.write(compressedTileEntitiesData);
 
             // Entities
-            List<CompoundTag> entitiesList =
-                    sortedChunks.stream()
-                            .flatMap(chunk -> chunk.getEntities().stream())
-                            .collect(Collectors.toList());
+            List<CompoundTag> entitiesList = sortedChunks.stream()
+                    .flatMap(chunk -> chunk.getEntities().stream())
+                    .collect(Collectors.toList());
 
             outStream.writeBoolean(!entitiesList.isEmpty());
 
             if (!entitiesList.isEmpty()) {
-                ListTag<CompoundTag> entitiesNbtList =
-                        new ListTag<>("entities", TagType.TAG_COMPOUND, entitiesList);
+                ListTag<CompoundTag> entitiesNbtList = new ListTag<>("entities", TagType.TAG_COMPOUND, entitiesList);
                 CompoundTag entitiesCompound =
-                        new CompoundTag(
-                                "", new CompoundMap(Collections.singletonList(entitiesNbtList)));
+                        new CompoundTag("", new CompoundMap(Collections.singletonList(entitiesNbtList)));
                 byte[] entitiesData = serializeCompoundTag(entitiesCompound);
                 byte[] compressedEntitiesData = Zstd.compress(entitiesData);
 
@@ -572,9 +504,7 @@ public class SWMImporter {
 
             if (!levelData.getGameRules().isEmpty()) {
                 CompoundMap gamerules = new CompoundMap();
-                levelData
-                        .getGameRules()
-                        .forEach((rule, value) -> gamerules.put(rule, new StringTag(rule, value)));
+                levelData.getGameRules().forEach((rule, value) -> gamerules.put(rule, new StringTag(rule, value)));
 
                 extraMap.put("gamerules", new CompoundTag("gamerules", gamerules));
             }
@@ -605,8 +535,7 @@ public class SWMImporter {
         return outByteStream.toByteArray();
     }
 
-    private static void writeBitSetAsBytes(DataOutputStream outStream, BitSet set, int fixedSize)
-            throws IOException {
+    private static void writeBitSetAsBytes(DataOutputStream outStream, BitSet set, int fixedSize) throws IOException {
         byte[] array = set.toByteArray();
         outStream.write(array);
 
@@ -617,8 +546,7 @@ public class SWMImporter {
         }
     }
 
-    private static byte[] serializeChunks(List<SlimeChunk> chunks, byte worldVersion)
-            throws IOException {
+    private static byte[] serializeChunks(List<SlimeChunk> chunks, byte worldVersion) throws IOException {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream(16384);
         DataOutputStream outStream = new DataOutputStream(outByteStream);
 
@@ -629,7 +557,8 @@ public class SWMImporter {
                 outStream.writeInt(heightMaps.length);
                 outStream.write(heightMaps);
             } else {
-                int[] heightMap = chunk.getHeightMaps().getIntArrayValue("heightMap").get();
+                int[] heightMap =
+                        chunk.getHeightMaps().getIntArrayValue("heightMap").get();
 
                 for (int i = 0; i < 256; i++) {
                     outStream.writeInt(heightMap[i]);
@@ -711,8 +640,7 @@ public class SWMImporter {
     private static byte[] serializeCompoundTag(CompoundTag tag) throws IOException {
         ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
         NBTOutputStream outStream =
-                new NBTOutputStream(
-                        outByteStream, NBTInputStream.NO_COMPRESSION, ByteOrder.BIG_ENDIAN);
+                new NBTOutputStream(outByteStream, NBTInputStream.NO_COMPRESSION, ByteOrder.BIG_ENDIAN);
         outStream.writeTag(tag);
 
         return outByteStream.toByteArray();

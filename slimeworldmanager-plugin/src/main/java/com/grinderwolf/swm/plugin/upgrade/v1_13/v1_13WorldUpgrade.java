@@ -56,19 +56,10 @@ public class v1_13WorldUpgrade implements Upgrade {
             chunkTag.getValue().put("xPos", new IntTag("xPos", chunk.getX()));
             chunkTag.getValue().put("zPos", new IntTag("zPos", chunk.getZ()));
             chunkTag.getValue().put("Sections", serializeSections(chunk.getSections()));
+            chunkTag.getValue().put("Entities", new ListTag<>("Entities", TagType.TAG_COMPOUND, chunk.getEntities()));
             chunkTag.getValue()
-                    .put(
-                            "Entities",
-                            new ListTag<>("Entities", TagType.TAG_COMPOUND, chunk.getEntities()));
-            chunkTag.getValue()
-                    .put(
-                            "TileEntities",
-                            new ListTag<>(
-                                    "TileEntities", TagType.TAG_COMPOUND, chunk.getTileEntities()));
-            chunkTag.getValue()
-                    .put(
-                            "TileTicks",
-                            new ListTag<>("TileTicks", TagType.TAG_COMPOUND, new ArrayList<>()));
+                    .put("TileEntities", new ListTag<>("TileEntities", TagType.TAG_COMPOUND, chunk.getTileEntities()));
+            chunkTag.getValue().put("TileTicks", new ListTag<>("TileTicks", TagType.TAG_COMPOUND, new ArrayList<>()));
             chunkTag.getValue().put("TerrainPopulated", new ByteTag("TerrainPopulated", (byte) 1));
             chunkTag.getValue().put("LightPopulated", new ByteTag("LightPopulated", (byte) 1));
 
@@ -83,20 +74,19 @@ public class v1_13WorldUpgrade implements Upgrade {
                     (ListTag<CompoundTag>) chunkTag.getAsListTag("Sections").get();
 
             for (CompoundTag sectionTag : serializedSections.getValue()) {
-                ListTag<CompoundTag> palette =
-                        (ListTag<CompoundTag>) sectionTag.getAsListTag("Palette").get();
+                ListTag<CompoundTag> palette = (ListTag<CompoundTag>)
+                        sectionTag.getAsListTag("Palette").get();
                 long[] blockStates = sectionTag.getLongArrayValue("BlockStates").get();
 
-                NibbleArray blockLight =
-                        new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get());
+                NibbleArray blockLight = new NibbleArray(
+                        sectionTag.getByteArrayValue("BlockLight").get());
                 NibbleArray skyLight =
                         new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get());
 
                 int index = sectionTag.getIntValue("Y").get();
 
                 SlimeChunkSection section =
-                        new CraftSlimeChunkSection(
-                                null, null, palette, blockStates, blockLight, skyLight);
+                        new CraftSlimeChunkSection(null, null, palette, blockStates, blockLight, skyLight);
                 newSections[index] = section;
             }
 
@@ -111,17 +101,16 @@ public class v1_13WorldUpgrade implements Upgrade {
             CompoundTag upgradeData = chunkTag.getAsCompoundTag("UpgradeData").orElse(null);
 
             // Chunk update
-            SlimeChunk newChunk =
-                    new CraftSlimeChunk(
-                            world.getName(),
-                            chunk.getX(),
-                            chunk.getZ(),
-                            newSections,
-                            new CompoundTag("", new CompoundMap()),
-                            newBiomes,
-                            chunk.getTileEntities(),
-                            chunk.getEntities(),
-                            upgradeData);
+            SlimeChunk newChunk = new CraftSlimeChunk(
+                    world.getName(),
+                    chunk.getX(),
+                    chunk.getZ(),
+                    newSections,
+                    new CompoundTag("", new CompoundMap()),
+                    newBiomes,
+                    chunk.getTileEntities(),
+                    chunk.getEntities(),
+                    upgradeData);
 
             world.updateChunk(newChunk);
 
@@ -137,8 +126,7 @@ public class v1_13WorldUpgrade implements Upgrade {
     }
 
     private ListTag<CompoundTag> serializeSections(SlimeChunkSection[] sections) {
-        ListTag<CompoundTag> sectionList =
-                new ListTag<>("Sections", TagType.TAG_COMPOUND, new ArrayList<>());
+        ListTag<CompoundTag> sectionList = new ListTag<>("Sections", TagType.TAG_COMPOUND, new ArrayList<>());
 
         for (int i = 0; i < sections.length; i++) {
             SlimeChunkSection section = sections[i];
@@ -147,9 +135,7 @@ public class v1_13WorldUpgrade implements Upgrade {
                 CompoundTag sectionTag = new CompoundTag(i + "", new CompoundMap());
 
                 sectionTag.getValue().put("Y", new IntTag("Y", i));
-                sectionTag
-                        .getValue()
-                        .put("Blocks", new ByteArrayTag("Blocks", section.getBlocks()));
+                sectionTag.getValue().put("Blocks", new ByteArrayTag("Blocks", section.getBlocks()));
                 sectionTag
                         .getValue()
                         .put("Data", new ByteArrayTag("Data", section.getData().getBacking()));
@@ -183,9 +169,7 @@ public class v1_13WorldUpgrade implements Upgrade {
 
         Logging.warning("Downgrading world to the 1.12 format. This may take a while.");
         List<SlimeChunk> chunks = new ArrayList<>(world.getChunks().values());
-        chunks.sort(
-                Comparator.comparingLong(
-                        chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
+        chunks.sort(Comparator.comparingLong(chunk -> (long) chunk.getZ() * Integer.MAX_VALUE + (long) chunk.getX()));
 
         long lastMessage = -1;
 
@@ -218,30 +202,22 @@ public class v1_13WorldUpgrade implements Upgrade {
                                 int val;
 
                                 if (startIndex == endIndex) {
-                                    val =
-                                            (int)
-                                                    (blockData[startIndex] >>> startBitSubIndex
-                                                            & maxEntryValue);
+                                    val = (int) (blockData[startIndex] >>> startBitSubIndex & maxEntryValue);
                                 } else {
                                     int endBitSubIndex = 64 - startBitSubIndex;
-                                    val =
-                                            (int)
-                                                    ((blockData[startIndex] >>> startBitSubIndex
-                                                                    | blockData[endIndex]
-                                                                            << endBitSubIndex)
-                                                            & maxEntryValue);
+                                    val = (int) ((blockData[startIndex] >>> startBitSubIndex
+                                                    | blockData[endIndex] << endBitSubIndex)
+                                            & maxEntryValue);
                                 }
 
                                 int id = 0;
                                 byte data = 0;
 
                                 CompoundTag blockTag = palette.get(val);
-                                String name =
-                                        blockTag.getStringValue("Name")
-                                                .get()
-                                                .substring(
-                                                        10); // Remove the namespace (minecraft:
-                                                             // prefix)
+                                String name = blockTag.getStringValue("Name")
+                                        .get()
+                                        .substring(10); // Remove the namespace (minecraft:
+                                // prefix)
                                 DowngradeData.BlockEntry blockEntry =
                                         downgradeData.getBlocks().get(name);
 
@@ -250,42 +226,31 @@ public class v1_13WorldUpgrade implements Upgrade {
                                     data = (byte) blockEntry.getData();
 
                                     // Block properties
-                                    Optional<CompoundTag> propertiesTag =
-                                            blockTag.getAsCompoundTag("Properties");
+                                    Optional<CompoundTag> propertiesTag = blockTag.getAsCompoundTag("Properties");
                                     Map<String, String> properties = null;
 
                                     if (propertiesTag.isPresent()) {
-                                        properties =
-                                                propertiesTag.get().getValue().values().stream()
-                                                        .map(Tag::getAsStringTag)
-                                                        .filter(Optional::isPresent)
-                                                        .map(Optional::get)
-                                                        .collect(
-                                                                Collectors.toMap(
-                                                                        Tag::getName,
-                                                                        StringTag::getValue));
+                                        properties = propertiesTag.get().getValue().values().stream()
+                                                .map(Tag::getAsStringTag)
+                                                .filter(Optional::isPresent)
+                                                .map(Optional::get)
+                                                .collect(Collectors.toMap(Tag::getName, StringTag::getValue));
 
                                         if (blockEntry.getProperties() != null) {
                                             mainLoop:
-                                            for (DowngradeData.BlockProperty property :
-                                                    blockEntry.getProperties()) {
+                                            for (DowngradeData.BlockProperty property : blockEntry.getProperties()) {
                                                 for (Map.Entry<String, String> conditionEntry :
                                                         property.getConditions().entrySet()) {
                                                     String propertyName = conditionEntry.getKey();
-                                                    String propertyValue =
-                                                            conditionEntry.getValue();
+                                                    String propertyValue = conditionEntry.getValue();
                                                     boolean inverted = propertyName.startsWith("!");
 
                                                     if ((inverted
                                                                     && propertyValue.equals(
-                                                                            properties.get(
-                                                                                    propertyName
-                                                                                            .substring(
-                                                                                                    1))))
+                                                                            properties.get(propertyName.substring(1))))
                                                             || (!inverted
                                                                     && !propertyValue.equals(
-                                                                            properties.get(
-                                                                                    propertyName)))) {
+                                                                            properties.get(propertyName)))) {
                                                         continue mainLoop;
                                                     }
                                                 }
@@ -297,8 +262,7 @@ public class v1_13WorldUpgrade implements Upgrade {
                                                 }
 
                                                 if (property.getData() != -1) {
-                                                    if (property.getOperation()
-                                                            == DowngradeData.Operation.OR) {
+                                                    if (property.getOperation() == DowngradeData.Operation.OR) {
                                                         data |= property.getData();
                                                     } else {
                                                         data = (byte) property.getData();
@@ -309,8 +273,7 @@ public class v1_13WorldUpgrade implements Upgrade {
                                     }
 
                                     // Tile Entity data
-                                    DowngradeData.TileEntityData tileEntityData =
-                                            blockEntry.getTileEntityData();
+                                    DowngradeData.TileEntityData tileEntityData = blockEntry.getTileEntityData();
 
                                     if (tileEntityData != null) {
                                         CompoundTag tileEntityTag = null;
@@ -325,9 +288,7 @@ public class v1_13WorldUpgrade implements Upgrade {
                                             int tileY = tileTag.getIntValue("y").get();
                                             int tileZ = tileTag.getIntValue("z").get();
 
-                                            if (tileX == blockX
-                                                    && tileY == blockY
-                                                    && tileZ == blockZ) {
+                                            if (tileX == blockX && tileY == blockY && tileZ == blockZ) {
                                                 tileEntityTag = tileTag;
 
                                                 break;
@@ -335,8 +296,7 @@ public class v1_13WorldUpgrade implements Upgrade {
                                         }
 
                                         // Create Tile Entity Action
-                                        DowngradeData.TileCreateAction createAction =
-                                                tileEntityData.getCreateAction();
+                                        DowngradeData.TileCreateAction createAction = tileEntityData.getCreateAction();
 
                                         if (tileEntityTag == null) {
                                             if (createAction == null) {
@@ -348,16 +308,11 @@ public class v1_13WorldUpgrade implements Upgrade {
 
                                             Objects.requireNonNull(
                                                     createAction.getName(),
-                                                    "Tile entity type cannot be null ("
-                                                            + name
-                                                            + ")");
+                                                    "Tile entity type cannot be null (" + name + ")");
 
                                             CompoundMap tileMap = new CompoundMap();
                                             tileMap.put(
-                                                    "id",
-                                                    new StringTag(
-                                                            "id",
-                                                            "minecraft:" + createAction.getName()));
+                                                    "id", new StringTag("id", "minecraft:" + createAction.getName()));
                                             tileMap.put("x", new IntTag("x", blockX));
                                             tileMap.put("y", new IntTag("y", blockY));
                                             tileMap.put("z", new IntTag("z", blockZ));
@@ -365,15 +320,13 @@ public class v1_13WorldUpgrade implements Upgrade {
                                         }
 
                                         // Set Values Action
-                                        DowngradeData.TileSetAction setAction =
-                                                tileEntityData.getSetAction();
+                                        DowngradeData.TileSetAction setAction = tileEntityData.getSetAction();
 
                                         if (setAction != null) {
-                                            Map<String, DowngradeData.TileSetEntry> entries =
-                                                    setAction.getEntries();
+                                            Map<String, DowngradeData.TileSetEntry> entries = setAction.getEntries();
 
-                                            for (Map.Entry<String, DowngradeData.TileSetEntry>
-                                                    entry : entries.entrySet()) {
+                                            for (Map.Entry<String, DowngradeData.TileSetEntry> entry :
+                                                    entries.entrySet()) {
                                                 String key = entry.getKey();
                                                 DowngradeData.TileSetEntry value = entry.getValue();
                                                 String nbtValue = value.getValue();
@@ -388,11 +341,10 @@ public class v1_13WorldUpgrade implements Upgrade {
                                                     nbtValue = properties.get(propName);
 
                                                     if (nbtValue == null) {
-                                                        throw new IllegalStateException(
-                                                                "Block "
-                                                                        + name
-                                                                        + " doesn't have a property called "
-                                                                        + propName);
+                                                        throw new IllegalStateException("Block "
+                                                                + name
+                                                                + " doesn't have a property called "
+                                                                + propName);
                                                     }
                                                 }
 
@@ -400,40 +352,22 @@ public class v1_13WorldUpgrade implements Upgrade {
 
                                                 switch (value.getType().toLowerCase()) {
                                                     case "byte":
-                                                        nbtTag =
-                                                                new ByteTag(
-                                                                        key,
-                                                                        Byte.valueOf(nbtValue));
+                                                        nbtTag = new ByteTag(key, Byte.valueOf(nbtValue));
                                                         break;
                                                     case "short":
-                                                        nbtTag =
-                                                                new ShortTag(
-                                                                        key,
-                                                                        Short.valueOf(nbtValue));
+                                                        nbtTag = new ShortTag(key, Short.valueOf(nbtValue));
                                                         break;
                                                     case "int":
-                                                        nbtTag =
-                                                                new IntTag(
-                                                                        key,
-                                                                        Integer.valueOf(nbtValue));
+                                                        nbtTag = new IntTag(key, Integer.valueOf(nbtValue));
                                                         break;
                                                     case "long":
-                                                        nbtTag =
-                                                                new LongTag(
-                                                                        key,
-                                                                        Long.valueOf(nbtValue));
+                                                        nbtTag = new LongTag(key, Long.valueOf(nbtValue));
                                                         break;
                                                     case "float":
-                                                        nbtTag =
-                                                                new FloatTag(
-                                                                        key,
-                                                                        Float.valueOf(nbtValue));
+                                                        nbtTag = new FloatTag(key, Float.valueOf(nbtValue));
                                                         break;
                                                     case "double":
-                                                        nbtTag =
-                                                                new DoubleTag(
-                                                                        key,
-                                                                        Double.valueOf(nbtValue));
+                                                        nbtTag = new DoubleTag(key, Double.valueOf(nbtValue));
                                                         break;
                                                     default:
                                                         nbtTag = new StringTag(key, nbtValue);
@@ -452,29 +386,22 @@ public class v1_13WorldUpgrade implements Upgrade {
                         }
                     }
 
-                    newSections[sectionIndex] =
-                            new CraftSlimeChunkSection(
-                                    blockArray,
-                                    dataArray,
-                                    null,
-                                    null,
-                                    section.getBlockLight(),
-                                    section.getSkyLight());
+                    newSections[sectionIndex] = new CraftSlimeChunkSection(
+                            blockArray, dataArray, null, null, section.getBlockLight(), section.getSkyLight());
                 }
 
                 CompoundMap heightMap = new CompoundMap();
                 heightMap.put("heightMap", new IntArrayTag("heightMap", new int[256]));
 
-                SlimeChunk newChunk =
-                        new CraftSlimeChunk(
-                                world.getName(),
-                                chunk.getX(),
-                                chunk.getZ(),
-                                newSections,
-                                new CompoundTag("", heightMap),
-                                new int[64],
-                                chunk.getTileEntities(),
-                                chunk.getEntities());
+                SlimeChunk newChunk = new CraftSlimeChunk(
+                        world.getName(),
+                        chunk.getX(),
+                        chunk.getZ(),
+                        newSections,
+                        new CompoundTag("", heightMap),
+                        new int[64],
+                        chunk.getTileEntities(),
+                        chunk.getEntities());
                 world.updateChunk(newChunk);
             }
 
@@ -498,11 +425,8 @@ public class v1_13WorldUpgrade implements Upgrade {
         builder.registerTypeAdapter(DowngradeData.BlockEntry.class, new BlockEntryDeserializer());
         builder.registerTypeAdapter(DowngradeData.TileSetAction.class, new SetActionDeserializer());
 
-        try (BufferedReader reader =
-                new BufferedReader(
-                        new InputStreamReader(
-                                SWMPlugin.getInstance().getResource("1_13to1_12_blocks.json"),
-                                StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                SWMPlugin.getInstance().getResource("1_13to1_12_blocks.json"), StandardCharsets.UTF_8))) {
             downgradeData = builder.create().fromJson(reader, DowngradeData.class);
         }
     }

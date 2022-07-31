@@ -53,11 +53,7 @@ public class DSListCmd implements Subcommand {
                     }
                 } catch (NumberFormatException ex) {
                     sender.sendMessage(
-                            Logging.COMMAND_PREFIX
-                                    + ChatColor.RED
-                                    + "'"
-                                    + pageString
-                                    + "' is not a valid number.");
+                            Logging.COMMAND_PREFIX + ChatColor.RED + "'" + pageString + "' is not a valid number.");
 
                     return true;
                 }
@@ -67,93 +63,76 @@ public class DSListCmd implements Subcommand {
             SlimeLoader loader = LoaderUtils.getLoader(source);
 
             if (loader == null) {
-                sender.sendMessage(
-                        Logging.COMMAND_PREFIX
-                                + ChatColor.RED
-                                + "Unknown data source "
-                                + source
-                                + ".");
+                sender.sendMessage(Logging.COMMAND_PREFIX + ChatColor.RED + "Unknown data source " + source + ".");
 
                 return true;
             }
 
-            Bukkit.getScheduler()
-                    .runTaskAsynchronously(
-                            SWMPlugin.getInstance(),
-                            () -> {
-                                List<String> worldList;
+            Bukkit.getScheduler().runTaskAsynchronously(SWMPlugin.getInstance(), () -> {
+                List<String> worldList;
 
-                                try {
-                                    worldList = loader.listWorlds();
-                                } catch (IOException ex) {
-                                    if (!(sender instanceof ConsoleCommandSender)) {
-                                        sender.sendMessage(
-                                                Logging.COMMAND_PREFIX
-                                                        + ChatColor.RED
-                                                        + "Failed to load world list. Take a look at the server console for more information.");
-                                    }
+                try {
+                    worldList = loader.listWorlds();
+                } catch (IOException ex) {
+                    if (!(sender instanceof ConsoleCommandSender)) {
+                        sender.sendMessage(Logging.COMMAND_PREFIX
+                                + ChatColor.RED
+                                + "Failed to load world list. Take a look at the server console for more information.");
+                    }
 
-                                    Logging.error("Failed to load world list:");
-                                    ex.printStackTrace();
-                                    return;
-                                }
+                    Logging.error("Failed to load world list:");
+                    ex.printStackTrace();
+                    return;
+                }
 
-                                if (worldList.isEmpty()) {
-                                    sender.sendMessage(
-                                            Logging.COMMAND_PREFIX
-                                                    + ChatColor.RED
-                                                    + "There are no worlds stored in data source "
-                                                    + source
-                                                    + ".");
+                if (worldList.isEmpty()) {
+                    sender.sendMessage(Logging.COMMAND_PREFIX
+                            + ChatColor.RED
+                            + "There are no worlds stored in data source "
+                            + source
+                            + ".");
 
-                                    return;
-                                }
+                    return;
+                }
 
-                                int offset = (page - 1) * MAX_ITEMS_PER_PAGE;
-                                double d = worldList.size() / (double) MAX_ITEMS_PER_PAGE;
-                                int maxPages = ((int) d) + ((d > (int) d) ? 1 : 0);
+                int offset = (page - 1) * MAX_ITEMS_PER_PAGE;
+                double d = worldList.size() / (double) MAX_ITEMS_PER_PAGE;
+                int maxPages = ((int) d) + ((d > (int) d) ? 1 : 0);
 
-                                if (offset >= worldList.size()) {
-                                    sender.sendMessage(
-                                            Logging.COMMAND_PREFIX
-                                                    + ChatColor.RED
-                                                    + "There "
-                                                    + (maxPages == 1 ? "is" : "are")
-                                                    + " only "
-                                                    + maxPages
-                                                    + " page"
-                                                    + (maxPages == 1 ? "" : "s")
-                                                    + "!");
+                if (offset >= worldList.size()) {
+                    sender.sendMessage(Logging.COMMAND_PREFIX
+                            + ChatColor.RED
+                            + "There "
+                            + (maxPages == 1 ? "is" : "are")
+                            + " only "
+                            + maxPages
+                            + " page"
+                            + (maxPages == 1 ? "" : "s")
+                            + "!");
 
-                                    return;
-                                }
+                    return;
+                }
 
-                                worldList.sort(String::compareTo);
-                                sender.sendMessage(
-                                        Logging.COMMAND_PREFIX
-                                                + "World list "
-                                                + ChatColor.YELLOW
-                                                + "["
-                                                + page
-                                                + "/"
-                                                + maxPages
-                                                + "]"
-                                                + ChatColor.GRAY
-                                                + ":");
+                worldList.sort(String::compareTo);
+                sender.sendMessage(Logging.COMMAND_PREFIX
+                        + "World list "
+                        + ChatColor.YELLOW
+                        + "["
+                        + page
+                        + "/"
+                        + maxPages
+                        + "]"
+                        + ChatColor.GRAY
+                        + ":");
 
-                                for (int i = offset;
-                                        (i - offset) < MAX_ITEMS_PER_PAGE && i < worldList.size();
-                                        i++) {
-                                    String world = worldList.get(i);
-                                    sender.sendMessage(
-                                            ChatColor.GRAY
-                                                    + " - "
-                                                    + (isLoaded(loader, world)
-                                                            ? ChatColor.GREEN
-                                                            : ChatColor.RED)
-                                                    + world);
-                                }
-                            });
+                for (int i = offset; (i - offset) < MAX_ITEMS_PER_PAGE && i < worldList.size(); i++) {
+                    String world = worldList.get(i);
+                    sender.sendMessage(ChatColor.GRAY
+                            + " - "
+                            + (isLoaded(loader, world) ? ChatColor.GREEN : ChatColor.RED)
+                            + world);
+                }
+            });
 
             return true;
         }

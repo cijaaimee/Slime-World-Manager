@@ -49,13 +49,15 @@ import java.util.concurrent.Executors;
 
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
-    @Getter private static SWMPlugin instance;
+    @Getter
+    private static SWMPlugin instance;
 
     private final List<SlimeWorld> worlds = new ArrayList<>();
 
     private final ExecutorService worldGeneratorService = Executors.newFixedThreadPool(1);
 
-    @Getter private SlimeNMS nms;
+    @Getter
+    private SlimeNMS nms;
 
     private boolean asyncWorldGen;
 
@@ -92,43 +94,30 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             if (erroredWorlds.contains(defaultWorldName)) {
                 Logging.error("Shutting down server, as the default world could not be loaded.");
                 System.exit(1);
-            } else if (getServer().getAllowNether()
-                    && erroredWorlds.contains(defaultWorldName + "_nether")) {
-                Logging.error(
-                        "Shutting down server, as the default nether world could not be loaded.");
+            } else if (getServer().getAllowNether() && erroredWorlds.contains(defaultWorldName + "_nether")) {
+                Logging.error("Shutting down server, as the default nether world could not be loaded.");
                 System.exit(1);
-            } else if (getServer().getAllowEnd()
-                    && erroredWorlds.contains(defaultWorldName + "_the_end")) {
-                Logging.error(
-                        "Shutting down server, as the default end world could not be loaded.");
+            } else if (getServer().getAllowEnd() && erroredWorlds.contains(defaultWorldName + "_the_end")) {
+                Logging.error("Shutting down server, as the default end world could not be loaded.");
                 System.exit(1);
             }
 
-            SlimeWorld defaultWorld =
-                    worlds.stream()
-                            .filter(world -> world.getName().equals(defaultWorldName))
+            SlimeWorld defaultWorld = worlds.stream()
+                    .filter(world -> world.getName().equals(defaultWorldName))
+                    .findFirst()
+                    .orElse(null);
+            SlimeWorld netherWorld = (getServer().getAllowNether()
+                    ? worlds.stream()
+                            .filter(world -> world.getName().equals(defaultWorldName + "_nether"))
                             .findFirst()
-                            .orElse(null);
-            SlimeWorld netherWorld =
-                    (getServer().getAllowNether()
-                            ? worlds.stream()
-                                    .filter(
-                                            world ->
-                                                    world.getName()
-                                                            .equals(defaultWorldName + "_nether"))
-                                    .findFirst()
-                                    .orElse(null)
-                            : null);
-            SlimeWorld endWorld =
-                    (getServer().getAllowEnd()
-                            ? worlds.stream()
-                                    .filter(
-                                            world ->
-                                                    world.getName()
-                                                            .equals(defaultWorldName + "_the_end"))
-                                    .findFirst()
-                                    .orElse(null)
-                            : null);
+                            .orElse(null)
+                    : null);
+            SlimeWorld endWorld = (getServer().getAllowEnd()
+                    ? worlds.stream()
+                            .filter(world -> world.getName().equals(defaultWorldName + "_the_end"))
+                            .findFirst()
+                            .orElse(null)
+                    : null);
 
             nms.setDefaultWorlds(defaultWorld, netherWorld, endWorld);
         } catch (IOException ex) {
@@ -163,9 +152,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
             try {
                 nms.addWorldToServerList(null);
-            } catch (
-                    IllegalArgumentException
-                            ignored) { // This exception is thrown as null is not a WorldServer
+            } catch (IllegalArgumentException ignored) { // This exception is thrown as null is not a WorldServer
                 Logging.warning("You've enabled async world generation.");
                 asyncWorldGen = true;
             } catch (UnsupportedOperationException exception) {
@@ -209,13 +196,11 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
                     SlimeLoader loader = getLoader(worldData.getDataSource());
 
                     if (loader == null) {
-                        throw new IllegalArgumentException(
-                                "invalid data source " + worldData.getDataSource() + "");
+                        throw new IllegalArgumentException("invalid data source " + worldData.getDataSource() + "");
                     }
 
                     SlimePropertyMap propertyMap = worldData.toPropertyMap();
-                    SlimeWorld world =
-                            loadWorld(loader, worldName, worldData.isReadOnly(), propertyMap);
+                    SlimeWorld world = loadWorld(loader, worldName, worldData.isReadOnly(), propertyMap);
 
                     worlds.add(world);
                 } catch (IllegalArgumentException
@@ -229,13 +214,11 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
                     if (ex instanceof IllegalArgumentException) {
                         message = ex.getMessage();
                     } else if (ex instanceof UnknownWorldException) {
-                        message =
-                                "world does not exist, are you sure you've set the correct data source?";
+                        message = "world does not exist, are you sure you've set the correct data source?";
                     } else if (ex instanceof NewerFormatException) {
-                        message =
-                                "world is serialized in a newer Slime Format version ("
-                                        + ex.getMessage()
-                                        + ") that SWM does not understand.";
+                        message = "world is serialized in a newer Slime Format version ("
+                                + ex.getMessage()
+                                + ") that SWM does not understand.";
                     } else if (ex instanceof WorldInUseException) {
                         message =
                                 "world is in use! If you think this is a mistake, please wait some time and try again.";
@@ -247,10 +230,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
                         ex.printStackTrace();
                     }
 
-                    Logging.error(
-                            "Failed to load world "
-                                    + worldName
-                                    + (message.isEmpty() ? "." : ": " + message));
+                    Logging.error("Failed to load world " + worldName + (message.isEmpty() ? "." : ": " + message));
                     erroredWorlds.add(worldName);
                 }
             }
@@ -261,20 +241,18 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
     }
 
     @Override
-    public SlimeWorld loadWorld(
-            SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties)
-            throws UnknownWorldException, IOException, CorruptedWorldException,
-                    NewerFormatException, WorldInUseException {
+    public SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties)
+            throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException,
+                    WorldInUseException {
         Objects.requireNonNull(properties, "Properties cannot be null");
 
         return loadWorld(loader, worldName, properties.isReadOnly(), propertiesToMap(properties));
     }
 
     @Override
-    public SlimeWorld loadWorld(
-            SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap)
-            throws UnknownWorldException, IOException, CorruptedWorldException,
-                    NewerFormatException, WorldInUseException {
+    public SlimeWorld loadWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap)
+            throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException,
+                    WorldInUseException {
         Objects.requireNonNull(loader, "Loader cannot be null");
         Objects.requireNonNull(worldName, "World name cannot be null");
         Objects.requireNonNull(propertyMap, "Properties cannot be null");
@@ -286,9 +264,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         CraftSlimeWorld world;
 
         try {
-            world =
-                    LoaderUtils.deserializeWorld(
-                            loader, worldName, serializedWorld, propertyMap, readOnly);
+            world = LoaderUtils.deserializeWorld(loader, worldName, serializedWorld, propertyMap, readOnly);
 
             if (world.getVersion() > nms.getWorldVersion()) {
                 WorldUpgrader.downgradeWorld(world);
@@ -303,24 +279,17 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             throw ex;
         }
 
-        Logging.info(
-                "World "
-                        + worldName
-                        + " loaded in "
-                        + (System.currentTimeMillis() - start)
-                        + "ms.");
+        Logging.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - start) + "ms.");
 
         return world;
     }
 
     @Override
-    public SlimeWorld createEmptyWorld(
-            SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties)
+    public SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties)
             throws WorldAlreadyExistsException, IOException {
         Objects.requireNonNull(properties, "Properties cannot be null");
 
-        return createEmptyWorld(
-                loader, worldName, properties.isReadOnly(), propertiesToMap(properties));
+        return createEmptyWorld(loader, worldName, properties.isReadOnly(), propertiesToMap(properties));
     }
 
     @Override
@@ -337,25 +306,19 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
         Logging.info("Creating empty world " + worldName + ".");
         long start = System.currentTimeMillis();
-        CraftSlimeWorld world =
-                new CraftSlimeWorld(
-                        worldName,
-                        new HashMap<>(),
-                        new CompoundTag("", new CompoundMap()),
-                        new ArrayList<>(),
-                        propertyMap,
-                        readOnly,
-                        !readOnly,
-                        loader,
-                        nms.getWorldVersion());
+        CraftSlimeWorld world = new CraftSlimeWorld(
+                worldName,
+                new HashMap<>(),
+                new CompoundTag("", new CompoundMap()),
+                new ArrayList<>(),
+                propertyMap,
+                readOnly,
+                !readOnly,
+                loader,
+                nms.getWorldVersion());
         loader.saveWorld(worldName, world.serialize(), !readOnly);
 
-        Logging.info(
-                "World "
-                        + worldName
-                        + " created in "
-                        + (System.currentTimeMillis() - start)
-                        + "ms.");
+        Logging.info("World " + worldName + " created in " + (System.currentTimeMillis() - start) + "ms.");
 
         return world;
     }
@@ -382,17 +345,14 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         Objects.requireNonNull(world, "SlimeWorld cannot be null");
 
         if (!world.isReadOnly() && !world.isLocked()) {
-            throw new IllegalArgumentException(
-                    "This world cannot be loaded, as it has not been locked.");
+            throw new IllegalArgumentException("This world cannot be loaded, as it has not been locked.");
         }
 
         if (asyncWorldGen) {
-            worldGeneratorService.submit(
-                    () -> {
-                        Object nmsWorld = nms.createNMSWorld(world);
-                        Bukkit.getScheduler()
-                                .runTask(this, () -> nms.addWorldToServerList(nmsWorld));
-                    });
+            worldGeneratorService.submit(() -> {
+                Object nmsWorld = nms.createNMSWorld(world);
+                Bukkit.getScheduler().runTask(this, () -> nms.addWorldToServerList(nmsWorld));
+            });
         } else {
             nms.generateWorld(world);
         }
@@ -400,8 +360,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Override
     public void migrateWorld(String worldName, SlimeLoader currentLoader, SlimeLoader newLoader)
-            throws IOException, WorldInUseException, WorldAlreadyExistsException,
-                    UnknownWorldException {
+            throws IOException, WorldInUseException, WorldAlreadyExistsException, UnknownWorldException {
         Objects.requireNonNull(worldName, "World name cannot be null");
         Objects.requireNonNull(currentLoader, "Current loader cannot be null");
         Objects.requireNonNull(newLoader, "New loader cannot be null");
@@ -453,8 +412,8 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
     @Override
     public void importWorld(File worldDir, String worldName, SlimeLoader loader)
-            throws WorldAlreadyExistsException, InvalidWorldException, WorldLoadedException,
-                    WorldTooBigException, IOException {
+            throws WorldAlreadyExistsException, InvalidWorldException, WorldLoadedException, WorldTooBigException,
+                    IOException {
         Objects.requireNonNull(worldDir, "World directory cannot be null");
         Objects.requireNonNull(worldName, "World name cannot be null");
         Objects.requireNonNull(loader, "Loader cannot be null");

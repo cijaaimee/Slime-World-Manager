@@ -41,8 +41,7 @@ public class SlimePropertyMap {
         for (SlimeProperty property : SlimeProperties.VALUES) {
             switch (property.getType()) {
                 case STRING:
-                    compound.getStringValue(property.getNbtName())
-                            .ifPresent((value) -> values.put(property, value));
+                    compound.getStringValue(property.getNbtName()).ifPresent((value) -> values.put(property, value));
                     break;
                 case BOOLEAN:
                     compound.getByteValue(property.getNbtName())
@@ -50,8 +49,7 @@ public class SlimePropertyMap {
                             .ifPresent((value) -> values.put(property, value));
                     break;
                 case INT:
-                    compound.getIntValue(property.getNbtName())
-                            .ifPresent((value) -> values.put(property, value));
+                    compound.getIntValue(property.getNbtName()).ifPresent((value) -> values.put(property, value));
                     break;
             }
         }
@@ -163,13 +161,12 @@ public class SlimePropertyMap {
 
     private void ensureType(SlimeProperty property, PropertyType requiredType) {
         if (property.getType() != requiredType) {
-            throw new IllegalArgumentException(
-                    "Property "
-                            + property.getNbtName()
-                            + " type is "
-                            + property.getType().name()
-                            + ", not "
-                            + requiredType.name());
+            throw new IllegalArgumentException("Property "
+                    + property.getNbtName()
+                    + " type is "
+                    + property.getType().name()
+                    + ", not "
+                    + requiredType.name());
         }
     }
 
@@ -197,19 +194,14 @@ public class SlimePropertyMap {
 
             switch (property.getType()) {
                 case STRING:
-                    map.put(
-                            property.getNbtName(),
-                            new StringTag(property.getNbtName(), (String) value));
+                    map.put(property.getNbtName(), new StringTag(property.getNbtName(), (String) value));
                     break;
                 case BOOLEAN:
-                    map.put(
-                            property.getNbtName(),
-                            new ByteTag(property.getNbtName(), (byte) (((Boolean) value) ? 1 : 0)));
+                    map.put(property.getNbtName(), new ByteTag(property.getNbtName(), (byte)
+                            (((Boolean) value) ? 1 : 0)));
                     break;
                 case INT:
-                    map.put(
-                            property.getNbtName(),
-                            new IntTag(property.getNbtName(), (Integer) value));
+                    map.put(property.getNbtName(), new IntTag(property.getNbtName(), (Integer) value));
                     break;
             }
         }

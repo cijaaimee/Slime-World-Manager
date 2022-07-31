@@ -67,8 +67,7 @@ public class NMSSlimeChunk implements SlimeChunk {
 
                 if (!section.a()) { // If the section is empty, just ignore it to save space
                     // Block Light Nibble Array
-                    NibbleArray blockLightArray =
-                            Converter.convertArray(section.getEmittedLightArray());
+                    NibbleArray blockLightArray = Converter.convertArray(section.getEmittedLightArray());
 
                     // Sky light Nibble Array
                     NibbleArray skyLightArray = Converter.convertArray(section.getSkyLightArray());
@@ -84,14 +83,8 @@ public class NMSSlimeChunk implements SlimeChunk {
                         blockDataArray.set(i, packed & 15);
                     }
 
-                    sections[sectionId] =
-                            new CraftSlimeChunkSection(
-                                    blocks,
-                                    blockDataArray,
-                                    null,
-                                    null,
-                                    blockLightArray,
-                                    skyLightArray);
+                    sections[sectionId] = new CraftSlimeChunkSection(
+                            blocks, blockDataArray, null, null, blockLightArray, skyLightArray);
                 }
             }
         }
@@ -102,9 +95,7 @@ public class NMSSlimeChunk implements SlimeChunk {
     @Override
     public CompoundTag getHeightMaps() {
         CompoundTag heightMapsCompound = new CompoundTag("", new CompoundMap());
-        heightMapsCompound
-                .getValue()
-                .put("heightMap", new IntArrayTag("heightMap", chunk.heightMap));
+        heightMapsCompound.getValue().put("heightMap", new IntArrayTag("heightMap", chunk.heightMap));
 
         return heightMapsCompound;
     }

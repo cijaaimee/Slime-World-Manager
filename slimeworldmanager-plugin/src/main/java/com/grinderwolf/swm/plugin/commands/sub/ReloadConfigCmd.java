@@ -34,10 +34,9 @@ public class ReloadConfigCmd implements Subcommand {
             ConfigManager.initialize();
         } catch (IOException | ObjectMappingException ex) {
             if (!(sender instanceof ConsoleCommandSender)) {
-                sender.sendMessage(
-                        Logging.COMMAND_PREFIX
-                                + ChatColor.RED
-                                + "Failed to reload the config file. Take a look at the server console for more information.");
+                sender.sendMessage(Logging.COMMAND_PREFIX
+                        + ChatColor.RED
+                        + "Failed to reload the config file. Take a look at the server console for more information.");
             }
 
             Logging.error("Failed to load config files:");

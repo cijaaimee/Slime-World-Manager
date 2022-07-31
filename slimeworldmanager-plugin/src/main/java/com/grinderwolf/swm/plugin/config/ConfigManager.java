@@ -29,55 +29,50 @@ public class ConfigManager {
     private static final File WORLDS_FILE = new File(PLUGIN_DIR, "worlds.yml");
     private static final File SOURCES_FILE = new File(PLUGIN_DIR, "sources.yml");
 
-    @Getter private static MainConfig mainConfig;
+    @Getter
+    private static MainConfig mainConfig;
 
     @Getter(value = AccessLevel.PACKAGE)
     private static YAMLConfigurationLoader mainConfigLoader;
 
-    @Getter private static WorldsConfig worldConfig;
+    @Getter
+    private static WorldsConfig worldConfig;
 
     @Getter(value = AccessLevel.PACKAGE)
     private static YAMLConfigurationLoader worldConfigLoader;
 
-    @Getter private static DatasourcesConfig datasourcesConfig;
+    @Getter
+    private static DatasourcesConfig datasourcesConfig;
 
     public static void initialize() throws IOException, ObjectMappingException {
         copyDefaultConfigs();
 
-        mainConfigLoader =
-                YAMLConfigurationLoader.builder()
-                        .setPath(MAIN_FILE.toPath())
-                        .setFlowStyle(DumperOptions.FlowStyle.BLOCK)
-                        .setHeaderMode(HeaderMode.PRESERVE)
-                        .build();
+        mainConfigLoader = YAMLConfigurationLoader.builder()
+                .setPath(MAIN_FILE.toPath())
+                .setFlowStyle(DumperOptions.FlowStyle.BLOCK)
+                .setHeaderMode(HeaderMode.PRESERVE)
+                .build();
         mainConfig = mainConfigLoader.load().getValue(TypeToken.of(MainConfig.class));
 
-        worldConfigLoader =
-                YAMLConfigurationLoader.builder()
-                        .setPath(WORLDS_FILE.toPath())
-                        .setFlowStyle(DumperOptions.FlowStyle.BLOCK)
-                        .setHeaderMode(HeaderMode.PRESERVE)
-                        .build();
+        worldConfigLoader = YAMLConfigurationLoader.builder()
+                .setPath(WORLDS_FILE.toPath())
+                .setFlowStyle(DumperOptions.FlowStyle.BLOCK)
+                .setHeaderMode(HeaderMode.PRESERVE)
+                .build();
         worldConfig = worldConfigLoader.load().getValue(TypeToken.of(WorldsConfig.class));
 
-        YAMLConfigurationLoader datasourcesConfigLoader =
-                YAMLConfigurationLoader.builder()
-                        .setPath(SOURCES_FILE.toPath())
-                        .setFlowStyle(DumperOptions.FlowStyle.BLOCK)
-                        .setHeaderMode(HeaderMode.PRESERVE)
-                        .build();
-        datasourcesConfig =
-                datasourcesConfigLoader.load().getValue(TypeToken.of(DatasourcesConfig.class));
+        YAMLConfigurationLoader datasourcesConfigLoader = YAMLConfigurationLoader.builder()
+                .setPath(SOURCES_FILE.toPath())
+                .setFlowStyle(DumperOptions.FlowStyle.BLOCK)
+                .setHeaderMode(HeaderMode.PRESERVE)
+                .build();
+        datasourcesConfig = datasourcesConfigLoader.load().getValue(TypeToken.of(DatasourcesConfig.class));
 
-        mainConfigLoader.save(
-                mainConfigLoader
-                        .createEmptyNode()
-                        .setValue(TypeToken.of(MainConfig.class), mainConfig));
+        mainConfigLoader.save(mainConfigLoader.createEmptyNode().setValue(TypeToken.of(MainConfig.class), mainConfig));
         worldConfig.save();
-        datasourcesConfigLoader.save(
-                datasourcesConfigLoader
-                        .createEmptyNode()
-                        .setValue(TypeToken.of(DatasourcesConfig.class), datasourcesConfig));
+        datasourcesConfigLoader.save(datasourcesConfigLoader
+                .createEmptyNode()
+                .setValue(TypeToken.of(DatasourcesConfig.class), datasourcesConfig));
     }
 
     private static void copyDefaultConfigs() throws IOException {

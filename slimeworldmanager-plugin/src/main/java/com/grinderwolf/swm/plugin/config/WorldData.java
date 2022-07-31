@@ -84,8 +84,7 @@ public class WorldData {
 
                 environment = World.Environment.getEnvironment(envId).name();
             } catch (NumberFormatException ex2) {
-                throw new IllegalArgumentException(
-                        "unknown environment '" + this.environment + "'");
+                throw new IllegalArgumentException("unknown environment '" + this.environment + "'");
             }
         }
 

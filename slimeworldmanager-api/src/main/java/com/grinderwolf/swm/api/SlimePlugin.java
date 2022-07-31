@@ -43,10 +43,9 @@ public interface SlimePlugin {
      * @deprecated see {@link #loadWorld(SlimeLoader, String, boolean, SlimePropertyMap)}
      */
     @Deprecated
-    SlimeWorld loadWorld(
-            SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties)
-            throws UnknownWorldException, IOException, CorruptedWorldException,
-                    NewerFormatException, WorldInUseException;
+    SlimeWorld loadWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties)
+            throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException,
+                    WorldInUseException;
 
     /**
      * Loads a world using a specificied {@link SlimeLoader}. This world can then be added to the
@@ -66,10 +65,9 @@ public interface SlimePlugin {
      * @throws WorldInUseException if the world is already being used on another server when trying
      *     to open it without read-only mode enabled.
      */
-    SlimeWorld loadWorld(
-            SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap)
-            throws UnknownWorldException, IOException, CorruptedWorldException,
-                    NewerFormatException, WorldInUseException;
+    SlimeWorld loadWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap)
+            throws UnknownWorldException, IOException, CorruptedWorldException, NewerFormatException,
+                    WorldInUseException;
 
     /**
      * Creates an empty world and stores it using a specified {@link SlimeLoader}. This world can
@@ -87,8 +85,7 @@ public interface SlimePlugin {
      * @deprecated see {@link #createEmptyWorld(SlimeLoader, String, boolean, SlimePropertyMap)}
      */
     @Deprecated
-    SlimeWorld createEmptyWorld(
-            SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties)
+    SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, SlimeWorld.SlimeProperties properties)
             throws WorldAlreadyExistsException, IOException;
 
     /**
@@ -106,8 +103,7 @@ public interface SlimePlugin {
      *     the same name.
      * @throws IOException if the world could not be stored.
      */
-    SlimeWorld createEmptyWorld(
-            SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap)
+    SlimeWorld createEmptyWorld(SlimeLoader loader, String worldName, boolean readOnly, SlimePropertyMap propertyMap)
             throws WorldAlreadyExistsException, IOException;
 
     /**
@@ -131,8 +127,7 @@ public interface SlimePlugin {
      * @throws UnknownWorldException if the world has been removed from the old data source.
      */
     void migrateWorld(String worldName, SlimeLoader currentLoader, SlimeLoader newLoader)
-            throws IOException, WorldInUseException, WorldAlreadyExistsException,
-                    UnknownWorldException;
+            throws IOException, WorldInUseException, WorldAlreadyExistsException, UnknownWorldException;
 
     /**
      * Returns the {@link SlimeLoader} that is able to read and store worlds from a specified data
@@ -166,6 +161,6 @@ public interface SlimePlugin {
      * @throws IOException if the world could not be read or stored.
      */
     void importWorld(File worldDir, String worldName, SlimeLoader loader)
-            throws WorldAlreadyExistsException, InvalidWorldException, WorldLoadedException,
-                    WorldTooBigException, IOException;
+            throws WorldAlreadyExistsException, InvalidWorldException, WorldLoadedException, WorldTooBigException,
+                    IOException;
 }

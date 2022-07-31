@@ -56,13 +56,7 @@ public class CustomChunkLoader implements IChunkLoader {
         nmsChunk.a(heightMap);
 
         // Load chunk sections
-        LOGGER.debug(
-                "Loading chunk sections for chunk ("
-                        + x
-                        + ", "
-                        + z
-                        + ") on world "
-                        + world.getName());
+        LOGGER.debug("Loading chunk sections for chunk (" + x + ", " + z + ") on world " + world.getName());
         ChunkSection[] sections = new ChunkSection[16];
 
         for (int sectionId = 0; sectionId < chunk.getSections().length; sectionId++) {
@@ -97,16 +91,15 @@ public class CustomChunkLoader implements IChunkLoader {
                     blockIds[id] = (char) packed;
                 }
 
-                LOGGER.debug(
-                        "ChunkSection #"
-                                + sectionId
-                                + " - Chunk ("
-                                + x
-                                + ", "
-                                + z
-                                + ") - World "
-                                + world.getName()
-                                + ":");
+                LOGGER.debug("ChunkSection #"
+                        + sectionId
+                        + " - Chunk ("
+                        + x
+                        + ", "
+                        + z
+                        + ") - World "
+                        + world.getName()
+                        + ":");
                 LOGGER.debug("Blocks:");
                 LOGGER.debug(blockIds);
                 LOGGER.debug("Block light array:");
@@ -141,13 +134,7 @@ public class CustomChunkLoader implements IChunkLoader {
         nmsChunk.a(toByteArray(chunk.getBiomes()));
 
         // Load tile entities
-        LOGGER.debug(
-                "Loading tile entities for chunk ("
-                        + x
-                        + ", "
-                        + z
-                        + ") on world "
-                        + world.getName());
+        LOGGER.debug("Loading tile entities for chunk (" + x + ", " + z + ") on world " + world.getName());
         List<CompoundTag> tileEntities = chunk.getTileEntities();
         int loadedEntities = 0;
 
@@ -162,19 +149,17 @@ public class CustomChunkLoader implements IChunkLoader {
             }
         }
 
-        LOGGER.debug(
-                "Loaded "
-                        + loadedEntities
-                        + " tile entities for chunk ("
-                        + x
-                        + ", "
-                        + z
-                        + ") on world "
-                        + world.getName());
+        LOGGER.debug("Loaded "
+                + loadedEntities
+                + " tile entities for chunk ("
+                + x
+                + ", "
+                + z
+                + ") on world "
+                + world.getName());
 
         // Load entities
-        LOGGER.debug(
-                "Loading entities for chunk (" + x + ", " + z + ") on world " + world.getName());
+        LOGGER.debug("Loading entities for chunk (" + x + ", " + z + ") on world " + world.getName());
         List<CompoundTag> entities = chunk.getEntities();
         loadedEntities = 0;
 
@@ -190,12 +175,10 @@ public class CustomChunkLoader implements IChunkLoader {
                     for (CompoundTag ridingTag = tag;
                             ridingTag.getValue().containsKey("Riding");
                             ridingTag = (CompoundTag) ridingTag.getValue().get("Riding")) {
-                        Entity entity2 =
-                                EntityTypes.a(
-                                        (NBTTagCompound)
-                                                Converter.convertTag(
-                                                        ridingTag.getValue().get("Riding")),
-                                        server);
+                        Entity entity2 = EntityTypes.a(
+                                (NBTTagCompound) Converter.convertTag(
+                                        ridingTag.getValue().get("Riding")),
+                                server);
 
                         if (entity2 != null) {
                             nmsChunk.a(entity2);
@@ -212,14 +195,7 @@ public class CustomChunkLoader implements IChunkLoader {
         }
 
         LOGGER.debug(
-                "Loaded "
-                        + loadedEntities
-                        + " entities for chunk ("
-                        + x
-                        + ", "
-                        + z
-                        + ") on world "
-                        + world.getName());
+                "Loaded " + loadedEntities + " entities for chunk (" + x + ", " + z + ") on world " + world.getName());
         LOGGER.debug("Loaded chunk (" + x + ", " + z + ") on world " + world.getName());
 
         return nmsChunk;
@@ -246,13 +222,9 @@ public class CustomChunkLoader implements IChunkLoader {
         } else if (slimeChunk instanceof NMSSlimeChunk) {
             chunk = ((NMSSlimeChunk) slimeChunk).getChunk();
         } else { // All SlimeChunk objects should be converted to NMSSlimeChunks when loading the
-                 // world
+            // world
             throw new IllegalStateException(
-                    "Chunk ("
-                            + x
-                            + ", "
-                            + z
-                            + ") has not been converted to a NMSSlimeChunk object!");
+                    "Chunk (" + x + ", " + z + ") has not been converted to a NMSSlimeChunk object!");
         }
 
         return chunk;
@@ -263,10 +235,8 @@ public class CustomChunkLoader implements IChunkLoader {
     public void a(World world, Chunk chunk) {
         SlimeChunk slimeChunk = this.world.getChunk(chunk.locX, chunk.locZ);
 
-        if (slimeChunk
-                instanceof
-                NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some
-                                 // reason)
+        if (slimeChunk instanceof NMSSlimeChunk) { // In case somehow the chunk object changes (might happen for some
+            // reason)
             ((NMSSlimeChunk) slimeChunk).setChunk(chunk);
         } else {
             this.world.updateChunk(new NMSSlimeChunk(chunk));

@@ -51,11 +51,7 @@ public class ImportWorldCmd implements Subcommand {
 
             if (loader == null) {
                 sender.sendMessage(
-                        Logging.COMMAND_PREFIX
-                                + ChatColor.RED
-                                + "Data source "
-                                + dataSource
-                                + " does not exist.");
+                        Logging.COMMAND_PREFIX + ChatColor.RED + "Data source " + dataSource + " does not exist.");
 
                 return true;
             }
@@ -63,12 +59,11 @@ public class ImportWorldCmd implements Subcommand {
             File worldDir = new File(args[0]);
 
             if (!worldDir.exists() || !worldDir.isDirectory()) {
-                sender.sendMessage(
-                        Logging.COMMAND_PREFIX
-                                + ChatColor.RED
-                                + "Path "
-                                + worldDir.getPath()
-                                + " does not point out to a valid world directory.");
+                sender.sendMessage(Logging.COMMAND_PREFIX
+                        + ChatColor.RED
+                        + "Path "
+                        + worldDir.getPath()
+                        + " does not point out to a valid world directory.");
 
                 return true;
             }
@@ -80,109 +75,93 @@ public class ImportWorldCmd implements Subcommand {
 
                 if (Arrays.equals(args, oldArgs)) { // Make sure it's exactly the same command
                     String worldName = (args.length > 2 ? args[2] : worldDir.getName());
-                    sender.sendMessage(
-                            Logging.COMMAND_PREFIX
-                                    + "Importing world "
-                                    + worldDir.getName()
-                                    + " into data source "
+                    sender.sendMessage(Logging.COMMAND_PREFIX
+                            + "Importing world "
+                            + worldDir.getName()
+                            + " into data source "
+                            + dataSource
+                            + "...");
+
+                    Bukkit.getScheduler().runTaskAsynchronously(SWMPlugin.getInstance(), () -> {
+                        try {
+                            long start = System.currentTimeMillis();
+                            SWMPlugin.getInstance().importWorld(worldDir, worldName, loader);
+
+                            sender.sendMessage(Logging.COMMAND_PREFIX
+                                    + ChatColor.GREEN
+                                    + "World "
+                                    + ChatColor.YELLOW
+                                    + worldName
+                                    + ChatColor.GREEN
+                                    + " imported "
+                                    + "successfully in "
+                                    + (System.currentTimeMillis() - start)
+                                    + "ms. Remember to add it to the worlds config file before loading it.");
+                        } catch (WorldAlreadyExistsException ex) {
+                            sender.sendMessage(Logging.COMMAND_PREFIX
+                                    + ChatColor.RED
+                                    + "Data source "
                                     + dataSource
-                                    + "...");
+                                    + " already contains a world called "
+                                    + worldName
+                                    + ".");
+                        } catch (InvalidWorldException ex) {
+                            sender.sendMessage(Logging.COMMAND_PREFIX
+                                    + ChatColor.RED
+                                    + "Directory "
+                                    + worldDir.getName()
+                                    + " does not contain a valid Minecraft world.");
+                        } catch (WorldLoadedException ex) {
+                            sender.sendMessage(Logging.COMMAND_PREFIX
+                                    + ChatColor.RED
+                                    + "World "
+                                    + worldDir.getName()
+                                    + " is loaded on this server. Please unload it before importing it.");
+                        } catch (WorldTooBigException ex) {
+                            sender.sendMessage(
+                                    Logging.COMMAND_PREFIX
+                                            + ChatColor.RED
+                                            + "Hey! Didn't you just read the warning? The Slime Format isn't meant for big worlds."
+                                            + " The world you provided just breaks everything. Please, trim it by using the MCEdit tool and try again.");
+                        } catch (IOException ex) {
+                            if (!(sender instanceof ConsoleCommandSender)) {
+                                sender.sendMessage(Logging.COMMAND_PREFIX
+                                        + ChatColor.RED
+                                        + "Failed to import world "
+                                        + worldName
+                                        + ". Take a look at the server console for more information.");
+                            }
 
-                    Bukkit.getScheduler()
-                            .runTaskAsynchronously(
-                                    SWMPlugin.getInstance(),
-                                    () -> {
-                                        try {
-                                            long start = System.currentTimeMillis();
-                                            SWMPlugin.getInstance()
-                                                    .importWorld(worldDir, worldName, loader);
-
-                                            sender.sendMessage(
-                                                    Logging.COMMAND_PREFIX
-                                                            + ChatColor.GREEN
-                                                            + "World "
-                                                            + ChatColor.YELLOW
-                                                            + worldName
-                                                            + ChatColor.GREEN
-                                                            + " imported "
-                                                            + "successfully in "
-                                                            + (System.currentTimeMillis() - start)
-                                                            + "ms. Remember to add it to the worlds config file before loading it.");
-                                        } catch (WorldAlreadyExistsException ex) {
-                                            sender.sendMessage(
-                                                    Logging.COMMAND_PREFIX
-                                                            + ChatColor.RED
-                                                            + "Data source "
-                                                            + dataSource
-                                                            + " already contains a world called "
-                                                            + worldName
-                                                            + ".");
-                                        } catch (InvalidWorldException ex) {
-                                            sender.sendMessage(
-                                                    Logging.COMMAND_PREFIX
-                                                            + ChatColor.RED
-                                                            + "Directory "
-                                                            + worldDir.getName()
-                                                            + " does not contain a valid Minecraft world.");
-                                        } catch (WorldLoadedException ex) {
-                                            sender.sendMessage(
-                                                    Logging.COMMAND_PREFIX
-                                                            + ChatColor.RED
-                                                            + "World "
-                                                            + worldDir.getName()
-                                                            + " is loaded on this server. Please unload it before importing it.");
-                                        } catch (WorldTooBigException ex) {
-                                            sender.sendMessage(
-                                                    Logging.COMMAND_PREFIX
-                                                            + ChatColor.RED
-                                                            + "Hey! Didn't you just read the warning? The Slime Format isn't meant for big worlds."
-                                                            + " The world you provided just breaks everything. Please, trim it by using the MCEdit tool and try again.");
-                                        } catch (IOException ex) {
-                                            if (!(sender instanceof ConsoleCommandSender)) {
-                                                sender.sendMessage(
-                                                        Logging.COMMAND_PREFIX
-                                                                + ChatColor.RED
-                                                                + "Failed to import world "
-                                                                + worldName
-                                                                + ". Take a look at the server console for more information.");
-                                            }
-
-                                            Logging.error(
-                                                    "Failed to import world "
-                                                            + worldName
-                                                            + ". Stack trace:");
-                                            ex.printStackTrace();
-                                        }
-                                    });
+                            Logging.error("Failed to import world " + worldName + ". Stack trace:");
+                            ex.printStackTrace();
+                        }
+                    });
 
                     return true;
                 }
             }
 
-            sender.sendMessage(
-                    Logging.COMMAND_PREFIX
-                            + ChatColor.RED
-                            + ChatColor.BOLD
-                            + "WARNING: "
-                            + ChatColor.GRAY
-                            + "The Slime Format is meant to "
-                            + "be used on tiny maps, not big survival worlds. It is recommended to trim your world by using the Prune MCEdit tool to ensure "
-                            + "you don't save more chunks than you want to.");
+            sender.sendMessage(Logging.COMMAND_PREFIX
+                    + ChatColor.RED
+                    + ChatColor.BOLD
+                    + "WARNING: "
+                    + ChatColor.GRAY
+                    + "The Slime Format is meant to "
+                    + "be used on tiny maps, not big survival worlds. It is recommended to trim your world by using the Prune MCEdit tool to ensure "
+                    + "you don't save more chunks than you want to.");
 
             sender.sendMessage(" ");
-            sender.sendMessage(
-                    Logging.COMMAND_PREFIX
-                            + ChatColor.YELLOW
-                            + ChatColor.BOLD
-                            + "NOTE: "
-                            + ChatColor.GRAY
-                            + "This command will automatically ignore every "
-                            + "chunk that doesn't contain any blocks.");
+            sender.sendMessage(Logging.COMMAND_PREFIX
+                    + ChatColor.YELLOW
+                    + ChatColor.BOLD
+                    + "NOTE: "
+                    + ChatColor.GRAY
+                    + "This command will automatically ignore every "
+                    + "chunk that doesn't contain any blocks.");
             sender.sendMessage(" ");
-            sender.sendMessage(
-                    Logging.COMMAND_PREFIX
-                            + ChatColor.GRAY
-                            + "If you are sure you want to continue, type again this command.");
+            sender.sendMessage(Logging.COMMAND_PREFIX
+                    + ChatColor.GRAY
+                    + "If you are sure you want to continue, type again this command.");
 
             importCache.put(sender.getName(), args);
 

@@ -57,11 +57,10 @@ public class v1_9WorldUpgrade implements Upgrade {
                                 id,
                                 new StringTag(
                                         id,
-                                        fixJson(
-                                                entityTag
-                                                        .getAsStringTag(id)
-                                                        .map(StringTag::getValue)
-                                                        .orElse(null))));
+                                        fixJson(entityTag
+                                                .getAsStringTag(id)
+                                                .map(StringTag::getValue)
+                                                .orElse(null))));
                     }
                 }
             }

@@ -17,9 +17,8 @@ import java.util.regex.Pattern;
 @Getter
 public class Version implements Comparable<Version> {
 
-    private static final Pattern PATTERN =
-            Pattern.compile(
-                    "(?<major>0|[1-9]\\d*)\\.(?<minor>0|[1-9]\\d*)(?:\\.(?<patch>0|[1-9]\\d*))?(?:-(?<tag>[A-z0-9.-]*))?");
+    private static final Pattern PATTERN = Pattern.compile(
+            "(?<major>0|[1-9]\\d*)\\.(?<minor>0|[1-9]\\d*)(?:\\.(?<patch>0|[1-9]\\d*))?(?:-(?<tag>[A-z0-9.-]*))?");
 
     private final int[] version = new int[3];
     private final String tag;

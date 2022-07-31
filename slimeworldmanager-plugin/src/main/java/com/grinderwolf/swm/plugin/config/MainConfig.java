@@ -34,10 +34,9 @@ public class MainConfig {
     public void save() {
         try {
             ConfigManager.getMainConfigLoader()
-                    .save(
-                            ConfigManager.getMainConfigLoader()
-                                    .createEmptyNode()
-                                    .setValue(TypeToken.of(MainConfig.class), this));
+                    .save(ConfigManager.getMainConfigLoader()
+                            .createEmptyNode()
+                            .setValue(TypeToken.of(MainConfig.class), this));
         } catch (IOException | ObjectMappingException ex) {
             Logging.error("Failed to save worlds config file:");
             ex.printStackTrace();

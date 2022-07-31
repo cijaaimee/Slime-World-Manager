@@ -112,8 +112,7 @@ public interface SlimeWorld {
      *     provided data source.
      * @throws IOException if the world could not be stored.
      */
-    SlimeWorld clone(String worldName, SlimeLoader loader)
-            throws WorldAlreadyExistsException, IOException;
+    SlimeWorld clone(String worldName, SlimeLoader loader) throws WorldAlreadyExistsException, IOException;
 
     /**
      * Returns a clone of the world with the given name. The world will be automatically stored
@@ -153,7 +152,10 @@ public interface SlimeWorld {
     class SlimeProperties {
 
         private double spawnX;
-        @Builder.Default private double spawnY = 255;
+
+        @Builder.Default
+        private double spawnY = 255;
+
         private double spawnZ;
 
         private int difficulty;
@@ -166,10 +168,13 @@ public interface SlimeWorld {
         @Builder.Default
         private boolean allowAnimals = true;
 
-        @Wither private boolean readOnly;
+        @Wither
+        private boolean readOnly;
 
-        @Builder.Default private boolean pvp = true;
+        @Builder.Default
+        private boolean pvp = true;
 
-        @Builder.Default private String environment = "NORMAL";
+        @Builder.Default
+        private String environment = "NORMAL";
     }
 }

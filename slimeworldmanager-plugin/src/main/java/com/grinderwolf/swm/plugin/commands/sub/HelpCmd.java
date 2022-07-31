@@ -37,15 +37,14 @@ public class HelpCmd implements Subcommand {
                 continue;
             }
 
-            sender.sendMessage(
-                    ChatColor.GRAY
-                            + "  -"
-                            + ChatColor.AQUA
-                            + "/swm "
-                            + cmd.getUsage()
-                            + ChatColor.GRAY
-                            + " - "
-                            + cmd.getDescription());
+            sender.sendMessage(ChatColor.GRAY
+                    + "  -"
+                    + ChatColor.AQUA
+                    + "/swm "
+                    + cmd.getUsage()
+                    + ChatColor.GRAY
+                    + " - "
+                    + cmd.getDescription());
         }
 
         return true;

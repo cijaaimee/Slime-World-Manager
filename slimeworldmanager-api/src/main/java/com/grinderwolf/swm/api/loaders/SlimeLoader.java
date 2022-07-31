@@ -33,8 +33,7 @@ public interface SlimeLoader {
      * @throws WorldInUseException if the world is locked
      * @throws IOException if the world could not be obtained.
      */
-    byte[] loadWorld(String worldName, boolean readOnly)
-            throws UnknownWorldException, WorldInUseException, IOException;
+    byte[] loadWorld(String worldName, boolean readOnly) throws UnknownWorldException, WorldInUseException, IOException;
 
     /**
      * Checks whether or not a world exists inside the data source.

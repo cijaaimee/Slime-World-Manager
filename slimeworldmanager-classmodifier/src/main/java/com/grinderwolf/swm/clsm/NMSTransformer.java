@@ -31,8 +31,7 @@ import java.util.regex.Pattern;
 
 public class NMSTransformer implements ClassFileTransformer {
 
-    private static final Pattern PATTERN =
-            Pattern.compile("^(\\w+)\\s*\\((.*?)\\)\\s*@(.+?\\.txt)$");
+    private static final Pattern PATTERN = Pattern.compile("^(\\w+)\\s*\\((.*?)\\)\\s*@(.+?\\.txt)$");
     private static final boolean DEBUG = Boolean.getBoolean("clsmDebug");
 
     private static Map<String, Change[]> changes = new HashMap<>();
@@ -70,12 +69,7 @@ public class NMSTransformer implements ClassFileTransformer {
                         Matcher matcher = PATTERN.matcher(changeList.get(i));
 
                         if (!matcher.find()) {
-                            System.err.println(
-                                    "Invalid change '"
-                                            + changeList.get(i)
-                                            + "' on class "
-                                            + clazz
-                                            + ".");
+                            System.err.println("Invalid change '" + changeList.get(i) + "' on class " + clazz + ".");
                             System.exit(1);
                         }
 
@@ -92,15 +86,13 @@ public class NMSTransformer implements ClassFileTransformer {
                         String location = matcher.group(3);
                         String content;
 
-                        try (InputStream changeStream =
-                                NMSTransformer.class.getResourceAsStream("/" + location)) {
+                        try (InputStream changeStream = NMSTransformer.class.getResourceAsStream("/" + location)) {
                             if (changeStream == null) {
-                                System.err.println(
-                                        "Failed to find data for change "
-                                                + changeList.get(i)
-                                                + " on class "
-                                                + clazz
-                                                + ".");
+                                System.err.println("Failed to find data for change "
+                                        + changeList.get(i)
+                                        + " on class "
+                                        + clazz
+                                        + ".");
                                 System.exit(1);
                             }
 
@@ -112,12 +104,7 @@ public class NMSTransformer implements ClassFileTransformer {
                     }
 
                     if (DEBUG) {
-                        System.out.println(
-                                "Loaded "
-                                        + changeArray.length
-                                        + " changes for class "
-                                        + clazz
-                                        + ".");
+                        System.out.println("Loaded " + changeArray.length + " changes for class " + clazz + ".");
                     }
 
                     Change[] oldChanges = changes.get(clazz);
@@ -128,8 +115,7 @@ public class NMSTransformer implements ClassFileTransformer {
                         Change[] newChanges = new Change[oldChanges.length + changeArray.length];
 
                         System.arraycopy(oldChanges, 0, newChanges, 0, oldChanges.length);
-                        System.arraycopy(
-                                changeArray, 0, newChanges, oldChanges.length, changeArray.length);
+                        System.arraycopy(changeArray, 0, newChanges, oldChanges.length, changeArray.length);
 
                         changes.put(clazz, newChanges);
                     }
@@ -198,9 +184,8 @@ public class NMSTransformer implements ClassFileTransformer {
                             try {
                                 method.insertBefore(change.getContent());
                             } catch (CannotCompileException ex) {
-                                if (!change
-                                        .isOptional()) { // If it's an optional change we can ignore
-                                                         // it
+                                if (!change.isOptional()) { // If it's an optional change we can ignore
+                                    // it
                                     throw ex;
                                 }
                             }
@@ -215,8 +200,7 @@ public class NMSTransformer implements ClassFileTransformer {
 
                     return ctClass.toBytecode();
                 } catch (NotFoundException | CannotCompileException | IOException ex) {
-                    System.err.println(
-                            "Failed to override methods from class " + fixedClassName + ".");
+                    System.err.println("Failed to override methods from class " + fixedClassName + ".");
                     ex.printStackTrace();
                 }
             }

@@ -60,13 +60,12 @@ public class Converter {
                 case TAG_COMPOUND:
                     NBTTagCompound compound = new NBTTagCompound();
 
-                    ((CompoundTag) tag)
-                            .getValue()
-                            .forEach((key, value) -> compound.set(key, convertTag(value)));
+                    ((CompoundTag) tag).getValue().forEach((key, value) -> compound.set(key, convertTag(value)));
 
                     return compound;
                 default:
-                    throw new IllegalArgumentException("Invalid tag type " + tag.getType().name());
+                    throw new IllegalArgumentException(
+                            "Invalid tag type " + tag.getType().name());
             }
         } catch (Exception ex) {
             LOGGER.error("Failed to convert NBT object:");

@@ -38,8 +38,7 @@ public class WorldImporter {
     private static final Pattern MAP_FILE_PATTERN = Pattern.compile("^(?:map_([0-9]*).dat)$");
     private static final int SECTOR_SIZE = 4096;
 
-    public static CraftSlimeWorld readFromDirectory(File worldDir)
-            throws InvalidWorldException, IOException {
+    public static CraftSlimeWorld readFromDirectory(File worldDir) throws InvalidWorldException, IOException {
         File levelFile = new File(worldDir, "level.dat");
 
         if (!levelFile.exists() || !levelFile.isFile()) {
@@ -73,14 +72,10 @@ public class WorldImporter {
         Map<Long, SlimeChunk> chunks = new HashMap<>();
 
         for (File file : regionDir.listFiles((dir, name) -> name.endsWith(".mca"))) {
-            chunks.putAll(
-                    loadChunks(file, worldVersion).stream()
-                            .collect(
-                                    Collectors.toMap(
-                                            (chunk) ->
-                                                    ((long) chunk.getZ()) * Integer.MAX_VALUE
-                                                            + ((long) chunk.getX()),
-                                            (chunk) -> chunk)));
+            chunks.putAll(loadChunks(file, worldVersion).stream()
+                    .collect(Collectors.toMap(
+                            (chunk) -> ((long) chunk.getZ()) * Integer.MAX_VALUE + ((long) chunk.getX()),
+                            (chunk) -> chunk)));
         }
 
         if (chunks.isEmpty()) {
@@ -96,8 +91,8 @@ public class WorldImporter {
                 throw new InvalidWorldException(worldDir);
             }
 
-            for (File mapFile :
-                    dataDir.listFiles((dir, name) -> MAP_FILE_PATTERN.matcher(name).matches())) {
+            for (File mapFile : dataDir.listFiles(
+                    (dir, name) -> MAP_FILE_PATTERN.matcher(name).matches())) {
                 maps.add(loadMap(mapFile));
             }
         }
@@ -107,8 +102,7 @@ public class WorldImporter {
 
         if (!data.getGameRules().isEmpty()) {
             CompoundMap gamerules = new CompoundMap();
-            data.getGameRules()
-                    .forEach((rule, value) -> gamerules.put(rule, new StringTag(rule, value)));
+            data.getGameRules().forEach((rule, value) -> gamerules.put(rule, new StringTag(rule, value)));
 
             extraData.put("gamerules", new CompoundTag("gamerules", gamerules));
         }
@@ -136,12 +130,14 @@ public class WorldImporter {
         int mapId = Integer.parseInt(fileName.substring(4, fileName.length() - 4));
         CompoundTag tag;
 
-        try (NBTInputStream nbtStream =
-                new NBTInputStream(
-                        Files.newInputStream(mapFile.toPath()),
-                        NBTInputStream.GZIP_COMPRESSION,
-                        ByteOrder.BIG_ENDIAN)) {
-            tag = nbtStream.readTag().getAsCompoundTag().get().getAsCompoundTag("data").get();
+        try (NBTInputStream nbtStream = new NBTInputStream(
+                Files.newInputStream(mapFile.toPath()), NBTInputStream.GZIP_COMPRESSION, ByteOrder.BIG_ENDIAN)) {
+            tag = nbtStream
+                    .readTag()
+                    .getAsCompoundTag()
+                    .get()
+                    .getAsCompoundTag("data")
+                    .get();
         }
 
         tag.getValue().put("id", new IntTag("id", mapId));
@@ -167,17 +163,10 @@ public class WorldImporter {
                 Map<String, String> gameRules = new HashMap<>();
                 Optional<CompoundTag> rulesList = dataTag.get().getAsCompoundTag("GameRules");
 
-                rulesList.ifPresent(
-                        compoundTag ->
-                                compoundTag
-                                        .getValue()
-                                        .forEach(
-                                                (ruleName, ruleTag) ->
-                                                        gameRules.put(
-                                                                ruleName,
-                                                                ruleTag.getAsStringTag()
-                                                                        .get()
-                                                                        .getValue())));
+                rulesList.ifPresent(compoundTag -> compoundTag
+                        .getValue()
+                        .forEach((ruleName, ruleTag) -> gameRules.put(
+                                ruleName, ruleTag.getAsStringTag().get().getValue())));
 
                 int spawnX = dataTag.get().getIntValue("SpawnX").orElse(0);
                 int spawnY = dataTag.get().getIntValue("SpawnY").orElse(255);
@@ -192,8 +181,7 @@ public class WorldImporter {
 
     private static List<SlimeChunk> loadChunks(File file, byte worldVersion) throws IOException {
         byte[] regionByteArray = Files.readAllBytes(file.toPath());
-        DataInputStream inputStream =
-                new DataInputStream(new ByteArrayInputStream(regionByteArray));
+        DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(regionByteArray));
 
         List<ChunkEntry> chunks = new ArrayList<>(1024);
 
@@ -203,60 +191,43 @@ public class WorldImporter {
             int chunkSize = entry & 15;
 
             if (entry != 0) {
-                ChunkEntry chunkEntry =
-                        new ChunkEntry(chunkOffset * SECTOR_SIZE, chunkSize * SECTOR_SIZE);
+                ChunkEntry chunkEntry = new ChunkEntry(chunkOffset * SECTOR_SIZE, chunkSize * SECTOR_SIZE);
                 chunks.add(chunkEntry);
             }
         }
 
-        List<SlimeChunk> loadedChunks =
-                chunks.stream()
-                        .map(
-                                (entry) -> {
-                                    try {
-                                        DataInputStream headerStream =
-                                                new DataInputStream(
-                                                        new ByteArrayInputStream(
-                                                                regionByteArray,
-                                                                entry.getOffset(),
-                                                                entry.getPaddedSize()));
+        List<SlimeChunk> loadedChunks = chunks.stream()
+                .map((entry) -> {
+                    try {
+                        DataInputStream headerStream = new DataInputStream(
+                                new ByteArrayInputStream(regionByteArray, entry.getOffset(), entry.getPaddedSize()));
 
-                                        int chunkSize = headerStream.readInt() - 1;
-                                        int compressionScheme = headerStream.readByte();
+                        int chunkSize = headerStream.readInt() - 1;
+                        int compressionScheme = headerStream.readByte();
 
-                                        DataInputStream chunkStream =
-                                                new DataInputStream(
-                                                        new ByteArrayInputStream(
-                                                                regionByteArray,
-                                                                entry.getOffset() + 5,
-                                                                chunkSize));
-                                        InputStream decompressorStream =
-                                                compressionScheme == 1
-                                                        ? new GZIPInputStream(chunkStream)
-                                                        : new InflaterInputStream(chunkStream);
-                                        NBTInputStream nbtStream =
-                                                new NBTInputStream(
-                                                        decompressorStream,
-                                                        NBTInputStream.NO_COMPRESSION,
-                                                        ByteOrder.BIG_ENDIAN);
-                                        CompoundTag globalCompound =
-                                                (CompoundTag) nbtStream.readTag();
-                                        CompoundMap globalMap = globalCompound.getValue();
+                        DataInputStream chunkStream = new DataInputStream(
+                                new ByteArrayInputStream(regionByteArray, entry.getOffset() + 5, chunkSize));
+                        InputStream decompressorStream = compressionScheme == 1
+                                ? new GZIPInputStream(chunkStream)
+                                : new InflaterInputStream(chunkStream);
+                        NBTInputStream nbtStream = new NBTInputStream(
+                                decompressorStream, NBTInputStream.NO_COMPRESSION, ByteOrder.BIG_ENDIAN);
+                        CompoundTag globalCompound = (CompoundTag) nbtStream.readTag();
+                        CompoundMap globalMap = globalCompound.getValue();
 
-                                        if (!globalMap.containsKey("Level")) {
-                                            throw new RuntimeException("Missing Level tag?");
-                                        }
+                        if (!globalMap.containsKey("Level")) {
+                            throw new RuntimeException("Missing Level tag?");
+                        }
 
-                                        CompoundTag levelCompound =
-                                                (CompoundTag) globalMap.get("Level");
+                        CompoundTag levelCompound = (CompoundTag) globalMap.get("Level");
 
-                                        return readChunk(levelCompound, worldVersion);
-                                    } catch (IOException ex) {
-                                        throw new RuntimeException(ex);
-                                    }
-                                })
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                        return readChunk(levelCompound, worldVersion);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
         return loadedChunks;
     }
@@ -298,24 +269,12 @@ public class WorldImporter {
             heightMapsCompound.getValue().put("heightMap", new IntArrayTag("heightMap", heightMap));
         }
 
-        List<CompoundTag> tileEntities =
-                ((ListTag<CompoundTag>)
-                                compound.getAsListTag("TileEntities")
-                                        .orElse(
-                                                new ListTag<>(
-                                                        "TileEntities",
-                                                        TagType.TAG_COMPOUND,
-                                                        new ArrayList<>())))
-                        .getValue();
-        List<CompoundTag> entities =
-                ((ListTag<CompoundTag>)
-                                compound.getAsListTag("Entities")
-                                        .orElse(
-                                                new ListTag<>(
-                                                        "Entities",
-                                                        TagType.TAG_COMPOUND,
-                                                        new ArrayList<>())))
-                        .getValue();
+        List<CompoundTag> tileEntities = ((ListTag<CompoundTag>) compound.getAsListTag("TileEntities")
+                        .orElse(new ListTag<>("TileEntities", TagType.TAG_COMPOUND, new ArrayList<>())))
+                .getValue();
+        List<CompoundTag> entities = ((ListTag<CompoundTag>) compound.getAsListTag("Entities")
+                        .orElse(new ListTag<>("Entities", TagType.TAG_COMPOUND, new ArrayList<>())))
+                .getValue();
         ListTag<CompoundTag> sectionsTag =
                 (ListTag<CompoundTag>) compound.getAsListTag("Sections").get();
         SlimeChunkSection[] sectionArray = new SlimeChunkSection[16];
@@ -345,46 +304,30 @@ public class WorldImporter {
             } else {
                 dataArray = null;
 
-                paletteTag = (ListTag<CompoundTag>) sectionTag.getAsListTag("Palette").orElse(null);
+                paletteTag = (ListTag<CompoundTag>)
+                        sectionTag.getAsListTag("Palette").orElse(null);
                 blockStatesArray = sectionTag.getLongArrayValue("BlockStates").orElse(null);
 
-                if (paletteTag == null
-                        || blockStatesArray == null
-                        || isEmpty(blockStatesArray)) { // Skip it
+                if (paletteTag == null || blockStatesArray == null || isEmpty(blockStatesArray)) { // Skip it
                     continue;
                 }
             }
 
-            NibbleArray blockLightArray =
-                    sectionTag.getValue().containsKey("BlockLight")
-                            ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get())
-                            : null;
-            NibbleArray skyLightArray =
-                    sectionTag.getValue().containsKey("SkyLight")
-                            ? new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get())
-                            : null;
+            NibbleArray blockLightArray = sectionTag.getValue().containsKey("BlockLight")
+                    ? new NibbleArray(sectionTag.getByteArrayValue("BlockLight").get())
+                    : null;
+            NibbleArray skyLightArray = sectionTag.getValue().containsKey("SkyLight")
+                    ? new NibbleArray(sectionTag.getByteArrayValue("SkyLight").get())
+                    : null;
 
-            sectionArray[index] =
-                    new CraftSlimeChunkSection(
-                            blocks,
-                            dataArray,
-                            paletteTag,
-                            blockStatesArray,
-                            blockLightArray,
-                            skyLightArray);
+            sectionArray[index] = new CraftSlimeChunkSection(
+                    blocks, dataArray, paletteTag, blockStatesArray, blockLightArray, skyLightArray);
         }
 
         for (SlimeChunkSection section : sectionArray) {
             if (section != null) { // Chunk isn't empty
                 return new CraftSlimeChunk(
-                        null,
-                        chunkX,
-                        chunkZ,
-                        sectionArray,
-                        heightMapsCompound,
-                        biomes,
-                        tileEntities,
-                        entities);
+                        null, chunkX, chunkZ, sectionArray, heightMapsCompound, biomes, tileEntities, entities);
             }
         }
 
