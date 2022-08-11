@@ -42,51 +42,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.grinderwolf</groupId>
-            <artifactId>slimeworldmanager-nms-v1_9_R1</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.grinderwolf</groupId>
-            <artifactId>slimeworldmanager-nms-v1_9_R2</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.grinderwolf</groupId>
-            <artifactId>slimeworldmanager-nms-v1_10_R1</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.grinderwolf</groupId>
-            <artifactId>slimeworldmanager-nms-v1_11_R1</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.grinderwolf</groupId>
-            <artifactId>slimeworldmanager-nms-v1_12_R1</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.grinderwolf</groupId>
-            <artifactId>slimeworldmanager-nms-v1_13_R1</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.grinderwolf</groupId>
-            <artifactId>slimeworldmanager-nms-v1_13_R2</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.grinderwolf</groupId>
-            <artifactId>slimeworldmanager-nms-v1_14_R1</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.grinderwolf</groupId>
-            <artifactId>slimeworldmanager-nms-v1_15_R1</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.luben</groupId>
             <artifactId>zstd-jni</artifactId>
             <version>1.4.1-1</version>

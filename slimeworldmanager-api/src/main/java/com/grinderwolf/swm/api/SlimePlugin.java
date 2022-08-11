@@ -14,6 +14,7 @@ import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Main class of the SWM API. From here, you can load
@@ -110,6 +111,16 @@ public interface SlimePlugin {
      * @param world {@link SlimeWorld} world to be added to the server's world list
      */
     void generateWorld(SlimeWorld world);
+
+    /**
+     * Generates a Minecraft World asynchronous from a {@link SlimeWorld} and
+     * adds it to the server's world list.
+     *
+     * @param world {@link SlimeWorld} world to be added to the server's world list
+     *
+     * @return A {@link CompletableFuture<Void>} that will complete once the world has been added to the server's list
+     */
+    CompletableFuture<Void> generateWorldAsync(SlimeWorld world);
 
     /**
      * Migrates a {@link SlimeWorld} to another datasource.

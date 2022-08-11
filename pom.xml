@@ -12,16 +12,7 @@
         <module>slimeworldmanager-nms-v1_8_R3</module>
         <module>slimeworldmanager-plugin</module>
         <module>slimeworldmanager-importer</module>
-        <module>slimeworldmanager-nms-v1_9_R1</module>
-        <module>slimeworldmanager-nms-v1_9_R2</module>
-        <module>slimeworldmanager-nms-v1_10_R1</module>
-        <module>slimeworldmanager-nms-v1_11_R1</module>
-        <module>slimeworldmanager-nms-v1_12_R1</module>
-        <module>slimeworldmanager-nms-v1_13_R1</module>
-        <module>slimeworldmanager-nms-v1_13_R2</module>
-        <module>slimeworldmanager-nms-v1_14_R1</module>
         <module>slimeworldmanager-classmodifier</module>
-        <module>slimeworldmanager-nms-v1_15_R1</module>
     </modules>
 
     <repositories>
@@ -32,6 +23,10 @@
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>elmakers-repo</id>
+            <url>https://maven.elmakers.com/repository/</url>
         </repository>
     </repositories>
     <pluginRepositories>
