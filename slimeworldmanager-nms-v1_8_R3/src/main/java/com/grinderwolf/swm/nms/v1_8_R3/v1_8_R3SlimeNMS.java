@@ -1,10 +1,12 @@
 package com.grinderwolf.swm.nms.v1_8_R3;
 
+import com.grinderwolf.swm.api.SlimePlugin;
 import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.grinderwolf.swm.api.world.properties.SlimeProperties;
 import com.grinderwolf.swm.nms.CraftSlimeWorld;
 import com.grinderwolf.swm.nms.SlimeNMS;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.WorldServer;
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +16,10 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Getter
 public class v1_8_R3SlimeNMS implements SlimeNMS {
@@ -62,6 +68,8 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
         loadingDefaultWorlds = false;
     }
 
+
+    @SneakyThrows
     @Override
     public Object createNMSWorld(SlimeWorld world) {
         CustomDataManager dataManager = new CustomDataManager(world);
@@ -73,13 +81,18 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
         do {
             for (WorldServer server : mcServer.worlds) {
                 used = server.dimension == dimension;
-
+                if(!used) {
+                    used = SlimePlugin.ADDING_WORLDS.contains(dimension);
+                }
                 if (used) {
                     dimension++;
                     break;
                 }
             }
         } while (used);
+        SlimePlugin.ADDING_WORLDS.add(dimension);
+
+
 
         return new CustomWorldServer((CraftSlimeWorld) world, dataManager, dimension);
     }
@@ -90,7 +103,7 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
     }
 
     @Override
-    public void addWorldToServerList(Object worldObject) {
+    public int addWorldToServerList(Object worldObject) {
         if (!(worldObject instanceof WorldServer)) {
             throw new IllegalArgumentException("World object must be an instance of WorldServer!");
         }
@@ -115,6 +128,7 @@ public class v1_8_R3SlimeNMS implements SlimeNMS {
         Bukkit.getPluginManager().callEvent(new WorldLoadEvent(server.getWorld()));
 
         LOGGER.info("World " + worldName + " loaded in " + (System.currentTimeMillis() - startTime) + "ms.");
+        return server.getWorld().getHandle().dimension;
     }
 
     @Override

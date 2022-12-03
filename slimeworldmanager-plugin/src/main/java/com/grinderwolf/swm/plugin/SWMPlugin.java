@@ -32,6 +32,10 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class SWMPlugin extends JavaPlugin implements SlimePlugin {
 
@@ -309,7 +313,7 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
             nms.generateWorld(world);
         }
     }
-
+    private static Lock TEST_LOCK = new ReentrantLock();
     @Override
     public CompletableFuture<Void> generateWorldAsync(SlimeWorld world) {
         CompletableFuture<Void> cf = new CompletableFuture<>();
@@ -325,11 +329,16 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         worldGeneratorService.submit(() -> {
+
             Object nmsWorld = nms.createNMSWorld(world);
+            CompletableFuture<Void> done = new CompletableFuture<>();
             Bukkit.getScheduler().runTask(this, () -> {
-                nms.addWorldToServerList(nmsWorld);
+                int id = nms.addWorldToServerList(nmsWorld);
+                ADDING_WORLDS.removeIf(integer -> integer == id);
                 cf.complete(null);
+                done.complete(null);
             });
+
         });
 
         return cf;

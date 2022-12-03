@@ -13,7 +13,7 @@ public interface SlimeNMS {
         throw new UnsupportedOperationException("This spigot version does not support async world loading");
     }
 
-    default void addWorldToServerList(Object worldObject) {
+    default int addWorldToServerList(Object worldObject) {
         throw new UnsupportedOperationException("This spigot version does not support async world loading");
     }
 

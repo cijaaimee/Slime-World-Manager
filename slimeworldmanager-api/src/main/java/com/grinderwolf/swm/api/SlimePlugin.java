@@ -14,7 +14,10 @@ import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Main class of the SWM API. From here, you can load
@@ -23,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
  * interface, to load and store worlds from other data sources.
  */
 public interface SlimePlugin {
-
+    public static List<Integer> ADDING_WORLDS = new CopyOnWriteArrayList<>();
     /**
      * Loads a world using a specificied {@link SlimeLoader}.
      * This world can then be added to the server's world
