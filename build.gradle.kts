@@ -29,8 +29,8 @@ subprojects {
         mavenLocal()
         mavenCentral()
 
-        maven(getNexusRepository("maven-snapshots/"))
-        maven(getNexusRepository("maven-releases/"))
+        maven(getNexusRepository("snapshots/"))
+        maven(getNexusRepository("releases/"))
 
         maven("https://jitpack.io")
         maven("https://repo.glaremasters.me/repository/concuncan/")
@@ -53,7 +53,7 @@ subprojects {
 
     publishing {
         repositories {
-            maven(getNexusRepository("maven-snapshots/"))
+            maven(getNexusRepository("snapshots/"))
         }
     }
 }
@@ -75,7 +75,7 @@ tasks.withType<JavaCompile> {
 
 publishing {
     repositories {
-        maven(getNexusRepository("maven-snapshots/"))
+        maven(getNexusRepository("snapshots/"))
     }
 
     publications {
