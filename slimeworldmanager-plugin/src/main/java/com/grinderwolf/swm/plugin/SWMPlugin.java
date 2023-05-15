@@ -26,7 +26,6 @@ import com.grinderwolf.swm.plugin.config.WorldData;
 import com.grinderwolf.swm.plugin.config.WorldsConfig;
 import com.grinderwolf.swm.plugin.loaders.LoaderUtils;
 import com.grinderwolf.swm.plugin.log.Logging;
-import com.grinderwolf.swm.plugin.update.Updater;
 import com.grinderwolf.swm.plugin.upgrade.WorldUpgrader;
 import com.grinderwolf.swm.plugin.world.WorldUnlocker;
 import com.grinderwolf.swm.plugin.world.importer.WorldImporter;
@@ -144,10 +143,6 @@ public class SWMPlugin extends JavaPlugin implements SlimePlugin {
         }
 
         getServer().getPluginManager().registerEvents(new WorldUnlocker(), this);
-
-        if (ConfigManager.getMainConfig().getUpdaterOptions().isEnabled()) {
-            getServer().getPluginManager().registerEvents(new Updater(), this);
-        }
 
         if (ConfigManager.getMainConfig().isAsyncWorldGenerate()) {
             try {

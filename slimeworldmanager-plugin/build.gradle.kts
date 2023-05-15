@@ -24,7 +24,7 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.13-R0.1-SNAPSHOT")
 }
 
-version = "3.0.1"
+version = "3.0.2"
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     archiveClassifier.set("")

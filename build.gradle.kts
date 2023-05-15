@@ -41,8 +41,8 @@ subprojects {
     }
 
     dependencies {
-        compileOnly("org.projectlombok:lombok:1.18.24")
-        annotationProcessor("org.projectlombok:lombok:1.18.24")
+        compileOnly("org.projectlombok:lombok:1.18.26")
+        annotationProcessor("org.projectlombok:lombok:1.18.26")
     }
 
     tasks.withType<JavaCompile> {
